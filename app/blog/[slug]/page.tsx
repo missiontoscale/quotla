@@ -82,7 +82,18 @@ export default function BlogPostPage() {
         throw new Error(data.error || 'Failed to submit comment')
       }
 
-      setSuccess('Your comment has been submitted and is awaiting moderation.')
+      const data = await response.json()
+
+      if (data.approved) {
+        setSuccess('Your comment has been posted successfully!')
+        // Reload comments to show the new one
+        if (post) {
+          await loadComments(post.id)
+        }
+      } else {
+        setSuccess('Your comment has been submitted and is awaiting moderation.')
+      }
+
       setCommentForm({
         author_name: '',
         author_email: '',
