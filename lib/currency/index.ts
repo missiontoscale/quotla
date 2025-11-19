@@ -1,7 +1,7 @@
 interface ExchangeRateResponse {
   result: string
   base_code: string
-  conversion_rates: Record<string, number>
+  rates: Record<string, number>
   time_last_update_utc?: string
 }
 
@@ -52,12 +52,17 @@ export async function getExchangeRates(baseCurrency: string = 'USD'): Promise<Re
       throw new Error('Failed to fetch exchange rates')
     }
 
+    if (!data.rates) {
+      console.error('API response missing rates:', data)
+      throw new Error('Invalid response from exchange rate API')
+    }
+
     // Cache the rates
-    rateCache.data = data.conversion_rates
+    rateCache.data = data.rates
     rateCache.base = baseCurrency
     rateCache.timestamp = now
 
-    return data.conversion_rates
+    return data.rates
   } catch (error) {
     console.error('Exchange rate fetch error:', error)
 
@@ -88,6 +93,11 @@ export async function convertCurrency(
   }
 
   const rates = await getExchangeRates(fromCurrency)
+
+  if (!rates) {
+    throw new Error('Unable to fetch exchange rates')
+  }
+
   const rate = rates[toCurrency]
 
   if (!rate) {

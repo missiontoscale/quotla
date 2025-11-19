@@ -9,7 +9,8 @@
       "Bash(\"c:\\Users\\ASUS\\Documents\\Projects\\Projects completed @ Mission To Scale\\quotla\\app\\invoices\\[id]\\page.tsx\")",
       "Bash(echo:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []
