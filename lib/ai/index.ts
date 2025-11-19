@@ -42,28 +42,10 @@ export async function generateDescription(prompt: string): Promise<string> {
       throw new Error('AI generation is disabled. Please enable an AI provider in your environment variables.')
   }
 
-  // If primary provider failed, try fallback providers
+  // If primary provider failed, don't try fallback - just throw the error
+  // This prevents unnecessary API calls to providers with no credits/invalid keys
   if (primaryError) {
-    console.log('Attempting fallback providers...')
-
-    // Try all providers except the one that already failed
-    const providers = [
-      { name: 'anthropic', fn: generateWithAnthropic },
-      { name: 'openai', fn: generateDescriptionWithOpenAI },
-      { name: 'gemini', fn: generateDescriptionWithGemini },
-    ].filter(p => p.name !== AI_PROVIDER)
-
-    for (const provider of providers) {
-      try {
-        console.log(`Trying fallback provider: ${provider.name}`)
-        return await provider.fn(prompt)
-      } catch (error) {
-        console.log(`Fallback provider ${provider.name} failed:`, error instanceof Error ? error.message : 'Unknown error')
-      }
-    }
-
-    // All providers failed
-    throw new Error(`AI generation failed. Primary provider error: ${primaryError.message}`)
+    throw primaryError
   }
 
   // This should never happen, but TypeScript needs it

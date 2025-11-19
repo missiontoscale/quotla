@@ -53,6 +53,9 @@ Generate only the description, without any preamble or additional commentary.`
 
     const data = await response.json()
 
+    // Debug: log the full response structure
+    console.log('Full Gemini response:', JSON.stringify(data, null, 2))
+
     // Check if we have candidates
     if (!data.candidates || data.candidates.length === 0) {
       console.error('No candidates in Gemini response:', data)
@@ -68,10 +71,14 @@ Generate only the description, without any preamble or additional commentary.`
 
     // Extract text from the response
     const content = candidate.content
+    console.log('Content object:', JSON.stringify(content, null, 2))
+
     if (!content || !content.parts || content.parts.length === 0) {
       console.error('No content parts in Gemini response:', data)
       throw new Error('No content in Gemini response')
     }
+
+    console.log('Content parts:', JSON.stringify(content.parts, null, 2))
 
     // Get the first text part
     const textPart = content.parts.find((part: any) => part.text)
