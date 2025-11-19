@@ -10,7 +10,8 @@
       "Bash(echo:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(nul)"
     ],
     "deny": [],
     "ask": []
