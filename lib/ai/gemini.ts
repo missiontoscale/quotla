@@ -38,8 +38,6 @@ Generate only the description, without any preamble or additional commentary.`
           generationConfig: {
             temperature: 0.7,
             maxOutputTokens: 1024,
-            // Disable thinking mode for simpler, faster responses
-            thoughtMode: 'disabled',
           },
         }),
       }
