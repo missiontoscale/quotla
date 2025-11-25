@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
           return cookieStore.get(name)?.value
         },
       },
-    })
+    } as any)
 
     const { data: { session } } = await supabase.auth.getSession()
     const isAuthenticated = !!session

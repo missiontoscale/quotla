@@ -48,6 +48,7 @@ export default function AdminPage() {
   const handleApproveComment = async (id: string) => {
     const { error } = await supabase
       .from('blog_comments')
+      // @ts-ignore - Supabase type inference issue
       .update({ approved: true, approved_by: profile?.id, approved_at: new Date().toISOString() })
       .eq('id', id)
 

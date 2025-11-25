@@ -73,7 +73,7 @@ export default function EditBlogPostPage() {
     }
 
     try {
-      const updateData: any = {
+      const updateData: Record<string, string | boolean | null> = {
         title: formData.title,
         slug: formData.slug,
         excerpt: formData.excerpt || null,
@@ -90,6 +90,7 @@ export default function EditBlogPostPage() {
 
       const { error: updateError } = await supabase
         .from('blog_posts')
+        // @ts-ignore - Supabase type inference issue
         .update(updateData)
         .eq('id', params.id as string)
 

@@ -50,6 +50,7 @@ export default function AdminBlogPage() {
   const togglePublish = async (post: BlogPost) => {
     const { error } = await supabase
       .from('blog_posts')
+      // @ts-ignore - Supabase type inference issue
       .update({
         published: !post.published,
         published_at: !post.published ? new Date().toISOString() : null,
