@@ -364,6 +364,27 @@ export default function SettingsPage() {
         </form>
       </div>
 
+      <div className="card mt-8">
+        <h2 className="text-xl font-bold text-gray-900 mb-4">Account Actions</h2>
+        <div className="space-y-4">
+          <div>
+            <p className="text-gray-600 mb-2">Sign out of your account</p>
+            <button
+              onClick={async () => {
+                try {
+                  await signOut()
+                } catch (err) {
+                  setError('Failed to sign out')
+                }
+              }}
+              className="btn btn-secondary"
+            >
+              Sign Out
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div className="card mt-8 border-red-200">
         <h2 className="text-xl font-bold text-red-600 mb-4">Danger Zone</h2>
         <p className="text-gray-600 mb-4">

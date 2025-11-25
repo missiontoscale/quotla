@@ -1,25 +1,31 @@
-export async function generateDescriptionWithGemini(prompt: string): Promise<string> {
+export async function generateDescriptionWithGemini(
+  prompt: string,
+  history?: Array<{role: string, content: string}>
+): Promise<string> {
   const apiKey = process.env.GOOGLE_AI_API_KEY
 
   if (!apiKey) {
     throw new Error('GOOGLE_AI_API_KEY is not configured')
   }
 
-  const systemPrompt = `You are a professional business writer helping to create clear, professional descriptions for quotes and invoices.
+  // Build context from history (last 5 pairs)
+  let contextText = ''
+  if (history && history.length > 0) {
+    const recentHistory = history.slice(-10)
+    contextText = '\n\nRecent conversation:\n' + recentHistory.map(msg =>
+      `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}`
+    ).join('\n')
+  }
 
-The user will describe a service or product, and you should generate a concise, professional description suitable for a business quote or invoice line item.
-
-Keep it professional, clear, and focused on the value provided. Use 2-4 sentences maximum.
-
-Generate only the description, without any preamble or additional commentary.`
-
-  const fullPrompt = `${systemPrompt}\n\nUser request: ${prompt}`
+  // Short but contextual prompt to maintain identity while avoiding thinking tokens
+  const fullPrompt = `You are Quotla AI, a business assistant for quotes and invoices. Answer professionally and concisely (2-3 sentences). If you cannot recall specific details from earlier, politely ask the user to repeat.${contextText}\n\nCurrent question: ${prompt}`
 
   try {
     // Use REST API directly for better compatibility
-    // Using gemini-1.5-pro model (latest stable model)
+    // Using gemini-2.5-flash model (fast, stable, and cost-effective)
+    // Lower maxOutputTokens to ensure there's room for actual output (not just thinking)
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: {
@@ -36,27 +42,45 @@ Generate only the description, without any preamble or additional commentary.`
             },
           ],
           generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 1024,
+            temperature: 0.5,
+            maxOutputTokens: 100,  // Reduced further to prevent thinking token overflow
+            candidateCount: 1,
           },
         }),
       }
     )
 
+    // Check if response is OK
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}))
-      console.error('Gemini API error:', errorData)
-      throw new Error(
-        errorData?.error?.message || `API request failed with status ${response.status}`
-      )
+      // Log the raw response text for debugging
+      const responseText = await response.text()
+      console.error('Gemini API error response:', responseText)
+
+      // Try to parse as JSON, but handle HTML responses
+      try {
+        const errorData = JSON.parse(responseText)
+        throw new Error(
+          errorData?.error?.message || `API request failed with status ${response.status}`
+        )
+      } catch (parseError) {
+        // If we got HTML or non-JSON response
+        if (responseText.includes('<!DOCTYPE') || responseText.includes('<html')) {
+          throw new Error(`Gemini API returned HTML instead of JSON. Status: ${response.status}. This usually indicates an authentication or endpoint issue.`)
+        }
+        throw new Error(`API request failed with status ${response.status}: ${responseText.substring(0, 200)}`)
+      }
+    }
+
+    // Validate Content-Type before parsing
+    const contentType = response.headers.get('content-type')
+
+    if (!contentType || !contentType.includes('application/json')) {
+      const responseText = await response.text()
+      console.error('Unexpected response format:', responseText.substring(0, 500))
+      throw new Error(`Expected JSON response but got ${contentType}. Response: ${responseText.substring(0, 200)}`)
     }
 
     const data = await response.json()
-
-    // Debug: log the full response structure (using console.dir for deep inspection)
-    console.log('============ FULL GEMINI RESPONSE ============')
-    console.dir(data, { depth: null, colors: true })
-    console.log('==============================================')
 
     // Check if we have candidates
     if (!data.candidates || data.candidates.length === 0) {
@@ -65,7 +89,6 @@ Generate only the description, without any preamble or additional commentary.`
     }
 
     const candidate = data.candidates[0]
-    console.log('Finish reason:', candidate.finishReason)
 
     // Check finish reason
     if (candidate.finishReason === 'MAX_TOKENS') {
@@ -74,19 +97,31 @@ Generate only the description, without any preamble or additional commentary.`
 
     // Extract text from the response
     const content = candidate.content
-    console.log('============ CONTENT OBJECT ============')
-    console.dir(content, { depth: null, colors: true })
-    console.log('========================================')
 
-    if (!content || !content.parts || content.parts.length === 0) {
-      console.error('No content parts in Gemini response')
+    // Handle both Gemini 1.5 and Gemini 2.5 response formats
+    // Gemini 2.5 models sometimes return empty content.parts when all tokens are used for "thinking"
+    // This is why we use gemini-2.5-flash with reduced maxOutputTokens
+
+    if (!content) {
+      console.error('No content in candidate')
       throw new Error('No content in Gemini response')
     }
 
-    console.log('============ CONTENT PARTS ============')
-    console.dir(content.parts, { depth: null, colors: true })
-    console.log('=======================================')
-    console.log('Number of parts:', content.parts.length)
+    // Check if content has parts (normal case)
+    if (!content.parts || content.parts.length === 0) {
+      console.error('No content parts in Gemini response')
+
+      // For Gemini models, if we hit MAX_TOKENS with thoughts but no output
+      // we should use a lower maxOutputTokens to allow room for actual output
+      if (candidate.finishReason === 'MAX_TOKENS' && data.usageMetadata?.thoughtsTokenCount) {
+        throw new Error(
+          'Gemini used all tokens for thinking without generating output. ' +
+          'Try simplifying your prompt or using a different model.'
+        )
+      }
+
+      throw new Error('No content parts in Gemini response')
+    }
 
     // Get the first text part
     const textPart = content.parts.find((part: any) => part.text)
@@ -121,5 +156,170 @@ Generate only the description, without any preamble or additional commentary.`
     }
 
     throw new Error('Failed to generate description with Gemini')
+  }
+}
+
+export async function generateQuoteWithGemini(prompt: string): Promise<import('./openai').GeneratedQuote> {
+  const apiKey = process.env.GOOGLE_AI_API_KEY
+
+  if (!apiKey) {
+    throw new Error('GOOGLE_AI_API_KEY is not configured')
+  }
+
+  // Detect currency from prompt
+  const lowerPrompt = prompt.toLowerCase()
+  let currency = 'USD'
+
+  if (lowerPrompt.includes('ngn') || lowerPrompt.includes('naira') || lowerPrompt.includes('nigeria')) {
+    currency = 'NGN'
+  } else if (lowerPrompt.includes('eur') || lowerPrompt.includes('euro')) {
+    currency = 'EUR'
+  } else if (lowerPrompt.includes('gbp') || lowerPrompt.includes('pound')) {
+    currency = 'GBP'
+  }
+
+  // VERY SHORT PROMPT to avoid thinking tokens
+  const fullPrompt = `Generate quote JSON for: ${prompt}. Currency: ${currency}. Include client_name, currency, items (description, quantity, unit_price, amount), subtotal, tax_rate, tax_amount, total, notes, valid_until. JSON only.`
+
+  try {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: fullPrompt,
+                },
+              ],
+            },
+          ],
+          generationConfig: {
+            temperature: 0.3,
+            maxOutputTokens: 600,
+            candidateCount: 1,
+          },
+        }),
+      }
+    )
+
+    if (!response.ok) {
+      const responseText = await response.text()
+      console.error('Gemini API error response:', responseText)
+
+      try {
+        const errorData = JSON.parse(responseText)
+        throw new Error(
+          errorData?.error?.message || `API request failed with status ${response.status}`
+        )
+      } catch (parseError) {
+        if (responseText.includes('<!DOCTYPE') || responseText.includes('<html')) {
+          throw new Error(`Gemini API returned HTML instead of JSON. Status: ${response.status}. This usually indicates an authentication or endpoint issue.`)
+        }
+        throw new Error(`API request failed with status ${response.status}: ${responseText.substring(0, 200)}`)
+      }
+    }
+
+    const contentType = response.headers.get('content-type')
+
+    if (!contentType || !contentType.includes('application/json')) {
+      const responseText = await response.text()
+      console.error('Unexpected response format:', responseText.substring(0, 500))
+      throw new Error(`Expected JSON response but got ${contentType}. Response: ${responseText.substring(0, 200)}`)
+    }
+
+    const data = await response.json()
+
+    if (!data.candidates || data.candidates.length === 0) {
+      console.error('No candidates in Gemini response')
+      throw new Error('No response generated by Gemini')
+    }
+
+    const candidate = data.candidates[0]
+
+    if (candidate.finishReason === 'MAX_TOKENS') {
+      console.warn('Gemini hit max tokens, response may be truncated')
+    }
+
+    const content = candidate.content
+
+    if (!content) {
+      console.error('No content in candidate')
+      throw new Error('No content in Gemini response')
+    }
+
+    if (!content.parts || content.parts.length === 0) {
+      console.error('No content parts in Gemini response')
+
+      if (candidate.finishReason === 'MAX_TOKENS' && data.usageMetadata?.thoughtsTokenCount) {
+        throw new Error(
+          'Gemini used all tokens for thinking without generating output. ' +
+          'Try simplifying your prompt or using a different model.'
+        )
+      }
+
+      throw new Error('No content parts in Gemini response')
+    }
+
+    const textPart = content.parts.find((part: any) => part.text)
+    if (!textPart || !textPart.text) {
+      console.error('No text found in content parts:', content.parts)
+      throw new Error('No text content in Gemini response')
+    }
+
+    let jsonText = textPart.text.trim()
+
+    // Remove markdown code blocks if present
+    jsonText = jsonText.replace(/```json\n?/g, '').replace(/```\n?/g, '')
+
+    // Try to parse the JSON
+    const quote = JSON.parse(jsonText)
+
+    // Validate the structure
+    if (!quote.items || !Array.isArray(quote.items) || quote.items.length === 0) {
+      console.error('Invalid quote structure:', quote)
+      throw new Error('AI did not generate valid quote items. Please provide more details.')
+    }
+
+    // Ensure all items have required fields and add sort_order
+    quote.items = quote.items.map((item: any, index: number) => ({
+      description: item.description || 'Item',
+      quantity: parseFloat(item.quantity) || 1,
+      unit_price: parseFloat(item.unit_price) || 0,
+      amount: parseFloat(item.amount) || (parseFloat(item.quantity) || 1) * (parseFloat(item.unit_price) || 0),
+      sort_order: index,
+    }))
+
+    // Validate and ensure numeric fields
+    quote.client_name = quote.client_name || 'Client'
+    quote.currency = currency
+    quote.subtotal = parseFloat(quote.subtotal) || quote.items.reduce((sum: number, item: any) => sum + item.amount, 0)
+    quote.tax_rate = parseFloat(quote.tax_rate) || 0.1
+    quote.tax_amount = parseFloat(quote.tax_amount) || quote.subtotal * quote.tax_rate
+    quote.total = parseFloat(quote.total) || quote.subtotal + quote.tax_amount
+
+    return quote
+  } catch (error) {
+    console.error('Gemini quote generation error:', error)
+
+    if (error instanceof Error) {
+      if (error.message.includes('API_KEY_INVALID') || error.message.includes('invalid')) {
+        throw new Error('Invalid Google AI API key. Please check your GOOGLE_AI_API_KEY.')
+      }
+      if (error.message.includes('quota') || error.message.includes('limit')) {
+        throw new Error('Google AI API quota exceeded. Please try again later.')
+      }
+      if (error.message.includes('JSON') || error.message.includes('parse')) {
+        throw new Error('Failed to parse AI response. Please try again with more specific details.')
+      }
+      throw new Error(error.message)
+    }
+
+    throw new Error('Failed to generate quote. Please try again.')
   }
 }

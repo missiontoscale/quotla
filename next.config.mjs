@@ -8,6 +8,14 @@ const nextConfig = {
       },
     ],
   },
+  // Performance optimizations
+  swcMinify: true,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+  experimental: {
+    optimizePackageImports: ['@supabase/supabase-js', '@google/generative-ai', 'openai', '@anthropic-ai/sdk'],
+  },
 }
 
 export default nextConfig

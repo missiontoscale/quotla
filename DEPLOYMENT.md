@@ -1,332 +1,251 @@
-# Deployment Guide
+# Quotla Deployment Guide
 
-This guide covers deploying Quotla to production using Vercel.
+This guide covers deploying your Quotla application to production using Vercel or Netlify.
 
-## Pre-Deployment Checklist
+## Prerequisites
 
-Before deploying, ensure you have:
+- GitHub repository with your code
+- Environment variables from `.env` file
+- Supabase project set up
 
-- [x] Completed local setup (see SETUP.md)
-- [x] Tested all features locally
-- [x] Set up Supabase project
-- [x] Configured database schema
-- [x] Created storage bucket
-- [x] Obtained Anthropic API key
-- [x] Code pushed to GitHub
+## Required Environment Variables
 
-## Deploying to Vercel
-
-### Step 1: Push to GitHub
-
-```bash
-git init
-git add .
-git commit -m "Initial commit"
-git branch -M main
-git remote add origin https://github.com/yourusername/quotla.git
-git push -u origin main
-```
-
-### Step 2: Connect to Vercel
-
-1. Go to [vercel.com](https://vercel.com)
-2. Sign up or log in
-3. Click "Add New Project"
-4. Import your GitHub repository
-5. Select the repository
-
-### Step 3: Configure Environment Variables
-
-In the Vercel dashboard, add the following environment variables:
+Make sure you have these environment variables ready:
 
 ```
-NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGc...
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGc...
-ANTHROPIC_API_KEY=sk-ant-...
-NEXT_PUBLIC_APP_URL=https://your-domain.vercel.app
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+
+# AI Providers (at least one required)
+ANTHROPIC_API_KEY=your_anthropic_key
+OPENAI_API_KEY=your_openai_key
+GOOGLE_AI_API_KEY=your_google_ai_key
+
+# Currency API
+EXCHANGERATE_API_KEY=your_exchangerate_key
+
+# App Configuration
+NEXT_PUBLIC_APP_URL=https://your-domain.com
 ```
-
-**Important:** Copy these exactly from your `.env` file, except for `NEXT_PUBLIC_APP_URL` which should be your production URL.
-
-### Step 4: Deploy
-
-1. Click "Deploy"
-2. Wait for the deployment to complete
-3. Vercel will provide you with a URL
-
-### Step 5: Update Supabase Configuration
-
-1. Go to your Supabase project
-2. Navigate to Authentication → Settings
-3. Under "Site URL", add your Vercel URL:
-   ```
-   https://your-project.vercel.app
-   ```
-4. Under "Redirect URLs", add:
-   ```
-   https://your-project.vercel.app/**
-   ```
-
-### Step 6: Test Production Deployment
-
-1. Visit your Vercel URL
-2. Test all critical features:
-   - Sign up/Login
-   - Profile settings
-   - Client creation
-   - Quote creation with AI
-   - Invoice creation
-   - Blog viewing
-   - Newsletter subscription
-
-## Custom Domain (Optional)
-
-### Adding a Custom Domain
-
-1. In Vercel dashboard, go to your project
-2. Click "Settings" → "Domains"
-3. Add your custom domain
-4. Follow DNS configuration instructions
-5. Wait for DNS propagation
-
-### Update Supabase for Custom Domain
-
-After adding a custom domain:
-
-1. Go to Supabase → Authentication → Settings
-2. Update "Site URL" to your custom domain
-3. Update "Redirect URLs" to include your custom domain
-
-### Update Environment Variables
-
-1. In Vercel, update `NEXT_PUBLIC_APP_URL`:
-   ```
-   NEXT_PUBLIC_APP_URL=https://yourdomain.com
-   ```
-2. Redeploy the application
-
-## Production Configuration
-
-### Enable Email Confirmation
-
-For production, you should enable email confirmation:
-
-1. Go to Supabase → Authentication → Settings
-2. Under "Email Auth", enable "Confirm email"
-3. Customize email templates:
-   - Confirmation email
-   - Password reset email
-   - Magic link email
-
-### Set Up Custom SMTP (Recommended)
-
-By default, Supabase limits emails. For production:
-
-1. Get an SMTP service (SendGrid, Mailgun, AWS SES)
-2. In Supabase → Settings → Auth
-3. Configure SMTP settings
-4. Test email delivery
-
-### Review Rate Limits
-
-The default rate limit is 5 comments per hour. Adjust if needed in:
-```typescript
-// lib/utils/security.ts
-export async function checkRateLimit(
-  identifier: string,
-  action: string,
-  maxRequests: number = 10, // Adjust this
-  windowMinutes: number = 60
-)
-```
-
-## Monitoring & Maintenance
-
-### Set Up Error Tracking
-
-Consider adding error tracking:
-
-1. **Sentry**: For error monitoring
-   ```bash
-   npm install @sentry/nextjs
-   ```
-
-2. **Vercel Analytics**: Enable in project settings
-
-### Database Backups
-
-Supabase automatically backs up your database. To ensure safety:
-
-1. Go to Supabase → Database → Backups
-2. Review backup schedule
-3. Consider enabling Point-in-Time Recovery (PITR) for Pro plan
-
-### Performance Monitoring
-
-Monitor your application:
-
-1. Use Vercel Analytics (free)
-2. Check Supabase metrics (Database, Auth, Storage)
-3. Monitor Anthropic API usage
-
-## Security Best Practices
-
-### For Production
-
-1. **Enable HTTPS only**
-   - Vercel does this automatically
-
-2. **Review RLS Policies**
-   - Audit all policies in Supabase
-   - Test with different user roles
-
-3. **Secure Storage Bucket**
-   - Review storage policies
-   - Ensure proper access controls
-
-4. **Rotate Secrets Regularly**
-   - API keys
-   - Service role keys
-   - Database passwords
-
-5. **Set Up WAF** (Web Application Firewall)
-   - Consider Cloudflare for additional protection
-
-## Scaling Considerations
-
-### Database
-
-- Monitor query performance in Supabase
-- Add indexes for slow queries
-- Consider upgrading Supabase plan as you grow
-
-### AI Usage
-
-- Monitor Anthropic API usage
-- Set up usage alerts
-- Consider implementing caching for common descriptions
-
-### Storage
-
-- Monitor storage usage
-- Implement image optimization
-- Set up CDN for faster delivery
-
-## Continuous Deployment
-
-Vercel automatically redeploys when you push to your main branch:
-
-```bash
-git add .
-git commit -m "Update feature"
-git push
-```
-
-Vercel will:
-1. Build the project
-2. Run any checks
-3. Deploy to production
-4. Provide a preview URL
-
-## Rollback
-
-If something goes wrong:
-
-1. Go to Vercel dashboard
-2. Navigate to Deployments
-3. Find the last working deployment
-4. Click "Promote to Production"
-
-## Environment-Specific Configuration
-
-### Staging Environment
-
-Create a staging environment:
-
-1. Create a new branch: `staging`
-2. In Vercel, create a new project linked to `staging` branch
-3. Use separate Supabase project for staging
-4. Test changes before merging to `main`
-
-## Troubleshooting Production Issues
-
-### Build Failures
-
-Check Vercel build logs:
-- Missing environment variables
-- TypeScript errors
-- Dependency issues
-
-### Runtime Errors
-
-Check Vercel function logs:
-- API route errors
-- Database connection issues
-- Authentication problems
-
-### Slow Performance
-
-- Check Supabase query performance
-- Review Vercel function execution times
-- Optimize images and assets
-
-## Cost Optimization
-
-### Vercel
-
-- Free tier: Includes hobby projects
-- Pro tier: $20/month for commercial use
-
-### Supabase
-
-- Free tier: 500MB database, 1GB storage
-- Pro tier: $25/month for more resources
-
-### Anthropic
-
-- Pay per use
-- Monitor usage to control costs
-- Implement caching where possible
-
-## Compliance & Legal
-
-### GDPR Compliance
-
-If serving EU users:
-- Add privacy policy
-- Implement data export
-- Add account deletion
-- Cookie consent (if using analytics)
-
-### Data Retention
-
-Configure data retention policies:
-- How long to keep audit logs
-- When to delete inactive accounts
-- Newsletter unsubscribe handling
-
-## Post-Deployment Tasks
-
-After successful deployment:
-
-- [ ] Test all features in production
-- [ ] Send test emails
-- [ ] Create first admin user
-- [ ] Add initial blog content
-- [ ] Set up monitoring and alerts
-- [ ] Configure backups
-- [ ] Document any custom configurations
-- [ ] Train users (if applicable)
-
-## Support
-
-For issues:
-1. Check Vercel deployment logs
-2. Review Supabase logs
-3. Check browser console for errors
-4. Refer to main README.md
 
 ---
 
-**Congratulations!** Your Quotla application is now live in production.
+## Option 1: Deploy to Vercel (Recommended for Next.js)
+
+Vercel is the best choice for Next.js applications and offers the easiest deployment experience.
+
+### Step 1: Install Vercel CLI (Optional)
+
+```bash
+npm install -g vercel
+```
+
+### Step 2: Deploy via Vercel Dashboard
+
+1. Go to [vercel.com](https://vercel.com) and sign in with your GitHub account
+2. Click **"Add New Project"**
+3. Import your GitHub repository
+4. Configure your project:
+   - **Framework Preset**: Next.js (auto-detected)
+   - **Root Directory**: `./` (leave as default)
+   - **Build Command**: `npm run build` (auto-detected)
+   - **Output Directory**: `.next` (auto-detected)
+
+### Step 3: Add Environment Variables
+
+In the Vercel project settings:
+
+1. Go to **Settings** → **Environment Variables**
+2. Add each environment variable:
+   - Variable name (e.g., `NEXT_PUBLIC_SUPABASE_URL`)
+   - Value (paste your actual value)
+   - Select environments: Production, Preview, Development
+3. Click **Save**
+
+### Step 4: Deploy
+
+1. Click **Deploy**
+2. Wait for the build to complete (2-3 minutes)
+3. Your app will be live at `https://your-project.vercel.app`
+
+### Step 5: Add Custom Domain (Optional)
+
+1. Go to **Settings** → **Domains**
+2. Add your custom domain
+3. Follow the DNS configuration instructions
+4. Update `NEXT_PUBLIC_APP_URL` environment variable to your custom domain
+
+### Vercel CLI Deployment
+
+Alternatively, deploy from your terminal:
+
+```bash
+# Login to Vercel
+vercel login
+
+# Deploy to production
+vercel --prod
+
+# Follow the prompts to link your project
+```
+
+---
+
+## Option 2: Deploy to Netlify
+
+Netlify is another excellent option with a generous free tier.
+
+### Step 1: Deploy via Netlify Dashboard
+
+1. Go to [netlify.com](https://netlify.com) and sign in with GitHub
+2. Click **"Add new site"** → **"Import an existing project"**
+3. Choose **GitHub** and select your repository
+4. Configure build settings:
+   - **Build command**: `npm run build`
+   - **Publish directory**: `.next`
+   - **Base directory**: (leave empty)
+
+### Step 2: Add Environment Variables
+
+1. Go to **Site settings** → **Environment variables**
+2. Click **Add a variable**
+3. Add each environment variable from the list above
+4. Make sure to select **"Deploy" and "Branch deploys"**
+
+### Step 3: Configure Next.js Plugin
+
+Netlify needs a plugin for Next.js. Create a `netlify.toml` file in your project root (already created for you).
+
+### Step 4: Deploy
+
+1. Click **Deploy site**
+2. Wait for the build to complete
+3. Your app will be live at `https://your-site-name.netlify.app`
+
+### Step 5: Add Custom Domain (Optional)
+
+1. Go to **Domain settings** → **Add custom domain**
+2. Follow the DNS configuration instructions
+3. Update `NEXT_PUBLIC_APP_URL` environment variable
+
+---
+
+## Option 3: Deploy to Railway
+
+Railway offers a simple deployment experience with a generous free tier.
+
+### Step 1: Deploy via Railway Dashboard
+
+1. Go to [railway.app](https://railway.app) and sign in with GitHub
+2. Click **"New Project"** → **"Deploy from GitHub repo"**
+3. Select your repository
+4. Railway will auto-detect Next.js
+
+### Step 2: Add Environment Variables
+
+1. Go to your project → **Variables** tab
+2. Add each environment variable
+3. Click **Deploy**
+
+### Step 3: Configure Domain
+
+1. Go to **Settings** → **Networking**
+2. Generate a Railway domain or add your custom domain
+3. Update `NEXT_PUBLIC_APP_URL` environment variable
+
+---
+
+## Post-Deployment Checklist
+
+After deploying to any platform:
+
+- [ ] Test the live site thoroughly
+- [ ] Verify all AI providers are working
+- [ ] Test quote generation and PDF export
+- [ ] Test invoice creation
+- [ ] Verify authentication flow (sign up, sign in, password reset)
+- [ ] Test multi-currency conversion
+- [ ] Check that Supabase connection is working
+- [ ] Test the AI chat assistant
+- [ ] Verify email functionality (if configured)
+- [ ] Test on mobile devices
+- [ ] Set up monitoring and error tracking (optional)
+
+---
+
+## Continuous Deployment
+
+All three platforms support automatic deployments:
+
+- **Push to main branch** → Automatic production deployment
+- **Push to other branches** → Preview deployments (Vercel/Netlify)
+- **Pull requests** → Preview deployments with unique URLs
+
+---
+
+## Supabase Configuration
+
+Make sure your Supabase project allows your deployment URL:
+
+1. Go to Supabase Dashboard → **Authentication** → **URL Configuration**
+2. Add your deployment URL to:
+   - **Site URL**: `https://your-domain.com`
+   - **Redirect URLs**: `https://your-domain.com/**`
+
+---
+
+## Troubleshooting
+
+### Build Fails
+
+- Check the build logs for specific errors
+- Verify all environment variables are set correctly
+- Make sure `npm run build` works locally first
+
+### Environment Variables Not Working
+
+- Ensure variables starting with `NEXT_PUBLIC_` are prefixed correctly
+- Redeploy after adding/changing environment variables
+- For Vercel: Clear build cache and redeploy
+
+### API Routes Failing
+
+- Check that server-side environment variables (without `NEXT_PUBLIC_`) are set
+- Verify API keys are valid
+- Check platform-specific logs for errors
+
+### Supabase Connection Issues
+
+- Verify `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` are correct
+- Check Supabase Dashboard for API keys
+- Ensure deployment URL is added to Supabase allowed origins
+
+---
+
+## Performance Optimization
+
+After deployment:
+
+1. Enable **Edge Functions** on Vercel for faster API responses
+2. Configure **CDN caching** for static assets
+3. Enable **Image Optimization** (enabled by default on Vercel)
+4. Monitor **Core Web Vitals** in Vercel Analytics
+5. Set up **Error Tracking** (Sentry, LogRocket, etc.)
+
+---
+
+## Recommended: Vercel
+
+For the best Next.js experience, we recommend Vercel:
+
+- Zero configuration needed
+- Automatic HTTPS
+- Edge network for global performance
+- Best Next.js integration
+- Generous free tier
+- Automatic preview deployments
+- Built-in analytics
+
+Deploy now: [vercel.com/new](https://vercel.com/new)

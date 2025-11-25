@@ -80,7 +80,11 @@ export default function NewsletterPage() {
         <div className="card">
           {success ? (
             <div className="text-center py-8">
-              <div className="text-6xl mb-4">✓</div>
+              <div className="text-6xl mb-4 text-green-600">
+                <svg className="w-20 h-20 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Thank you for subscribing!</h2>
               <p className="text-gray-600 mb-6">
                 We&apos;ve sent a confirmation email to {formData.email}
@@ -141,17 +145,14 @@ export default function NewsletterPage() {
 
         <div className="mt-12 grid md:grid-cols-3 gap-6">
           <div className="text-center">
-            <div className="text-3xl mb-2">📧</div>
             <h3 className="font-bold mb-1">Weekly Updates</h3>
             <p className="text-sm text-gray-600">Get the latest news every week</p>
           </div>
           <div className="text-center">
-            <div className="text-3xl mb-2">💡</div>
             <h3 className="font-bold mb-1">Expert Tips</h3>
             <p className="text-sm text-gray-600">Learn from industry professionals</p>
           </div>
           <div className="text-center">
-            <div className="text-3xl mb-2">🎁</div>
             <h3 className="font-bold mb-1">Exclusive Content</h3>
             <p className="text-sm text-gray-600">Subscriber-only resources</p>
           </div>

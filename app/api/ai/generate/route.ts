@@ -4,7 +4,7 @@ import { sanitizeHtml } from '@/lib/utils/security'
 
 export async function POST(request: NextRequest) {
   try {
-    const { prompt } = await request.json()
+    const { prompt, history } = await request.json()
 
     if (!prompt) {
       return NextResponse.json(
@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const description = await generateDescription(prompt)
+    const description = await generateDescription(prompt, history)
     const sanitized = sanitizeHtml(description)
 
     return NextResponse.json({ description: sanitized })
