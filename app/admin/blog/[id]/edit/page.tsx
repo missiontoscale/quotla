@@ -36,13 +36,13 @@ export default function EditBlogPostPage() {
       .single()
 
     if (!error && data) {
-      setPost(data)
+      setPost(data as BlogPost)
       setFormData({
-        title: data.title,
-        slug: data.slug,
-        excerpt: data.excerpt || '',
-        content: data.content,
-        published: data.published,
+        title: (data as BlogPost).title,
+        slug: (data as BlogPost).slug,
+        excerpt: (data as BlogPost).excerpt || '',
+        content: (data as BlogPost).content,
+        published: (data as BlogPost).published,
       })
     }
   }
