@@ -58,23 +58,84 @@ export default function DashboardPage() {
         <h1 className="text-3xl font-bold text-gray-900">
           Welcome back{profile?.company_name ? `, ${profile.company_name}` : ''}
         </h1>
-        <p className="mt-2 text-gray-600">Here&apos;s what&apos;s happening with your business</p>
+        <p className="mt-2 text-gray-600">What would you like to do today?</p>
+      </div>
+
+      {/* AI Chat Quick Access - Hero Element */}
+      <div className="card bg-gradient-to-br from-primary-50 to-white border-2 border-primary-200 shadow-xl">
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-primary-600 mb-3 shadow-lg">
+            <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Ask Quotla AI Anything</h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Generate quotes, create invoices, get pricing advice, or ask business questions through a simple conversation
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-3 max-w-3xl mx-auto mb-4">
+          {[
+            { title: 'Create a quote', desc: 'Generate a professional quote with AI', color: 'blue' },
+            { title: 'Make an invoice', desc: 'Create an invoice in seconds', color: 'green' },
+            { title: 'Get pricing help', desc: 'Ask for pricing strategy advice', color: 'purple' },
+            { title: 'Business advice', desc: 'Get expert business guidance', color: 'orange' },
+          ].map((action, idx) => (
+            <button
+              key={idx}
+              onClick={() => {
+                const event = new CustomEvent('open-chat')
+                window.dispatchEvent(event)
+              }}
+              className="bg-white border-2 border-primary-200 rounded-xl p-5 text-left hover:border-primary-400 hover:shadow-lg transition-all group"
+            >
+              <div className="flex items-start gap-3">
+                <div className={`w-10 h-10 rounded-lg bg-${action.color}-100 flex items-center justify-center flex-shrink-0`}>
+                  <svg className={`w-5 h-5 text-${action.color}-600`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 group-hover:text-primary-600 mb-1">{action.title}</h4>
+                  <p className="text-sm text-gray-600">{action.desc}</p>
+                </div>
+              </div>
+            </button>
+          ))}
+        </div>
+
+        <div className="text-center">
+          <button
+            onClick={() => {
+              const event = new CustomEvent('open-chat')
+              window.dispatchEvent(event)
+            }}
+            className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white rounded-xl font-semibold hover:bg-primary-700 transition-all shadow-lg hover:shadow-xl"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+            Open Quotla Chat
+          </button>
+          <p className="text-xs text-gray-500 mt-2">AI assistant is always available to help</p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="card">
+        <div className="card hover:shadow-lg transition-shadow">
           <div className="text-sm text-gray-600">Total Quotes</div>
           <div className="text-3xl font-bold text-gray-900 mt-2">{stats.totalQuotes}</div>
         </div>
-        <div className="card">
+        <div className="card hover:shadow-lg transition-shadow">
           <div className="text-sm text-gray-600">Total Invoices</div>
           <div className="text-3xl font-bold text-gray-900 mt-2">{stats.totalInvoices}</div>
         </div>
-        <div className="card">
+        <div className="card hover:shadow-lg transition-shadow">
           <div className="text-sm text-gray-600">Pending Invoices</div>
           <div className="text-3xl font-bold text-yellow-600 mt-2">{stats.pendingInvoices}</div>
         </div>
-        <div className="card">
+        <div className="card hover:shadow-lg transition-shadow">
           <div className="text-sm text-gray-600">Paid Invoices</div>
           <div className="text-3xl font-bold text-green-600 mt-2">{stats.paidInvoices}</div>
         </div>
