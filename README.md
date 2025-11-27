@@ -5,7 +5,7 @@ A professional business management platform for creating quotes and invoices wit
 ## Features
 
 - **Professional Quote & Invoice Management**: Create, edit, and track business documents with customizable line items, automatic tax calculations, and multi-currency support
-- **AI-Powered Content Generation**: Generate professional service descriptions using Claude 3.5 Sonnet
+- **AI-Powered Content Generation**: Generate professional service descriptions 
 - **Client Management**: Store and manage client information with full contact details and history
 - **Business Profile**: Customize your business profile with logo, company details, and branding
 - **Blog System**: Public blog with comment moderation for engagement
