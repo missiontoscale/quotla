@@ -108,80 +108,66 @@ export default function HomePage() {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center mb-16">
-          <h2 className="text-5xl md:text-6xl font-bold text-white mb-6">
-            Generate Professional Quotes
-            <br />
-            <span className="text-primary-200">In Under 2 Minutes</span>
+      {/* Hero Section - Chat First */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="text-center mb-8">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            Your AI-Powered Business Assistant
           </h2>
-          <p className="text-xl text-primary-100 mb-8 max-w-3xl mx-auto">
-            AI-powered quote generation with multi-currency support, invoice management, and client tracking.
-            Supercharge your workflow and close deals faster.
+          <p className="text-lg text-primary-100 max-w-2xl mx-auto">
+            Generate quotes, create invoices, get business advice - all through a simple conversation.
           </p>
-          <div className="flex justify-center gap-4">
-            <Link href="/signup" className="px-8 py-4 rounded-lg text-lg font-medium bg-white text-primary-600 hover:bg-gray-100 transition-colors shadow-xl">
-              Start Free Trial
-            </Link>
-            <a href="#chat" className="px-8 py-4 rounded-lg text-lg font-medium bg-primary-700 text-white hover:bg-primary-600 transition-colors border-2 border-primary-500">
-              Try AI Assistant
-            </a>
-          </div>
+          {!isAuthenticated && (
+            <p className="text-sm text-primary-300 mt-3">
+              Try 2 questions free, then <Link href="/signup" className="underline hover:text-white font-medium">create an account</Link> for unlimited access.
+            </p>
+          )}
         </div>
 
-        {/* Features Grid */}
-        <div className="grid md:grid-cols-3 gap-8 mb-16">
-          <div className="bg-white/10 backdrop-blur-sm border border-primary-700 rounded-xl p-6">
-            <h3 className="text-xl font-bold text-white mb-2">AI-Powered Generation</h3>
-            <p className="text-primary-200">
-              Generate complete quotes with line items, pricing, and tax calculations in seconds using advanced AI.
-            </p>
-          </div>
-          <div className="bg-white/10 backdrop-blur-sm border border-primary-700 rounded-xl p-6">
-            <h3 className="text-xl font-bold text-white mb-2">Multi-Currency Support</h3>
-            <p className="text-primary-200">
-              Work with USD, NGN, EUR, GBP and more. Perfect for global businesses and African markets.
-            </p>
-          </div>
-          <div className="bg-white/10 backdrop-blur-sm border border-primary-700 rounded-xl p-6">
-            <h3 className="text-xl font-bold text-white mb-2">Complete Management</h3>
-            <p className="text-primary-200">
-              Track quotes, manage invoices, organize clients, and export to PDF - all in one platform.
-            </p>
-          </div>
-        </div>
+        {/* Main Chat Interface - Hero Element */}
+        <div className="max-w-5xl mx-auto mb-12">
+          {/* Suggested Prompts (shown when no messages) */}
+          {chatMessages.length === 0 && (
+            <div className="grid md:grid-cols-2 gap-3 mb-6">
+              {[
+                { title: 'Create a quote', prompt: 'Help me create a professional quote for web development services' },
+                { title: 'Generate invoice', prompt: 'Generate an invoice for my recent consulting project' },
+                { title: 'Pricing advice', prompt: 'How should I price my freelance design services?' },
+                { title: 'Business tips', prompt: 'What are the best practices for following up on quotes?' },
+              ].map((suggestion, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    setChatInput(suggestion.prompt)
+                    setTimeout(() => handleChatSend(), 100)
+                  }}
+                  className="bg-white/10 backdrop-blur-sm border border-primary-600 rounded-xl p-4 text-left hover:bg-white/20 transition-all group"
+                >
+                  <h4 className="font-semibold text-white mb-1 group-hover:text-primary-100">{suggestion.title}</h4>
+                  <p className="text-sm text-primary-300">{suggestion.prompt}</p>
+                </button>
+              ))}
+            </div>
+          )}
 
-        {/* Chat Interface */}
-        <div id="chat" className="bg-white/10 backdrop-blur-sm border border-primary-700 rounded-xl p-8 mb-16">
-          <div className="text-center mb-6">
-            <h3 className="text-3xl font-bold text-white mb-2">Chat with Quotla AI</h3>
-            <p className="text-primary-200">Ask anything about quotes, invoices, pricing, or business advice</p>
-            {!isAuthenticated && (
-              <p className="text-sm text-primary-300 mt-2">
-                Free users get 2 questions. <Link href="/signup" className="underline hover:text-white">Create account</Link> for unlimited access.
-              </p>
-            )}
-          </div>
-
-          <div className="max-w-3xl mx-auto">
-            {/* Chat Messages */}
-            {chatMessages.length > 0 && (
-              <div className="bg-primary-900/50 rounded-lg p-4 mb-4 max-h-96 overflow-y-auto space-y-4">
+          {/* Chat Messages Area */}
+          <div className="bg-white/5 backdrop-blur-sm border border-primary-600 rounded-2xl shadow-2xl overflow-hidden">
+            {chatMessages.length > 0 ? (
+              <div className="p-6 max-h-[500px] overflow-y-auto space-y-4">
                 {chatMessages.map((msg, idx) => (
                   <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[80%] rounded-lg px-4 py-2 ${
+                    <div className={`max-w-[85%] rounded-2xl px-5 py-3 ${
                       msg.role === 'user'
-                        ? 'bg-white text-primary-900'
-                        : 'bg-primary-700 text-white'
+                        ? 'bg-white text-primary-900 shadow-lg'
+                        : 'bg-primary-700/80 text-white backdrop-blur-sm'
                     }`}>
-                      <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                      <p className="text-base leading-relaxed whitespace-pre-wrap">{msg.content}</p>
                     </div>
                   </div>
                 ))}
                 {chatLoading && (
                   <div className="flex justify-start">
-                    <div className="bg-primary-700 rounded-lg px-4 py-2">
+                    <div className="bg-primary-700/80 backdrop-blur-sm rounded-2xl px-5 py-3">
                       <div className="flex space-x-2">
                         <div className="w-2 h-2 bg-white rounded-full animate-bounce"></div>
                         <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
@@ -191,60 +177,114 @@ export default function HomePage() {
                   </div>
                 )}
               </div>
+            ) : (
+              <div className="p-12 text-center">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/10 mb-4">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-2">Start a conversation</h3>
+                <p className="text-primary-200">Click a suggestion above or type your question below</p>
+              </div>
             )}
 
-            {/* Chat Input */}
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={chatInput}
-                onChange={(e) => setChatInput(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleChatSend()}
-                placeholder={promptCount >= 2 && !isAuthenticated ? "Sign up to continue..." : "Ask me anything about quotes, invoices, or business advice..."}
-                className="flex-1 px-4 py-3 rounded-lg bg-white/20 border border-primary-600 text-white placeholder-primary-300 focus:outline-none focus:ring-2 focus:ring-white disabled:opacity-50"
-                disabled={chatLoading || (!isAuthenticated && promptCount >= 2)}
-              />
-              <button
-                onClick={handleChatSend}
-                disabled={!chatInput.trim() || chatLoading || (!isAuthenticated && promptCount >= 2)}
-                className="px-6 py-3 rounded-lg bg-white text-primary-600 font-medium hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                </svg>
-              </button>
+            {/* Chat Input - Always visible at bottom */}
+            <div className="p-4 bg-primary-900/30 border-t border-primary-600">
+              <div className="flex gap-3">
+                <input
+                  type="text"
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleChatSend()}
+                  placeholder={promptCount >= 2 && !isAuthenticated ? "Sign up to continue..." : "Ask anything about quotes, invoices, pricing, or business advice..."}
+                  className="flex-1 px-5 py-4 rounded-xl bg-white/10 border border-primary-500 text-white placeholder-primary-300 focus:outline-none focus:ring-2 focus:ring-white focus:bg-white/15 disabled:opacity-50 text-base"
+                  disabled={chatLoading || (!isAuthenticated && promptCount >= 2)}
+                />
+                <button
+                  onClick={handleChatSend}
+                  disabled={!chatInput.trim() || chatLoading || (!isAuthenticated && promptCount >= 2)}
+                  className="px-6 py-4 rounded-xl bg-white text-primary-600 font-semibold hover:bg-gray-100 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                  </svg>
+                </button>
+              </div>
+              {!isAuthenticated && promptCount > 0 && (
+                <p className="text-xs text-primary-300 mt-2 text-center">
+                  {promptCount}/2 free questions used
+                </p>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Business Advisor Section */}
-        <div className="bg-white/10 backdrop-blur-sm border border-primary-700 rounded-xl p-8">
+        {/* Quick Features Below Chat */}
+        <div className="grid md:grid-cols-3 gap-6 mb-16 max-w-5xl mx-auto">
+          <div className="bg-white/5 backdrop-blur-sm border border-primary-700 rounded-xl p-5 text-center">
+            <h3 className="text-lg font-bold text-white mb-1">AI Quote Generation</h3>
+            <p className="text-sm text-primary-200">
+              Complete quotes with line items and pricing in seconds
+            </p>
+          </div>
+          <div className="bg-white/5 backdrop-blur-sm border border-primary-700 rounded-xl p-5 text-center">
+            <h3 className="text-lg font-bold text-white mb-1">Multi-Currency</h3>
+            <p className="text-sm text-primary-200">
+              USD, NGN, EUR, GBP and more for global business
+            </p>
+          </div>
+          <div className="bg-white/5 backdrop-blur-sm border border-primary-700 rounded-xl p-5 text-center">
+            <h3 className="text-lg font-bold text-white mb-1">Complete Platform</h3>
+            <p className="text-sm text-primary-200">
+              Quotes, invoices, clients, and PDF export all-in-one
+            </p>
+          </div>
+        </div>
+
+        {/* What You Can Do Section */}
+        <div className="max-w-5xl mx-auto mb-16">
           <div className="text-center mb-8">
-            <h3 className="text-3xl font-bold text-white mb-2">AI Business Advisor</h3>
-            <p className="text-primary-200">Get expert advice on pricing, quotes, invoices, and growing your business</p>
+            <h3 className="text-3xl font-bold text-white mb-3">What can Quotla help you with?</h3>
+            <p className="text-primary-200">Ask the AI assistant anything about your business</p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-4">
             {[
-              { title: 'Pricing Strategy', desc: 'Learn to price services effectively' },
-              { title: 'Quote Best Practices', desc: 'Create winning quotes' },
-              { title: 'Invoice Management', desc: 'Master payment collection' },
-              { title: 'Client Relations', desc: 'Build better relationships' },
-              { title: 'Business Growth', desc: 'Scale your business' },
-              { title: 'Negotiations', desc: 'Close deals faster' },
+              { title: 'Pricing Strategy', desc: 'Get advice on pricing your services competitively' },
+              { title: 'Quote Creation', desc: 'Generate professional quotes instantly' },
+              { title: 'Invoice Management', desc: 'Create and track invoices effortlessly' },
+              { title: 'Client Relations', desc: 'Build stronger client relationships' },
+              { title: 'Business Growth', desc: 'Strategies to scale your business' },
+              { title: 'Payment Collection', desc: 'Best practices for getting paid faster' },
             ].map((topic, idx) => (
-              <div key={idx} className="bg-primary-800/50 border border-primary-700 rounded-lg p-4 hover:bg-primary-700/50 transition-colors cursor-pointer">
-                <h4 className="font-bold text-white mb-1">{topic.title}</h4>
-                <p className="text-sm text-primary-200">{topic.desc}</p>
+              <div key={idx} className="bg-white/5 backdrop-blur-sm border border-primary-700 rounded-xl p-4 hover:bg-white/10 transition-all">
+                <h4 className="font-semibold text-white mb-1">{topic.title}</h4>
+                <p className="text-sm text-primary-300">{topic.desc}</p>
               </div>
             ))}
           </div>
+        </div>
 
-          <div className="text-center mt-8">
-            <Link href="/signup" className="inline-block px-8 py-3 rounded-lg bg-white text-primary-600 font-medium hover:bg-gray-100 transition-colors">
-              Get Full Access - Create Account
+        {/* Call to Action */}
+        <div className="max-w-3xl mx-auto text-center bg-white/10 backdrop-blur-sm border border-primary-600 rounded-2xl p-10">
+          <h3 className="text-3xl font-bold text-white mb-4">
+            Ready to supercharge your business?
+          </h3>
+          <p className="text-lg text-primary-200 mb-6">
+            Join thousands of professionals using Quotla to create quotes, manage invoices, and grow their business.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/signup" className="px-8 py-4 rounded-xl text-lg font-semibold bg-white text-primary-600 hover:bg-gray-100 transition-all shadow-xl">
+              Start Free - No Credit Card
+            </Link>
+            <Link href="/login" className="px-8 py-4 rounded-xl text-lg font-semibold bg-primary-700 text-white hover:bg-primary-600 transition-all border-2 border-primary-500">
+              Sign In
             </Link>
           </div>
+          <p className="text-sm text-primary-300 mt-4">
+            Free plan includes 2 AI questions. Unlimited access with paid plan.
+          </p>
         </div>
       </main>
 
