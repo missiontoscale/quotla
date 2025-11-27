@@ -18,6 +18,17 @@ export default function DashboardPage() {
     loadData()
   }, [user])
 
+  useEffect(() => {
+    const handleOpenChat = () => {
+      const chatButton = document.querySelector('[title="Chat with Quotla AI"]') as HTMLButtonElement
+      if (chatButton) {
+        chatButton.click()
+      }
+    }
+    window.addEventListener('open-chat', handleOpenChat)
+    return () => window.removeEventListener('open-chat', handleOpenChat)
+  }, [])
+
   const loadData = async () => {
     if (!user) return
 
@@ -44,7 +55,7 @@ export default function DashboardPage() {
   const stats = {
     totalQuotes: quotes.length,
     totalInvoices: invoices.length,
-    pendingInvoices: invoices.filter((i) => i.status === 'sent').length,
+    totalRevenue: invoices.filter((i) => i.status === 'paid').reduce((sum, invoice) => sum + invoice.total, 0),
     paidInvoices: invoices.filter((i) => i.status === 'paid').length,
   }
 
@@ -76,33 +87,82 @@ export default function DashboardPage() {
         </div>
 
         <div className="grid md:grid-cols-2 gap-3 max-w-3xl mx-auto mb-4">
-          {[
-            { title: 'Create a quote', desc: 'Generate a professional quote with AI', color: 'blue' },
-            { title: 'Make an invoice', desc: 'Create an invoice in seconds', color: 'green' },
-            { title: 'Get pricing help', desc: 'Ask for pricing strategy advice', color: 'purple' },
-            { title: 'Business advice', desc: 'Get expert business guidance', color: 'orange' },
-          ].map((action, idx) => (
-            <button
-              key={idx}
-              onClick={() => {
-                const event = new CustomEvent('open-chat')
-                window.dispatchEvent(event)
-              }}
-              className="bg-white border-2 border-primary-200 rounded-xl p-5 text-left hover:border-primary-400 hover:shadow-lg transition-all group"
-            >
-              <div className="flex items-start gap-3">
-                <div className={`w-10 h-10 rounded-lg bg-${action.color}-100 flex items-center justify-center flex-shrink-0`}>
-                  <svg className={`w-5 h-5 text-${action.color}-600`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 group-hover:text-primary-600 mb-1">{action.title}</h4>
-                  <p className="text-sm text-gray-600">{action.desc}</p>
-                </div>
+          <button
+            onClick={() => {
+              const event = new CustomEvent('open-chat')
+              window.dispatchEvent(event)
+            }}
+            className="bg-white border-2 border-primary-200 rounded-xl p-5 text-left hover:border-primary-400 hover:shadow-lg transition-all group"
+          >
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-lg bg-primary-100 flex items-center justify-center flex-shrink-0">
+                <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
               </div>
-            </button>
-          ))}
+              <div>
+                <h4 className="font-semibold text-gray-900 group-hover:text-primary-600 mb-1">Create a quote</h4>
+                <p className="text-sm text-gray-600">Generate a professional quote with AI</p>
+              </div>
+            </div>
+          </button>
+          <button
+            onClick={() => {
+              const event = new CustomEvent('open-chat')
+              window.dispatchEvent(event)
+            }}
+            className="bg-white border-2 border-primary-200 rounded-xl p-5 text-left hover:border-primary-400 hover:shadow-lg transition-all group"
+          >
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-lg bg-primary-100 flex items-center justify-center flex-shrink-0">
+                <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+              </div>
+              <div>
+                <h4 className="font-semibold text-gray-900 group-hover:text-primary-600 mb-1">Make an invoice</h4>
+                <p className="text-sm text-gray-600">Create an invoice in seconds</p>
+              </div>
+            </div>
+          </button>
+          <button
+            onClick={() => {
+              const event = new CustomEvent('open-chat')
+              window.dispatchEvent(event)
+            }}
+            className="bg-white border-2 border-primary-200 rounded-xl p-5 text-left hover:border-primary-400 hover:shadow-lg transition-all group"
+          >
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-lg bg-primary-100 flex items-center justify-center flex-shrink-0">
+                <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <h4 className="font-semibold text-gray-900 group-hover:text-primary-600 mb-1">Get pricing help</h4>
+                <p className="text-sm text-gray-600">Ask for pricing strategy advice</p>
+              </div>
+            </div>
+          </button>
+          <button
+            onClick={() => {
+              const event = new CustomEvent('open-chat')
+              window.dispatchEvent(event)
+            }}
+            className="bg-white border-2 border-primary-200 rounded-xl p-5 text-left hover:border-primary-400 hover:shadow-lg transition-all group"
+          >
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-lg bg-primary-100 flex items-center justify-center flex-shrink-0">
+                <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+              </div>
+              <div>
+                <h4 className="font-semibold text-gray-900 group-hover:text-primary-600 mb-1">Business advice</h4>
+                <p className="text-sm text-gray-600">Get expert business guidance</p>
+              </div>
+            </div>
+          </button>
         </div>
 
         <div className="text-center">
@@ -132,8 +192,8 @@ export default function DashboardPage() {
           <div className="text-3xl font-bold text-gray-900 mt-2">{stats.totalInvoices}</div>
         </div>
         <div className="card hover:shadow-lg transition-shadow">
-          <div className="text-sm text-gray-600">Pending Invoices</div>
-          <div className="text-3xl font-bold text-yellow-600 mt-2">{stats.pendingInvoices}</div>
+          <div className="text-sm text-gray-600">Total Revenue</div>
+          <div className="text-3xl font-bold text-primary-600 mt-2">{formatCurrency(stats.totalRevenue, invoices[0]?.currency || 'USD')}</div>
         </div>
         <div className="card hover:shadow-lg transition-shadow">
           <div className="text-sm text-gray-600">Paid Invoices</div>
@@ -248,21 +308,6 @@ export default function DashboardPage() {
               ))}
             </div>
           )}
-        </div>
-      </div>
-
-      <div className="card">
-        <h2 className="text-xl font-bold mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Link href="/quotes/new" className="btn btn-primary text-center">
-            Create New Quote
-          </Link>
-          <Link href="/invoices/new" className="btn btn-primary text-center">
-            Create New Invoice
-          </Link>
-          <Link href="/clients/new" className="btn btn-secondary text-center">
-            Add New Client
-          </Link>
         </div>
       </div>
     </div>

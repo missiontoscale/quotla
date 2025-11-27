@@ -21,7 +21,8 @@
       "Bash(git fetch:*)",
       "Bash(git merge:*)",
       "Bash(git branch:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(git pull:*)"
     ],
     "deny": [],
     "ask": []
