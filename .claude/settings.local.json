@@ -36,7 +36,8 @@
       "Bash(find:*)",
       "Bash(cp:*)",
       "Bash(grep:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(rm:*)"
     ],
     "deny": [],
     "ask": []
