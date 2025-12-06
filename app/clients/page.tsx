@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { supabase } from '@/lib/supabase/client'
 import { Client } from '@/types'
 import { useAuth } from '@/contexts/AuthContext'
+import LoadingSpinner from '@/components/LoadingSpinner'
 
 export default function ClientsPage() {
   const { user } = useAuth()
@@ -49,7 +50,7 @@ export default function ClientsPage() {
   )
 
   if (loading) {
-    return <div>Loading...</div>
+    return <LoadingSpinner />
   }
 
   return (

@@ -1,7 +1,5 @@
 {
-  "env": {
-    "includeCoAuthoredBy": "false"
-  },
+  "includeCoAuthoredBy": false,
   "permissions": {
     "allow": [
       "Bash(npm ls:*)",
@@ -22,7 +20,23 @@
       "Bash(git merge:*)",
       "Bash(git branch:*)",
       "Bash(npm run build:*)",
-      "Bash(git pull:*)"
+      "Bash(git pull:*)",
+      "Bash(findstr:*)",
+      "Bash(move AI_PROVIDERS.md documentation )",
+      "Bash(move ARCHITECTURE.md documentation )",
+      "Bash(move DEPLOYMENT.md documentation )",
+      "Bash(move PROJECT_SUMMARY.md documentation )",
+      "Bash(move QUICK_DEPLOY.md documentation )",
+      "Bash(move QUICK_START_AI.md documentation )",
+      "Bash(move SETUP.md documentation)",
+      "Bash(taskkill:*)",
+      "Bash(del \"c:\\Users\\ASUS\\Documents\\Projects\\Projects completed @ Mission To Scale\\quotla\\app\\dashboard\\page.tsx\")",
+      "Bash(del /s /q \".next\")",
+      "Bash(where:*)",
+      "Bash(find:*)",
+      "Bash(cp:*)",
+      "Bash(grep:*)",
+      "Bash(npm install:*)"
     ],
     "deny": [],
     "ask": []

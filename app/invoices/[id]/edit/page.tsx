@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { Client, LineItem, CURRENCIES, INVOICE_STATUSES, Invoice } from '@/types'
 import { calculateTax, calculateTotal } from '@/lib/utils/validation'
 import AIDescriptionGenerator from '@/components/AIDescriptionGenerator'
+import LoadingSpinner from '@/components/LoadingSpinner'
 
 export default function EditInvoicePage() {
   const router = useRouter()
@@ -210,7 +211,7 @@ export default function EditInvoicePage() {
   }
 
   if (!invoice) {
-    return <div>Loading...</div>
+    return <LoadingSpinner />
   }
 
   const { subtotal, taxAmount, total } = calculateTotals()

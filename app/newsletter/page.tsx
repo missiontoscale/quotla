@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { validateEmail } from '@/lib/utils/validation'
+import Footer from '@/components/Footer'
 
 export default function NewsletterPage() {
   const [formData, setFormData] = useState({
@@ -158,6 +159,7 @@ export default function NewsletterPage() {
           </div>
         </div>
       </main>
+      <Footer />
     </div>
   )
 }

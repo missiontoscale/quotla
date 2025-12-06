@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase/client'
 import { BlogPost } from '@/types'
+import LoadingSpinner from '@/components/LoadingSpinner'
 
 export default function EditBlogPostPage() {
   const router = useRouter()
@@ -109,7 +110,7 @@ export default function EditBlogPostPage() {
   }
 
   if (!post) {
-    return <div>Loading...</div>
+    return <LoadingSpinner />
   }
 
   return (

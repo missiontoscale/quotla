@@ -2,32 +2,44 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase/client'
 import { Quote, Invoice } from '@/types'
 import { useAuth } from '@/contexts/AuthContext'
 import { format } from 'date-fns'
 import { formatCurrency } from '@/lib/utils/validation'
+import CreateModal from '@/components/CreateModal'
+import InvoicesSlideOver from '@/components/InvoicesSlideOver'
+import QuotesSlideOver from '@/components/QuotesSlideOver'
+import ClientsSlideOver from '@/components/ClientsSlideOver'
 
 export default function DashboardPage() {
   const { user, profile } = useAuth()
+  const searchParams = useSearchParams()
   const [quotes, setQuotes] = useState<Quote[]>([])
   const [invoices, setInvoices] = useState<Invoice[]>([])
   const [loading, setLoading] = useState(true)
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [isInvoicesSlideOverOpen, setIsInvoicesSlideOverOpen] = useState(false)
+  const [isQuotesSlideOverOpen, setIsQuotesSlideOverOpen] = useState(false)
+  const [isClientsSlideOverOpen, setIsClientsSlideOverOpen] = useState(false)
 
   useEffect(() => {
     loadData()
   }, [user])
 
   useEffect(() => {
-    const handleOpenChat = () => {
-      const chatButton = document.querySelector('[title="Chat with Quotla AI"]') as HTMLButtonElement
-      if (chatButton) {
-        chatButton.click()
-      }
+    // Check URL params to open slide-overs
+    if (searchParams.get('invoices') === 'open') {
+      setIsInvoicesSlideOverOpen(true)
     }
-    window.addEventListener('open-chat', handleOpenChat)
-    return () => window.removeEventListener('open-chat', handleOpenChat)
-  }, [])
+    if (searchParams.get('quotes') === 'open') {
+      setIsQuotesSlideOverOpen(true)
+    }
+    if (searchParams.get('clients') === 'open') {
+      setIsClientsSlideOverOpen(true)
+    }
+  }, [searchParams])
 
   const loadData = async () => {
     if (!user) return
@@ -57,259 +69,200 @@ export default function DashboardPage() {
     totalInvoices: invoices.length,
     totalRevenue: invoices.filter((i) => i.status === 'paid').reduce((sum, invoice) => sum + invoice.total, 0),
     paidInvoices: invoices.filter((i) => i.status === 'paid').length,
+    pendingInvoices: invoices.filter((i) => i.status === 'sent').length,
+    draftQuotes: quotes.filter((q) => q.status === 'draft').length,
   }
 
   if (loading) {
-    return <div>Loading...</div>
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-600 border-t-transparent"></div>
+      </div>
+    )
   }
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">
+      <div className="text-left">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 text-left">
           Welcome back{profile?.company_name ? `, ${profile.company_name}` : ''}
         </h1>
-        <p className="mt-2 text-gray-600">What would you like to do today?</p>
+        <p className="mt-2 text-gray-600 text-left">Here's an overview of your business</p>
       </div>
 
-      {/* AI Chat Quick Access - Hero Element */}
-      <div className="card bg-gradient-to-br from-primary-50 to-white border-2 border-primary-200 shadow-xl">
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-primary-600 mb-3 shadow-lg">
-            <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      {/* Quick Actions */}
+      <div className="card bg-gradient-to-br from-primary-50 to-white border-2 border-primary-200">
+        <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-6 text-left">Quick Actions</h2>
+
+        {/* Primary Action - AI Create */}
+        <button
+          onClick={() => setIsCreateModalOpen(true)}
+          className="w-full flex items-center gap-3 sm:gap-4 px-4 sm:px-8 py-4 sm:py-6 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-all shadow-lg hover:shadow-xl group mb-6"
+        >
+          <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0">
+            <svg className="w-5 h-5 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Ask Quotla AI Anything</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Generate quotes, create invoices, get pricing advice, or ask business questions through a simple conversation
-          </p>
-        </div>
+          <div className="flex-1 text-left">
+            <div className="font-bold text-base sm:text-xl">Smart generate in seconds</div>
+            <div className="text-xs sm:text-sm opacity-90 mt-1">Create invoices and quotes with Artificial Intelligence</div>
+          </div>
+          <svg className="w-5 h-5 sm:w-6 sm:h-6 opacity-75 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
 
-        <div className="grid md:grid-cols-2 gap-3 max-w-3xl mx-auto mb-4">
-          <button
-            onClick={() => {
-              const event = new CustomEvent('open-chat')
-              window.dispatchEvent(event)
-            }}
-            className="bg-white border-2 border-primary-200 rounded-xl p-5 text-left hover:border-primary-400 hover:shadow-lg transition-all group"
+        {/* Secondary Actions */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <Link
+            href="/quotes/new"
+            className="flex items-center gap-3 px-4 py-3 bg-white border-2 border-primary-200 text-primary-600 rounded-lg hover:bg-primary-50 transition-all"
           >
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-lg bg-primary-100 flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              <div>
-                <h4 className="font-semibold text-gray-900 group-hover:text-primary-600 mb-1">Create a quote</h4>
-                <p className="text-sm text-gray-600">Generate a professional quote with AI</p>
-              </div>
-            </div>
-          </button>
-          <button
-            onClick={() => {
-              const event = new CustomEvent('open-chat')
-              window.dispatchEvent(event)
-            }}
-            className="bg-white border-2 border-primary-200 rounded-xl p-5 text-left hover:border-primary-400 hover:shadow-lg transition-all group"
-          >
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-lg bg-primary-100 flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
-              </div>
-              <div>
-                <h4 className="font-semibold text-gray-900 group-hover:text-primary-600 mb-1">Make an invoice</h4>
-                <p className="text-sm text-gray-600">Create an invoice in seconds</p>
-              </div>
-            </div>
-          </button>
-          <button
-            onClick={() => {
-              const event = new CustomEvent('open-chat')
-              window.dispatchEvent(event)
-            }}
-            className="bg-white border-2 border-primary-200 rounded-xl p-5 text-left hover:border-primary-400 hover:shadow-lg transition-all group"
-          >
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-lg bg-primary-100 flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div>
-                <h4 className="font-semibold text-gray-900 group-hover:text-primary-600 mb-1">Get pricing help</h4>
-                <p className="text-sm text-gray-600">Ask for pricing strategy advice</p>
-              </div>
-            </div>
-          </button>
-          <button
-            onClick={() => {
-              const event = new CustomEvent('open-chat')
-              window.dispatchEvent(event)
-            }}
-            className="bg-white border-2 border-primary-200 rounded-xl p-5 text-left hover:border-primary-400 hover:shadow-lg transition-all group"
-          >
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-lg bg-primary-100 flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-              </div>
-              <div>
-                <h4 className="font-semibold text-gray-900 group-hover:text-primary-600 mb-1">Business advice</h4>
-                <p className="text-sm text-gray-600">Get expert business guidance</p>
-              </div>
-            </div>
-          </button>
-        </div>
-
-        <div className="text-center">
-          <button
-            onClick={() => {
-              const event = new CustomEvent('open-chat')
-              window.dispatchEvent(event)
-            }}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white rounded-xl font-semibold hover:bg-primary-700 transition-all shadow-lg hover:shadow-xl"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            Open Quotla Chat
+            <div className="flex-1 text-left">
+              <div className="font-semibold text-sm sm:text-base">New Quote</div>
+              <div className="text-xs">Manual creation</div>
+            </div>
+          </Link>
+          <Link
+            href="/invoices/new"
+            className="flex items-center gap-3 px-4 py-3 bg-white border-2 border-primary-200 text-primary-600 rounded-lg hover:bg-primary-50 transition-all"
+          >
+            <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            <div className="flex-1 text-left">
+              <div className="font-semibold text-sm sm:text-base">New Invoice</div>
+              <div className="text-xs">Manual creation</div>
+            </div>
+          </Link>
+          <button
+            onClick={() => setIsClientsSlideOverOpen(true)}
+            className="flex items-center gap-3 px-4 py-3 bg-white border-2 border-primary-200 text-primary-600 rounded-lg hover:bg-primary-50 transition-all text-left"
+          >
+            <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            <div className="flex-1 text-left">
+              <div className="font-semibold text-sm sm:text-base">Manage Clients</div>
+              <div className="text-xs">View all clients</div>
+            </div>
           </button>
-          <p className="text-xs text-gray-500 mt-2">AI assistant is always available to help</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="card hover:shadow-lg transition-shadow">
-          <div className="text-sm text-gray-600">Total Quotes</div>
-          <div className="text-3xl font-bold text-gray-900 mt-2">{stats.totalQuotes}</div>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+        <div className="card hover:shadow-lg transition-shadow text-left">
+          <div className="text-sm text-gray-600 text-left">Total Quotes</div>
+          <div className="text-2xl sm:text-3xl font-bold text-gray-900 mt-2 text-left">{stats.totalQuotes}</div>
         </div>
-        <div className="card hover:shadow-lg transition-shadow">
-          <div className="text-sm text-gray-600">Total Invoices</div>
-          <div className="text-3xl font-bold text-gray-900 mt-2">{stats.totalInvoices}</div>
+        <div className="card hover:shadow-lg transition-shadow text-left">
+          <div className="text-sm text-gray-600 text-left">Draft Quotes</div>
+          <div className="text-2xl sm:text-3xl font-bold text-gray-500 mt-2 text-left">{stats.draftQuotes}</div>
         </div>
-        <div className="card hover:shadow-lg transition-shadow">
-          <div className="text-sm text-gray-600">Total Revenue</div>
-          <div className="text-3xl font-bold text-primary-600 mt-2">{formatCurrency(stats.totalRevenue, invoices[0]?.currency || 'USD')}</div>
+        <div className="card hover:shadow-lg transition-shadow text-left">
+          <div className="text-sm text-gray-600 text-left">Total Invoices</div>
+          <div className="text-2xl sm:text-3xl font-bold text-gray-900 mt-2 text-left">{stats.totalInvoices}</div>
         </div>
-        <div className="card hover:shadow-lg transition-shadow">
-          <div className="text-sm text-gray-600">Paid Invoices</div>
-          <div className="text-3xl font-bold text-green-600 mt-2">{stats.paidInvoices}</div>
+        <div className="card hover:shadow-lg transition-shadow text-left">
+          <div className="text-sm text-gray-600 text-left">Pending Invoices</div>
+          <div className="text-2xl sm:text-3xl font-bold text-blue-600 mt-2 text-left">{stats.pendingInvoices}</div>
+        </div>
+        <div className="card hover:shadow-lg transition-shadow text-left">
+          <div className="text-sm text-gray-600 text-left">Paid Invoices</div>
+          <div className="text-2xl sm:text-3xl font-bold text-green-600 mt-2 text-left">{stats.paidInvoices}</div>
+        </div>
+        <div className="card hover:shadow-lg transition-shadow text-left">
+          <div className="text-sm text-gray-600 text-left">Total Revenue</div>
+          <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary-600 mt-2 text-left">{formatCurrency(stats.totalRevenue, invoices[0]?.currency || 'USD')}</div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="card">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold">Recent Quotes</h2>
-            <Link href="/quotes" className="text-primary-600 hover:text-primary-700 text-sm font-medium">
-              View all
-            </Link>
+      {/* Recent Documents */}
+      <div className="card">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-3">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 text-left">Recent Invoices & Quotes</h2>
+          <div className="flex gap-2 w-full sm:w-auto">
+            <button
+              onClick={() => setIsQuotesSlideOverOpen(true)}
+              className="text-primary-600 hover:text-primary-700 text-xs sm:text-sm font-medium px-3 py-1 rounded-lg border border-primary-200 hover:bg-primary-50 transition-colors flex-1 sm:flex-initial"
+            >
+              View Quotes
+            </button>
+            <button
+              onClick={() => setIsInvoicesSlideOverOpen(true)}
+              className="text-primary-600 hover:text-primary-700 text-xs sm:text-sm font-medium px-3 py-1 rounded-lg border border-primary-200 hover:bg-primary-50 transition-colors flex-1 sm:flex-initial"
+            >
+              View Invoices
+            </button>
           </div>
-          {quotes.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              <p>No quotes yet</p>
-              <Link href="/quotes/new" className="btn btn-primary mt-4 inline-block">
-                Create your first quote
-              </Link>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {quotes.map((quote) => (
-                <Link
-                  key={quote.id}
-                  href={`/quotes/${quote.id}`}
-                  className="block p-3 border rounded hover:bg-gray-50"
-                >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <div className="font-medium">{quote.quote_number}</div>
-                      {quote.title && <div className="text-sm text-gray-600">{quote.title}</div>}
-                    </div>
-                    <div className="text-right">
-                      <div className="font-medium">{formatCurrency(quote.total, quote.currency)}</div>
-                      <div className="text-xs text-gray-500">
-                        {format(new Date(quote.created_at), 'MMM d, yyyy')}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mt-2">
-                    <span
-                      className={`inline-block px-2 py-1 text-xs rounded ${
-                        quote.status === 'approved'
-                          ? 'bg-green-100 text-green-800'
-                          : quote.status === 'sent'
-                          ? 'bg-blue-100 text-blue-800'
-                          : 'bg-gray-100 text-gray-800'
-                      }`}
-                    >
-                      {quote.status}
-                    </span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
         </div>
 
-        <div className="card">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold">Recent Invoices</h2>
-            <Link href="/invoices" className="text-primary-600 hover:text-primary-700 text-sm font-medium">
-              View all
-            </Link>
+        {quotes.length === 0 && invoices.length === 0 ? (
+          <div className="text-center py-16 text-gray-500">
+            <svg className="w-20 h-20 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <p className="text-lg mb-2">No documents yet</p>
+            <p className="text-sm text-gray-400 mb-6">Start by creating your first quote or invoice</p>
+            <button onClick={() => setIsCreateModalOpen(true)} className="btn btn-primary">
+              Create Document with AI
+            </button>
           </div>
-          {invoices.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              <p>No invoices yet</p>
-              <Link href="/invoices/new" className="btn btn-primary mt-4 inline-block">
-                Create your first invoice
-              </Link>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {invoices.map((invoice) => (
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[...quotes.map(q => ({...q, type: 'quote' as const})), ...invoices.map(i => ({...i, type: 'invoice' as const}))]
+              .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+              .slice(0, 10)
+              .map((doc) => (
                 <Link
-                  key={invoice.id}
-                  href={`/invoices/${invoice.id}`}
-                  className="block p-3 border rounded hover:bg-gray-50"
+                  key={`${doc.type}-${doc.id}`}
+                  href={`/${doc.type}s/${doc.id}`}
+                  className="block p-4 border-2 border-gray-100 rounded-lg hover:border-primary-200 hover:bg-gray-50 transition-all"
                 >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <div className="font-medium">{invoice.invoice_number}</div>
-                      {invoice.title && <div className="text-sm text-gray-600">{invoice.title}</div>}
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-2 h-2 rounded-full ${doc.type === 'quote' ? 'bg-blue-500' : 'bg-green-500'}`}></div>
+                      <span className="text-xs font-medium text-gray-500 uppercase">{doc.type}</span>
                     </div>
-                    <div className="text-right">
-                      <div className="font-medium">{formatCurrency(invoice.total, invoice.currency)}</div>
-                      <div className="text-xs text-gray-500">
-                        {format(new Date(invoice.created_at), 'MMM d, yyyy')}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mt-2">
                     <span
-                      className={`inline-block px-2 py-1 text-xs rounded ${
-                        invoice.status === 'paid'
+                      className={`px-2 py-1 text-xs font-medium rounded ${
+                        doc.status === 'paid' || doc.status === 'approved'
                           ? 'bg-green-100 text-green-800'
-                          : invoice.status === 'sent'
+                          : doc.status === 'sent'
                           ? 'bg-blue-100 text-blue-800'
-                          : invoice.status === 'overdue'
+                          : doc.status === 'overdue'
                           ? 'bg-red-100 text-red-800'
                           : 'bg-gray-100 text-gray-800'
                       }`}
                     >
-                      {invoice.status}
+                      {doc.status}
                     </span>
+                  </div>
+                  <div className="font-semibold text-gray-900">{doc.type === 'quote' ? (doc as any).quote_number : (doc as any).invoice_number}</div>
+                  {doc.title && <div className="text-sm text-gray-600 mt-1">{doc.title}</div>}
+                  {doc.client_name && <div className="text-xs text-gray-500 mt-1">{doc.client_name}</div>}
+                  <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-100">
+                    <div className="font-bold text-gray-900">{formatCurrency(doc.total, doc.currency)}</div>
+                    <div className="text-xs text-gray-500">
+                      {format(new Date(doc.created_at), 'MMM d, yyyy')}
+                    </div>
                   </div>
                 </Link>
               ))}
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
+
+      {/* Modals and Slide-Overs */}
+      <CreateModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} />
+      <InvoicesSlideOver isOpen={isInvoicesSlideOverOpen} onClose={() => setIsInvoicesSlideOverOpen(false)} />
+      <QuotesSlideOver isOpen={isQuotesSlideOverOpen} onClose={() => setIsQuotesSlideOverOpen(false)} />
+      <ClientsSlideOver isOpen={isClientsSlideOverOpen} onClose={() => setIsClientsSlideOverOpen(false)} />
     </div>
   )
 }
