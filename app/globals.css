@@ -3,45 +3,238 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    /* Primary Brand Colors - Professional Navy/Blue */
+    --color-primary: #1e40af;
+    --color-primary-light: #3b82f6;
+    --color-primary-lighter: #60a5fa;
+    --color-primary-lightest: #dbeafe;
+    --color-primary-dark: #1e3a8a;
+    --color-primary-darkest: #1e293b;
+
+    /* Background Colors */
+    --color-bg-primary: #FFFFFF;
+    --color-bg-secondary: #F8FAFC;
+    --color-bg-tertiary: #F1F5F9;
+    --color-bg-card: #FFFFFF;
+    --color-bg-hover: #F8FAFC;
+
+    /* Text Colors */
+    --color-text-primary: #0f172a;
+    --color-text-secondary: #475569;
+    --color-text-tertiary: #94a3b8;
+    --color-text-inverse: #FFFFFF;
+    --color-text-muted: #cbd5e1;
+
+    /* Border Colors */
+    --color-border: #e2e8f0;
+    --color-border-light: #f1f5f9;
+    --color-border-dark: #cbd5e1;
+    --color-border-focus: #1e40af;
+
+    /* Semantic Colors */
+    --color-success: #10B981;
+    --color-success-light: #D1FAE5;
+    --color-success-dark: #065F46;
+    --color-error: #EF4444;
+    --color-error-light: #FEE2E2;
+    --color-error-dark: #991B1B;
+    --color-warning: #F59E0B;
+    --color-warning-light: #FEF3C7;
+    --color-warning-dark: #92400E;
+    --color-info: #3B82F6;
+    --color-info-light: #DBEAFE;
+    --color-info-dark: #1E40AF;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+    --gradient-hero: linear-gradient(135deg, #FFFFFF 0%, #dbeafe 50%, #f0f9ff 100%);
+    --gradient-cta: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    --shadow-glow: 0 0 20px rgba(30, 64, 175, 0.15);
+  }
+
   * {
-    @apply border-gray-200;
+    border-color: var(--color-border);
   }
 
   body {
-    @apply bg-white text-gray-900;
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-bricolage), var(--font-barlow), var(--font-figtree), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   }
 }
 
 @layer components {
   .btn {
-    @apply px-4 py-2 rounded font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2;
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
   }
 
   .btn-primary {
-    @apply bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500;
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+    @apply hover:opacity-90 focus:ring-[var(--color-primary)];
+  }
+
+  .btn-primary:hover {
+    background-color: var(--color-primary-light);
   }
 
   .btn-secondary {
-    @apply bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500;
+    background-color: var(--color-bg-tertiary);
+    color: var(--color-text-primary);
+    @apply hover:opacity-90;
+  }
+
+  .btn-secondary:hover {
+    background-color: var(--color-border-dark);
   }
 
   .btn-danger {
-    @apply bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
+    background-color: var(--color-error);
+    color: var(--color-text-inverse);
+    @apply hover:opacity-90;
+  }
+
+  .btn-danger:hover {
+    background-color: var(--color-error-dark);
   }
 
   .input {
-    @apply w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+    @apply w-full px-3 py-2 rounded-lg transition-all duration-200;
+    border: 1px solid var(--color-border);
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
+  }
+
+  .input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+  }
+
+  .input::placeholder {
+    color: var(--color-text-tertiary);
   }
 
   .label {
-    @apply block text-sm font-medium text-gray-700 mb-1;
+    @apply block text-sm font-medium mb-1;
+    color: var(--color-text-secondary);
   }
 
   .card {
-    @apply bg-white border border-gray-200 rounded-lg p-6;
+    @apply rounded-lg p-6;
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .card:hover {
+    box-shadow: var(--shadow-md);
   }
 
   .error {
-    @apply text-red-600 text-sm mt-1;
+    @apply text-sm mt-1;
+    color: var(--color-error);
+  }
+
+  .text-primary {
+    color: var(--color-primary);
+  }
+
+  .text-secondary {
+    color: var(--color-text-secondary);
+  }
+
+  .text-muted {
+    color: var(--color-text-tertiary);
+  }
+
+  .bg-primary {
+    background-color: var(--color-primary);
+  }
+
+  .bg-secondary {
+    background-color: var(--color-bg-secondary);
+  }
+
+  .border-primary {
+    border-color: var(--color-primary);
+  }
+
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+
+  .gradient-cta {
+    background: var(--gradient-cta);
+  }
+
+  .link-primary {
+    color: var(--color-primary);
+    @apply transition-colors duration-200;
+  }
+
+  .link-primary:hover {
+    color: var(--color-primary-light);
+  }
+
+  .alert-success {
+    background-color: var(--color-success-light);
+    color: var(--color-success-dark);
+    border: 1px solid var(--color-success);
+    @apply px-4 py-3 rounded-lg;
+  }
+
+  .alert-error {
+    background-color: var(--color-error-light);
+    color: var(--color-error-dark);
+    border: 1px solid var(--color-error);
+    @apply px-4 py-3 rounded-lg;
+  }
+
+  .alert-warning {
+    background-color: var(--color-warning-light);
+    color: var(--color-warning-dark);
+    border: 1px solid var(--color-warning);
+    @apply px-4 py-3 rounded-lg;
+  }
+
+  .alert-info {
+    background-color: var(--color-info-light);
+    color: var(--color-info-dark);
+    border: 1px solid var(--color-info);
+    @apply px-4 py-3 rounded-lg;
+  }
+
+  /* Horizontal scroll animation */
+  @keyframes scroll-left {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  .animate-scroll-left {
+    animation: scroll-left 30s linear infinite;
+  }
+
+  .animate-scroll-left:hover {
+    animation-play-state: paused;
   }
 }

@@ -1,3 +1,5 @@
+import { CHAT_SYSTEM_PROMPT, QUOTE_GENERATION_CONFIG, getQuoteGenerationPrompt } from '@/prompts'
+
 export async function generateDescriptionWithGemini(
   prompt: string,
   history?: Array<{role: string, content: string}>
@@ -18,7 +20,7 @@ export async function generateDescriptionWithGemini(
   }
 
   // Short but contextual prompt to maintain identity while avoiding thinking tokens
-  const fullPrompt = `You are Quotla AI, a business assistant for quotes and invoices. Answer professionally and concisely (2-3 sentences). If you cannot recall specific details from earlier, politely ask the user to repeat.${contextText}\n\nCurrent question: ${prompt}`
+  const fullPrompt = `${CHAT_SYSTEM_PROMPT} Answer in 2-3 sentences.${contextText}\n\nCurrent question: ${prompt}`
 
   try {
     // Use REST API directly for better compatibility
@@ -178,8 +180,8 @@ export async function generateQuoteWithGemini(prompt: string): Promise<import('.
     currency = 'GBP'
   }
 
-  // VERY SHORT PROMPT to avoid thinking tokens
-  const fullPrompt = `Generate quote JSON for: ${prompt}. Currency: ${currency}. Include client_name, currency, items (description, quantity, unit_price, amount), subtotal, tax_rate, tax_amount, total, notes, valid_until. JSON only.`
+  // Use centralized prompt
+  const fullPrompt = getQuoteGenerationPrompt(prompt, currency)
 
   try {
     const response = await fetch(
@@ -200,8 +202,8 @@ export async function generateQuoteWithGemini(prompt: string): Promise<import('.
             },
           ],
           generationConfig: {
-            temperature: 0.3,
-            maxOutputTokens: 600,
+            temperature: QUOTE_GENERATION_CONFIG.temperature,
+            maxOutputTokens: QUOTE_GENERATION_CONFIG.maxTokens,
             candidateCount: 1,
           },
         }),

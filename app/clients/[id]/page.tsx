@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase/client'
 import { useAuth } from '@/contexts/AuthContext'
 import { validateEmail } from '@/lib/utils/validation'
 import { Client } from '@/types'
+import LoadingSpinner from '@/components/LoadingSpinner'
 
 export default function EditClientPage() {
   const router = useRouter()
@@ -108,7 +109,7 @@ export default function EditClientPage() {
   }
 
   if (!client) {
-    return <div>Loading...</div>
+    return <LoadingSpinner />
   }
 
   return (

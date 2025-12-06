@@ -11,6 +11,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.20.0",
     "@google/generative-ai": "^0.21.0",
+    "@headlessui/react": "^2.2.9",
     "@supabase/supabase-js": "^2.39.3",
     "date-fns": "^3.3.1",
     "docx": "^8.5.0",
@@ -22,6 +23,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.50.1",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
     "uuid": "^9.0.1"
   },
   "devDependencies": {

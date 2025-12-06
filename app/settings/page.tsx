@@ -176,6 +176,82 @@ export default function SettingsPage() {
         )}
 
         <div>
+          <h2 className="text-xl font-bold mb-4">Profile Picture</h2>
+          <div className="flex items-center gap-4">
+            {profile?.avatar_url ? (
+              <img
+                src={profile.avatar_url}
+                alt="Profile"
+                className="h-20 w-20 rounded-full object-cover border-4 border-primary-100"
+              />
+            ) : (
+              <div className="h-20 w-20 rounded-full bg-primary-600 flex items-center justify-center">
+                <span className="text-white text-2xl font-semibold">
+                  {profile?.email?.charAt(0).toUpperCase() || 'U'}
+                </span>
+              </div>
+            )}
+            <div>
+              <input
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0]
+                  if (!file) return
+
+                  const validation = validateFileUpload(file)
+                  if (!validation.valid) {
+                    setError(validation.error || 'Invalid file')
+                    return
+                  }
+
+                  setUploading(true)
+                  setError('')
+
+                  try {
+                    if (!storageReady) {
+                      await setupStorage()
+                    }
+
+                    const fileExt = file.name.split('.').pop()
+                    const fileName = `${profile?.id}-avatar-${Date.now()}.${fileExt}`
+                    const filePath = `avatars/${fileName}`
+
+                    const { error: uploadError } = await supabase.storage
+                      .from('business-assets')
+                      .upload(filePath, file)
+
+                    if (uploadError) {
+                      if (uploadError.message.includes('not found') || uploadError.message.includes('Bucket')) {
+                        await setupStorage()
+                        const { error: retryError } = await supabase.storage
+                          .from('business-assets')
+                          .upload(filePath, file)
+                        if (retryError) throw retryError
+                      } else {
+                        throw uploadError
+                      }
+                    }
+
+                    const { data } = supabase.storage.from('business-assets').getPublicUrl(filePath)
+
+                    await updateProfile({ avatar_url: data.publicUrl })
+                    setSuccess('Profile picture uploaded successfully')
+                  } catch (err) {
+                    setError(err instanceof Error ? err.message : 'Failed to upload profile picture')
+                  } finally {
+                    setUploading(false)
+                  }
+                }}
+                disabled={uploading}
+                className="text-sm"
+              />
+              <p className="text-xs text-gray-500 mt-1">PNG, JPEG, or WebP. Max 2MB.</p>
+            </div>
+          </div>
+        </div>
+
+        <div>
           <h2 className="text-xl font-bold mb-4">Business Logo</h2>
           <div className="flex items-center gap-4">
             {profile?.logo_url && (

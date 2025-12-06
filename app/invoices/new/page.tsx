@@ -14,6 +14,7 @@ export default function NewInvoicePage() {
   const { user, profile } = useAuth()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [aiLoaded, setAiLoaded] = useState(false)
   const [clients, setClients] = useState<Client[]>([])
 
   const [formData, setFormData] = useState({
@@ -35,7 +36,53 @@ export default function NewInvoicePage() {
 
   useEffect(() => {
     loadClients()
+    loadAIData()
   }, [user])
+
+  const loadAIData = () => {
+    // Check if there's AI-generated data in the URL
+    if (typeof window === 'undefined') return
+
+    const params = new URLSearchParams(window.location.search)
+    const aiDataStr = params.get('ai_data')
+
+    if (aiDataStr) {
+      try {
+        const aiData = JSON.parse(decodeURIComponent(aiDataStr))
+
+        // Populate form with AI data
+        setFormData(prev => ({
+          ...prev,
+          title: `Invoice for ${aiData.client_name}`,
+          currency: aiData.currency || prev.currency,
+          tax_rate: aiData.tax_rate || prev.tax_rate,
+          notes: aiData.notes || prev.notes,
+          due_date: aiData.due_date || prev.due_date,
+        }))
+
+        // Populate items
+        if (aiData.items && aiData.items.length > 0) {
+          setItems(aiData.items.map((item: any, index: number) => ({
+            description: item.description || '',
+            quantity: item.quantity || 1,
+            unit_price: item.unit_price || 0,
+            amount: item.amount || 0,
+            sort_order: index,
+          })))
+        }
+
+        // Clear the URL parameter after loading
+        window.history.replaceState({}, '', '/invoices/new')
+
+        // Show success message
+        setAiLoaded(true)
+        setTimeout(() => setAiLoaded(false), 5000)
+      } catch (err) {
+        console.error('Error loading AI data:', err)
+        setError('Failed to load AI-generated data')
+      }
+    }
+  }
 
   const loadClients = async () => {
     if (!user) return
@@ -184,6 +231,15 @@ export default function NewInvoicePage() {
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded">
             {error}
+          </div>
+        )}
+
+        {aiLoaded && (
+          <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded flex items-center gap-2">
+            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+            </svg>
+            <span className="font-medium">Invoice successfully generated from AI! Review and adjust the details below, then save.</span>
           </div>
         )}
 

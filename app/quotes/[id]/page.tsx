@@ -9,6 +9,7 @@ import { QuoteWithItems } from '@/types'
 import { format } from 'date-fns'
 import { formatCurrency } from '@/lib/utils/validation'
 import ExportButtons from '@/components/ExportButtons'
+import LoadingSpinner from '@/components/LoadingSpinner'
 
 export default function ViewQuotePage() {
   const router = useRouter()
@@ -102,7 +103,7 @@ export default function ViewQuotePage() {
   }
 
   if (loading || !quote) {
-    return <div>Loading...</div>
+    return <LoadingSpinner />
   }
 
   return (

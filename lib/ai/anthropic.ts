@@ -1,5 +1,11 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { GeneratedQuote } from './openai'
+import {
+  CHAT_SYSTEM_PROMPT,
+  QUOTE_GENERATION_SYSTEM_PROMPT,
+  getQuoteGenerationPrompt,
+  QUOTE_GENERATION_CONFIG
+} from '@/prompts'
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -36,7 +42,7 @@ export async function generateDescription(
       model: 'claude-3-5-sonnet-20241022',
       max_tokens: 200,
       temperature: 0.5,
-      system: 'You are Quotla AI, a business assistant for quotes and invoices. Answer professionally and concisely. If you cannot recall specific details from earlier in the conversation, politely ask the user to repeat the information.',
+      system: CHAT_SYSTEM_PROMPT,
       messages,
     })
 
@@ -68,12 +74,13 @@ export async function generateQuoteWithAnthropic(prompt: string): Promise<Genera
   try {
     const message = await anthropic.messages.create({
       model: 'claude-3-5-sonnet-20241022',
-      max_tokens: 800,
-      temperature: 0.3,
+      max_tokens: QUOTE_GENERATION_CONFIG.maxTokens,
+      temperature: QUOTE_GENERATION_CONFIG.temperature,
+      system: QUOTE_GENERATION_SYSTEM_PROMPT,
       messages: [
         {
           role: 'user',
-          content: `Generate quote JSON for: ${prompt}. Currency: ${currency}. Include client_name, currency, items (description, quantity, unit_price, amount), subtotal, tax_rate, tax_amount, total, notes, valid_until. Return only valid JSON, no markdown.`,
+          content: getQuoteGenerationPrompt(prompt, currency),
         },
       ],
     })

@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase/client'
 import { BlogPost } from '@/types'
 import { format } from 'date-fns'
+import LoadingSpinner from '@/components/LoadingSpinner'
 
 export default function AdminBlogPage() {
   const { profile } = useAuth()
@@ -67,7 +68,7 @@ export default function AdminBlogPage() {
   }
 
   if (loading) {
-    return <div>Loading...</div>
+    return <LoadingSpinner />
   }
 
   return (

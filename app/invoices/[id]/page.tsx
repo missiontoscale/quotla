@@ -9,6 +9,7 @@ import { Invoice, InvoiceItem, Client, InvoiceWithItems } from '@/types'
 import { format } from 'date-fns'
 import { formatCurrency } from '@/lib/utils/validation'
 import ExportButtons from '@/components/ExportButtons'
+import LoadingSpinner from '@/components/LoadingSpinner'
 
 export default function ViewInvoicePage() {
   const params = useParams()
@@ -62,11 +63,7 @@ export default function ViewInvoicePage() {
   }
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div>Loading...</div>
-      </div>
-    )
+    return <LoadingSpinner />
   }
 
   if (!invoice) {

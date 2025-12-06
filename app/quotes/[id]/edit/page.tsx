@@ -8,6 +8,7 @@ import { Client, LineItem, CURRENCIES, QUOTE_STATUSES, Quote, QuoteItem } from '
 import { calculateTax, calculateTotal } from '@/lib/utils/validation'
 import AIDescriptionGenerator from '@/components/AIDescriptionGenerator'
 import CurrencyConverter from '@/components/CurrencyConverter'
+import LoadingSpinner from '@/components/LoadingSpinner'
 
 export default function EditQuotePage() {
   const router = useRouter()
@@ -229,7 +230,7 @@ export default function EditQuotePage() {
   }
 
   if (!quote) {
-    return <div>Loading...</div>
+    return <LoadingSpinner />
   }
 
   const { subtotal, taxAmount, total } = calculateTotals()
