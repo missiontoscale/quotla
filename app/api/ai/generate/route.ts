@@ -134,6 +134,12 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error('AI generation error:', error)
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace')
+    console.error('AI Provider:', process.env.AI_PROVIDER)
+    console.error('Has OpenAI Key:', !!process.env.OPENAI_API_KEY)
+    console.error('Has Anthropic Key:', !!process.env.ANTHROPIC_API_KEY)
+    console.error('Has Gemini Key:', !!process.env.GOOGLE_AI_API_KEY)
+
     const errorMessage = error instanceof Error ? error.message : 'Failed to generate description'
     return NextResponse.json(
       { error: errorMessage },

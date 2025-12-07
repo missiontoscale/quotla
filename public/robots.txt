@@ -1,0 +1,14 @@
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Disallow certain paths
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /quotes/
+Disallow: /invoices/
+Disallow: /clients/
+Disallow: /settings/
+
+# Sitemap
+Sitemap: https://quotla.netlify.app/sitemap.xml

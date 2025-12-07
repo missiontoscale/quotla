@@ -129,7 +129,9 @@ export default function HomePage() {
         localStorage.setItem('quotla_chat_history', JSON.stringify(updatedMessages))
       }
     } catch (error) {
-      const errorMessage = { role: 'assistant', content: 'Sorry, I encountered an error. Please try again.' }
+      console.error('Chat error:', error)
+      const errorText = error instanceof Error ? error.message : 'Sorry, I encountered an error. Please try again.'
+      const errorMessage = { role: 'assistant', content: errorText }
       const updatedMessages = [...chatMessages, newUserMessage, errorMessage]
       setChatMessages(updatedMessages)
 
@@ -261,7 +263,7 @@ export default function HomePage() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-16">
               <Link href="/" className="flex items-center gap-3 group">
-                <img src="/images/quotla-logo.png" alt="Quotla" className="h-8 w-auto transform group-hover:scale-105 transition-transform" />
+                <img src="/images/quotla-logo.png" alt="Quotla Logo" width="32" height="32" className="h-8 w-auto transform group-hover:scale-105 transition-transform" />
                 <span className="text-xl font-bold text-gray-900">Quotla</span>
               </Link>
 
@@ -325,6 +327,7 @@ export default function HomePage() {
                         setChatInput(suggestion.prompt)
                         setTimeout(() => handleChatSend(), 100)
                       }}
+                      aria-label={suggestion.title}
                       className={`bg-gradient-to-br ${suggestion.color} border rounded-2xl p-5 text-left hover:shadow-lg hover:scale-[1.02] transition-all group`}
                     >
                       <div className="flex items-start gap-3">
@@ -387,9 +390,10 @@ export default function HomePage() {
                     <button
                       onClick={handleChatSend}
                       disabled={!chatInput.trim() || chatLoading || (!isAuthenticated && promptCount >= 2)}
+                      aria-label="Send message"
                       className="px-6 py-4 rounded-xl bg-gray-900 text-white font-semibold hover:bg-gray-800 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center"
                     >
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                       </svg>
                     </button>
@@ -459,7 +463,9 @@ export default function HomePage() {
                       <div key={idx} className="flex items-center justify-center w-48 h-20 bg-white rounded-xl border border-gray-200 px-6 shadow-sm grayscale hover:grayscale-0 transition-all">
                         <img
                           src={company.logo}
-                          alt={company.name}
+                          alt={`${company.name} logo`}
+                          width="120"
+                          height="32"
                           className="h-8 w-auto object-contain opacity-60 hover:opacity-100 transition-opacity"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
