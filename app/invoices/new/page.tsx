@@ -39,21 +39,37 @@ export default function NewInvoicePage() {
     loadAIData()
   }, [user])
 
-  const loadAIData = () => {
+  const loadAIData = async () => {
     // Check if there's AI-generated data in the URL
     if (typeof window === 'undefined') return
 
     const params = new URLSearchParams(window.location.search)
     const aiDataStr = params.get('ai_data')
 
-    if (aiDataStr) {
+    if (aiDataStr && user) {
       try {
         const aiData = JSON.parse(decodeURIComponent(aiDataStr))
+
+        // Try to find matching client by name
+        let matchedClientId = ''
+        if (aiData.client_name) {
+          const { data: existingClients } = await supabase
+            .from('clients')
+            .select('id, name')
+            .eq('user_id', user.id)
+            .ilike('name', `%${aiData.client_name}%`)
+            .limit(1)
+
+          if (existingClients && existingClients.length > 0) {
+            matchedClientId = existingClients[0].id
+          }
+        }
 
         // Populate form with AI data
         setFormData(prev => ({
           ...prev,
-          title: `Invoice for ${aiData.client_name}`,
+          client_id: matchedClientId,
+          title: aiData.title || `Invoice for ${aiData.client_name}`,
           currency: aiData.currency || prev.currency,
           tax_rate: aiData.tax_rate || prev.tax_rate,
           notes: aiData.notes || prev.notes,
@@ -66,7 +82,7 @@ export default function NewInvoicePage() {
             description: item.description || '',
             quantity: item.quantity || 1,
             unit_price: item.unit_price || 0,
-            amount: item.amount || 0,
+            amount: (item.quantity || 1) * (item.unit_price || 0),
             sort_order: index,
           })))
         }

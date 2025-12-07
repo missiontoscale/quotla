@@ -135,11 +135,17 @@ export function extractInvoiceDataFromConversation(messages: ConversationMessage
       account_name: accountNameMatch?.[1]?.trim() || business.name
     } : undefined
 
-    // Only return if we have essential data
-    if (!business.name || items.length === 0) {
-      console.log('❌ Missing essential data:', { businessName: business.name, itemsCount: items.length })
+    // Only return if we have essential data (at least items)
+    if (items.length === 0) {
+      console.log('❌ Missing essential data:', { itemsCount: items.length })
       console.log('=== CONVERSATION PARSER END (FAILED) ===')
       return null
+    }
+
+    // Provide defaults for missing data
+    if (!business.name) {
+      business.name = 'Your Business'
+      console.log('⚠️ No business name found, using default')
     }
 
     const result = {

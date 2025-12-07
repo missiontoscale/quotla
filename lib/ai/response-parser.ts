@@ -143,10 +143,14 @@ export function parseAIResponse(response: string): ParsedDocumentData | null {
       })
     }
 
-    // Only return if we have essential data
-    if (items.length === 0 || !business.name || !client.name) {
+    // Only return if we have essential data (at least items)
+    if (items.length === 0) {
       return null
     }
+
+    // Provide defaults for missing data
+    if (!business.name) business.name = 'Your Business'
+    if (!client.name) client.name = 'Customer'
 
     const baseData = {
       business,

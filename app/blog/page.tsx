@@ -44,25 +44,26 @@ export default function BlogPage() {
   const mainPosts = posts
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="border-b bg-white">
+    <div className="min-h-screen bg-[#FAF9F6]" style={{backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px)', backgroundSize: '60px 60px'}}>
+      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <Link href="/" className="text-2xl font-bold text-primary-600">
-              Quotla
+            <Link href="/" className="flex items-center gap-3 group">
+              <img src="/images/quotla-logo.png" alt="Quotla" className="h-8 w-auto transform group-hover:scale-105 transition-transform" />
+              <span className="text-xl font-bold text-gray-900">Quotla</span>
             </Link>
-            <div className="flex gap-4">
+            <div className="flex items-center gap-3">
               {isAuthenticated ? (
-                <Link href="/dashboard" className="btn btn-primary">
+                <Link href="/dashboard" className="px-4 py-2 rounded-lg text-sm font-semibold bg-gray-900 text-white hover:bg-gray-800 transition-all shadow-sm">
                   Dashboard
                 </Link>
               ) : (
                 <>
-                  <Link href="/login" className="btn btn-secondary">
+                  <Link href="/login" className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">
                     Sign In
                   </Link>
-                  <Link href="/signup" className="btn btn-primary">
-                    Get Started
+                  <Link href="/signup" className="px-4 py-2 rounded-lg text-sm font-semibold bg-gray-900 text-white hover:bg-gray-800 transition-all shadow-sm">
+                    Get Started Free
                   </Link>
                 </>
               )}

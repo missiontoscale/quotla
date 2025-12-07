@@ -9,6 +9,8 @@ import { parseAIResponse, shouldCreateDocument, ParsedDocumentData } from '@/lib
 import { extractInvoiceDataFromConversation } from '@/lib/ai/conversation-parser'
 import Modal from './Modal'
 import VoiceRecorder from './VoiceRecorder'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 interface CreateModalProps {
   isOpen: boolean
@@ -220,11 +222,11 @@ export default function CreateModal({ isOpen, onClose }: CreateModalProps) {
           }
         }
 
-        if (parsedData) {
+        if (parsedData && parsedData.items && parsedData.items.length > 0) {
           // Convert parsedData to the format expected by /quotes/new and /invoices/new
           const aiDataForForm = {
-            client_name: parsedData.client.name,
-            currency: parsedData.currency,
+            client_name: parsedData.client.name || 'Customer',
+            currency: parsedData.currency || 'USD',
             items: parsedData.items,
             tax_rate: parsedData.additional_charges?.find(c => c.description.toLowerCase().includes('tax'))?.amount ?
                       ((parsedData.additional_charges.find(c => c.description.toLowerCase().includes('tax'))!.amount / parsedData.items.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0)) * 100) : 0,
@@ -234,7 +236,7 @@ export default function CreateModal({ isOpen, onClose }: CreateModalProps) {
           // Navigate to the appropriate form with pre-filled data
           const total = parsedData.items.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0) + (parsedData.additional_charges?.reduce((sum, c) => sum + c.amount, 0) || 0)
 
-          const enhancedResponse = `✓ I've prepared the ${parsedData.type} for you!\n\nClient: ${parsedData.client.name}\nTotal: ${parsedData.currency} ${total.toFixed(2)}\n\nClick the button below to review and save it.`
+          const enhancedResponse = `✓ **I've prepared the ${parsedData.type} for you!**\n\n**Client:** ${parsedData.client.name}\n**Total:** ${parsedData.currency} ${total.toFixed(2)}\n\nClick the button below to review and save it.`
 
           setChatMessages(prev => [...prev.slice(-24), {
             role: 'assistant',
@@ -244,7 +246,8 @@ export default function CreateModal({ isOpen, onClose }: CreateModalProps) {
             documentType: parsedData.type
           }])
         } else {
-          setChatMessages(prev => [...prev.slice(-24), { role: 'assistant', content: `${aiResponse}\n\n⚠️ I couldn't parse the document data. Please provide more details or create manually.`, timestamp: new Date() }])
+          // No parsable data, but still show the AI response
+          setChatMessages(prev => [...prev.slice(-24), { role: 'assistant', content: aiResponse, timestamp: new Date() }])
         }
       } else {
         setChatMessages(prev => [...prev.slice(-24), { role: 'assistant', content: aiResponse, timestamp: new Date() }])
@@ -266,13 +269,11 @@ export default function CreateModal({ isOpen, onClose }: CreateModalProps) {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary-600 shadow-lg">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-              </svg>
+            <div className="h-12 w-12 rounded-lg bg-primary-600 flex items-center justify-center flex-shrink-0 shadow-lg">
+              <span className="text-white font-bold text-2xl">Q</span>
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Quotla AI Assistant</h2>
+              <h2 className="text-2xl font-bold text-gray-900">What do you need?</h2>
               <p className="text-sm text-gray-600">Describe your quote or invoice, and I'll create it for you</p>
             </div>
           </div>
@@ -295,7 +296,7 @@ export default function CreateModal({ isOpen, onClose }: CreateModalProps) {
           {chatMessages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <p className="text-sm text-gray-600 max-w-lg mb-8">
-                Click a suggestion above or type in your problem
+                Click a suggestion below to get started, or type your own request.:
               </p>
               <div className="w-full max-w-2xl grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <button
@@ -358,7 +359,15 @@ export default function CreateModal({ isOpen, onClose }: CreateModalProps) {
                         ? 'bg-primary-600 text-white'
                         : 'bg-white text-gray-900 shadow-sm border border-gray-200'
                     }`}>
-                      <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                      {msg.role === 'user' ? (
+                        <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                      ) : (
+                        <div className="text-sm leading-relaxed prose prose-sm max-w-none prose-p:my-1 prose-headings:my-2 prose-ul:my-1 prose-ol:my-1 prose-li:my-0">
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            {msg.content}
+                          </ReactMarkdown>
+                        </div>
+                      )}
                       {msg.timestamp && !isNaN(new Date(msg.timestamp).getTime()) && (
                         <p className="text-xs mt-2 opacity-70">
                           {format(new Date(msg.timestamp), 'h:mm a')}
@@ -427,7 +436,7 @@ export default function CreateModal({ isOpen, onClose }: CreateModalProps) {
             disabled={chatLoading}
           />
         ) : (
-          <div className="flex gap-3">
+          <div className="relative">
             <input
               type="file"
               ref={fileInputRef}
@@ -445,49 +454,63 @@ export default function CreateModal({ isOpen, onClose }: CreateModalProps) {
               accept="image/*,.pdf,.doc,.docx"
               className="hidden"
             />
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              disabled={chatLoading}
-              className="p-3 rounded-lg border-2 border-gray-300 hover:border-primary-400 hover:bg-primary-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed self-end"
-              title="Upload file (max 2MB)"
-            >
-              <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-              </svg>
-            </button>
-            <button
-              onClick={() => setIsRecording(true)}
-              disabled={chatLoading}
-              className="p-3 rounded-lg border-2 border-gray-300 hover:border-primary-400 hover:bg-primary-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed self-end"
-              title="Record voice message"
-            >
-              <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-              </svg>
-            </button>
-            <textarea
-              value={chatInput}
-              onChange={(e) => setChatInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault()
-                  handleChatSend()
-                }
-              }}
-              placeholder="Describe your quote or invoice... (Press Enter to send, Shift+Enter for new line)"
-              className="flex-1 px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all disabled:opacity-50 disabled:bg-gray-50 resize-none"
-              disabled={chatLoading}
-              rows={2}
-            />
-            <button
-              onClick={handleChatSend}
-              disabled={(!chatInput.trim() && !selectedFile) || chatLoading}
-              className="px-6 py-3 rounded-lg bg-primary-600 text-white font-semibold hover:bg-primary-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none self-end"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-              </svg>
-            </button>
+            <div className="relative flex items-end gap-2 px-4 py-3 rounded-lg border-2 border-gray-300 focus-within:border-primary-500 focus-within:ring-2 focus-within:ring-primary-200 bg-white transition-all">
+              <textarea
+                value={chatInput}
+                onChange={(e) => setChatInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault()
+                    handleChatSend()
+                  }
+                }}
+                placeholder="Describe your quote or invoice..."
+                className="flex-1 outline-none resize-none bg-transparent text-sm sm:text-base disabled:opacity-50 disabled:bg-gray-50 min-h-[24px] max-h-[200px]"
+                disabled={chatLoading}
+                rows={1}
+                style={{
+                  height: 'auto',
+                  overflowY: chatInput.split('\n').length > 3 ? 'auto' : 'hidden'
+                }}
+                onInput={(e) => {
+                  const target = e.target as HTMLTextAreaElement
+                  target.style.height = 'auto'
+                  target.style.height = target.scrollHeight + 'px'
+                }}
+              />
+              <div className="flex items-center gap-1 flex-shrink-0">
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={chatLoading}
+                  className="p-2 rounded-md hover:bg-gray-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Upload file (max 2MB)"
+                >
+                  <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => setIsRecording(true)}
+                  disabled={chatLoading}
+                  className="p-2 rounded-md hover:bg-gray-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Record voice message"
+                >
+                  <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                  </svg>
+                </button>
+                <button
+                  onClick={handleChatSend}
+                  disabled={(!chatInput.trim() && !selectedFile) || chatLoading}
+                  className="p-2 rounded-md bg-primary-600 text-white hover:bg-primary-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Send message"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                  </svg>
+                </button>
+              </div>
+            </div>
           </div>
         )}
         <p className="text-xs text-gray-500 text-center">

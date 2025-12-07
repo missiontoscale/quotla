@@ -106,11 +106,20 @@ export default function HomePage() {
         }),
       })
 
-      const data = await response.json()
-
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to generate')
+        // Try to parse JSON error, but handle HTML responses gracefully
+        let errorMessage = 'Failed to generate response'
+        try {
+          const data = await response.json()
+          errorMessage = data.error || errorMessage
+        } catch (e) {
+          // Response wasn't JSON (likely an HTML error page)
+          errorMessage = `Server error (${response.status})`
+        }
+        throw new Error(errorMessage)
       }
+
+      const data = await response.json()
 
       const updatedMessages = [...chatMessages, newUserMessage, { role: 'assistant', content: data.description }]
       setChatMessages(updatedMessages)
@@ -518,7 +527,7 @@ export default function HomePage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/signup" className="px-8 py-4 rounded-xl text-lg font-semibold bg-white text-gray-900 hover:bg-gray-100 transition-all shadow-xl hover:shadow-2xl hover:scale-105">
-                Start Free - No Credit Card
+                Make earning easy
               </Link>
               <Link href="/about" className="px-8 py-4 rounded-xl text-lg font-semibold bg-transparent text-white hover:bg-white/10 transition-all border-2 border-white/20">
                 Learn More
