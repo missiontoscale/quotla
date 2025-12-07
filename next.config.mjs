@@ -1,12 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   typescript: {
-    // Temporarily ignore build errors for deployment
-    ignoreBuildErrors: true,
+    // Enable strict type checking for production builds
+    ignoreBuildErrors: false,
   },
   eslint: {
-    // Temporarily ignore eslint during builds
-    ignoreDuringBuilds: true,
+    // Enable ESLint checks during builds
+    ignoreDuringBuilds: false,
   },
   images: {
     remotePatterns: [
@@ -17,12 +17,37 @@ const nextConfig = {
     ],
   },
   // Performance optimizations
-  swcMinify: true,
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
   experimental: {
     optimizePackageImports: ['@supabase/supabase-js', '@google/generative-ai', 'openai', '@anthropic-ai/sdk'],
+  },
+  // Security headers
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on'
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY'
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff'
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin'
+          },
+        ],
+      },
+    ]
   },
 }
 

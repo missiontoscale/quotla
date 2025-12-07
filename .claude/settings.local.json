@@ -37,7 +37,12 @@
       "Bash(cp:*)",
       "Bash(grep:*)",
       "Bash(npm install:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(npm run security:audit:*)",
+      "Bash(npm audit:*)",
+      "Bash(tasklist:*)",
+      "Bash(timeout /t 5 /nobreak)",
+      "Bash(ls:*)"
     ],
     "deny": [],
     "ask": []

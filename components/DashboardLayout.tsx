@@ -1,15 +1,12 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
-import QuotlaChat from './QuotlaChat'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const { profile } = useAuth()
-  const [chatOpen, setChatOpen] = useState(false)
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard' },
@@ -23,15 +20,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-primary-50 flex">
+    <div className="min-h-screen bg-[#FAF9F6] flex" style={{backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px)', backgroundSize: '60px 60px'}}>
       {/* Desktop: Left Sidebar */}
-      <aside className="hidden lg:flex lg:flex-col lg:w-72 bg-primary-900 text-white">
+      <aside className="hidden lg:flex lg:flex-col lg:w-72 bg-gray-900 text-white">
         {/* Logo */}
-        <div className="p-6 border-b border-primary-800">
-          <Link href="/dashboard" className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-white flex items-center justify-center">
-              <span className="text-primary-600 font-bold text-xl">Q</span>
-            </div>
+        <div className="p-6 border-b border-gray-800">
+          <Link href="/dashboard" className="flex items-center gap-3 group">
+            <img src="/images/quotla-logo.png" alt="Quotla" className="h-10 w-auto transform group-hover:scale-105 transition-transform" />
             <span className="text-2xl font-logo font-semibold">Quotla</span>
           </Link>
         </div>
@@ -44,8 +39,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               href={item.href}
               className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${
                 pathname === item.href
-                  ? 'bg-primary-700 text-white shadow-lg'
-                  : 'text-primary-200 hover:bg-primary-800 hover:text-white'
+                  ? 'bg-gray-800 text-white shadow-lg'
+                  : 'text-gray-300 hover:bg-gray-800 hover:text-white'
               }`}
             >
               {item.name}
@@ -54,16 +49,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </nav>
 
         {/* User Profile Section */}
-        <div className="p-4 border-t border-primary-800">
+        <div className="p-4 border-t border-gray-800">
           <Link
             href="/settings"
-            className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary-800 transition-colors"
+            className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors"
           >
             {profile?.avatar_url ? (
               <img
                 src={profile.avatar_url}
                 alt="Profile"
-                className="h-10 w-10 rounded-full object-cover border-2 border-primary-700"
+                className="h-10 w-10 rounded-full object-cover border-2 border-gray-700"
               />
             ) : (
               <div className="h-10 w-10 rounded-full bg-primary-600 flex items-center justify-center">
@@ -76,19 +71,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <p className="text-sm font-medium text-white truncate">
                 {profile?.email?.split('@')[0] || 'User'}
               </p>
-              <p className="text-xs text-primary-300">Settings & Billing</p>
+              <p className="text-xs text-gray-400">Settings & Billing</p>
             </div>
           </Link>
         </div>
       </aside>
 
       {/* Mobile: Top Navigation */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 bg-primary-900 text-white z-40">
+      <div className="lg:hidden fixed top-0 left-0 right-0 bg-gray-900 text-white z-40">
         <div className="flex items-center justify-between p-4">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-white flex items-center justify-center">
-              <span className="text-primary-600 font-bold">Q</span>
-            </div>
+          <Link href="/dashboard" className="flex items-center gap-2 group">
+            <img src="/images/quotla-logo.png" alt="Quotla" className="h-8 w-auto transform group-hover:scale-105 transition-transform" />
             <span className="text-xl font-logo font-semibold">Quotla</span>
           </Link>
           <Link href="/settings">
@@ -114,8 +107,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               href={item.href}
               className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap ${
                 pathname === item.href
-                  ? 'bg-primary-700 text-white'
-                  : 'text-primary-200 hover:bg-primary-800'
+                  ? 'bg-gray-800 text-white'
+                  : 'text-gray-300 hover:bg-gray-800'
               }`}
             >
               {item.name}
@@ -151,19 +144,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </footer>
       </main>
 
-      {/* Floating Chat Button */}
-      <button
-        onClick={() => setChatOpen(true)}
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-full bg-primary-600 text-white shadow-2xl hover:bg-primary-700 transition-all duration-300 animate-pulse-glow z-50 flex items-center justify-center group"
-        title="Chat with Quotla AI"
-      >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-        </svg>
-        <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-green-400 border-2 border-white"></span>
-      </button>
-
-      {chatOpen && <QuotlaChat onClose={() => setChatOpen(false)} />}
     </div>
   )
 }

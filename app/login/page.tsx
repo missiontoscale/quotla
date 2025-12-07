@@ -1,14 +1,15 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase/client'
 import { validateEmail } from '@/lib/utils/validation'
 import Footer from '@/components/Footer'
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -33,13 +34,18 @@ export default function LoginPage() {
 
       if (error) throw error
 
+      // Check if there's a redirect parameter in the URL
+      const redirectTo = searchParams.get('redirect')
+
       // Check if there's a redirect flag for chat history restoration
       const shouldRedirect = localStorage.getItem('quotla_redirect_after_auth')
       if (shouldRedirect) {
         localStorage.removeItem('quotla_redirect_after_auth')
       }
 
-      router.push('/dashboard')
+      // Redirect to the intended page or default to dashboard
+      router.push(redirectTo || '/dashboard')
+      router.refresh() // Force a refresh to ensure session is properly loaded
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to sign in')
     } finally {
@@ -118,5 +124,17 @@ export default function LoginPage() {
       </div>
       <Footer />
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-600 border-t-transparent"></div>
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   )
 }
