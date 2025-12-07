@@ -42,7 +42,8 @@
       "Bash(npm audit:*)",
       "Bash(tasklist:*)",
       "Bash(timeout /t 5 /nobreak)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(npm run type-check:*)"
     ],
     "deny": [],
     "ask": []
