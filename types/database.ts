@@ -24,6 +24,7 @@ export interface Database {
           phone: string | null
           website: string | null
           logo_url: string | null
+          avatar_url: string | null
           default_currency: string
           is_admin: boolean
           created_at: string
@@ -43,6 +44,7 @@ export interface Database {
           phone?: string | null
           website?: string | null
           logo_url?: string | null
+          avatar_url?: string | null
           default_currency?: string
           is_admin?: boolean
           created_at?: string
@@ -62,6 +64,7 @@ export interface Database {
           phone?: string | null
           website?: string | null
           logo_url?: string | null
+          avatar_url?: string | null
           default_currency?: string
           is_admin?: boolean
           created_at?: string
