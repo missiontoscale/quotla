@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Poppins, Bricolage_Grotesque, Barlow, Figtree } from 'next/font/google'
 import './globals.css'
 import { Providers } from '@/components/Providers'
@@ -33,16 +33,17 @@ export const metadata: Metadata = {
   title: 'Quotla - Professional Quote & Invoice Management',
   description: 'Create professional quotes and invoices with AI-powered content generation',
   manifest: '/manifest.json',
-  themeColor: '#2563eb',
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 5,
-  },
   icons: {
     icon: '/images/quotla-logo.png',
     apple: '/images/quotla-logo.png',
   },
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: '#2563eb',
 }
 
 export default function RootLayout({
@@ -52,10 +53,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${poppins.variable} ${bricolageGrotesque.variable} ${barlow.variable} ${figtree.variable}`}>
-      <head>
-        <meta name="theme-color" content="#2563eb" />
-        <link rel="apple-touch-icon" href="/images/quotla-logo.png" />
-      </head>
       <body className={poppins.className}>
         <Providers>{children}</Providers>
       </body>
