@@ -27,12 +27,43 @@ function LoginForm() {
     }
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
 
-      if (error) throw error
+      if (error) {
+        // Check if it's an email confirmation error
+        if (error.message.includes('Email not confirmed')) {
+          setError('Please confirm your email address before signing in. Check your inbox for the confirmation link.')
+        } else {
+          throw error
+        }
+        setLoading(false)
+        return
+      }
+
+      // Verify we have a valid session
+      if (!data.session) {
+        setError('Unable to establish session. Please try again or contact support.')
+        setLoading(false)
+        return
+      }
+
+      // Profile should exist (created by database trigger during signup)
+      // Verify it exists
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', data.user.id)
+        .maybeSingle()
+
+      if (profileError || !profile) {
+        console.error('Profile not found for user:', data.user.id, profileError)
+        setError('Unable to access your profile. Please contact support.')
+        setLoading(false)
+        return
+      }
 
       // Check if there's a redirect parameter in the URL
       const redirectTo = searchParams.get('redirect')

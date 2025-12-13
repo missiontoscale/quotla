@@ -99,6 +99,7 @@ export default function HomePage() {
 
       const response = await fetch('/api/ai/generate', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           prompt: userMessage,

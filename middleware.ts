@@ -43,7 +43,7 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/_next/') ||
     pathname.startsWith('/static/') ||
     pathname.startsWith('/api/auth/') ||  // Allow Supabase auth callbacks
-    pathname.match(/\.(ico|png|jpg|jpeg|svg|gif|webp|woff|woff2|ttf)$/)
+    pathname.match(/\.(ico|png|jpg|jpeg|svg|gif|webp|woff|woff2|ttf|json|txt|xml)$/)
   ) {
     addSecurityHeaders(response)
     return response
@@ -112,7 +112,9 @@ export async function middleware(request: NextRequest) {
 
   // Only redirect on server-side for routes that don't have client-side protection
   // This prevents redirect loops with ProtectedRoute component
-  if (!isPublicRoute && !session && !isClientSideProtected) {
+  // API routes should not redirect - let them handle auth errors with proper JSON responses
+  const isApiRoute = pathname.startsWith('/api/')
+  if (!isPublicRoute && !session && !isClientSideProtected && !isApiRoute) {
     const loginUrl = new URL('/login', request.url)
     loginUrl.searchParams.set('redirect', pathname)
     return NextResponse.redirect(loginUrl)

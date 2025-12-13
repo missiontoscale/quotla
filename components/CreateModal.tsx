@@ -69,6 +69,19 @@ export default function CreateModal({ isOpen, onClose }: CreateModalProps) {
   const handleVoiceRecording = async (audioBlob: Blob) => {
     setIsRecording(false)
 
+    // Check authentication
+    if (!user) {
+      setChatMessages(prev => [...prev.slice(-24), {
+        role: 'assistant',
+        content: 'Please sign in to use the AI assistant. Your session may have expired.',
+        timestamp: new Date()
+      }])
+      localStorage.setItem('quotla_chat_history', JSON.stringify(chatMessages))
+      localStorage.setItem('quotla_redirect_after_auth', 'true')
+      router.push('/login')
+      return
+    }
+
     // Convert audio blob to file
     const audioFile = new File([audioBlob], `voice-${Date.now()}.webm`, { type: 'audio/webm' })
     const userMessage = '[Voice message]'
@@ -89,8 +102,15 @@ export default function CreateModal({ isOpen, onClose }: CreateModalProps) {
 
       const response = await fetch('/api/ai/generate', {
         method: 'POST',
+        credentials: 'include',
         body: formData,
       })
+
+      // Check if response is HTML (redirect to login)
+      const contentType = response.headers.get('content-type')
+      if (contentType && contentType.includes('text/html')) {
+        throw new Error('AUTHENTICATION_REQUIRED')
+      }
 
       const data = await response.json()
 
@@ -104,11 +124,22 @@ export default function CreateModal({ isOpen, onClose }: CreateModalProps) {
         timestamp: new Date()
       }])
     } catch (error) {
-      setChatMessages(prev => [...prev.slice(-24), {
-        role: 'assistant',
-        content: 'Sorry, I couldn\'t process your voice message. Please try typing instead.',
-        timestamp: new Date()
-      }])
+      if (error instanceof Error && error.message === 'AUTHENTICATION_REQUIRED') {
+        setChatMessages(prev => [...prev.slice(-24), {
+          role: 'assistant',
+          content: 'Your session has expired. Please sign in again to continue.',
+          timestamp: new Date()
+        }])
+        localStorage.setItem('quotla_chat_history', JSON.stringify(chatMessages))
+        localStorage.setItem('quotla_redirect_after_auth', 'true')
+        setTimeout(() => router.push('/login'), 2000)
+      } else {
+        setChatMessages(prev => [...prev.slice(-24), {
+          role: 'assistant',
+          content: 'Sorry, I couldn\'t process your voice message. Please try typing instead.',
+          timestamp: new Date()
+        }])
+      }
     } finally {
       setChatLoading(false)
     }
@@ -116,6 +147,20 @@ export default function CreateModal({ isOpen, onClose }: CreateModalProps) {
 
   const handleChatSend = async () => {
     if ((!chatInput.trim() && !selectedFile) || chatLoading) return
+
+    // Check authentication
+    if (!user) {
+      setChatMessages(prev => [...prev.slice(-24), {
+        role: 'assistant',
+        content: 'Please sign in to use the AI assistant. Your session may have expired.',
+        timestamp: new Date()
+      }])
+      // Save chat history and redirect to login
+      localStorage.setItem('quotla_chat_history', JSON.stringify(chatMessages))
+      localStorage.setItem('quotla_redirect_after_auth', 'true')
+      router.push('/login')
+      return
+    }
 
     const userMessage = chatInput || (selectedFile ? `[Uploaded file: ${selectedFile.name}]` : '')
     const fileToSend = selectedFile
@@ -139,18 +184,26 @@ export default function CreateModal({ isOpen, onClose }: CreateModalProps) {
 
         response = await fetch('/api/ai/generate', {
           method: 'POST',
+          credentials: 'include',
           body: formData,
         })
       } else {
         // Send as JSON when no file
         response = await fetch('/api/ai/generate', {
           method: 'POST',
+          credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             prompt: userMessage,
             history: recentMessages
           }),
         })
+      }
+
+      // Check if response is HTML (redirect to login)
+      const contentType = response.headers.get('content-type')
+      if (contentType && contentType.includes('text/html')) {
+        throw new Error('AUTHENTICATION_REQUIRED')
       }
 
       const data = await response.json()
@@ -253,7 +306,24 @@ export default function CreateModal({ isOpen, onClose }: CreateModalProps) {
         setChatMessages(prev => [...prev.slice(-24), { role: 'assistant', content: aiResponse, timestamp: new Date() }])
       }
     } catch (error) {
-      setChatMessages(prev => [...prev.slice(-24), { role: 'assistant', content: 'Sorry, I encountered an error. Please try again.', timestamp: new Date() }])
+      // Handle authentication errors
+      if (error instanceof Error && error.message === 'AUTHENTICATION_REQUIRED') {
+        setChatMessages(prev => [...prev.slice(-24), {
+          role: 'assistant',
+          content: 'Your session has expired. Please sign in again to continue.',
+          timestamp: new Date()
+        }])
+        // Save chat history and redirect to login
+        localStorage.setItem('quotla_chat_history', JSON.stringify(chatMessages))
+        localStorage.setItem('quotla_redirect_after_auth', 'true')
+        setTimeout(() => router.push('/login'), 2000)
+      } else {
+        setChatMessages(prev => [...prev.slice(-24), {
+          role: 'assistant',
+          content: 'Sorry, I encountered an error. Please try again.',
+          timestamp: new Date()
+        }])
+      }
     } finally {
       setChatLoading(false)
       setSelectedFile(null)

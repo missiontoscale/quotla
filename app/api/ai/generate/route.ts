@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createServerClient } from '@supabase/ssr'
 import { generateDescription } from '@/lib/ai'
 import { sanitizeHtml } from '@/lib/utils/security'
 import { extractFileContent, isFileSizeValid, MAX_FILE_SIZE, FileExtractionResult } from '@/lib/utils/file-extractor'
@@ -7,6 +8,27 @@ import { validateDocument, generateFollowUpQuestion } from '@/lib/ai/extractors/
 
 export async function POST(request: NextRequest) {
   try {
+    // Check authentication
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return request.cookies.get(name)?.value
+          },
+          set() {},
+          remove() {},
+        },
+      }
+    )
+
+    const { data: { session } } = await supabase.auth.getSession()
+
+    // Allow unauthenticated users for the homepage demo (with rate limiting handled elsewhere)
+    // But authenticated users get full access
+    const isAuthenticated = !!session
+
     const contentType = request.headers.get('content-type')
     let prompt = ''
     let history = []
