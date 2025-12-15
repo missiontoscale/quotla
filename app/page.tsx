@@ -455,22 +455,17 @@ export default function HomePage() {
                 {[...Array(2)].map((_, setIndex) => (
                   <div key={setIndex} className="flex space-x-12 shrink-0">
                     {[
-                      { name: 'Microsoft', logo: 'https://img.logo.dev/microsoft.com?token=pk_X-NyT1KdRKuAsr5p7K_wTA' },
-                      { name: 'Shopify', logo: 'https://img.logo.dev/shopify.com?token=pk_X-NyT1KdRKuAsr5p7K_wTA' },
-                      { name: 'Adobe', logo: 'https://img.logo.dev/adobe.com?token=pk_X-NyT1KdRKuAsr5p7K_wTA' },
-                      { name: 'Slack', logo: 'https://img.logo.dev/slack.com?token=pk_X-NyT1KdRKuAsr5p7K_wTA' },
-                      { name: 'Mailchimp', logo: 'https://img.logo.dev/mailchimp.com?token=pk_X-NyT1KdRKuAsr5p7K_wTA' },
-                      { name: 'Stripe', logo: 'https://img.logo.dev/stripe.com?token=pk_X-NyT1KdRKuAsr5p7K_wTA' }
+                      'Microsoft',
+                      'Shopify',
+                      'Adobe',
+                      'Slack',
+                      'Mailchimp',
+                      'Stripe'
                     ].map((company, idx) => (
-                      <div key={idx} className="flex items-center justify-center w-48 h-20 bg-white rounded-xl border border-gray-200 px-6 shadow-sm grayscale hover:grayscale-0 transition-all">
-                        <Image
-                          src={company.logo}
-                          alt={`${company.name} logo`}
-                          width={120}
-                          height={32}
-                          className="h-8 w-auto object-contain opacity-60 hover:opacity-100 transition-opacity"
-                          loading="lazy"
-                        />
+                      <div key={idx} className="flex items-center justify-center w-48 h-20 bg-white rounded-xl border border-gray-200 px-6 shadow-sm hover:shadow-md transition-all">
+                        <span className="text-xl font-bold text-gray-800 opacity-60 hover:opacity-100 transition-opacity">
+                          {company}
+                        </span>
                       </div>
                     ))}
                   </div>
