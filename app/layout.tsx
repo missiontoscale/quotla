@@ -37,6 +37,9 @@ export const metadata: Metadata = {
     icon: '/images/quotla-logo.png',
     apple: '/images/quotla-logo.png',
   },
+  other: {
+    'dns-prefetch': 'https://img.logo.dev',
+  },
 }
 
 export const viewport: Viewport = {

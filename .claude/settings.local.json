@@ -45,7 +45,8 @@
       "Bash(ls:*)",
       "Bash(npm run type-check:*)",
       "Bash(npx kill-port:*)",
-      "Bash(if exist .next rmdir /s /q .next)"
+      "Bash(if exist .next rmdir /s /q .next)",
+      "Bash(npx tsc:*)"
     ],
     "deny": [],
     "ask": []

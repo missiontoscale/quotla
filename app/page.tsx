@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase/client'
 import Footer from '@/components/Footer'
@@ -161,8 +162,8 @@ export default function HomePage() {
       color: "from-blue-500 to-cyan-500"
     },
     {
-      title: "Smart Invoice Management",
-      description: "Generate invoices, track payments, and manage your billing workflow effortlessly.",
+      title: "Invoice Management",
+      description: "Generate invoices, track payments, and organize your billing records.",
       icon: (
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -181,8 +182,8 @@ export default function HomePage() {
       color: "from-orange-500 to-red-500"
     },
     {
-      title: "Business Intelligence",
-      description: "Get AI-powered advice on pricing, proposals, client management, and business growth.",
+      title: "Income Summaries",
+      description: "View simple income summaries by month or year. Export anytime for your records.",
       icon: (
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -202,7 +203,7 @@ export default function HomePage() {
     },
     {
       title: "Export & Share",
-      description: "Generate beautiful PDFs and share quotes and invoices with your clients instantly.",
+      description: "Generate professional PDFs and share quotes and invoices with your clients.",
       icon: (
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
@@ -264,7 +265,7 @@ export default function HomePage() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-16">
               <Link href="/" className="flex items-center gap-3 group">
-                <img src="/images/quotla-logo.png" alt="Quotla Logo" width="32" height="32" className="h-8 w-auto transform group-hover:scale-105 transition-transform" />
+                <Image src="/images/quotla-logo.png" alt="Quotla Logo" width={32} height={32} className="h-8 w-auto transform group-hover:scale-105 transition-transform" priority />
                 <span className="text-xl font-bold text-gray-900">Quotla</span>
               </Link>
 
@@ -417,7 +418,7 @@ export default function HomePage() {
             <div className="text-center mb-16">
               <h3 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Everything you need</h3>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                Powerful tools designed to simplify your business operations
+                Tools to create and organize professional quotes and invoices
               </p>
             </div>
 
@@ -439,8 +440,8 @@ export default function HomePage() {
         <section className="py-16 bg-gradient-to-br from-gray-50 to-white" style={{backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.02) 1px, transparent 1px)', backgroundSize: '60px 60px'}}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
-              <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">Trusted by professionals worldwide</h3>
-              <p className="text-lg text-gray-600">Join thousands of businesses streamlining their workflow</p>
+              <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">Used by professionals worldwide</h3>
+              <p className="text-lg text-gray-600">Create quotes and track invoices in one place</p>
             </div>
 
             {/* Horizontal scrolling logos */}
@@ -462,23 +463,13 @@ export default function HomePage() {
                       { name: 'Stripe', logo: 'https://img.logo.dev/stripe.com?token=pk_X-NyT1KdRKuAsr5p7K_wTA' }
                     ].map((company, idx) => (
                       <div key={idx} className="flex items-center justify-center w-48 h-20 bg-white rounded-xl border border-gray-200 px-6 shadow-sm grayscale hover:grayscale-0 transition-all">
-                        <img
+                        <Image
                           src={company.logo}
                           alt={`${company.name} logo`}
-                          width="120"
-                          height="32"
+                          width={120}
+                          height={32}
                           className="h-8 w-auto object-contain opacity-60 hover:opacity-100 transition-opacity"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.style.display = 'none';
-                            const parent = target.parentElement;
-                            if (parent) {
-                              const span = document.createElement('span');
-                              span.className = 'text-lg font-semibold text-gray-400';
-                              span.textContent = company.name;
-                              parent.appendChild(span);
-                            }
-                          }}
+                          loading="lazy"
                         />
                       </div>
                     ))}
@@ -526,15 +517,15 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-10"></div>
           <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h3 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              Ready to transform your business?
+              Ready to get started?
             </h3>
             <p className="text-xl text-gray-300 mb-10 leading-relaxed">
-              Join thousands of professionals using Quotla to streamline their workflow,<br className="hidden sm:block" />
-              create professional documents, and grow their business.
+              Create professional quotes and invoices in seconds.<br className="hidden sm:block" />
+              Track your work and export records anytime.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/signup" className="px-8 py-4 rounded-xl text-lg font-semibold bg-white text-gray-900 hover:bg-gray-100 transition-all shadow-xl hover:shadow-2xl hover:scale-105">
-                Make earning easy
+                Start creating
               </Link>
               <Link href="/about" className="px-8 py-4 rounded-xl text-lg font-semibold bg-transparent text-white hover:bg-white/10 transition-all border-2 border-white/20">
                 Learn More

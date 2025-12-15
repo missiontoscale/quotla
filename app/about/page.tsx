@@ -32,7 +32,7 @@ export default function AboutPage() {
             Professional Quotes in 2 Minutes or Less
           </h1>
           <p className="text-xl text-primary-100 max-w-2xl mx-auto">
-            Quotla helps business owners create professional quotes and invoices faster than ever before, powered by AI technology that understands your business needs.
+            Quotla helps you create professional quotes and invoices quickly using AI to generate clear, client-ready documents.
           </p>
         </div>
       </div>
@@ -42,7 +42,7 @@ export default function AboutPage() {
         <section className="mb-16">
           <h2 className="text-3xl font-bold text-gray-900 mb-6">What We Do</h2>
           <p className="text-lg text-gray-700 mb-4">
-            Quotla is a comprehensive platform designed to streamline your business documentation workflow. We help you create professional quotes and invoices in 2 minutes or less using AI-powered automation.
+            Quotla is a platform that helps you create professional quotes and invoices in 2 minutes or less using AI to generate documents.
           </p>
           <p className="text-lg text-gray-700 mb-4">
             Our platform combines intelligent conversation-based document creation with traditional manual controls, giving you the flexibility to work however you prefer.
@@ -162,7 +162,7 @@ export default function AboutPage() {
               <svg className="w-6 h-6 text-primary-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
-              <span className="text-gray-700">Service providers looking to streamline their billing process</span>
+              <span className="text-gray-700">Service providers who need to organize billing records</span>
             </li>
             <li className="flex items-start gap-3">
               <svg className="w-6 h-6 text-primary-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -182,7 +182,7 @@ export default function AboutPage() {
         <section className="bg-primary-50 p-8 rounded-lg border border-primary-200">
           <h2 className="text-3xl font-bold text-gray-900 mb-4 text-center">Ready to Get Started?</h2>
           <p className="text-lg text-gray-700 mb-6 text-center max-w-2xl mx-auto">
-            Join hundreds of businesses already saving time with Quotla. Create your first quote in under 2 minutes.
+            Create your first professional quote in under 2 minutes.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/signup" className="px-8 py-4 rounded-lg text-lg font-semibold bg-primary-600 text-white hover:bg-primary-700 transition-colors text-center">

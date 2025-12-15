@@ -1,0 +1,51 @@
+{
+  "features": [
+    {
+      "enabled": false,
+      "name": "full-text-search"
+    },
+    {
+      "enabled": true,
+      "name": "dark-mode"
+    },
+    {
+      "enabled": true,
+      "name": "date-filtering"
+    },
+    {
+      "enabled": true,
+      "name": "source-filtering"
+    }
+  ],
+  "data": [
+    {
+      "collab": false,
+      "date": "2020-12-18",
+      "name": "AWS ML Recommendation Engine",
+      "slug": "aws-ml-recommendation-engine",
+      "source": "https://dev.to/wheeleruniverse/my-october-cloud-guru-challenge-experience-5ecg",
+      "excerpt": "My experience building an ML-powered recommendation engine on AWS during the October Cloud Guru Challenge.",
+      "platform": "DEV.to",
+      "tags": ["AWS", "Machine Learning", "Cloud"]
+    },
+    {
+      "date": "2024-05-09",
+      "name": "How I Crushed My AWS Certification Renewals Back-to-Back (and Why It Was a Bad Idea)",
+      "slug": "aws-cert-renewals-back-to-back",
+      "source": "https://dev.to/aws-builders/how-i-crushed-my-aws-certification-renewals-back-to-back-and-why-it-was-a-bad-idea-56fh",
+      "excerpt": "A candid story about renewing multiple AWS certifications in quick succession and the lessons learned along the way.",
+      "platform": "DEV.to",
+      "tags": ["AWS", "Certifications", "Career"]
+    },
+    {
+      "collab": true,
+      "date": "2021-08-11",
+      "name": "Our Quest for the Perfect Code Assessment",
+      "slug": "code-assessment-quest",
+      "source": "https://www.bravolt.com/post/our-quest-for-the-perfect-code-assessment",
+      "excerpt": "How we designed and implemented a comprehensive code assessment process that works for both candidates and teams.",
+      "platform": "Bravolt",
+      "tags": ["Hiring", "Engineering", "Best Practices"]
+    }
+  ]
+}
