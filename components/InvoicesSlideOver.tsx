@@ -3,11 +3,12 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase/client'
-import { Invoice } from '@/types'
+import { Invoice, InvoiceWithItems } from '@/types'
 import { useAuth } from '@/contexts/AuthContext'
 import { format } from 'date-fns'
 import { formatCurrency } from '@/lib/utils/validation'
 import SlideOver from './SlideOver'
+import DownloadDropdown from './DownloadDropdown'
 
 interface InvoicesSlideOverProps {
   isOpen: boolean
@@ -15,8 +16,9 @@ interface InvoicesSlideOverProps {
 }
 
 export default function InvoicesSlideOver({ isOpen, onClose }: InvoicesSlideOverProps) {
-  const { user } = useAuth()
+  const { user, profile } = useAuth()
   const [invoices, setInvoices] = useState<Invoice[]>([])
+  const [invoicesWithItems, setInvoicesWithItems] = useState<Record<string, InvoiceWithItems>>({})
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<string>('all')
 
@@ -39,6 +41,32 @@ export default function InvoicesSlideOver({ isOpen, onClose }: InvoicesSlideOver
       setInvoices(data)
     }
     setLoading(false)
+  }
+
+  const loadInvoiceWithItems = async (invoiceId: string) => {
+    if (invoicesWithItems[invoiceId]) return invoicesWithItems[invoiceId]
+
+    const { data: invoiceData } = await supabase
+      .from('invoices')
+      .select('*, client:clients(*)')
+      .eq('id', invoiceId)
+      .maybeSingle()
+
+    if (!invoiceData) return null
+
+    const { data: itemsData } = await supabase
+      .from('invoice_items')
+      .select('*')
+      .eq('invoice_id', invoiceId)
+      .order('sort_order', { ascending: true })
+
+    const fullInvoice = {
+      ...(invoiceData as any),
+      items: itemsData || [],
+    } as InvoiceWithItems
+
+    setInvoicesWithItems(prev => ({ ...prev, [invoiceId]: fullInvoice }))
+    return fullInvoice
   }
 
   const handleDelete = async (id: string) => {
@@ -75,7 +103,7 @@ export default function InvoicesSlideOver({ isOpen, onClose }: InvoicesSlideOver
               className={`px-4 py-2 rounded text-sm font-medium ${
                 filter === 'all'
                   ? 'bg-primary-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'bg-primary-600 text-primary-200 hover:bg-primary-600'
               }`}
             >
               All
@@ -85,7 +113,7 @@ export default function InvoicesSlideOver({ isOpen, onClose }: InvoicesSlideOver
               className={`px-4 py-2 rounded text-sm font-medium ${
                 filter === 'draft'
                   ? 'bg-primary-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'bg-primary-600 text-primary-200 hover:bg-primary-600'
               }`}
             >
               Draft
@@ -95,7 +123,7 @@ export default function InvoicesSlideOver({ isOpen, onClose }: InvoicesSlideOver
               className={`px-4 py-2 rounded text-sm font-medium ${
                 filter === 'sent'
                   ? 'bg-primary-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'bg-primary-600 text-primary-200 hover:bg-primary-600'
               }`}
             >
               Sent
@@ -105,7 +133,7 @@ export default function InvoicesSlideOver({ isOpen, onClose }: InvoicesSlideOver
               className={`px-4 py-2 rounded text-sm font-medium ${
                 filter === 'paid'
                   ? 'bg-primary-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'bg-primary-600 text-primary-200 hover:bg-primary-600'
               }`}
             >
               Paid
@@ -115,7 +143,7 @@ export default function InvoicesSlideOver({ isOpen, onClose }: InvoicesSlideOver
               className={`px-4 py-2 rounded text-sm font-medium ${
                 filter === 'overdue'
                   ? 'bg-primary-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'bg-primary-600 text-primary-200 hover:bg-primary-600'
               }`}
             >
               Overdue
@@ -129,7 +157,7 @@ export default function InvoicesSlideOver({ isOpen, onClose }: InvoicesSlideOver
           </div>
         ) : filteredInvoices.length === 0 ? (
           <div className="card text-center py-12">
-            <p className="text-gray-500 mb-4">No invoices found</p>
+            <p className="text-primary-400 mb-4">No invoices found</p>
             <Link
               href="/invoices/new"
               className="btn btn-primary inline-block"
@@ -151,19 +179,19 @@ export default function InvoicesSlideOver({ isOpen, onClose }: InvoicesSlideOver
                           invoice.status === 'paid'
                             ? 'bg-green-100 text-green-800'
                             : invoice.status === 'sent'
-                            ? 'bg-blue-100 text-blue-800'
+                            ? 'bg-quotla-green/10 text-quotla-dark'
                             : invoice.status === 'overdue'
                             ? 'bg-red-100 text-red-800'
                             : invoice.status === 'cancelled'
-                            ? 'bg-gray-100 text-gray-800'
+                            ? 'bg-primary-600 text-primary-100'
                             : 'bg-yellow-100 text-yellow-800'
                         }`}
                       >
                         {invoice.status}
                       </span>
                     </div>
-                    {invoice.title && <p className="text-gray-600 mt-1">{invoice.title}</p>}
-                    <div className="mt-2 text-sm text-gray-500">
+                    {invoice.title && <p className="text-primary-300 mt-1">{invoice.title}</p>}
+                    <div className="mt-2 text-sm text-primary-400">
                       <span>Issue Date: {format(new Date(invoice.issue_date), 'MMM d, yyyy')}</span>
                       {invoice.due_date && (
                         <span className="ml-4">
@@ -173,10 +201,10 @@ export default function InvoicesSlideOver({ isOpen, onClose }: InvoicesSlideOver
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-2xl font-bold text-gray-900">
+                    <div className="text-2xl font-bold text-primary-50">
                       {formatCurrency(invoice.total, invoice.currency)}
                     </div>
-                    <div className="mt-4 flex gap-2">
+                    <div className="mt-4 flex gap-2 flex-wrap">
                       <Link
                         href={`/invoices/${invoice.id}`}
                         className="text-primary-600 hover:text-primary-700 text-sm font-medium"
@@ -191,6 +219,11 @@ export default function InvoicesSlideOver({ isOpen, onClose }: InvoicesSlideOver
                       >
                         Edit
                       </Link>
+                      <DownloadDropdown
+                        type="invoice"
+                        data={invoicesWithItems[invoice.id] || { ...invoice, items: [], client: null }}
+                        profile={profile}
+                      />
                       <button
                         onClick={() => handleDelete(invoice.id)}
                         className="text-red-600 hover:text-red-700 text-sm font-medium"

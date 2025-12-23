@@ -57,13 +57,24 @@ export function extractInvoiceDataFromConversation(messages: ConversationMessage
     console.log('Extracted business:', business)
 
     // Extract client info (if mentioned)
-    const clientNameMatch = fullConversation.match(/(?:client|customer|bill to|deliver to)[\s:]+([A-Z][A-Za-z\s]+?)(?:,|\.|located|$)/i)
-    const clientAddressMatch = fullConversation.match(/client.*?located\s+at\s+([^,\n]+)/i)
+    let clientNameMatch = fullConversation.match(/(?:client|customer|bill to|deliver to)[\s:]+(?:is\s+)?([A-Z][A-Za-z\s&]+?)(?:,|\.|located|in\s|$)/i)
+    if (!clientNameMatch) {
+      // Try pattern like "for XYZ Company" or "Client: XYZ"
+      clientNameMatch = fullConversation.match(/(?:for|client:?)\s+([A-Z][A-Za-z\s&]+?)(?:\s+business|\s+company|\.|\n|$)/i)
+    }
+
+    let clientAddressMatch = fullConversation.match(/client.*?(?:located\s+at|in)\s+([^,\n\.]+)/i)
+    if (!clientAddressMatch) {
+      // Try pattern like "Client is in Location"
+      clientAddressMatch = fullConversation.match(/(?:client|customer)[\s\w]*\s+(?:is\s+)?in\s+([A-Z][A-Za-z\s,]+?)(?:\.|$)/i)
+    }
 
     const client = {
       name: clientNameMatch?.[1]?.trim() || 'Customer',
       address: clientAddressMatch?.[1]?.trim() || ''
     }
+
+    console.log('Extracted client:', client)
 
     // Detect currency
     let currency = 'NGN'
@@ -75,7 +86,29 @@ export function extractInvoiceDataFromConversation(messages: ConversationMessage
     // Extract items - look for quantity + description + price patterns
     const items: Array<{description: string, quantity: number, unit_price: number}> = []
 
-    // Pattern: "25 units of 200G selling at 5k"
+    // Pattern 1: "cost X dollars per hour" + "Y hours"
+    const hourlyRateMatch = fullConversation.match(/(?:cost|rate|charge|price)[s]?\s+(?:is\s+)?[₦$€£]?(\d+(?:[,.]\d+)?)\s*(?:dollars?|naira|euros?|pounds?)?\s+per\s+hour/i)
+    const hoursMatch = fullConversation.match(/(\d+)\s+hours?/i)
+
+    if (hourlyRateMatch && hoursMatch) {
+      const rate = parseFloat(hourlyRateMatch[1].replace(',', '.'))
+      const hours = parseInt(hoursMatch[1])
+
+      // Try to extract service description
+      const serviceMatch = fullConversation.match(/(?:make|provide|offer|deliver|service)[s]?\s+([^\.]+?)\s+for/i) ||
+                          fullConversation.match(/for\s+([^\.]+?)\s+(?:cost|charge|rate)/i)
+      const description = serviceMatch?.[1]?.trim() || 'Service'
+
+      console.log(`Parsed hourly service: ${hours} hours x ${description} @ ${rate}/hour`)
+
+      items.push({
+        description: `${description} (${hours} hours @ ${currency === 'USD' ? '$' : currency}${rate}/hr)`,
+        quantity: hours,
+        unit_price: rate
+      })
+    }
+
+    // Pattern 2: "25 units of 200G selling at 5k"
     const itemPattern1 = /(\d+)\s+units?\s+of\s+([^,]+?)\s+(?:selling\s+at|at|for)\s+(\d+(?:[,.]\d+)?)\s*(k)?/gi
     let match
     while ((match = itemPattern1.exec(fullConversation)) !== null) {
@@ -97,7 +130,7 @@ export function extractInvoiceDataFromConversation(messages: ConversationMessage
       })
     }
 
-    // Pattern: "10 units at 5000"
+    // Pattern 3: "10 units at 5000"
     const itemPattern2 = /(\d+)\s+units?\s+(?:at|for|@)\s+[₦$€£]?(\d+(?:,\d{3})*(?:\.\d{2})?)/gi
     while ((match = itemPattern2.exec(fullConversation)) !== null) {
       const quantity = parseInt(match[1])

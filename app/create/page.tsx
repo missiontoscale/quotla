@@ -249,8 +249,8 @@ export default function CreatePage() {
     <DashboardLayout>
       <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Create Document</h1>
-        <p className="mt-2 text-gray-600">Use AI to generate quotes and invoices in minutes, or create them manually</p>
+        <h1 className="text-3xl font-bold text-primary-50">Create Document</h1>
+        <p className="mt-2 text-primary-300">Use AI to generate quotes and invoices in minutes, or create them manually</p>
       </div>
 
       {/* AI Chat Interface */}
@@ -263,8 +263,8 @@ export default function CreatePage() {
               </svg>
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900">Quotla AI Assistant</h2>
-              <p className="text-sm text-gray-600">Describe your quote or invoice, and I'll create it for you</p>
+              <h2 className="text-xl font-bold text-primary-50">Quotla AI Assistant</h2>
+              <p className="text-sm text-primary-300">Describe your quote or invoice, and I'll create it for you</p>
             </div>
           </div>
         </div>
@@ -272,7 +272,7 @@ export default function CreatePage() {
         {/* Chat Messages Area */}
         <div
           ref={chatContainerRef}
-          className="bg-white rounded-xl border-2 border-gray-200 p-4 mb-4 overflow-y-auto"
+          className="bg-white rounded-xl border-2 border-primary-600 p-4 mb-4 overflow-y-auto"
           style={{ height: 'clamp(400px, 50vh, 600px)' }}
         >
           {chatMessages.length === 0 ? (
@@ -282,21 +282,21 @@ export default function CreatePage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Start creating with AI</h3>
-              <p className="text-sm text-gray-600 max-w-md">
+              <h3 className="text-lg font-semibold text-primary-50 mb-2">Start creating with AI</h3>
+              <p className="text-sm text-primary-300 max-w-md">
                 Tell me about your business, client, and what you're quoting. I'll generate a professional document for you.
               </p>
               <div className="mt-6 text-left w-full max-w-md space-y-3">
-                <p className="text-xs font-semibold text-gray-500 uppercase">Try saying:</p>
+                <p className="text-xs font-semibold text-primary-400 uppercase">Try saying:</p>
                 <button
                   onClick={() => setChatInput('I need a quote for web development services for ABC Company. 40 hours at $100/hour.')}
-                  className="w-full text-left px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded-lg text-sm text-gray-700 transition-colors"
+                  className="w-full text-left px-4 py-2 bg-primary-700 hover:bg-primary-600 rounded-lg text-sm text-primary-200 transition-colors"
                 >
                   "I need a quote for web development services..."
                 </button>
                 <button
                   onClick={() => setChatInput('Create an invoice for consulting work. 3 days at $500 per day for XYZ Corp.')}
-                  className="w-full text-left px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded-lg text-sm text-gray-700 transition-colors"
+                  className="w-full text-left px-4 py-2 bg-primary-700 hover:bg-primary-600 rounded-lg text-sm text-primary-200 transition-colors"
                 >
                   "Create an invoice for consulting work..."
                 </button>
@@ -310,22 +310,22 @@ export default function CreatePage() {
                     <div className={`rounded-2xl px-4 py-3 ${
                       msg.role === 'user'
                         ? 'bg-primary-600 text-white'
-                        : 'bg-gray-100 text-gray-900'
+                        : 'bg-primary-600 text-primary-50'
                     }`}>
                       <div className="text-sm leading-relaxed prose prose-sm max-w-none prose-headings:mt-2 prose-headings:mb-2 prose-p:my-1 prose-ul:my-1 prose-ol:my-1 prose-li:my-0">
                         <ReactMarkdown
                           remarkPlugins={[remarkGfm]}
                           components={{
                             // Style markdown elements to match chat bubble colors
-                            strong: ({children}) => <strong className={msg.role === 'user' ? 'text-white font-bold' : 'text-gray-900 font-bold'}>{children}</strong>,
-                            em: ({children}) => <em className={msg.role === 'user' ? 'text-white' : 'text-gray-900'}>{children}</em>,
-                            h1: ({children}) => <h1 className={msg.role === 'user' ? 'text-white text-xl font-bold' : 'text-gray-900 text-xl font-bold'}>{children}</h1>,
-                            h2: ({children}) => <h2 className={msg.role === 'user' ? 'text-white text-lg font-bold' : 'text-gray-900 text-lg font-bold'}>{children}</h2>,
-                            h3: ({children}) => <h3 className={msg.role === 'user' ? 'text-white text-base font-bold' : 'text-gray-900 text-base font-bold'}>{children}</h3>,
-                            ul: ({children}) => <ul className={msg.role === 'user' ? 'text-white list-disc pl-4' : 'text-gray-900 list-disc pl-4'}>{children}</ul>,
-                            ol: ({children}) => <ol className={msg.role === 'user' ? 'text-white list-decimal pl-4' : 'text-gray-900 list-decimal pl-4'}>{children}</ol>,
-                            p: ({children}) => <p className={msg.role === 'user' ? 'text-white' : 'text-gray-900'}>{children}</p>,
-                            code: ({children}) => <code className={msg.role === 'user' ? 'bg-primary-700 px-1 py-0.5 rounded text-white' : 'bg-gray-200 px-1 py-0.5 rounded text-gray-900'}>{children}</code>,
+                            strong: ({children}) => <strong className={msg.role === 'user' ? 'text-white font-bold' : 'text-primary-50 font-bold'}>{children}</strong>,
+                            em: ({children}) => <em className={msg.role === 'user' ? 'text-white' : 'text-primary-50'}>{children}</em>,
+                            h1: ({children}) => <h1 className={msg.role === 'user' ? 'text-white text-xl font-bold' : 'text-primary-50 text-xl font-bold'}>{children}</h1>,
+                            h2: ({children}) => <h2 className={msg.role === 'user' ? 'text-white text-lg font-bold' : 'text-primary-50 text-lg font-bold'}>{children}</h2>,
+                            h3: ({children}) => <h3 className={msg.role === 'user' ? 'text-white text-base font-bold' : 'text-primary-50 text-base font-bold'}>{children}</h3>,
+                            ul: ({children}) => <ul className={msg.role === 'user' ? 'text-white list-disc pl-4' : 'text-primary-50 list-disc pl-4'}>{children}</ul>,
+                            ol: ({children}) => <ol className={msg.role === 'user' ? 'text-white list-decimal pl-4' : 'text-primary-50 list-decimal pl-4'}>{children}</ol>,
+                            p: ({children}) => <p className={msg.role === 'user' ? 'text-white' : 'text-primary-50'}>{children}</p>,
+                            code: ({children}) => <code className={msg.role === 'user' ? 'bg-primary-700 px-1 py-0.5 rounded text-white' : 'bg-primary-600 px-1 py-0.5 rounded text-primary-50'}>{children}</code>,
                           }}
                         >
                           {msg.content}
@@ -352,11 +352,11 @@ export default function CreatePage() {
               ))}
               {chatLoading && (
                 <div className="flex justify-start">
-                  <div className="bg-gray-100 rounded-2xl px-4 py-3">
+                  <div className="bg-primary-600 rounded-2xl px-4 py-3">
                     <div className="flex space-x-2">
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></div>
+                      <div className="w-2 h-2 bg-primary-500 rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-primary-500 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                      <div className="w-2 h-2 bg-primary-500 rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></div>
                     </div>
                   </div>
                 </div>
@@ -367,13 +367,13 @@ export default function CreatePage() {
 
         {/* File Upload Preview */}
         {selectedFile && (
-          <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-between">
+          <div className="mb-3 p-3 bg-quotla-light border border-quotla-green/30 rounded-lg flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-quotla-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
               </svg>
-              <span className="text-sm text-gray-700">{selectedFile.name}</span>
-              <span className="text-xs text-gray-500">({(selectedFile.size / 1024).toFixed(1)} KB)</span>
+              <span className="text-sm text-primary-200">{selectedFile.name}</span>
+              <span className="text-xs text-primary-400">({(selectedFile.size / 1024).toFixed(1)} KB)</span>
             </div>
             <button
               onClick={() => {
@@ -411,10 +411,10 @@ export default function CreatePage() {
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={chatLoading}
-            className="p-3 rounded-lg border-2 border-gray-300 hover:border-primary-400 hover:bg-primary-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed self-end"
+            className="p-3 rounded-lg border-2 border-primary-500 hover:border-primary-400 hover:bg-primary-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed self-end"
             title="Upload file (max 2MB)"
           >
-            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
             </svg>
           </button>
@@ -432,7 +432,7 @@ export default function CreatePage() {
               }
             }}
             placeholder="Describe your quote or invoice... (Press Enter to send, Shift+Enter for new line)"
-            className="flex-1 px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all disabled:opacity-50 disabled:bg-gray-50 resize-y min-h-[48px] max-h-[200px]"
+            className="flex-1 px-4 py-3 rounded-lg border-2 border-primary-500 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all disabled:opacity-50 disabled:bg-primary-700 resize-y min-h-[48px] max-h-[200px]"
             disabled={chatLoading}
             rows={1}
             style={{
@@ -455,7 +455,7 @@ export default function CreatePage() {
             </svg>
           </button>
         </div>
-        <p className="text-xs text-gray-500 mt-2 text-center">
+        <p className="text-xs text-primary-400 mt-2 text-center">
           Keeps up to 25 messages in context • Max file size: 2MB • Voice recording available
         </p>
       </div>
@@ -467,16 +467,16 @@ export default function CreatePage() {
           className="card hover:shadow-lg transition-all cursor-pointer text-left group"
         >
           <div className="flex items-start gap-4">
-            <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-              <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-quotla-green/10 flex items-center justify-center group-hover:bg-quotla-green/20 transition-colors">
+              <svg className="w-6 h-6 text-quotla-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
             <div className="flex-1">
-              <h3 className="text-lg font-semibold text-gray-900 mb-1">Create Quote Manually</h3>
-              <p className="text-sm text-gray-600">Use the traditional form to create a quote with full control over every detail</p>
+              <h3 className="text-lg font-semibold text-primary-50 mb-1">Create Quote Manually</h3>
+              <p className="text-sm text-primary-300">Use the traditional form to create a quote with full control over every detail</p>
             </div>
-            <svg className="w-5 h-5 text-gray-400 group-hover:text-primary-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-primary-400 group-hover:text-primary-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </div>
@@ -493,10 +493,10 @@ export default function CreatePage() {
               </svg>
             </div>
             <div className="flex-1">
-              <h3 className="text-lg font-semibold text-gray-900 mb-1">Create Invoice Manually</h3>
-              <p className="text-sm text-gray-600">Use the traditional form to create an invoice with full control over every detail</p>
+              <h3 className="text-lg font-semibold text-primary-50 mb-1">Create Invoice Manually</h3>
+              <p className="text-sm text-primary-300">Use the traditional form to create an invoice with full control over every detail</p>
             </div>
-            <svg className="w-5 h-5 text-gray-400 group-hover:text-primary-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-primary-400 group-hover:text-primary-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </div>

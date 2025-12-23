@@ -58,7 +58,7 @@ export default function NewsletterPage() {
               Quotla
             </Link>
             <div className="flex gap-4">
-              <Link href="/blog" className="text-gray-700 hover:text-gray-900">
+              <Link href="/blog" className="text-primary-200 hover:text-primary-50">
                 Blog
               </Link>
               <Link href="/login" className="btn btn-secondary">
@@ -71,8 +71,8 @@ export default function NewsletterPage() {
 
       <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Subscribe to Our Newsletter</h1>
-          <p className="text-xl text-gray-600">
+          <h1 className="text-4xl font-bold text-primary-50 mb-4">Subscribe to Our Newsletter</h1>
+          <p className="text-xl text-primary-300">
             Get the latest tips, updates, and insights on professional business management
             delivered to your inbox
           </p>
@@ -86,8 +86,8 @@ export default function NewsletterPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Thank you for subscribing!</h2>
-              <p className="text-gray-600 mb-6">
+              <h2 className="text-2xl font-bold text-primary-50 mb-2">Thank you for subscribing!</h2>
+              <p className="text-primary-300 mb-6">
                 We&apos;ve sent a confirmation email to {formData.email}
               </p>
               <Link href="/" className="btn btn-primary">
@@ -137,7 +137,7 @@ export default function NewsletterPage() {
                 </button>
               </form>
 
-              <div className="mt-6 text-center text-sm text-gray-500">
+              <div className="mt-6 text-center text-sm text-primary-400">
                 <p>We respect your privacy. Unsubscribe at any time.</p>
               </div>
             </>
@@ -147,15 +147,15 @@ export default function NewsletterPage() {
         <div className="mt-12 grid md:grid-cols-3 gap-6">
           <div className="text-center">
             <h3 className="font-bold mb-1">Weekly Updates</h3>
-            <p className="text-sm text-gray-600">Get the latest news every week</p>
+            <p className="text-sm text-primary-300">Get the latest news every week</p>
           </div>
           <div className="text-center">
             <h3 className="font-bold mb-1">Expert Tips</h3>
-            <p className="text-sm text-gray-600">Learn from industry professionals</p>
+            <p className="text-sm text-primary-300">Learn from industry professionals</p>
           </div>
           <div className="text-center">
             <h3 className="font-bold mb-1">Exclusive Content</h3>
-            <p className="text-sm text-gray-600">Subscriber-only resources</p>
+            <p className="text-sm text-primary-300">Subscriber-only resources</p>
           </div>
         </div>
       </main>

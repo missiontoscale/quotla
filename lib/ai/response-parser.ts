@@ -177,7 +177,22 @@ export function shouldCreateDocument(userMessage: string, aiResponse: string): b
   const lowerAI = aiResponse.toLowerCase()
 
   // Check if user is asking to create (more aggressive detection)
-  const createKeywords = ['create', 'generate', 'make', 'build', 'prepare', 'actually create', 'go on', 'do it', 'now create']
+  const createKeywords = [
+    'create the quote',
+    'create the invoice',
+    'create the document',
+    'create it',
+    'make the quote',
+    'make the invoice',
+    'generate the quote',
+    'generate the invoice',
+    'that is all',
+    'that\'s all',
+    'go ahead',
+    'proceed',
+    'do it',
+    'yes create'
+  ]
   const hasCreateIntent = createKeywords.some(keyword => lowerUser.includes(keyword))
 
   // Check if AI provided structured invoice/quote data
@@ -188,5 +203,8 @@ export function shouldCreateDocument(userMessage: string, aiResponse: string): b
   const hasLineItems = lowerAI.includes('units of') || lowerAI.includes('quantity') ||
                        (lowerAI.includes('-') && (lowerAI.includes('₦') || lowerAI.includes('$')))
 
-  return hasCreateIntent && (hasStructuredData || hasLineItems)
+  // If user explicitly says "create", we should trigger even without structured data in AI response
+  const explicitCreate = lowerUser.includes('create the') || lowerUser.includes('that is all')
+
+  return (hasCreateIntent && (hasStructuredData || hasLineItems)) || explicitCreate
 }

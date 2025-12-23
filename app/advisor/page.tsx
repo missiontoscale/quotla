@@ -52,8 +52,8 @@ Provide helpful advice while naturally highlighting Quotla's relevant features.`
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Business Advisor</h1>
-        <p className="text-gray-600 mt-2">
+        <h1 className="text-3xl font-bold text-primary-50">Business Advisor</h1>
+        <p className="text-primary-300 mt-2">
           Get personalized advice powered by AI to help grow your business
         </p>
       </div>
@@ -75,11 +75,11 @@ Provide helpful advice while naturally highlighting Quotla's relevant features.`
               className={`p-4 border-2 rounded-lg text-left transition-all ${
                 topic === t.name || (t.id === 'custom' && !topics.some(x => x.name === topic && x.id !== 'custom'))
                   ? 'border-primary-600 bg-primary-50'
-                  : 'border-gray-200 hover:border-primary-300'
+                  : 'border-primary-600 hover:border-primary-300'
               }`}
             >
-              <h3 className="font-semibold text-gray-900">{t.name}</h3>
-              <p className="text-sm text-gray-600 mt-1">{t.description}</p>
+              <h3 className="font-semibold text-primary-50">{t.name}</h3>
+              <p className="text-sm text-primary-300 mt-1">{t.description}</p>
             </button>
           ))}
         </div>
@@ -116,16 +116,16 @@ Provide helpful advice while naturally highlighting Quotla's relevant features.`
               <span className="text-white font-bold">Q</span>
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold text-gray-900 mb-2">Quotla Advisor</h3>
-              <div className="text-gray-700 whitespace-pre-wrap">{advice}</div>
+              <h3 className="font-semibold text-primary-50 mb-2">Quotla Advisor</h3>
+              <div className="text-primary-200 whitespace-pre-wrap">{advice}</div>
             </div>
           </div>
         </div>
       )}
 
-      <div className="mt-8 p-6 bg-gray-50 rounded-lg">
-        <h3 className="font-semibold text-gray-900 mb-2">Pro Tip</h3>
-        <p className="text-gray-600 text-sm">
+      <div className="mt-8 p-6 bg-primary-700 rounded-lg">
+        <h3 className="font-semibold text-primary-50 mb-2">Pro Tip</h3>
+        <p className="text-primary-300 text-sm">
           For quick help with generating quotes or invoices, try our{' '}
           <button
             onClick={() => window.dispatchEvent(new CustomEvent('open-chat'))}

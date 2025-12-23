@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { CURRENCIES } from '@/types'
-import { validateFileUpload } from '@/lib/utils/validation'
+import { validateFileUpload, validateImageUrl } from '@/lib/utils/validation'
 import { supabase } from '@/lib/supabase/client'
 
 export default function SettingsPage() {
@@ -161,7 +161,7 @@ export default function SettingsPage() {
 
   return (
     <div className="max-w-3xl">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Business Settings</h1>
+      <h1 className="text-3xl font-bold text-primary-50 mb-8">Business Settings</h1>
 
       <div className="card space-y-6">
         {success && (
@@ -178,9 +178,9 @@ export default function SettingsPage() {
         <div>
           <h2 className="text-xl font-bold mb-4">Profile Picture</h2>
           <div className="flex items-center gap-4">
-            {profile?.avatar_url ? (
+            {profile?.avatar_url && validateImageUrl(profile.avatar_url) ? (
               <img
-                src={profile.avatar_url}
+                src={validateImageUrl(profile.avatar_url)!}
                 alt="Profile"
                 className="h-20 w-20 rounded-full object-cover border-4 border-primary-100"
               />
@@ -246,7 +246,7 @@ export default function SettingsPage() {
                 disabled={uploading}
                 className="text-sm"
               />
-              <p className="text-xs text-gray-500 mt-1">PNG, JPEG, or WebP. Max 2MB.</p>
+              <p className="text-xs text-primary-400 mt-1">PNG, JPEG, or WebP. Max 2MB.</p>
             </div>
           </div>
         </div>
@@ -254,8 +254,8 @@ export default function SettingsPage() {
         <div>
           <h2 className="text-xl font-bold mb-4">Business Logo</h2>
           <div className="flex items-center gap-4">
-            {profile?.logo_url && (
-              <img src={profile.logo_url} alt="Logo" className="h-16 w-16 object-contain" />
+            {profile?.logo_url && validateImageUrl(profile.logo_url) && (
+              <img src={validateImageUrl(profile.logo_url)!} alt="Logo" className="h-16 w-16 object-contain" />
             )}
             <div>
               <input
@@ -265,7 +265,7 @@ export default function SettingsPage() {
                 disabled={uploading}
                 className="text-sm"
               />
-              <p className="text-xs text-gray-500 mt-1">PNG, JPEG, or WebP. Max 2MB.</p>
+              <p className="text-xs text-primary-400 mt-1">PNG, JPEG, or WebP. Max 2MB.</p>
             </div>
           </div>
         </div>
@@ -441,10 +441,10 @@ export default function SettingsPage() {
       </div>
 
       <div className="card mt-8">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Account Actions</h2>
+        <h2 className="text-xl font-bold text-primary-50 mb-4">Account Actions</h2>
         <div className="space-y-4">
           <div>
-            <p className="text-gray-600 mb-2">Sign out of your account</p>
+            <p className="text-primary-300 mb-2">Sign out of your account</p>
             <button
               onClick={async () => {
                 try {
@@ -463,7 +463,7 @@ export default function SettingsPage() {
 
       <div className="card mt-8 border-red-200">
         <h2 className="text-xl font-bold text-red-600 mb-4">Danger Zone</h2>
-        <p className="text-gray-600 mb-4">
+        <p className="text-primary-300 mb-4">
           Once you delete your account, there is no going back. All your data including quotes, invoices, clients, and settings will be permanently deleted.
         </p>
 

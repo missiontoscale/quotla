@@ -3,11 +3,12 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase/client'
-import { Quote } from '@/types'
+import { Quote, QuoteWithItems } from '@/types'
 import { useAuth } from '@/contexts/AuthContext'
 import { format } from 'date-fns'
 import { formatCurrency } from '@/lib/utils/validation'
 import SlideOver from './SlideOver'
+import DownloadDropdown from './DownloadDropdown'
 
 interface QuotesSlideOverProps {
   isOpen: boolean
@@ -15,8 +16,9 @@ interface QuotesSlideOverProps {
 }
 
 export default function QuotesSlideOver({ isOpen, onClose }: QuotesSlideOverProps) {
-  const { user } = useAuth()
+  const { user, profile } = useAuth()
   const [quotes, setQuotes] = useState<Quote[]>([])
+  const [quotesWithItems, setQuotesWithItems] = useState<Record<string, QuoteWithItems>>({})
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<string>('all')
 
@@ -39,6 +41,32 @@ export default function QuotesSlideOver({ isOpen, onClose }: QuotesSlideOverProp
       setQuotes(data)
     }
     setLoading(false)
+  }
+
+  const loadQuoteWithItems = async (quoteId: string) => {
+    if (quotesWithItems[quoteId]) return quotesWithItems[quoteId]
+
+    const { data: quoteData } = await supabase
+      .from('quotes')
+      .select('*, client:clients(*)')
+      .eq('id', quoteId)
+      .maybeSingle()
+
+    if (!quoteData) return null
+
+    const { data: itemsData } = await supabase
+      .from('quote_items')
+      .select('*')
+      .eq('quote_id', quoteId)
+      .order('sort_order', { ascending: true })
+
+    const fullQuote = {
+      ...(quoteData as any),
+      items: itemsData || [],
+    } as QuoteWithItems
+
+    setQuotesWithItems(prev => ({ ...prev, [quoteId]: fullQuote }))
+    return fullQuote
   }
 
   const handleDelete = async (id: string) => {
@@ -75,7 +103,7 @@ export default function QuotesSlideOver({ isOpen, onClose }: QuotesSlideOverProp
               className={`px-4 py-2 rounded text-sm font-medium ${
                 filter === 'all'
                   ? 'bg-primary-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'bg-primary-600 text-primary-200 hover:bg-primary-600'
               }`}
             >
               All
@@ -85,7 +113,7 @@ export default function QuotesSlideOver({ isOpen, onClose }: QuotesSlideOverProp
               className={`px-4 py-2 rounded text-sm font-medium ${
                 filter === 'draft'
                   ? 'bg-primary-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'bg-primary-600 text-primary-200 hover:bg-primary-600'
               }`}
             >
               Draft
@@ -95,7 +123,7 @@ export default function QuotesSlideOver({ isOpen, onClose }: QuotesSlideOverProp
               className={`px-4 py-2 rounded text-sm font-medium ${
                 filter === 'sent'
                   ? 'bg-primary-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'bg-primary-600 text-primary-200 hover:bg-primary-600'
               }`}
             >
               Sent
@@ -105,7 +133,7 @@ export default function QuotesSlideOver({ isOpen, onClose }: QuotesSlideOverProp
               className={`px-4 py-2 rounded text-sm font-medium ${
                 filter === 'approved'
                   ? 'bg-primary-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'bg-primary-600 text-primary-200 hover:bg-primary-600'
               }`}
             >
               Approved
@@ -119,7 +147,7 @@ export default function QuotesSlideOver({ isOpen, onClose }: QuotesSlideOverProp
           </div>
         ) : filteredQuotes.length === 0 ? (
           <div className="card text-center py-12">
-            <p className="text-gray-500 mb-4">No quotes found</p>
+            <p className="text-primary-400 mb-4">No quotes found</p>
             <Link
               href="/quotes/new"
               className="btn btn-primary inline-block"
@@ -141,19 +169,19 @@ export default function QuotesSlideOver({ isOpen, onClose }: QuotesSlideOverProp
                           quote.status === 'approved'
                             ? 'bg-green-100 text-green-800'
                             : quote.status === 'sent'
-                            ? 'bg-blue-100 text-blue-800'
+                            ? 'bg-quotla-green/10 text-quotla-dark'
                             : quote.status === 'rejected'
                             ? 'bg-red-100 text-red-800'
                             : quote.status === 'expired'
-                            ? 'bg-gray-100 text-gray-800'
+                            ? 'bg-primary-600 text-primary-100'
                             : 'bg-yellow-100 text-yellow-800'
                         }`}
                       >
                         {quote.status}
                       </span>
                     </div>
-                    {quote.title && <p className="text-gray-600 mt-1">{quote.title}</p>}
-                    <div className="mt-2 text-sm text-gray-500">
+                    {quote.title && <p className="text-primary-300 mt-1">{quote.title}</p>}
+                    <div className="mt-2 text-sm text-primary-400">
                       <span>Issue Date: {format(new Date(quote.issue_date), 'MMM d, yyyy')}</span>
                       {quote.valid_until && (
                         <span className="ml-4">
@@ -163,10 +191,10 @@ export default function QuotesSlideOver({ isOpen, onClose }: QuotesSlideOverProp
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-2xl font-bold text-gray-900">
+                    <div className="text-2xl font-bold text-primary-50">
                       {formatCurrency(quote.total, quote.currency)}
                     </div>
-                    <div className="mt-4 flex gap-2">
+                    <div className="mt-4 flex gap-2 flex-wrap">
                       <Link
                         href={`/quotes/${quote.id}`}
                         className="text-primary-600 hover:text-primary-700 text-sm font-medium"
@@ -181,6 +209,11 @@ export default function QuotesSlideOver({ isOpen, onClose }: QuotesSlideOverProp
                       >
                         Edit
                       </Link>
+                      <DownloadDropdown
+                        type="quote"
+                        data={quotesWithItems[quote.id] || { ...quote, items: [], client: null }}
+                        profile={profile}
+                      />
                       <button
                         onClick={() => handleDelete(quote.id)}
                         className="text-red-600 hover:text-red-700 text-sm font-medium"

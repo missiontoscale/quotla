@@ -33,20 +33,66 @@ export default function BlogPage() {
   }, [])
 
   const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession()
-    setIsAuthenticated(!!session)
+    try {
+      const { data: { session }, error } = await supabase.auth.getSession()
+      if (error) {
+        console.warn('Auth check failed:', error.message)
+        setIsAuthenticated(false)
+        return
+      }
+      setIsAuthenticated(!!session)
+    } catch (error) {
+      console.warn('Auth check error:', error)
+      setIsAuthenticated(false)
+    }
   }
 
   const loadInternalPosts = async () => {
-    const { data, error } = await supabase
-      .from('blog_posts')
-      .select('*')
-      .eq('published', true)
-      .order('published_at', { ascending: false })
+    // Load from database
+    try {
+      const { data, error } = await supabase
+        .from('blog_posts')
+        .select('*')
+        .eq('published', true)
+        .order('published_at', { ascending: false })
 
-    if (!error && data) {
-      setInternalPosts(data)
+      if (error) {
+        console.warn('Failed to load blog posts from database:', error.message)
+      } else if (data) {
+        setInternalPosts(data)
+      }
+    } catch (error) {
+      console.warn('Error fetching blog posts:', error)
     }
+
+    // Also load markdown posts
+    try {
+      const response = await fetch('/api/blog/markdown')
+      if (response.ok) {
+        const markdownPosts = await response.json()
+        // Convert markdown posts to BlogPost format
+        const convertedPosts: BlogPost[] = markdownPosts.map((md: any) => ({
+          id: md.slug,
+          title: md.title,
+          slug: md.slug,
+          excerpt: md.excerpt,
+          content: md.content,
+          author_id: 'markdown',
+          published: md.published,
+          published_at: md.date,
+          created_at: md.date,
+          category: md.category,
+          tags: md.tags,
+          reading_time_minutes: md.readingTime,
+          featured_image_url: md.image
+        }))
+        // Merge with database posts
+        setInternalPosts(prev => [...prev, ...convertedPosts])
+      }
+    } catch (error) {
+      console.warn('Error loading markdown posts:', error)
+    }
+
     setLoading(false)
   }
 
@@ -74,10 +120,10 @@ export default function BlogPage() {
           title: post.title,
           slug: post.slug,
           excerpt: post.excerpt || undefined,
-          date: post.published_at || post.created_at,
+          date: post.published_at || post.created_at || new Date().toISOString(),
           isExternal: false,
           platform: 'Quotla',
-          tags: []
+          tags: post.tags || []
         })
       })
     }
@@ -157,26 +203,27 @@ export default function BlogPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6] dark:bg-gray-900 transition-colors" style={{backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px)', backgroundSize: '60px 60px'}}>
-      <nav className="sticky top-0 z-50 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-700/50 transition-colors">
+    <div className="min-h-screen bg-[#FAF9F6] dark:bg-primary-800 transition-colors" style={{backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px)', backgroundSize: '60px 60px'}}>
+      <nav className="sticky top-0 z-50 bg-quotla-dark/95 dark:bg-quotla-dark/95 backdrop-blur-xl border-b border-quotla-light/20 dark:border-quotla-light/20 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link href="/" className="flex items-center gap-3 group">
-              <img src="/images/quotla-logo.png" alt="Quotla" className="h-8 w-auto transform group-hover:scale-105 transition-transform" />
-              <span className="text-xl font-bold text-gray-900 dark:text-white transition-colors">Quotla Blog</span>
+              <img src="/images/logos/icons/Quotla icon light.svg" alt="Quotla" className="h-12 w-auto transform group-hover:scale-105 transition-transform dark:hidden" />
+              <img src="/images/logos/icons/Quotla icon light.svg" alt="Quotla" className="h-12 w-auto transform group-hover:scale-105 transition-transform hidden dark:block" />
+              <span className="text-xl font-bold text-quotla-light dark:text-quotla-light transition-colors">Quotla Blog</span>
             </Link>
             <div className="flex items-center gap-3">
               {isDarkModeEnabled && <ThemeToggle />}
               {isAuthenticated ? (
-                <Link href="/dashboard" className="px-4 py-2 rounded-lg text-sm font-semibold bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 transition-all shadow-sm">
+                <Link href="/dashboard" className="px-4 py-2 rounded-lg text-sm font-semibold bg-quotla-orange text-quotla-light hover:bg-secondary-600 transition-all shadow-sm">
                   Dashboard
                 </Link>
               ) : (
                 <>
-                  <Link href="/login" className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
+                  <Link href="/login" className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-primary-300 hover:text-quotla-dark dark:hover:text-quotla-light transition-colors">
                     Sign In
                   </Link>
-                  <Link href="/signup" className="px-4 py-2 rounded-lg text-sm font-semibold bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 transition-all shadow-sm">
+                  <Link href="/signup" className="px-4 py-2 rounded-lg text-sm font-semibold bg-quotla-orange text-quotla-light hover:bg-secondary-600 transition-all shadow-sm">
                     Get Started Free
                   </Link>
                 </>
@@ -189,9 +236,9 @@ export default function BlogPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Blog Header */}
         <div className="mb-8">
-          <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-4 transition-colors">Blog</h1>
-          <p className="text-xl text-gray-600 dark:text-gray-400 transition-colors">
-            Latest insights, tips, and updates from Quotla and the Wheeler Universe
+          <h1 className="text-5xl font-bold text-quotla-dark dark:text-quotla-light mb-4 transition-colors">Blog</h1>
+          <p className="text-xl text-gray-700 dark:text-primary-400 transition-colors">
+            Latest insights, tips, and updates from Quotla
           </p>
         </div>
 
@@ -204,24 +251,24 @@ export default function BlogPage() {
         </div>
 
         {/* Stats */}
-        <div className="mb-8 flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+        <div className="mb-8 flex items-center gap-4 text-sm text-gray-700 dark:text-primary-400">
           <span className="font-medium">
             {filteredPosts.length} {filteredPosts.length === 1 ? 'post' : 'posts'} found
           </span>
           {filters.searchQuery && (
-            <span className="text-primary-600 dark:text-primary-400">
+            <span className="text-quotla-orange dark:text-primary-400">
               matching "{filters.searchQuery}"
             </span>
           )}
         </div>
 
         {filteredPosts.length === 0 ? (
-          <div className="card text-center py-12 dark:bg-gray-800 dark:text-white transition-colors">
-            <svg className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="card text-center py-12 dark:bg-primary-900 dark:text-quotla-light transition-colors">
+            <svg className="mx-auto h-12 w-12 text-primary-400 dark:text-primary-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <p className="text-gray-500 dark:text-gray-400 mb-2">No blog posts found</p>
-            <p className="text-sm text-gray-400 dark:text-gray-500">Try adjusting your filters or search query</p>
+            <p className="text-primary-400 dark:text-primary-400 mb-2">No blog posts found</p>
+            <p className="text-sm text-primary-400 dark:text-primary-400">Try adjusting your filters or search query</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">

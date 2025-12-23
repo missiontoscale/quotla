@@ -74,3 +74,38 @@ export function calculateTax(subtotal: number, taxRate: number): number {
 export function calculateTotal(subtotal: number, taxAmount: number): number {
   return Number((subtotal + taxAmount).toFixed(2))
 }
+
+// Sanitize HTML to prevent XSS attacks
+export function sanitizeHtmlContent(html: string): string {
+  return html
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+    .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
+    .replace(/javascript:/gi, '')
+    .replace(/<embed\b[^<]*(?:(?!<\/embed>)<[^<]*)*<\/embed>/gi, '')
+    .replace(/<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi, '')
+}
+
+// Validate and sanitize image URL
+export function validateImageUrl(url: string | null | undefined): string | null {
+  if (!url) return null
+
+  try {
+    const parsedUrl = new URL(url)
+    // Only allow https URLs from trusted domains
+    if (parsedUrl.protocol !== 'https:') return null
+
+    // Allow Supabase storage URLs and other trusted CDNs
+    const allowedDomains = [
+      'supabase.co',
+      'cloudinary.com',
+      'amazonaws.com',
+      'cloudflare.com'
+    ]
+
+    const isAllowed = allowedDomains.some(domain => parsedUrl.hostname.includes(domain))
+    return isAllowed ? url : null
+  } catch {
+    return null
+  }
+}

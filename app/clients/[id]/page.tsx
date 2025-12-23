@@ -40,10 +40,10 @@ export default function EditClientPage() {
       .select('*')
       .eq('id', params.id as string)
       .eq('user_id', user.id)
-      .single()
+      .maybeSingle()
 
     if (!error && data) {
-      setClient(data)
+      setClient(data as Client)
       setFormData({
         name: data.name,
         email: data.email || '',
@@ -114,7 +114,7 @@ export default function EditClientPage() {
 
   return (
     <div className="max-w-3xl">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Edit Client</h1>
+      <h1 className="text-3xl font-bold text-primary-50 mb-8">Edit Client</h1>
 
       <div className="card">
         {error && (

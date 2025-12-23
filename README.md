@@ -1,114 +1,260 @@
 # Quotla
 
-A professional business management platform for creating quotes and invoices with AI-powered content generation.
+**A professional business management platform for creating quotes and invoices with AI-powered content generation.**
 
-## Features
+Quotla simplifies document creation for businesses by combining intelligent AI assistance with a powerful, easy-to-use interface. Create professional quotes and invoices in seconds through natural conversation or traditional forms.
+
+---
+
+## ✨ Features
+
+### Core Functionality
 
 - **Professional Quote & Invoice Management**: Create, edit, and track business documents with customizable line items, automatic tax calculations, and multi-currency support
-- **AI-Powered Content Generation**: Generate professional service descriptions 
-- **Client Management**: Store and manage client information with full contact details and history
-- **Business Profile**: Customize your business profile with logo, company details, and branding
-- **Blog System**: Public blog with comment moderation for engagement
-- **Newsletter**: Email subscription system for marketing
-- **Admin Dashboard**: Manage comments and view subscribers
-- **Enterprise Security**: Row-level security, rate limiting, and comprehensive audit logging
+- **AI-Powered Document Generation**: Generate invoices and quotes from natural language using conversational AI with support for voice input
+- **File Processing**: Upload PDF, DOCX, TXT, and images to extract data automatically with Vision AI
+- **Smart Export Options**: Export documents as PDF, DOCX, or PNG with professional formatting
+- **Client Management**: Store and manage client information with full contact details and document history
+- **Business Profile**: Customize your business profile with logo, company details, tax information, and branding
 
-## Tech Stack
+### Content & Marketing
 
-- **Frontend**: Next.js 14, React, TypeScript, Tailwind CSS
-- **Backend**: Next.js API Routes
-- **Database**: Supabase (PostgreSQL with Row Level Security)
-- **Authentication**: Supabase Auth
-- **AI**: Anthropic Claude 3.5 Sonnet
-- **Storage**: Supabase Storage (for logos)
+- **Blog System**: Full-featured blog with markdown support, categories, tags, and featured posts
+- **Newsletter**: Email subscription system with admin management
+- **Admin Dashboard**: Moderate comments, view subscribers, and manage content
 
-## Getting Started
+### Security & Compliance
 
-### Prerequisites
-
-- Node.js 18+ installed
-- A Supabase account and project
-- An Anthropic API key
-
-### Installation
-
-1. Clone the repository:
-```bash
-cd quotla
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Set up environment variables:
-   - Copy `.env.example` to `.env`
-   - Fill in your Supabase credentials
-   - Add your Anthropic API key
-
-4. Set up the database:
-   - Go to your Supabase project SQL Editor
-   - Run the SQL script in `supabase-schema.sql`
-   - This will create all tables, policies, and triggers
-
-5. Set up Supabase Storage:
-   - Go to Storage in Supabase Dashboard
-   - Create a new bucket called `business-assets`
-   - Set it to public
-   - Add RLS policies for authenticated users
-
-6. Run the development server:
-```bash
-npm run dev
-```
-
-7. Open [http://localhost:3000](http://localhost:3000)
-
-## Environment Variables
-
-Required environment variables (see `.env.example`):
-
-- `NEXT_PUBLIC_SUPABASE_URL`: Your Supabase project URL
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Your Supabase anonymous key
-- `SUPABASE_SERVICE_ROLE_KEY`: Your Supabase service role key (for admin operations)
-- `ANTHROPIC_API_KEY`: Your Anthropic API key for AI features
-- `NEXT_PUBLIC_APP_URL`: Your application URL (for production)
-
-## Key Features Explained
-
-### AI Description Generation
-
-When creating quotes or invoices, click "Generate with AI" on any line item. Describe your service in plain language, and AI will generate a professional description.
-
-Example:
-- Input: "Website design for small business with 5 pages"
-- Output: Professional, detailed description suitable for client-facing documents
-
-### Security Features
-
-- **Row Level Security**: Users can only access their own data
-- **Rate Limiting**: Prevents spam and abuse (5 comments per hour)
+- **Row-Level Security**: Users can only access their own data
+- **Rate Limiting**: Prevents spam and abuse
 - **Password Requirements**: Strong password validation with complexity rules
-- **File Upload Security**: Validates file types and sizes, prevents malicious uploads
 - **Input Sanitization**: All user inputs are sanitized to prevent XSS attacks
 - **Audit Logging**: Track security events and admin actions
 
-### Multi-Currency Support
+---
 
-Supports 8 major currencies:
-- USD (US Dollar)
-- EUR (Euro)
-- GBP (British Pound)
-- CAD (Canadian Dollar)
-- AUD (Australian Dollar)
-- JPY (Japanese Yen)
-- CNY (Chinese Yuan)
-- INR (Indian Rupee)
+## 🛠 Tech Stack
+
+| Layer | Technology |
+| ----- | ---------- |
+| **Frontend** | Next.js 15, React 19, TypeScript, Tailwind CSS |
+| **Backend** | Next.js API Routes + External FastAPI for AI operations |
+| **Database** | Supabase (PostgreSQL with Row Level Security) |
+| **Authentication** | Supabase Auth with JWT tokens |
+| **AI** | External FastAPI backend (OpenAI GPT-4, Anthropic Claude, Google Gemini) |
+| **Storage** | Supabase Storage for logos and file uploads |
+| **Deployment** | Vercel (recommended) |
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+Before you begin, ensure you have:
+
+- **Node.js 18+** and npm installed
+- A **Supabase account** and project ([Sign up free](https://supabase.com))
+- A **FastAPI backend** deployed and accessible for AI operations
+- **API keys** for your chosen AI provider (OpenAI, Anthropic, or Google)
+
+### Installation
+
+1. **Clone the repository**
+
+   ```bash
+   git clone <repository-url>
+   cd quotla
+   ```
+
+2. **Install dependencies**
+
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables**
+
+   Create a `.env.local` file in the root directory:
+
+   ```env
+   # Supabase Configuration
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+   # AI Backend Configuration
+   NEXT_PUBLIC_EXTERNAL_API_BASE_URL=your_fastapi_backend_url
+   EXTERNAL_API_KEY=your_api_key_for_backend
+   ```
+
+4. **Set up Supabase database**
+
+   Run the database schema in your Supabase SQL Editor:
+   - Navigate to your Supabase project dashboard
+   - Go to SQL Editor
+   - Create tables for: `profiles`, `clients`, `quotes`, `invoices`, `blog_posts`, `blog_comments`, `newsletter_subscribers`
+   - Enable Row Level Security (RLS) policies
+
+5. **Run the development server**
+
+   ```bash
+   npm run dev
+   ```
+
+6. **Open your browser**
+
+   Navigate to [http://localhost:3000](http://localhost:3000)
+
+### Deployment
+
+#### Deploy to Vercel (Recommended)
+
+1. Push your code to GitHub
+2. Import your repository in Vercel
+3. Add environment variables in Vercel project settings
+4. Deploy
+
+```bash
+# Or use Vercel CLI
+npm install -g vercel
+vercel
+```
+
+---
+
+## 📖 Usage Guide
+
+### Creating Documents with AI
+
+Quotla's AI assistant can generate quotes and invoices through natural conversation.
+
+**How it works:**
+
+1. Click **"Intelligent generation in seconds"** on the dashboard
+2. Describe what you need in plain language:
+   - "Create an invoice for website design services worth $2,500 for ABC Corp"
+   - "I need a quote for 50 units of product X at $100 each with 10% discount"
+3. The AI will:
+   - Extract client information
+   - Parse line items with quantities and prices
+   - Calculate totals and taxes
+   - Generate a complete document
+4. Review and save the generated document
+
+**Supported inputs:**
+
+- Text descriptions
+- Voice recordings (click microphone icon)
+- File uploads (PDF, DOCX, images) for data extraction
+
+### Manual Document Creation
+
+For traditional workflows:
+
+1. Navigate to **Quotes** or **Invoices**
+2. Click **"New Quote"** or **"New Invoice"**
+3. Fill in the form:
+   - Select a client (or create new)
+   - Add line items with descriptions, quantities, and prices
+   - Set tax rates and discounts
+   - Add notes and payment terms
+4. Click **"Generate with AI"** on any line item for professional descriptions
+5. Save as draft or mark as sent
+
+### Managing Clients
+
+1. Go to **Clients** section
+2. Add client details:
+   - Company name
+   - Contact person
+   - Email and phone
+   - Address
+3. View client history with all associated quotes and invoices
+
+### Exporting Documents
+
+Documents can be exported in multiple formats:
+- **PDF**: Professional print-ready format
+- **DOCX**: Editable Microsoft Word document
+- **PNG**: Image format for quick sharing
+
+Click the export button on any document and choose your format.
+
+### Blog Management
+
+Create blog posts using markdown files:
+
+1. Create a `.md` file in `content/blog/` directory
+2. Add frontmatter metadata:
+
+   ```yaml
+   ---
+   title: "Your Post Title"
+   date: "2024-01-15"
+   author: "Your Name"
+   category: "Business Tips"
+   tags: ["invoicing", "productivity"]
+   featured: true
+   excerpt: "Brief description of the post"
+   ---
+   ```
+
+3. Write content in markdown
+4. Posts automatically appear at `/blog`
+
+**Features:**
+
+- GitHub Flavored Markdown (GFM) support
+- Automatic reading time calculation
+- Category and tag filtering
+- Featured posts
+- SEO-friendly URLs
+
+### Admin Features
+
+Admins have additional capabilities accessible from the admin dashboard:
+
+- **Comment Moderation**: Approve or reject blog comments
+- **Subscriber Management**: View and export newsletter subscribers
+- **Audit Logs**: Review security events and user actions
+
+---
+
+## 🌍 Multi-Currency Support
+
+Quotla supports 8 major currencies with automatic formatting:
+
+| Currency | Code | Symbol |
+| -------- | ---- | ------ |
+| US Dollar | USD | $ |
+| Euro | EUR | € |
+| British Pound | GBP | £ |
+| Canadian Dollar | CAD | CA$ |
+| Australian Dollar | AUD | A$ |
+| Japanese Yen | JPY | ¥ |
+| Chinese Yuan | CNY | ¥ |
+| Indian Rupee | INR | ₹ |
+
+---
+
+## 🔒 Security Features
+
+Quotla implements enterprise-grade security:
+
+- **Row Level Security (RLS)**: Database-level isolation ensures users can only access their own data
+- **Rate Limiting**: API endpoints are rate-limited to prevent abuse (5 requests/hour for sensitive operations)
+- **Password Requirements**: Enforces strong passwords with minimum length, uppercase, lowercase, numbers, and special characters
+- **File Upload Security**: Validates file types, sizes, and content to prevent malicious uploads
+- **Input Sanitization**: All user inputs are sanitized to prevent XSS, SQL injection, and other attacks
+- **JWT Authentication**: Secure token-based authentication with automatic refresh
+- **Audit Logging**: Comprehensive logging of security events and admin actions
+- **HTTPS Only**: All traffic encrypted in transit
+
+---
 
 ## Project Structure
 
-```
+```text
 quotla/
 ├── app/                      # Next.js app directory
 │   ├── api/                 # API routes
@@ -153,68 +299,6 @@ Admins have additional capabilities:
 1. **Moderate Comments**: Approve or reject blog comments
 2. **View Subscribers**: See newsletter subscriber list
 3. **Access Audit Logs**: Review security events
-
-To make a user an admin:
-```sql
-UPDATE profiles SET is_admin = true WHERE email = 'admin@example.com';
-```
-
-## Database Schema
-
-The application uses the following main tables:
-- `profiles`: User business profiles
-- `clients`: Client information
-- `quotes` & `quote_items`: Quote documents
-- `invoices` & `invoice_items`: Invoice documents
-- `blog_posts` & `blog_comments`: Blog system
-- `newsletter_subscribers`: Email subscribers
-- `rate_limits`: Rate limiting tracking
-- `audit_logs`: Security audit trail
-
-All tables have Row Level Security (RLS) policies to ensure data isolation.
-
-## Security Best Practices
-
-1. **Never commit `.env` files** - They contain sensitive credentials
-2. **Use strong passwords** - The app enforces this, but ensure your Supabase/Anthropic accounts also use them
-3. **Enable email confirmation** - Configure Supabase Auth for production
-4. **Set up proper CORS** - Configure allowed domains in production
-5. **Regular backups** - Use Supabase's backup features
-6. **Monitor audit logs** - Review security events regularly
-
-## Deployment
-
-### Deploy to Vercel
-
-1. Push your code to GitHub
-2. Connect to Vercel
-3. Add environment variables in Vercel dashboard
-4. Deploy
-
-### Important Production Steps
-
-1. Set `NEXT_PUBLIC_APP_URL` to your production URL
-2. Enable email confirmation in Supabase Auth settings
-3. Configure email templates in Supabase
-4. Set up proper domain for Supabase project
-5. Review and adjust rate limits for production traffic
-
-## Troubleshooting
-
-### Database Connection Issues
-- Verify Supabase URL and keys are correct
-- Check if RLS policies are properly set up
-- Ensure you ran the complete SQL schema
-
-### AI Generation Not Working
-- Verify Anthropic API key is valid
-- Check API usage limits
-- Review browser console for errors
-
-### File Upload Issues
-- Ensure `business-assets` bucket exists in Supabase Storage
-- Verify bucket is set to public
-- Check file size limits (max 2MB)
 
 ## License
 

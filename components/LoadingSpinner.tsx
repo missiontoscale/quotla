@@ -1,21 +1,19 @@
 export default function LoadingSpinner() {
   return (
-    <div className="flex items-center justify-center min-h-screen" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-primary-800">
+      <div className="mb-6 animate-pulse">
+        <img
+          src="/images/logos/icons/Quotla icon off white.svg"
+          alt="Quotla"
+          className="h-20 w-auto"
+        />
+      </div>
       <div className="relative">
         <div
-          className="w-16 h-16 border-4 rounded-full animate-spin"
-          style={{
-            borderColor: 'var(--color-primary-lightest)',
-            borderTopColor: 'var(--color-primary)'
-          }}
+          className="w-16 h-16 border-4 border-primary-600 border-t-primary-50 rounded-full animate-spin"
         ></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-          <div
-            className="w-4 h-4 rounded-full animate-pulse"
-            style={{ backgroundColor: 'var(--color-primary)' }}
-          ></div>
-        </div>
       </div>
+      <p className="mt-6 text-primary-300 text-sm font-medium">Loading...</p>
     </div>
   )
 }

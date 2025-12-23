@@ -23,7 +23,7 @@ export async function checkRateLimit(
     .gte('window_start', windowStart.toISOString())
     .order('window_start', { ascending: false })
     .limit(1)
-    .single()
+    .maybeSingle()
 
   if (existing) {
     if (existing.count >= maxRequests) {
@@ -80,7 +80,7 @@ export async function logAudit(
     action,
     resource_type: resourceType,
     resource_id: resourceId,
-    details: details as never,
+    details: details || null,
     ip_address: ipAddress,
   })
 }

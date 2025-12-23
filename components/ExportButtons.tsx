@@ -7,7 +7,7 @@ import { QuoteWithItems, InvoiceWithItems, Profile } from '@/types'
 interface ExportButtonsProps {
   type: 'quote' | 'invoice'
   data: QuoteWithItems | InvoiceWithItems
-  profile: Profile
+  profile: Profile | null
 }
 
 export default function ExportButtons({ type, data, profile }: ExportButtonsProps) {

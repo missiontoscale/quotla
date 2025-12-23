@@ -2,22 +2,27 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import VoiceRecorder from './VoiceRecorder'
+import { classifyIntent, classifyIntentFast, type Intent } from '@/lib/ai/intent-classifier'
+import { storeTransferData } from '@/lib/utils/secure-transfer'
 
 interface Message {
   role: 'user' | 'assistant'
   content: string
   generatedQuote?: any
+  generatedInvoice?: any
 }
 
 export default function QuotlaChat({ onClose }: { onClose: () => void }) {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: 'Hi! I\'m Quotla AI Assistant. I can help you:\n\n• Generate complete quotes with line items and pricing\n• Create invoices\n• Provide business advice\n• Answer questions about your quotes and invoices\n\nWhat would you like to do today?',
+      content: 'Hi! I\'m Quotla AI Assistant. I can help you:\n\n• Generate complete quotes with line items and pricing\n• Create invoices\n• Provide business advice\n• Understand Nigeria\'s 2026 tax reforms\n\nWhat would you like to do today?',
     },
   ])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [transcribing, setTranscribing] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
@@ -29,53 +34,26 @@ export default function QuotlaChat({ onClose }: { onClose: () => void }) {
     scrollToBottom()
   }, [messages])
 
-  const detectIntent = (userMessage: string, lastMessage?: Message): string => {
-    const lowerMsg = userMessage.toLowerCase()
-
-    // If the last message had a generated quote and user says "yes", "do it", etc.
-    if (lastMessage?.generatedQuote) {
-      if (
-        lowerMsg.includes('yes') ||
-        lowerMsg.includes('create') ||
-        lowerMsg.includes('do it') ||
-        lowerMsg.includes('sure') ||
-        lowerMsg.includes('okay') ||
-        lowerMsg.includes('ok')
-      ) {
-        // But if they're asking for modifications (currency, changes), regenerate
-        if (
-          lowerMsg.includes('but') ||
-          lowerMsg.includes('ngn') ||
-          lowerMsg.includes('naira') ||
-          lowerMsg.includes('currency') ||
-          lowerMsg.includes('instead') ||
-          lowerMsg.includes('different')
-        ) {
-          return 'generate_quote'
-        }
-        return 'save_quote'
-      }
+  /**
+   * AI-powered intent detection with fallback to fast heuristics
+   * This replaces the old keyword-based detection with context-aware classification
+   */
+  const detectIntent = async (userMessage: string): Promise<Intent> => {
+    // Option 1: Use AI-powered classification (more accurate, uses API)
+    // Uncomment this for production use with full AI classification
+    try {
+      const classification = await classifyIntent(messages, userMessage)
+      console.log('AI Intent Classification:', classification)
+      return classification.intent
+    } catch (error) {
+      console.error('AI classification failed, falling back to fast heuristics:', error)
+      // Fallback to fast heuristics if AI fails
+      return classifyIntentFast(messages, userMessage)
     }
 
-    if (
-      lowerMsg.includes('quote') ||
-      lowerMsg.includes('generate') ||
-      lowerMsg.includes('create') ||
-      lowerMsg.includes('price') ||
-      lowerMsg.includes('estimate') ||
-      lowerMsg.includes('ngn') ||
-      lowerMsg.includes('naira') ||
-      lowerMsg.includes('usd') ||
-      lowerMsg.includes('web development')
-    ) {
-      return 'generate_quote'
-    }
-
-    if (lowerMsg.includes('invoice')) {
-      return 'generate_invoice'
-    }
-
-    return 'general'
+    // Option 2: Use fast heuristics only (faster, no API cost)
+    // Uncomment this to skip AI classification and use only heuristics
+    // return classifyIntentFast(messages, userMessage)
   }
 
   const handleGenerateQuote = async (userMessage: string) => {
@@ -109,6 +87,18 @@ export default function QuotlaChat({ onClose }: { onClose: () => void }) {
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to generate quote')
+      }
+
+      // Check if currency is needed
+      if (data.needs_currency) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: 'assistant',
+            content: data.text_output || 'Please specify the currency (e.g., NGN, USD, EUR, GBP) for this quote.',
+          },
+        ])
+        return
       }
 
       const quote = data.quote
@@ -179,16 +169,100 @@ export default function QuotlaChat({ onClose }: { onClose: () => void }) {
     }
   }
 
-  const handleSaveQuote = async (quote: any) => {
+  const handleGenerateInvoice = async (userMessage: string) => {
     try {
-      router.push(`/quotes/new?ai_data=${encodeURIComponent(JSON.stringify(quote))}`)
-      onClose()
+      // Get last 5 messages for context (10 total with user/assistant pairs)
+      const recentMessages = messages.slice(-10).map(m => ({
+        role: m.role,
+        content: m.content
+      }))
+
+      // Combine conversation history for context
+      const conversationContext = recentMessages.map(m => `${m.role}: ${m.content}`).join('\n')
+      const fullPrompt = `${conversationContext}\nuser: ${userMessage}`
+
+      const response = await fetch('/api/ai/generate-invoice', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: fullPrompt }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to generate invoice')
+      }
+
+      // Check if currency is needed
+      if (data.needs_currency) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: 'assistant',
+            content: data.text_output || 'Please specify the currency (e.g., NGN, USD, EUR, GBP) for this invoice.',
+          },
+        ])
+        return
+      }
+
+      const invoice = data.invoice
+
+      // Get currency symbol
+      const currencySymbol = invoice.currency === 'NGN' ? '₦' :
+                            invoice.currency === 'EUR' ? '€' :
+                            invoice.currency === 'GBP' ? '£' : '$'
+
+      const assistantMessage: Message = {
+        role: 'assistant',
+        content: `I've generated an invoice for you! Here's what I created:\n\n**Client:** ${invoice.client_name}\n**Currency:** ${invoice.currency || 'USD'}\n**Invoice #:** ${invoice.invoice_number || 'Auto-generated'}\n${invoice.payment_terms ? `**Payment Terms:** ${invoice.payment_terms}\n` : ''}\n**Items:**\n${invoice.items.map((item: any, i: number) =>
+          `${i + 1}. ${item.description}\n   Qty: ${item.quantity} × ${currencySymbol}${item.unit_price.toFixed(2)} = ${currencySymbol}${item.amount.toFixed(2)}`
+        ).join('\n\n')}\n\n**Subtotal:** ${currencySymbol}${invoice.subtotal.toFixed(2)}\n**Tax (${(invoice.tax_rate * 100).toFixed(1)}%):** ${currencySymbol}${invoice.tax_amount.toFixed(2)}${invoice.delivery_charge ? `\n**Delivery:** ${currencySymbol}${invoice.delivery_charge.toFixed(2)}` : ''}\n**Total:** ${currencySymbol}${invoice.total.toFixed(2)}\n\n${invoice.notes ? `**Notes:** ${invoice.notes}\n\n` : ''}${invoice.due_date ? `**Due Date:** ${invoice.due_date}\n\n` : ''}Would you like me to create this invoice in your system?`,
+        generatedInvoice: invoice,
+      }
+
+      setMessages((prev) => [...prev, assistantMessage])
     } catch (error) {
       setMessages((prev) => [
         ...prev,
         {
           role: 'assistant',
+          content: `I apologize, but I encountered an error generating the invoice: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again with more details.`,
+        },
+      ])
+    }
+  }
+
+  const handleSaveQuote = async (quote: any) => {
+    try {
+      // ✅ SECURE: Store data in sessionStorage, pass only ID via URL
+      const transferId = storeTransferData('quote', quote)
+      router.push(`/quotes/new?transfer=${transferId}`)
+      onClose()
+    } catch (error) {
+      console.error('Failed to store quote data securely:', error)
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: 'assistant',
           content: 'Failed to navigate to quote creation. Please try manually creating the quote.',
+        },
+      ])
+    }
+  }
+
+  const handleSaveInvoice = async (invoice: any) => {
+    try {
+      // ✅ SECURE: Store data in sessionStorage, pass only ID via URL
+      const transferId = storeTransferData('invoice', invoice)
+      router.push(`/invoices/new?transfer=${transferId}`)
+      onClose()
+    } catch (error) {
+      console.error('Failed to store invoice data securely:', error)
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: 'assistant',
+          content: 'Failed to navigate to invoice creation. Please try manually creating the invoice.',
         },
       ])
     }
@@ -203,22 +277,21 @@ export default function QuotlaChat({ onClose }: { onClose: () => void }) {
     setLoading(true)
 
     try {
-      // Get the last assistant message to check for context
-      const lastAssistantMsg = messages.filter(m => m.role === 'assistant').pop()
-      const intent = detectIntent(userMessage, lastAssistantMsg)
+      // Detect intent using AI-powered classification
+      const intent = await detectIntent(userMessage)
 
+      // Get the last assistant message to check for generated items
+      const lastAssistantMsg = messages.filter(m => m.role === 'assistant').pop()
+
+      // Route to appropriate handler based on intent
       if (intent === 'save_quote' && lastAssistantMsg?.generatedQuote) {
         await handleSaveQuote(lastAssistantMsg.generatedQuote)
+      } else if (intent === 'save_invoice' && lastAssistantMsg?.generatedInvoice) {
+        await handleSaveInvoice(lastAssistantMsg.generatedInvoice)
       } else if (intent === 'generate_quote') {
         await handleGenerateQuote(userMessage)
       } else if (intent === 'generate_invoice') {
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: 'assistant',
-            content: 'Invoice generation is coming soon! For now, you can create invoices manually from the Invoices page.',
-          },
-        ])
+        await handleGenerateInvoice(userMessage)
       } else {
         await handleGeneralAdvice(userMessage)
       }
@@ -226,6 +299,49 @@ export default function QuotlaChat({ onClose }: { onClose: () => void }) {
       console.error('Chat error:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleVoiceRecording = async (audioBlob: Blob) => {
+    setTranscribing(true)
+    try {
+      // Convert audio to text using enhanced Whisper API
+      const formData = new FormData()
+      formData.append('audio', audioBlob, 'recording.webm')
+
+      const response = await fetch('/api/ai/transcribe', {
+        method: 'POST',
+        body: formData,
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to transcribe audio')
+      }
+
+      // Use the transcribed text as input
+      setInput(data.text)
+
+      // Show a brief success message
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: 'assistant',
+          content: '🎤 Transcribed! You can review and send the message above.',
+        },
+      ])
+    } catch (error) {
+      console.error('Transcription error:', error)
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: 'assistant',
+          content: 'Sorry, I had trouble understanding the audio. Please try again or type your message.',
+        },
+      ])
+    } finally {
+      setTranscribing(false)
     }
   }
 
@@ -276,16 +392,24 @@ export default function QuotlaChat({ onClose }: { onClose: () => void }) {
               className={`max-w-[80%] rounded-lg px-4 py-2 ${
                 message.role === 'user'
                   ? 'bg-primary-600 text-white'
-                  : 'bg-gray-100 text-gray-900'
+                  : 'bg-primary-600 text-primary-50'
               }`}
             >
               <p className="text-sm whitespace-pre-wrap">{message.content}</p>
               {message.generatedQuote && (
                 <button
                   onClick={() => handleSaveQuote(message.generatedQuote)}
-                  className="mt-3 w-full bg-white text-primary-600 px-3 py-2 rounded text-sm font-medium hover:bg-gray-50 transition-colors"
+                  className="mt-3 w-full bg-white text-primary-600 px-3 py-2 rounded text-sm font-medium hover:bg-primary-700 transition-colors"
                 >
                   Create This Quote →
+                </button>
+              )}
+              {message.generatedInvoice && (
+                <button
+                  onClick={() => handleSaveInvoice(message.generatedInvoice)}
+                  className="mt-3 w-full bg-white text-primary-600 px-3 py-2 rounded text-sm font-medium hover:bg-primary-700 transition-colors"
+                >
+                  Create This Invoice →
                 </button>
               )}
             </div>
@@ -293,11 +417,25 @@ export default function QuotlaChat({ onClose }: { onClose: () => void }) {
         ))}
         {loading && (
           <div className="flex justify-start">
-            <div className="bg-gray-100 rounded-lg px-4 py-2">
+            <div className="bg-primary-600 rounded-lg px-4 py-2">
               <div className="flex space-x-2">
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                <div className="w-2 h-2 bg-primary-500 rounded-full animate-bounce"></div>
+                <div className="w-2 h-2 bg-primary-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                <div className="w-2 h-2 bg-primary-500 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+              </div>
+            </div>
+          </div>
+        )}
+        {transcribing && (
+          <div className="flex justify-start">
+            <div className="bg-quotla-light border border-quotla-green/30 rounded-lg px-4 py-2">
+              <div className="flex items-center gap-2">
+                <div className="flex space-x-1">
+                  <div className="w-1.5 h-1.5 bg-quotla-orange rounded-full animate-bounce"></div>
+                  <div className="w-1.5 h-1.5 bg-quotla-orange rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  <div className="w-1.5 h-1.5 bg-quotla-orange rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                </div>
+                <span className="text-xs text-quotla-dark font-medium">Transcribing audio...</span>
               </div>
             </div>
           </div>
@@ -306,20 +444,24 @@ export default function QuotlaChat({ onClose }: { onClose: () => void }) {
       </div>
 
       {/* Input */}
-      <div className="p-4 border-t bg-gray-50">
-        <div className="flex gap-2">
+      <div className="p-4 border-t bg-primary-700">
+        <div className="flex gap-2 items-end">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+            onKeyDown={(e) => e.key === 'Enter' && handleSend()}
             placeholder="Ask me anything or describe what you need..."
             className="flex-1 input text-sm"
             disabled={loading}
           />
+          <VoiceRecorder
+            onRecordingComplete={handleVoiceRecording}
+            disabled={loading || transcribing}
+          />
           <button
             onClick={handleSend}
-            disabled={!input.trim() || loading}
+            disabled={!input.trim() || loading || transcribing}
             className="btn btn-primary px-4 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg
@@ -337,8 +479,8 @@ export default function QuotlaChat({ onClose }: { onClose: () => void }) {
             </svg>
           </button>
         </div>
-        <p className="text-xs text-gray-500 mt-2">
-          Try: "Generate a quote for website development" or "Create a quote for 3 months of consulting"
+        <p className="text-xs text-primary-400 mt-2">
+          Try: "Generate a quote for website development" or "Explain the 2026 VAT changes"
         </p>
       </div>
     </div>

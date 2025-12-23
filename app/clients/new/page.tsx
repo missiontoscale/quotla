@@ -80,7 +80,7 @@ export default function NewClientPage() {
 
   return (
     <div className="max-w-3xl">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Add New Client</h1>
+      <h1 className="text-3xl font-bold text-primary-50 mb-8">Add New Client</h1>
 
       <div className="card">
         {error && (

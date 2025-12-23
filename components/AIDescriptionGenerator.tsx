@@ -79,7 +79,7 @@ export default function AIDescriptionGenerator({ onGenerate }: AIDescriptionGene
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-primary-400 mt-1">
                 Provide details about what you&apos;re quoting, and AI will generate a professional description
               </p>
             </div>

@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
-import { generateDescription } from '@/lib/ai'
+import { getExternalAIClient } from '@/lib/api/external-ai-client'
 import { sanitizeHtml } from '@/lib/utils/security'
-import { extractFileContent, isFileSizeValid, MAX_FILE_SIZE, FileExtractionResult } from '@/lib/utils/file-extractor'
-import { extractFromImageOpenAI, formatVisionResponse } from '@/lib/ai/vision'
-import { validateDocument, generateFollowUpQuestion } from '@/lib/ai/extractors/document-validator'
 
 export async function POST(request: NextRequest) {
   try {
@@ -32,7 +29,6 @@ export async function POST(request: NextRequest) {
     const contentType = request.headers.get('content-type')
     let prompt = ''
     let history = []
-    let fileContent = ''
 
     // Handle multipart/form-data for file uploads
     if (contentType?.includes('multipart/form-data')) {
@@ -49,79 +45,28 @@ export async function POST(request: NextRequest) {
 
       const file = formData.get('file') as File | null
       if (file) {
-        // Validate file size
-        if (!isFileSizeValid(file)) {
+        // Use external API for file upload
+        const client = getExternalAIClient()
+        const result = await client.generateWithFile({
+          prompt: prompt || 'Extract all invoice/quote data from this document',
+          file,
+        })
+
+        if (!result.success) {
           return NextResponse.json(
-            { error: `File size exceeds maximum allowed size of ${MAX_FILE_SIZE / 1024 / 1024}MB` },
+            { error: result.error || 'Failed to extract data from file' },
             { status: 400 }
           )
         }
 
-        // Extract file content
-        try {
-          const extraction = await extractFileContent(file)
+        const sanitized = sanitizeHtml(result.text_output)
 
-          // Check if it's an image file (returns FileExtractionResult)
-          if (typeof extraction === 'object' && extraction.type === 'image') {
-            // Use vision API to extract document data
-            const visionResult = await extractFromImageOpenAI(
-              extraction.base64Data!,
-              extraction.mimeType,
-              prompt || 'Extract all invoice/quote data from this document'
-            )
-
-            if (!visionResult.success) {
-              return NextResponse.json(
-                { error: visionResult.error || 'Failed to extract data from image' },
-                { status: 400 }
-              )
-            }
-
-            // Determine document type (default to quote if not specified)
-            const documentType = visionResult.documentType === 'invoice' ? 'invoice' : 'quote'
-
-            // Validate extracted data
-            const validation = validateDocument(visionResult.data, documentType)
-
-            // Format response for user
-            const formattedResponse = formatVisionResponse(visionResult)
-
-            // Check if we have enough data to auto-create
-            if (validation.canAutoCreate) {
-              return NextResponse.json({
-                description: formattedResponse,
-                extractedData: visionResult.data,
-                documentType: documentType,
-                canAutoCreate: true,
-                missingFields: [],
-                shouldCreateDocument: true
-              })
-            } else {
-              // Need more information - ask follow-up questions
-              const followUpQuestion = generateFollowUpQuestion(validation.missingRequired, documentType)
-
-              return NextResponse.json({
-                description: `${formattedResponse}\n\n${followUpQuestion}`,
-                extractedData: visionResult.data,
-                documentType: documentType,
-                canAutoCreate: false,
-                missingFields: validation.missingRequired,
-                requiresFollowUp: true,
-                shouldCreateDocument: false
-              })
-            }
-          } else {
-            // Text file - use existing text extraction
-            fileContent = extraction as string
-            prompt = prompt ? `${fileContent}\n\nUser question: ${prompt}` : fileContent
-          }
-        } catch (error) {
-          console.error('File extraction error:', error)
-          return NextResponse.json(
-            { error: 'Failed to extract file content. Please try a different file format.' },
-            { status: 400 }
-          )
-        }
+        return NextResponse.json({
+          description: sanitized,
+          extractedData: result.data,
+          documentType: result.document_type,
+          shouldCreateDocument: true,
+        })
       }
     } else {
       const body = await request.json()
@@ -136,31 +81,65 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Always use external AI API
+    const client = getExternalAIClient()
+
+    let result
+    try {
+      result = await client.generate({
+        prompt,
+        history,
+      })
+    } catch (apiError) {
+      console.error('External API call failed:', apiError)
+
+      // Check if it's a connection error
+      const errorMessage = apiError instanceof Error ? apiError.message : 'Unknown error'
+      if (errorMessage.includes('fetch') || errorMessage.includes('ECONNREFUSED')) {
+        return NextResponse.json(
+          {
+            error: 'Unable to connect to the AI service. Please ensure the external API backend is running at ' +
+                   (process.env.EXTERNAL_AI_API_URL || 'http://127.0.0.1:8000')
+          },
+          { status: 503 }
+        )
+      }
+
+      return NextResponse.json(
+        { error: `AI service error: ${errorMessage}` },
+        { status: 500 }
+      )
+    }
+
+    if (!result.success) {
+      return NextResponse.json(
+        { error: result.error || 'Failed to generate description' },
+        { status: 400 }
+      )
+    }
+
+    const sanitized = sanitizeHtml(result.text_output)
+
     // Detect if user wants to create a document
     const lowerPrompt = prompt.toLowerCase()
     const isCreationRequest = lowerPrompt.includes('create') || lowerPrompt.includes('generate') ||
                               lowerPrompt.includes('actually') || lowerPrompt.includes('go on') ||
                               lowerPrompt.includes('do it')
 
-    // Check if this is a follow-up creation request (user saying "create it now")
+    // Check if this is a follow-up creation request
     const isFollowUpCreate = (lowerPrompt.includes('create') || lowerPrompt.includes('do it') ||
                               lowerPrompt.includes('go on') || lowerPrompt.includes('actually')) &&
                              history && history.length > 0
 
-    const description = await generateDescription(prompt, history)
-    const sanitized = sanitizeHtml(description)
-
     return NextResponse.json({
       description: sanitized,
-      shouldCreateDocument: isCreationRequest || isFollowUpCreate
+      extractedData: result.data,
+      documentType: result.document_type,
+      shouldCreateDocument: isCreationRequest || isFollowUpCreate || result.needs_currency === false,
     })
   } catch (error) {
     console.error('AI generation error:', error)
     console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace')
-    console.error('AI Provider:', process.env.AI_PROVIDER)
-    console.error('Has OpenAI Key:', !!process.env.OPENAI_API_KEY)
-    console.error('Has Anthropic Key:', !!process.env.ANTHROPIC_API_KEY)
-    console.error('Has Gemini Key:', !!process.env.GOOGLE_AI_API_KEY)
 
     const errorMessage = error instanceof Error ? error.message : 'Failed to generate description'
     return NextResponse.json(

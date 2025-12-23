@@ -35,7 +35,7 @@ const ThemeToggle: FC = () => {
   if (!mounted) {
     return (
       <button
-        className="p-2 rounded-lg bg-gray-100 text-gray-600"
+        className="p-2 rounded-lg bg-primary-600 text-primary-300"
         disabled
         aria-label="Loading theme toggle"
       >
@@ -49,7 +49,7 @@ const ThemeToggle: FC = () => {
   return (
     <button
       onClick={toggleTheme}
-      className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors"
+      className="p-2 rounded-lg bg-primary-600 hover:bg-primary-600 dark:bg-primary-900 dark:hover:bg-primary-800 text-primary-300 dark:text-primary-300 transition-colors"
       aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
       title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
     >

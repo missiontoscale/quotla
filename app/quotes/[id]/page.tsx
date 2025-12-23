@@ -110,13 +110,11 @@ export default function ViewQuotePage() {
     <div className="max-w-5xl">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Quote #{quote.quote_number}</h1>
-          {quote.title && <p className="text-gray-600 mt-1">{quote.title}</p>}
+          <h1 className="text-3xl font-bold text-primary-50">Quote #{quote.quote_number}</h1>
+          {quote.title && <p className="text-primary-300 mt-1">{quote.title}</p>}
         </div>
         <div className="flex gap-2">
-          {profile && (
-            <ExportButtons type="quote" data={quote} profile={profile} />
-          )}
+          <ExportButtons type="quote" data={quote} profile={profile} />
         </div>
       </div>
 
@@ -125,7 +123,7 @@ export default function ViewQuotePage() {
           <h2 className="text-lg font-bold mb-4">Quote Details</h2>
           <div className="space-y-3">
             <div className="flex justify-between">
-              <span className="text-gray-600">Status:</span>
+              <span className="text-primary-300">Status:</span>
               <select
                 value={quote.status}
                 onChange={(e) => handleStatusChange(e.target.value)}
@@ -139,17 +137,17 @@ export default function ViewQuotePage() {
               </select>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Issue Date:</span>
+              <span className="text-primary-300">Issue Date:</span>
               <span>{format(new Date(quote.issue_date), 'MMM d, yyyy')}</span>
             </div>
             {quote.valid_until && (
               <div className="flex justify-between">
-                <span className="text-gray-600">Valid Until:</span>
+                <span className="text-primary-300">Valid Until:</span>
                 <span>{format(new Date(quote.valid_until), 'MMM d, yyyy')}</span>
               </div>
             )}
             <div className="flex justify-between">
-              <span className="text-gray-600">Currency:</span>
+              <span className="text-primary-300">Currency:</span>
               <span>{quote.currency}</span>
             </div>
           </div>
@@ -160,10 +158,10 @@ export default function ViewQuotePage() {
           {quote.client ? (
             <div className="space-y-2">
               <div className="font-medium">{quote.client.name}</div>
-              {quote.client.email && <div className="text-gray-600">{quote.client.email}</div>}
-              {quote.client.phone && <div className="text-gray-600">{quote.client.phone}</div>}
+              {quote.client.email && <div className="text-primary-300">{quote.client.email}</div>}
+              {quote.client.phone && <div className="text-primary-300">{quote.client.phone}</div>}
               {quote.client.address && (
-                <div className="text-gray-600">
+                <div className="text-primary-300">
                   {quote.client.address}
                   <br />
                   {quote.client.city} {quote.client.state} {quote.client.postal_code}
@@ -173,7 +171,7 @@ export default function ViewQuotePage() {
               )}
             </div>
           ) : (
-            <p className="text-gray-500">No client assigned</p>
+            <p className="text-primary-400">No client assigned</p>
           )}
         </div>
       </div>
@@ -226,14 +224,14 @@ export default function ViewQuotePage() {
       {quote.notes && (
         <div className="card mb-8">
           <h2 className="text-lg font-bold mb-4">Notes</h2>
-          <p className="text-gray-700 whitespace-pre-wrap">{quote.notes}</p>
+          <p className="text-primary-200 whitespace-pre-wrap">{quote.notes}</p>
         </div>
       )}
 
       {quote.terms && (
         <div className="card mb-8">
           <h2 className="text-lg font-bold mb-4">Terms & Conditions</h2>
-          <p className="text-gray-700 whitespace-pre-wrap">{quote.terms}</p>
+          <p className="text-primary-200 whitespace-pre-wrap">{quote.terms}</p>
         </div>
       )}
 

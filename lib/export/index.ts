@@ -8,7 +8,6 @@ import {
   TableCell,
   TextRun,
   AlignmentType,
-  BorderStyle,
   WidthType,
   Packer,
 } from 'docx'
@@ -19,7 +18,7 @@ import { QuoteWithItems, InvoiceWithItems, Profile, CURRENCIES } from '@/types'
 interface ExportData {
   type: 'quote' | 'invoice'
   data: QuoteWithItems | InvoiceWithItems
-  profile: Profile
+  profile: Profile | null
 }
 
 const getCurrencySymbol = (code: string) => {
@@ -56,28 +55,28 @@ export async function exportToPDF(exportData: ExportData): Promise<void> {
   // Company info (right side)
   doc.setFontSize(14)
   doc.setTextColor(0, 0, 0)
-  doc.text(profile.company_name || 'Your Company', 140, 20)
+  doc.text(profile?.company_name || 'Your Company', 140, 20)
 
   doc.setFontSize(10)
   doc.setTextColor(100, 100, 100)
   let yPos = 27
-  if (profile.address) {
+  if (profile?.address) {
     doc.text(profile.address, 140, yPos)
     yPos += 5
   }
-  if (profile.city || profile.state || profile.postal_code) {
+  if (profile?.city || profile?.state || profile?.postal_code) {
     doc.text(`${profile.city || ''} ${profile.state || ''} ${profile.postal_code || ''}`.trim(), 140, yPos)
     yPos += 5
   }
-  if (profile.country) {
+  if (profile?.country) {
     doc.text(profile.country, 140, yPos)
     yPos += 5
   }
-  if (profile.phone) {
+  if (profile?.phone) {
     doc.text(`Phone: ${profile.phone}`, 140, yPos)
     yPos += 5
   }
-  if (profile.website) {
+  if (profile?.website) {
     doc.text(profile.website, 140, yPos)
   }
 
@@ -251,20 +250,20 @@ export async function exportToWord(exportData: ExportData): Promise<void> {
           new Paragraph({
             children: [
               new TextRun({
-                text: profile.company_name || 'Your Company',
+                text: profile?.company_name || 'Your Company',
                 bold: true,
                 size: 28,
               }),
             ],
           }),
-          ...(profile.address
+          ...(profile?.address
             ? [
                 new Paragraph({
                   children: [new TextRun({ text: profile.address, size: 20, color: '666666' })],
                 }),
               ]
             : []),
-          ...(profile.city || profile.state
+          ...(profile?.city || profile?.state
             ? [
                 new Paragraph({
                   children: [
@@ -566,7 +565,7 @@ export function exportToJSON(exportData: ExportData): void {
           country: data.client.country,
         }
       : null,
-    business: {
+    business: profile ? {
       name: profile.company_name,
       business_number: profile.business_number,
       tax_id: profile.tax_id,
@@ -577,7 +576,7 @@ export function exportToJSON(exportData: ExportData): void {
       country: profile.country,
       phone: profile.phone,
       website: profile.website,
-    },
+    } : null,
     currency: data.currency,
     items: data.items.map((item) => ({
       description: item.description,

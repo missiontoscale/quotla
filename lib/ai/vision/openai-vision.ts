@@ -5,7 +5,7 @@
 
 import OpenAI from 'openai'
 import { VisionExtractionResult, ExtractedDocumentData } from './types'
-import { VISION_EXTRACTION_PROMPT, VISION_CONFIG } from '@/prompts'
+import { VISION_EXTRACTION_PROMPT, VISION_CONFIG } from '@/lib/utils/prompts'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,

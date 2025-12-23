@@ -7,7 +7,7 @@ import { supabase } from '@/lib/supabase/client'
 import { useAuth } from '@/contexts/AuthContext'
 import { Invoice, InvoiceItem, Client, InvoiceWithItems } from '@/types'
 import { format } from 'date-fns'
-import { formatCurrency } from '@/lib/utils/validation'
+import { formatCurrency, validateImageUrl } from '@/lib/utils/validation'
 import ExportButtons from '@/components/ExportButtons'
 import LoadingSpinner from '@/components/LoadingSpinner'
 
@@ -71,24 +71,22 @@ export default function ViewInvoicePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-primary-700 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-6 flex justify-between items-center">
           <Link href="/invoices" className="text-primary-600 hover:text-primary-700">
             ← Back to Invoices
           </Link>
           <div className="flex gap-2">
-            {profile && (
-              <ExportButtons
-                type="invoice"
-                data={{
-                  ...invoice,
-                  items,
-                  client,
-                } as InvoiceWithItems}
-                profile={profile}
-              />
-            )}
+            <ExportButtons
+              type="invoice"
+              data={{
+                ...invoice,
+                items,
+                client,
+              } as InvoiceWithItems}
+              profile={profile}
+            />
             <Link href={`/invoices/${invoice.id}/edit`} className="btn btn-secondary">
               Edit Invoice
             </Link>
@@ -98,33 +96,33 @@ export default function ViewInvoicePage() {
         <div className="bg-white border rounded-lg p-8">
           <div className="flex justify-between items-start mb-8">
             <div>
-              {profile?.logo_url && (
-                <img src={profile.logo_url} alt="Logo" className="h-16 mb-4" />
+              {profile?.logo_url && validateImageUrl(profile.logo_url) && (
+                <img src={validateImageUrl(profile.logo_url)!} alt="Logo" className="h-16 mb-4" />
               )}
-              <h1 className="text-3xl font-bold text-gray-900">INVOICE</h1>
-              <p className="text-gray-600">{invoice.invoice_number}</p>
+              <h1 className="text-3xl font-bold text-primary-50">INVOICE</h1>
+              <p className="text-primary-300">{invoice.invoice_number}</p>
             </div>
             <div className="text-right">
               {profile?.company_name && (
                 <div className="font-bold text-lg mb-1">{profile.company_name}</div>
               )}
-              {profile?.address && <div className="text-sm text-gray-600">{profile.address}</div>}
+              {profile?.address && <div className="text-sm text-primary-300">{profile.address}</div>}
               {profile?.city && profile?.state && (
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-primary-300">
                   {profile.city}, {profile.state} {profile.postal_code}
                 </div>
               )}
-              {profile?.phone && <div className="text-sm text-gray-600">{profile.phone}</div>}
-              {profile?.email && <div className="text-sm text-gray-600">{profile.email}</div>}
+              {profile?.phone && <div className="text-sm text-primary-300">{profile.phone}</div>}
+              {profile?.email && <div className="text-sm text-primary-300">{profile.email}</div>}
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-8 mb-8 pb-8 border-b">
             <div>
-              <h3 className="font-bold text-gray-900 mb-2">Bill To:</h3>
+              <h3 className="font-bold text-primary-50 mb-2">Bill To:</h3>
               {client ? (
-                <div className="text-sm text-gray-600">
-                  <div className="font-medium text-gray-900">{client.name}</div>
+                <div className="text-sm text-primary-300">
+                  <div className="font-medium text-primary-50">{client.name}</div>
                   {client.company_name && <div>{client.company_name}</div>}
                   {client.address && <div>{client.address}</div>}
                   {client.city && client.state && (
@@ -136,28 +134,28 @@ export default function ViewInvoicePage() {
                   {client.phone && <div>{client.phone}</div>}
                 </div>
               ) : (
-                <div className="text-sm text-gray-600">No client specified</div>
+                <div className="text-sm text-primary-300">No client specified</div>
               )}
             </div>
 
             <div>
               <div className="space-y-1 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Issue Date:</span>
+                  <span className="text-primary-300">Issue Date:</span>
                   <span className="font-medium">{format(new Date(invoice.issue_date), 'MMM d, yyyy')}</span>
                 </div>
                 {invoice.due_date && (
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Due Date:</span>
+                    <span className="text-primary-300">Due Date:</span>
                     <span className="font-medium">{format(new Date(invoice.due_date), 'MMM d, yyyy')}</span>
                   </div>
                 )}
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Status:</span>
+                  <span className="text-primary-300">Status:</span>
                   <span className={`font-medium capitalize ${
                     invoice.status === 'paid' ? 'text-green-600' :
                     invoice.status === 'overdue' ? 'text-red-600' :
-                    'text-gray-900'
+                    'text-primary-50'
                   }`}>
                     {invoice.status}
                   </span>
@@ -168,13 +166,13 @@ export default function ViewInvoicePage() {
 
           {invoice.title && (
             <div className="mb-6">
-              <h2 className="text-xl font-bold text-gray-900">{invoice.title}</h2>
+              <h2 className="text-xl font-bold text-primary-50">{invoice.title}</h2>
             </div>
           )}
 
           <table className="w-full mb-8">
             <thead>
-              <tr className="border-b-2 border-gray-300">
+              <tr className="border-b-2 border-primary-500">
                 <th className="text-left py-3 px-2">Description</th>
                 <th className="text-right py-3 px-2 w-24">Quantity</th>
                 <th className="text-right py-3 px-2 w-32">Unit Price</th>
@@ -212,15 +210,15 @@ export default function ViewInvoicePage() {
 
           {invoice.notes && (
             <div className="mb-6">
-              <h3 className="font-bold text-gray-900 mb-2">Notes:</h3>
-              <p className="text-sm text-gray-600 whitespace-pre-wrap">{invoice.notes}</p>
+              <h3 className="font-bold text-primary-50 mb-2">Notes:</h3>
+              <p className="text-sm text-primary-300 whitespace-pre-wrap">{invoice.notes}</p>
             </div>
           )}
 
           {invoice.payment_terms && (
             <div>
-              <h3 className="font-bold text-gray-900 mb-2">Payment Terms:</h3>
-              <p className="text-sm text-gray-600 whitespace-pre-wrap">{invoice.payment_terms}</p>
+              <h3 className="font-bold text-primary-50 mb-2">Payment Terms:</h3>
+              <p className="text-sm text-primary-300 whitespace-pre-wrap">{invoice.payment_terms}</p>
             </div>
           )}
         </div>

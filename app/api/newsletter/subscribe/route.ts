@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
       .from('newsletter_subscribers')
       .select('*')
       .eq('email', email.toLowerCase())
-      .single()
+      .maybeSingle()
 
     if (existing) {
       if (existing.subscribed) {

@@ -209,7 +209,9 @@ export default function CreateModal({ isOpen, onClose }: CreateModalProps) {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to generate')
+        const errorMessage = data.error || 'Failed to generate'
+        console.error('API Error:', errorMessage, 'Status:', response.status)
+        throw new Error(errorMessage)
       }
 
       const aiResponse = data.description
@@ -306,6 +308,8 @@ export default function CreateModal({ isOpen, onClose }: CreateModalProps) {
         setChatMessages(prev => [...prev.slice(-24), { role: 'assistant', content: aiResponse, timestamp: new Date() }])
       }
     } catch (error) {
+      console.error('Chat send error:', error)
+
       // Handle authentication errors
       if (error instanceof Error && error.message === 'AUTHENTICATION_REQUIRED') {
         setChatMessages(prev => [...prev.slice(-24), {
@@ -318,9 +322,23 @@ export default function CreateModal({ isOpen, onClose }: CreateModalProps) {
         localStorage.setItem('quotla_redirect_after_auth', 'true')
         setTimeout(() => router.push('/login'), 2000)
       } else {
+        // Provide more specific error messages
+        let errorMessage = 'Sorry, I encountered an error. Please try again.'
+
+        if (error instanceof Error) {
+          // Check for specific error types
+          if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+            errorMessage = 'Unable to connect to the AI service. Please check your connection and try again.'
+          } else if (error.message.includes('Failed to generate')) {
+            errorMessage = 'The AI service is currently unavailable. Please ensure the external API backend is running and accessible.'
+          } else if (error.message) {
+            errorMessage = `Error: ${error.message}`
+          }
+        }
+
         setChatMessages(prev => [...prev.slice(-24), {
           role: 'assistant',
-          content: 'Sorry, I encountered an error. Please try again.',
+          content: errorMessage,
           timestamp: new Date()
         }])
       }
@@ -343,13 +361,13 @@ export default function CreateModal({ isOpen, onClose }: CreateModalProps) {
               <span className="text-white font-bold text-2xl">Q</span>
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">What do you need?</h2>
-              <p className="text-sm text-gray-600">Describe your quote or invoice, and I'll create it for you</p>
+              <h2 className="text-2xl font-bold text-primary-50">What do you need?</h2>
+              <p className="text-sm text-primary-300">Describe your quote or invoice, and I'll create it for you</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+            className="p-2 rounded-lg text-primary-400 hover:text-primary-300 hover:bg-primary-600 transition-colors"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -360,61 +378,49 @@ export default function CreateModal({ isOpen, onClose }: CreateModalProps) {
         {/* Chat Messages Area */}
         <div
           ref={chatContainerRef}
-          className="bg-gray-50 rounded-xl border-2 border-gray-200 p-6 overflow-y-auto"
+          className="bg-primary-700 rounded-xl border-2 border-primary-600 p-6 overflow-y-auto"
           style={{ height: 'clamp(400px, 60vh, 700px)' }}
         >
           {chatMessages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
-              <p className="text-sm text-gray-600 max-w-lg mb-8">
+              <p className="text-sm text-primary-300 max-w-lg mb-8">
                 Click a suggestion below to get started, or type your own request.:
               </p>
               <div className="w-full max-w-2xl grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <button
-                  onClick={() => setChatInput('I need a quote for web development services for ABC Company. 40 hours at $100/hour.')}
-                  className="text-left px-6 py-4 bg-white hover:bg-gray-50 rounded-lg text-sm text-gray-700 transition-all shadow-sm hover:shadow-md border border-gray-200"
+                  onClick={() => setChatInput('Help me create a quote for ')}
+                  className="text-left px-6 py-4 bg-white hover:bg-primary-700 rounded-lg text-sm text-primary-200 transition-all shadow-sm hover:shadow-md border border-primary-600"
                 >
-                  <div className="flex items-start gap-3">
-                    <span className="text-2xl">📝</span>
-                    <div>
-                      <h4 className="font-bold text-gray-900 mb-1">Create a quote</h4>
-                      <p className="text-xs text-gray-600">I need a quote for web development services...</p>
-                    </div>
+                  <div>
+                    <h4 className="font-semibold text-primary-50 mb-1">Create a quote</h4>
+                    <p className="text-xs text-primary-300">Help me create a quote for . . .</p>
                   </div>
                 </button>
                 <button
-                  onClick={() => setChatInput('Create an invoice for consulting work. 3 days at $500 per day for XYZ Corp.')}
-                  className="text-left px-6 py-4 bg-white hover:bg-gray-50 rounded-lg text-sm text-gray-700 transition-all shadow-sm hover:shadow-md border border-gray-200"
+                  onClick={() => setChatInput('Hey there! I need your help to create an invoice for ')}
+                  className="text-left px-6 py-4 bg-white hover:bg-primary-700 rounded-lg text-sm text-primary-200 transition-all shadow-sm hover:shadow-md border border-primary-600"
                 >
-                  <div className="flex items-start gap-3">
-                    <span className="text-2xl">🧾</span>
-                    <div>
-                      <h4 className="font-bold text-gray-900 mb-1">Generate invoice</h4>
-                      <p className="text-xs text-gray-600">Create an invoice for consulting work...</p>
-                    </div>
+                  <div>
+                    <h4 className="font-semibold text-primary-50 mb-1">Generate invoice</h4>
+                    <p className="text-xs text-primary-300">Hey there! I need your help to create an invoice for . . .</p>
                   </div>
                 </button>
                 <button
-                  onClick={() => setChatInput('How should I price my freelance design services?')}
-                  className="text-left px-6 py-4 bg-white hover:bg-gray-50 rounded-lg text-sm text-gray-700 transition-all shadow-sm hover:shadow-md border border-gray-200"
+                  onClick={() => setChatInput('How should I price my ')}
+                  className="text-left px-6 py-4 bg-white hover:bg-primary-700 rounded-lg text-sm text-primary-200 transition-all shadow-sm hover:shadow-md border border-primary-600"
                 >
-                  <div className="flex items-start gap-3">
-                    <span className="text-2xl">💰</span>
-                    <div>
-                      <h4 className="font-bold text-gray-900 mb-1">Pricing advice</h4>
-                      <p className="text-xs text-gray-600">How should I price my services?</p>
-                    </div>
+                  <div>
+                    <h4 className="font-semibold text-primary-50 mb-1">Pricing advice</h4>
+                    <p className="text-xs text-primary-300">How should I price my . . .</p>
                   </div>
                 </button>
                 <button
-                  onClick={() => setChatInput('What are the best practices for following up on quotes?')}
-                  className="text-left px-6 py-4 bg-white hover:bg-gray-50 rounded-lg text-sm text-gray-700 transition-all shadow-sm hover:shadow-md border border-gray-200"
+                  onClick={() => setChatInput('Explain the 2026 VAT changes in Nigeria')}
+                  className="text-left px-6 py-4 bg-white hover:bg-primary-700 rounded-lg text-sm text-primary-200 transition-all shadow-sm hover:shadow-md border border-primary-600"
                 >
-                  <div className="flex items-start gap-3">
-                    <span className="text-2xl">💡</span>
-                    <div>
-                      <h4 className="font-bold text-gray-900 mb-1">Business tips</h4>
-                      <p className="text-xs text-gray-600">Best practices for following up on quotes?</p>
-                    </div>
+                  <div>
+                    <h4 className="font-semibold text-primary-50 mb-1">Tax law guidance</h4>
+                    <p className="text-xs text-primary-300">Explain the 2026 VAT changes in Nigeria</p>
                   </div>
                 </button>
               </div>
@@ -427,7 +433,7 @@ export default function CreateModal({ isOpen, onClose }: CreateModalProps) {
                     <div className={`rounded-2xl px-5 py-3 ${
                       msg.role === 'user'
                         ? 'bg-primary-600 text-white'
-                        : 'bg-white text-gray-900 shadow-sm border border-gray-200'
+                        : 'bg-white text-primary-50 shadow-sm border border-primary-600'
                     }`}>
                       {msg.role === 'user' ? (
                         <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
@@ -451,9 +457,13 @@ export default function CreateModal({ isOpen, onClose }: CreateModalProps) {
                             onClose()
                             router.push(`/${msg.documentType}s/new?ai_data=${msg.documentId}`)
                           }}
-                          className="flex-1 px-4 py-2 bg-primary-600 text-white text-sm rounded-lg hover:bg-primary-700 transition-all font-medium shadow-md hover:shadow-lg"
+                          className="flex-1 px-4 py-2 bg-primary-600 text-white text-sm rounded-lg hover:bg-primary-700 transition-all font-medium shadow-md hover:shadow-lg flex items-center justify-center gap-2"
                         >
-                          Review & Save {msg.documentType === 'invoice' ? 'Invoice' : 'Quote'}
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          </svg>
+                          View & Save
                         </button>
                       </div>
                     )}
@@ -462,11 +472,11 @@ export default function CreateModal({ isOpen, onClose }: CreateModalProps) {
               ))}
               {chatLoading && (
                 <div className="flex justify-start">
-                  <div className="bg-white rounded-2xl px-5 py-3 shadow-sm border border-gray-200">
+                  <div className="bg-white rounded-2xl px-5 py-3 shadow-sm border border-primary-600">
                     <div className="flex space-x-2">
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></div>
+                      <div className="w-2 h-2 bg-primary-500 rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-primary-500 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                      <div className="w-2 h-2 bg-primary-500 rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></div>
                     </div>
                   </div>
                 </div>
@@ -477,13 +487,13 @@ export default function CreateModal({ isOpen, onClose }: CreateModalProps) {
 
         {/* File Upload Preview */}
         {selectedFile && (
-          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-between">
+          <div className="p-4 bg-quotla-light border border-quotla-green/30 rounded-lg flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-quotla-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
               </svg>
-              <span className="text-sm font-medium text-gray-700">{selectedFile.name}</span>
-              <span className="text-xs text-gray-500">({(selectedFile.size / 1024).toFixed(1)} KB)</span>
+              <span className="text-sm font-medium text-primary-200">{selectedFile.name}</span>
+              <span className="text-xs text-primary-400">({(selectedFile.size / 1024).toFixed(1)} KB)</span>
             </div>
             <button
               onClick={() => {
@@ -524,7 +534,7 @@ export default function CreateModal({ isOpen, onClose }: CreateModalProps) {
               accept="image/*,.pdf,.doc,.docx"
               className="hidden"
             />
-            <div className="relative flex items-end gap-2 px-4 py-3 rounded-lg border-2 border-gray-300 focus-within:border-primary-500 focus-within:ring-2 focus-within:ring-primary-200 bg-white transition-all">
+            <div className="relative flex items-end gap-2 px-4 py-3 rounded-lg border-2 border-primary-500 focus-within:border-primary-500 focus-within:ring-2 focus-within:ring-primary-200 bg-white transition-all">
               <textarea
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
@@ -535,7 +545,7 @@ export default function CreateModal({ isOpen, onClose }: CreateModalProps) {
                   }
                 }}
                 placeholder="Describe your quote or invoice..."
-                className="flex-1 outline-none resize-none bg-transparent text-sm sm:text-base disabled:opacity-50 disabled:bg-gray-50 min-h-[24px] max-h-[200px]"
+                className="flex-1 outline-none resize-none bg-transparent text-sm sm:text-base disabled:opacity-50 disabled:bg-primary-700 min-h-[24px] max-h-[200px]"
                 disabled={chatLoading}
                 rows={1}
                 style={{
@@ -552,20 +562,20 @@ export default function CreateModal({ isOpen, onClose }: CreateModalProps) {
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={chatLoading}
-                  className="p-2 rounded-md hover:bg-gray-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-2 rounded-md hover:bg-primary-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   title="Upload file (max 2MB)"
                 >
-                  <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
                   </svg>
                 </button>
                 <button
                   onClick={() => setIsRecording(true)}
                   disabled={chatLoading}
-                  className="p-2 rounded-md hover:bg-gray-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-2 rounded-md hover:bg-primary-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   title="Record voice message"
                 >
-                  <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                   </svg>
                 </button>
@@ -583,7 +593,7 @@ export default function CreateModal({ isOpen, onClose }: CreateModalProps) {
             </div>
           </div>
         )}
-        <p className="text-xs text-gray-500 text-center">
+        <p className="text-xs text-primary-400 text-center">
           Keeps up to 25 messages in context • Max file size: 2MB
         </p>
       </div>

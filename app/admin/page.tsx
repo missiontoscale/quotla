@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
-import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase/client'
 import { BlogComment, NewsletterSubscriber } from '@/types'
 import { format } from 'date-fns'
@@ -11,21 +10,13 @@ import LoadingSpinner from '@/components/LoadingSpinner'
 
 export default function AdminPage() {
   const { profile } = useAuth()
-  const router = useRouter()
   const [comments, setComments] = useState<BlogComment[]>([])
   const [subscribers, setSubscribers] = useState<NewsletterSubscriber[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (profile && !profile.is_admin) {
-      router.push('/dashboard')
-      return
-    }
-
-    if (profile?.is_admin) {
-      loadData()
-    }
-  }, [profile, router])
+    loadData()
+  }, [])
 
   const loadData = async () => {
     const [commentsRes, subscribersRes] = await Promise.all([
@@ -68,10 +59,6 @@ export default function AdminPage() {
     }
   }
 
-  if (!profile?.is_admin) {
-    return <div>Access denied</div>
-  }
-
   if (loading) {
     return <LoadingSpinner />
   }
@@ -79,7 +66,7 @@ export default function AdminPage() {
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+        <h1 className="text-3xl font-bold text-primary-50">Admin Dashboard</h1>
         <Link href="/admin/blog" className="btn btn-primary">
           Manage Blog Posts
         </Link>
@@ -89,7 +76,7 @@ export default function AdminPage() {
         <h2 className="text-2xl font-bold mb-6">Pending Comments ({comments.length})</h2>
 
         {comments.length === 0 ? (
-          <p className="text-gray-500">No pending comments</p>
+          <p className="text-primary-400">No pending comments</p>
         ) : (
           <div className="space-y-4">
             {comments.map((comment) => (
@@ -97,13 +84,13 @@ export default function AdminPage() {
                 <div className="flex justify-between items-start mb-2">
                   <div>
                     <span className="font-medium">{comment.author_name}</span>
-                    <span className="text-sm text-gray-500 ml-2">{comment.author_email}</span>
+                    <span className="text-sm text-primary-400 ml-2">{comment.author_email}</span>
                   </div>
-                  <span className="text-sm text-gray-500">
+                  <span className="text-sm text-primary-400">
                     {format(new Date(comment.created_at), 'MMM d, yyyy HH:mm')}
                   </span>
                 </div>
-                <p className="text-gray-700 mb-4">{comment.content}</p>
+                <p className="text-primary-200 mb-4">{comment.content}</p>
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleApproveComment(comment.id)}
@@ -128,7 +115,7 @@ export default function AdminPage() {
         <h2 className="text-2xl font-bold mb-6">Newsletter Subscribers ({subscribers.length})</h2>
 
         {subscribers.length === 0 ? (
-          <p className="text-gray-500">No subscribers yet</p>
+          <p className="text-primary-400">No subscribers yet</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">

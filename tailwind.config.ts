@@ -10,42 +10,59 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
+        // Primary typeface - Inter (similar to Open Sauce)
+        // Used for: headings, UI labels, navigation, and core interface copy
+        // Weights: Regular (400), Medium (500), Semi-bold (600), Bold (700)
         sans: [
-          'var(--font-poppins)',
+          'var(--font-inter)',
           '-apple-system',
           'BlinkMacSystemFont',
           'system-ui',
           'sans-serif',
         ],
+        // Secondary typeface - Bricolage Grotesque
+        // Used selectively for: marketing headers, highlights, or emphasis where personality is needed
+        // Weights: Regular (400), Medium (500), Semi-bold (600), Bold (700)
         heading: [
-          'Bricolage Grotesque',
-          'Barlow',
-          'Figtree',
+          'var(--font-bricolage)',
           '-apple-system',
           'BlinkMacSystemFont',
-          'Segoe UI',
-          'Roboto',
-          'Oxygen',
-          'Ubuntu',
-          'Cantarell',
-          'Open Sans',
-          'Helvetica Neue',
+          'system-ui',
           'sans-serif',
         ],
-        logo: ['var(--font-poppins)', 'sans-serif'],
+        // Logo font (using primary)
+        logo: ['var(--font-inter)', 'sans-serif'],
       },
       colors: {
         primary: {
-          50: '#f0f9ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#1e40af',
-          700: '#1e3a8a',
-          800: '#1e293b',
-          900: '#0f172a',
+          50: '#fffad6',      // Quotla light
+          100: '#f5f5dc',
+          200: '#e8e8cc',
+          300: '#d1d1aa',
+          400: '#8a8a66',
+          500: '#445642',     // Quotla green
+          600: '#2a2f2f',
+          700: '#1a1f1f',
+          800: '#0e1616',     // Quotla dark
+          900: '#080b0b',
+        },
+        secondary: {
+          50: '#fff5e6',
+          100: '#ffe8cc',
+          200: '#ffd199',
+          300: '#ffba66',
+          400: '#f59e0b',
+          500: '#ce6203',     // Quotla orange
+          600: '#a34f02',
+          700: '#783b02',
+          800: '#4d2601',
+          900: '#221200',
+        },
+        quotla: {
+          dark: '#0e1616',
+          green: '#445642',
+          light: '#fffad6',
+          orange: '#ce6203',
         },
       },
       animation: {
@@ -55,11 +72,11 @@ const config: Config = {
         'pulse-glow': {
           '0%, 100%': {
             opacity: '1',
-            boxShadow: '0 0 20px rgba(30, 64, 175, 0.3)',
+            boxShadow: '0 0 20px rgba(206, 98, 3, 0.3)',
           },
           '50%': {
             opacity: '0.8',
-            boxShadow: '0 0 30px rgba(30, 64, 175, 0.5)',
+            boxShadow: '0 0 30px rgba(206, 98, 3, 0.5)',
           },
         },
       },

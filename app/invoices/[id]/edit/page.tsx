@@ -218,7 +218,7 @@ export default function EditInvoicePage() {
 
   return (
     <div className="max-w-5xl">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Edit Invoice</h1>
+      <h1 className="text-3xl font-bold text-primary-50 mb-8">Edit Invoice</h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {error && (
@@ -405,7 +405,7 @@ export default function EditInvoicePage() {
                     <input
                       type="number"
                       step="0.01"
-                      className="input bg-gray-50"
+                      className="input bg-primary-700"
                       value={item.amount}
                       readOnly
                     />
@@ -476,7 +476,7 @@ export default function EditInvoicePage() {
           </div>
         </div>
 
-        <div className="card bg-gray-50">
+        <div className="card bg-primary-700">
           <div className="space-y-2">
             <div className="flex justify-between text-lg">
               <span>Subtotal:</span>

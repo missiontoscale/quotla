@@ -237,7 +237,7 @@ export default function EditQuotePage() {
 
   return (
     <div className="max-w-5xl">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Edit Quote</h1>
+      <h1 className="text-3xl font-bold text-primary-50 mb-8">Edit Quote</h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {error && (
@@ -424,7 +424,7 @@ export default function EditQuotePage() {
                     <input
                       type="number"
                       step="0.01"
-                      className="input bg-gray-50"
+                      className="input bg-primary-700"
                       value={item.amount}
                       readOnly
                     />
@@ -495,7 +495,7 @@ export default function EditQuotePage() {
           </div>
         </div>
 
-        <div className="card bg-gray-50">
+        <div className="card bg-primary-700">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold">Totals</h2>
             <CurrencyConverter

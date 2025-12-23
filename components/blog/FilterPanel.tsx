@@ -43,22 +43,22 @@ const FilterPanel: FC<FilterPanelProps> = ({
     !filters.showExternal
 
   return (
-    <div className="card bg-white">
+    <div className="card bg-[#FAF9F6] dark:bg-primary-900 shadow-sm">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-quotla-dark dark:text-quotla-light flex items-center gap-2">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
           </svg>
           Filters
           {hasActiveFilters && (
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-quotla-orange/10 text-quotla-orange">
               Active
             </span>
           )}
         </h3>
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="lg:hidden text-gray-500 hover:text-gray-700"
+          className="lg:hidden text-gray-600 dark:text-gray-400 hover:text-quotla-dark dark:hover:text-quotla-light"
           aria-label={isExpanded ? 'Collapse filters' : 'Expand filters'}
         >
           <svg
@@ -75,12 +75,12 @@ const FilterPanel: FC<FilterPanelProps> = ({
       <div className={`space-y-6 ${isExpanded ? 'block' : 'hidden lg:block'}`}>
         {/* Date Range */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-2">
             Date Range
           </label>
           <div className="space-y-2">
             <div>
-              <label htmlFor="dateFrom" className="block text-xs text-gray-600 mb-1">
+              <label htmlFor="dateFrom" className="block text-xs text-gray-700 dark:text-gray-300 mb-1">
                 From
               </label>
               <input
@@ -92,7 +92,7 @@ const FilterPanel: FC<FilterPanelProps> = ({
               />
             </div>
             <div>
-              <label htmlFor="dateTo" className="block text-xs text-gray-600 mb-1">
+              <label htmlFor="dateTo" className="block text-xs text-gray-700 dark:text-gray-300 mb-1">
                 To
               </label>
               <input
@@ -108,7 +108,7 @@ const FilterPanel: FC<FilterPanelProps> = ({
 
         {/* Source Type */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-2">
             Source Type
           </label>
           <div className="space-y-2">
@@ -117,18 +117,18 @@ const FilterPanel: FC<FilterPanelProps> = ({
                 type="checkbox"
                 checked={filters.showInternal}
                 onChange={(e) => onFilterChange({ ...filters, showInternal: e.target.checked })}
-                className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                className="rounded border-gray-300 text-quotla-orange focus:ring-quotla-orange"
               />
-              <span className="ml-2 text-sm text-gray-700">Internal Blogs</span>
+              <span className="ml-2 text-sm text-gray-800 dark:text-gray-200">Internal Blogs</span>
             </label>
             <label className="flex items-center">
               <input
                 type="checkbox"
                 checked={filters.showExternal}
                 onChange={(e) => onFilterChange({ ...filters, showExternal: e.target.checked })}
-                className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                className="rounded border-gray-300 text-quotla-orange focus:ring-quotla-orange"
               />
-              <span className="ml-2 text-sm text-gray-700">External Blogs</span>
+              <span className="ml-2 text-sm text-gray-800 dark:text-gray-200">External Blogs</span>
             </label>
           </div>
         </div>
@@ -136,7 +136,7 @@ const FilterPanel: FC<FilterPanelProps> = ({
         {/* Platforms */}
         {availablePlatforms.length > 0 && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-2">
               Platforms
             </label>
             <div className="space-y-2">
@@ -146,9 +146,9 @@ const FilterPanel: FC<FilterPanelProps> = ({
                     type="checkbox"
                     checked={filters.platforms.includes(platform)}
                     onChange={() => handlePlatformToggle(platform)}
-                    className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    className="rounded border-gray-300 text-quotla-orange focus:ring-quotla-orange"
                   />
-                  <span className="ml-2 text-sm text-gray-700">{platform}</span>
+                  <span className="ml-2 text-sm text-gray-800 dark:text-gray-200">{platform}</span>
                 </label>
               ))}
             </div>
@@ -159,7 +159,7 @@ const FilterPanel: FC<FilterPanelProps> = ({
         {hasActiveFilters && (
           <button
             onClick={handleReset}
-            className="w-full px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+            className="w-full px-4 py-2 text-sm font-medium text-quotla-light bg-quotla-orange hover:bg-orange-600 rounded-lg transition-colors"
           >
             Reset Filters
           </button>

@@ -1,5 +1,5 @@
 // Blog Aggregation System Types
-// Supports both internal Quotla blogs (Supabase) and external Wheeler Universe blogs (JSON)
+// Supports both internal Quotla blogs (Supabase) and external blogs (JSON)
 
 export interface BlogFeature {
   enabled?: boolean // disabled: false/undefined, enabled: true

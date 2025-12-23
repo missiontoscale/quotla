@@ -77,16 +77,49 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const loadProfile = async (userId: string) => {
+    // Check cache first
+    const cacheKey = `profile_${userId}`
+    const cached = sessionStorage.getItem(cacheKey)
+
+    if (cached) {
+      try {
+        const cachedProfile = JSON.parse(cached)
+        setProfile(cachedProfile)
+        setLoading(false)
+
+        // Refresh in background
+        refreshProfile(userId, cacheKey)
+        return
+      } catch (e) {
+        // Invalid cache, fetch fresh
+      }
+    }
+
+    // Fetch fresh profile
     const { data, error } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', userId)
-      .single()
+      .maybeSingle()
 
     if (!error && data) {
-      setProfile(data)
+      setProfile(data as Profile)
+      sessionStorage.setItem(cacheKey, JSON.stringify(data))
     }
     setLoading(false)
+  }
+
+  const refreshProfile = async (userId: string, cacheKey: string) => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .maybeSingle()
+
+    if (!error && data) {
+      setProfile(data as Profile)
+      sessionStorage.setItem(cacheKey, JSON.stringify(data))
+    }
   }
 
   const signUp = async (email: string, password: string) => {
@@ -108,6 +141,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     const { error } = await supabase.auth.signOut()
     if (error) throw error
+
+    // Clear cached profile
+    if (user) {
+      sessionStorage.removeItem(`profile_${user.id}`)
+    }
   }
 
   const updateProfile = async (updates: Partial<Profile>) => {

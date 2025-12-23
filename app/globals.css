@@ -4,33 +4,39 @@
 
 @layer base {
   :root {
-    /* Primary Brand Colors - Professional Navy/Blue */
-    --color-primary: #1e40af;
-    --color-primary-light: #3b82f6;
-    --color-primary-lighter: #60a5fa;
-    --color-primary-lightest: #dbeafe;
-    --color-primary-dark: #1e3a8a;
-    --color-primary-darkest: #1e293b;
+    /* Quotla Brand Colors - Primary */
+    --color-quotla-dark: #0e1616;
+    --color-quotla-green: #445642;
+    --color-quotla-light: #fffad6;
+    --color-quotla-orange: #ce6203;
 
-    /* Background Colors */
-    --color-bg-primary: #FFFFFF;
-    --color-bg-secondary: #F8FAFC;
-    --color-bg-tertiary: #F1F5F9;
-    --color-bg-card: #FFFFFF;
-    --color-bg-hover: #F8FAFC;
+    /* Primary Brand Colors - Based on Quotla Dark */
+    --color-primary: #0e1616;
+    --color-primary-light: #1a1f1f;
+    --color-primary-lighter: #2a2f2f;
+    --color-primary-lightest: #445642;
+    --color-primary-dark: #080b0b;
+    --color-primary-darkest: #000000;
+
+    /* Background Colors - Quotla Dark Theme */
+    --color-bg-primary: #0e1616;
+    --color-bg-secondary: #1a1f1f;
+    --color-bg-tertiary: #2a2f2f;
+    --color-bg-card: #1a1f1f;
+    --color-bg-hover: #2a2f2f;
 
     /* Text Colors */
-    --color-text-primary: #0f172a;
-    --color-text-secondary: #475569;
-    --color-text-tertiary: #94a3b8;
-    --color-text-inverse: #FFFFFF;
-    --color-text-muted: #cbd5e1;
+    --color-text-primary: #fffad6;
+    --color-text-secondary: #d1d5db;
+    --color-text-tertiary: #9ca3af;
+    --color-text-inverse: #0e1616;
+    --color-text-muted: #6b7280;
 
     /* Border Colors */
-    --color-border: #e2e8f0;
-    --color-border-light: #f1f5f9;
-    --color-border-dark: #cbd5e1;
-    --color-border-focus: #1e40af;
+    --color-border: #374151;
+    --color-border-light: #4b5563;
+    --color-border-dark: #1f2937;
+    --color-border-focus: #ce6203;
 
     /* Semantic Colors */
     --color-success: #10B981;
@@ -42,14 +48,14 @@
     --color-warning: #F59E0B;
     --color-warning-light: #FEF3C7;
     --color-warning-dark: #92400E;
-    --color-info: #3B82F6;
-    --color-info-light: #DBEAFE;
-    --color-info-dark: #1E40AF;
+    --color-info: #445642;
+    --color-info-light: #fffad6;
+    --color-info-dark: #0e1616;
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
-    --gradient-hero: linear-gradient(135deg, #FFFFFF 0%, #dbeafe 50%, #f0f9ff 100%);
-    --gradient-cta: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    --gradient-primary: linear-gradient(135deg, #0e1616 0%, #445642 100%);
+    --gradient-hero: linear-gradient(135deg, #0e1616 0%, #1a1f1f 50%, #2a2f2f 100%);
+    --gradient-cta: linear-gradient(135deg, #ce6203 0%, #445642 100%);
 
     /* Shadows */
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -57,7 +63,45 @@
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
     --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    --shadow-glow: 0 0 20px rgba(30, 64, 175, 0.15);
+    --shadow-glow: 0 0 20px rgba(17, 24, 39, 0.15);
+  }
+
+  .dark {
+    /* Primary Brand Colors - Quotla Dark (same as light mode) */
+    --color-primary: #0e1616;
+    --color-primary-light: #1a1f1f;
+    --color-primary-lighter: #2a2f2f;
+    --color-primary-lightest: #445642;
+    --color-primary-dark: #080b0b;
+    --color-primary-darkest: #000000;
+
+    /* Background Colors - Quotla Dark Theme */
+    --color-bg-primary: #0e1616;
+    --color-bg-secondary: #1a1f1f;
+    --color-bg-tertiary: #2a2f2f;
+    --color-bg-card: #1a1f1f;
+    --color-bg-hover: #2a2f2f;
+
+    /* Text Colors - Dark Mode */
+    --color-text-primary: #f5f5f7;
+    --color-text-secondary: #d1d5db;
+    --color-text-tertiary: #9ca3af;
+    --color-text-inverse: #111827;
+    --color-text-muted: #6b7280;
+
+    /* Border Colors - Dark Mode */
+    --color-border: #374151;
+    --color-border-light: #4b5563;
+    --color-border-dark: #1f2937;
+    --color-border-focus: #f5f5f7;
+
+    /* Shadows - Dark Mode */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    --shadow-glow: 0 0 20px rgba(245, 245, 247, 0.1);
   }
 
   * {
@@ -69,8 +113,48 @@
     color: var(--color-text-primary);
   }
 
+  /* Text selection styles - high contrast */
+  ::selection {
+    background-color: #ce6203;
+    color: #ffffff;
+  }
+
+  ::-moz-selection {
+    background-color: #ce6203;
+    color: #ffffff;
+  }
+
+  /* Selection on light backgrounds */
+  .bg-white ::selection,
+  [class*="bg-white"] ::selection,
+  [class*="bg-primary-50"] ::selection,
+  [class*="bg-quotla-light"] ::selection {
+    background-color: #0e1616;
+    color: #fffad6;
+  }
+
+  .bg-white ::-moz-selection,
+  [class*="bg-white"] ::-moz-selection,
+  [class*="bg-primary-50"] ::-moz-selection,
+  [class*="bg-quotla-light"] ::-moz-selection {
+    background-color: #0e1616;
+    color: #fffad6;
+  }
+
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-bricolage), var(--font-barlow), var(--font-figtree), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+  }
+
+  /* Improved spacing utility */
+  .space-y-smart > * + * {
+    margin-top: 1rem;
   }
 }
 
@@ -119,7 +203,7 @@
   .input:focus {
     outline: none;
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+    box-shadow: 0 0 0 3px rgba(206, 98, 3, 0.1);
   }
 
   .input::placeholder {

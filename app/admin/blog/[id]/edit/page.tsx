@@ -10,7 +10,7 @@ import LoadingSpinner from '@/components/LoadingSpinner'
 export default function EditBlogPostPage() {
   const router = useRouter()
   const params = useParams()
-  const { user, profile } = useAuth()
+  const { user } = useAuth()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [post, setPost] = useState<BlogPost | null>(null)
@@ -25,10 +25,10 @@ export default function EditBlogPostPage() {
 
   useEffect(() => {
     loadPost()
-  }, [params.id, profile])
+  }, [params.id])
 
   const loadPost = async () => {
-    if (!profile?.is_admin || !params.id) return
+    if (!params.id) return
 
     const { data, error } = await supabase
       .from('blog_posts')
@@ -61,8 +61,8 @@ export default function EditBlogPostPage() {
     setError('')
     setLoading(true)
 
-    if (!user || !profile?.is_admin) {
-      setError('Unauthorized')
+    if (!user) {
+      setError('Not authenticated')
       setLoading(false)
       return
     }
@@ -105,17 +105,13 @@ export default function EditBlogPostPage() {
     }
   }
 
-  if (!profile?.is_admin) {
-    return <div>Access denied</div>
-  }
-
   if (!post) {
     return <LoadingSpinner />
   }
 
   return (
     <div className="max-w-4xl">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Edit Blog Post</h1>
+      <h1 className="text-3xl font-bold text-primary-50 mb-8">Edit Blog Post</h1>
 
       <div className="card">
         {error && (
@@ -153,7 +149,7 @@ export default function EditBlogPostPage() {
               value={formData.slug}
               onChange={handleChange}
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-primary-400 mt-1">
               URL-friendly version (e.g., my-blog-post)
             </p>
           </div>
@@ -187,7 +183,7 @@ export default function EditBlogPostPage() {
               onChange={handleChange}
               placeholder="HTML content of your blog post"
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-primary-400 mt-1">
               You can use HTML markup for formatting.
             </p>
           </div>
@@ -201,9 +197,9 @@ export default function EditBlogPostPage() {
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, published: e.target.checked }))
               }
-              className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+              className="h-4 w-4 rounded border-primary-500 text-primary-600 focus:ring-primary-500"
             />
-            <label htmlFor="published" className="ml-2 text-sm text-gray-700">
+            <label htmlFor="published" className="ml-2 text-sm text-primary-200">
               Published
             </label>
           </div>

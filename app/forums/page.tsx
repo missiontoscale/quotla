@@ -10,12 +10,12 @@ export default function ForumsPage() {
   const [selectedCategory, setSelectedCategory] = useState('all')
 
   const categories = [
-    { id: 'all', name: 'All Topics', icon: '📚' },
-    { id: 'getting-started', name: 'Getting Started', icon: '🚀' },
-    { id: 'features', name: 'Features & Requests', icon: '💡' },
-    { id: 'tips', name: 'Tips & Best Practices', icon: '⭐' },
-    { id: 'troubleshooting', name: 'Troubleshooting', icon: '🔧' },
-    { id: 'showcase', name: 'Showcase', icon: '🎨' },
+    { id: 'all', name: 'All Topics' },
+    { id: 'getting-started', name: 'Getting Started' },
+    { id: 'features', name: 'Features & Requests' },
+    { id: 'tips', name: 'Tips & Best Practices' },
+    { id: 'troubleshooting', name: 'Troubleshooting' },
+    { id: 'showcase', name: 'Showcase' },
   ]
 
   const topics = [
@@ -79,12 +79,12 @@ export default function ForumsPage() {
     <DashboardLayout>
       <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Community Forums</h1>
-        <p className="mt-2 text-gray-600">Connect with other Quotla users, share tips, and get help</p>
+        <h1 className="text-3xl font-bold text-primary-50">Community Forums</h1>
+        <p className="mt-2 text-primary-300">Connect with other Quotla users, share tips, and get help</p>
       </div>
 
       {/* Coming Soon Banner */}
-      <div className="card bg-gradient-to-r from-primary-50 to-blue-50 border-2 border-primary-200">
+      <div className="card bg-gradient-to-r from-primary-50 to-quotla-light/50 border-2 border-primary-200">
         <div className="flex items-center gap-4">
           <div className="flex-shrink-0 w-16 h-16 rounded-full bg-primary-100 flex items-center justify-center">
             <svg className="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -92,8 +92,8 @@ export default function ForumsPage() {
             </svg>
           </div>
           <div className="flex-1">
-            <h3 className="text-xl font-bold text-gray-900 mb-1">Forums Coming Soon!</h3>
-            <p className="text-gray-700">
+            <h3 className="text-xl font-bold text-primary-50 mb-1">Forums Coming Soon!</h3>
+            <p className="text-primary-200">
               We're building a vibrant community space where you can connect with other Quotla users, share best practices, and get expert advice. Stay tuned!
             </p>
           </div>
@@ -104,7 +104,7 @@ export default function ForumsPage() {
         {/* Categories Sidebar */}
         <div className="lg:col-span-1">
           <div className="card sticky top-6">
-            <h3 className="font-semibold text-gray-900 mb-4">Categories</h3>
+            <h3 className="font-semibold text-primary-50 mb-4">Categories</h3>
             <div className="space-y-1">
               {categories.map((category) => (
                 <button
@@ -113,18 +113,17 @@ export default function ForumsPage() {
                   className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
                     selectedCategory === category.id
                       ? 'bg-primary-100 text-primary-700 font-medium'
-                      : 'text-gray-700 hover:bg-gray-100'
+                      : 'text-primary-200 hover:bg-primary-600'
                   }`}
                 >
-                  <span className="mr-2">{category.icon}</span>
                   {category.name}
                 </button>
               ))}
             </div>
 
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <h4 className="font-semibold text-gray-900 mb-3 text-sm">Forum Stats</h4>
-              <div className="space-y-2 text-sm text-gray-600">
+            <div className="mt-6 pt-6 border-t border-primary-600">
+              <h4 className="font-semibold text-primary-50 mb-3 text-sm">Forum Stats</h4>
+              <div className="space-y-2 text-sm text-primary-300">
                 <div className="flex justify-between">
                   <span>Topics</span>
                   <span className="font-medium">1,234</span>
@@ -146,7 +145,7 @@ export default function ForumsPage() {
         <div className="lg:col-span-3 space-y-4">
           {/* Create New Topic Button */}
           <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold text-gray-900">
+            <h2 className="text-xl font-semibold text-primary-50">
               {selectedCategory === 'all' ? 'All Topics' : categories.find(c => c.id === selectedCategory)?.name}
             </h2>
             <button className="btn btn-primary" disabled>
@@ -160,8 +159,8 @@ export default function ForumsPage() {
               <div key={topic.id} className="card hover:shadow-md transition-shadow">
                 <div className="flex gap-4">
                   <div className="flex-shrink-0">
-                    <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
-                      <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-12 h-12 rounded-full bg-primary-600 flex items-center justify-center">
+                      <svg className="w-6 h-6 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                       </svg>
                     </div>
@@ -169,7 +168,7 @@ export default function ForumsPage() {
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start gap-2">
-                      <h3 className="text-lg font-semibold text-gray-900 hover:text-primary-600 transition-colors flex-1">
+                      <h3 className="text-lg font-semibold text-primary-50 hover:text-primary-600 transition-colors flex-1">
                         {topic.title}
                       </h3>
                       {topic.isPinned && (
@@ -179,7 +178,7 @@ export default function ForumsPage() {
                       )}
                     </div>
 
-                    <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
+                    <div className="flex items-center gap-4 mt-2 text-sm text-primary-300">
                       <span className="flex items-center gap-1">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -199,7 +198,7 @@ export default function ForumsPage() {
                         </svg>
                         {topic.views} views
                       </span>
-                      <span className="ml-auto text-gray-500">
+                      <span className="ml-auto text-primary-400">
                         {topic.lastActivity}
                       </span>
                     </div>
@@ -211,7 +210,7 @@ export default function ForumsPage() {
 
           {filteredTopics.length === 0 && (
             <div className="card text-center py-12">
-              <p className="text-gray-500">No topics found in this category yet.</p>
+              <p className="text-primary-400">No topics found in this category yet.</p>
             </div>
           )}
         </div>
@@ -230,7 +229,7 @@ export default function ForumsPage() {
               placeholder="Enter your email"
               className="px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50"
             />
-            <button className="px-6 py-3 rounded-lg bg-white text-primary-600 font-semibold hover:bg-gray-100 transition-colors">
+            <button className="px-6 py-3 rounded-lg bg-white text-primary-600 font-semibold hover:bg-primary-600 transition-colors">
               Notify Me
             </button>
           </div>

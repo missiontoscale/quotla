@@ -85,7 +85,7 @@ export default function ClientsSlideOver({ isOpen, onClose }: ClientsSlideOverPr
           </div>
         ) : filteredClients.length === 0 ? (
           <div className="card text-center py-12">
-            <p className="text-gray-500 mb-4">No clients found</p>
+            <p className="text-primary-400 mb-4">No clients found</p>
             <Link
               href="/clients/new"
               className="btn btn-primary inline-block"
@@ -110,12 +110,12 @@ export default function ClientsSlideOver({ isOpen, onClose }: ClientsSlideOverPr
                 </thead>
                 <tbody>
                   {filteredClients.map((client) => (
-                    <tr key={client.id} className="border-b hover:bg-gray-50">
+                    <tr key={client.id} className="border-b hover:bg-primary-700">
                       <td className="py-3 px-4 font-medium">{client.name}</td>
-                      <td className="py-3 px-4 text-sm text-gray-600">{client.email || '-'}</td>
-                      <td className="py-3 px-4 text-sm text-gray-600">{client.phone || '-'}</td>
-                      <td className="py-3 px-4 text-sm text-gray-600">{client.company_name || '-'}</td>
-                      <td className="py-3 px-4 text-sm text-gray-600">
+                      <td className="py-3 px-4 text-sm text-primary-300">{client.email || '-'}</td>
+                      <td className="py-3 px-4 text-sm text-primary-300">{client.phone || '-'}</td>
+                      <td className="py-3 px-4 text-sm text-primary-300">{client.company_name || '-'}</td>
+                      <td className="py-3 px-4 text-sm text-primary-300">
                         {client.city && client.country ? `${client.city}, ${client.country}` : '-'}
                       </td>
                       <td className="py-3 px-4 text-right">

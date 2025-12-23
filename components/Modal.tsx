@@ -40,7 +40,7 @@ export default function Modal({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+          <div className="fixed inset-0 bg-primary-7000 bg-opacity-75 transition-opacity" />
         </Transition.Child>
 
         <div className="fixed inset-0 z-10 overflow-y-auto">
@@ -56,15 +56,15 @@ export default function Modal({
             >
               <Dialog.Panel className={`relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 w-full ${sizeClasses[size]}`}>
                 {title && (
-                  <div className="bg-white px-4 py-5 sm:px-6 border-b border-gray-200">
+                  <div className="bg-white px-4 py-5 sm:px-6 border-b border-primary-600">
                     <div className="flex items-center justify-between">
-                      <Dialog.Title className="text-2xl font-bold text-gray-900">
+                      <Dialog.Title className="text-2xl font-bold text-primary-50">
                         {title}
                       </Dialog.Title>
                       {showCloseButton && (
                         <button
                           type="button"
-                          className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                          className="rounded-md bg-white text-primary-400 hover:text-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
                           onClick={onClose}
                         >
                           <span className="sr-only">Close</span>

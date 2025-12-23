@@ -8,6 +8,7 @@ import { Client, LineItem, CURRENCIES, INVOICE_STATUSES } from '@/types'
 import { calculateTax, calculateTotal } from '@/lib/utils/validation'
 import AIDescriptionGenerator from '@/components/AIDescriptionGenerator'
 import CurrencyConverter from '@/components/CurrencyConverter'
+import { retrieveTransferData, getLegacyAIData, cleanupExpiredTransfers } from '@/lib/utils/secure-transfer'
 
 export default function NewInvoicePage() {
   const router = useRouter()
@@ -40,15 +41,34 @@ export default function NewInvoicePage() {
   }, [user])
 
   const loadAIData = async () => {
-    // Check if there's AI-generated data in the URL
+    // Check if there's AI-generated data
     if (typeof window === 'undefined') return
 
-    const params = new URLSearchParams(window.location.search)
-    const aiDataStr = params.get('ai_data')
+    // Cleanup expired transfers on page load
+    cleanupExpiredTransfers()
 
-    if (aiDataStr && user) {
+    const params = new URLSearchParams(window.location.search)
+
+    // ✅ SECURE: Try new secure transfer method first
+    const transferId = params.get('transfer')
+    let aiData = null
+
+    if (transferId) {
+      // Retrieve from sessionStorage using transfer ID
+      aiData = retrieveTransferData(transferId, 'invoice')
+
+      if (!aiData) {
+        console.error('Failed to retrieve transfer data. It may have expired.')
+        setError('The invoice data has expired. Please generate a new invoice.')
+        return
+      }
+    } else {
+      // ⚠️ LEGACY: Fallback to old URL-based method (for backward compatibility)
+      aiData = getLegacyAIData(params)
+    }
+
+    if (aiData && user) {
       try {
-        const aiData = JSON.parse(decodeURIComponent(aiDataStr))
 
         // Try to find matching client by name
         let matchedClientId = ''
@@ -241,7 +261,7 @@ export default function NewInvoicePage() {
 
   return (
     <div className="max-w-5xl">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Create New Invoice</h1>
+      <h1 className="text-3xl font-bold text-primary-50 mb-8">Create New Invoice</h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {error && (
@@ -437,7 +457,7 @@ export default function NewInvoicePage() {
                     <input
                       type="number"
                       step="0.01"
-                      className="input bg-gray-50"
+                      className="input bg-primary-700"
                       value={item.amount}
                       readOnly
                     />
@@ -508,7 +528,7 @@ export default function NewInvoicePage() {
           </div>
         </div>
 
-        <div className="card bg-gray-50">
+        <div className="card bg-primary-700">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold">Totals</h2>
             <CurrencyConverter

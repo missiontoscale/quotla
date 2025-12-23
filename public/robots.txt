@@ -1,14 +1,15 @@
 # Allow all crawlers
 User-agent: *
-Allow: /
-
-# Disallow certain paths
 Disallow: /api/
+Disallow: /admin/
 Disallow: /dashboard/
-Disallow: /quotes/
-Disallow: /invoices/
-Disallow: /clients/
 Disallow: /settings/
+Disallow: /billing/
+Disallow: /login
+Disallow: /signup
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /verify-email
 
 # Sitemap
 Sitemap: https://quotla.netlify.app/sitemap.xml
