@@ -15,7 +15,7 @@ import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
 import { FOOTER_SECTIONS, FOOTER_BRAND, FooterLink as FooterLinkType } from './footer/footer-data'
 import { FooterLink } from './footer/FooterLink'
-import { COLORS, SPACING, TYPOGRAPHY } from '@/lib/constants'
+import { COLORS, SPACING, TYPOGRAPHY, APP_VERSION } from '@/lib/constants'
 
 export default function Footer() {
   const { user } = useAuth()
@@ -81,6 +81,9 @@ export default function Footer() {
         <div className={`mt-8 pt-8 border-t border-${COLORS.BORDER.LIGHT} text-center`}>
           <p className={`${TYPOGRAPHY.BODY_SM} text-${COLORS.TEXT.LIGHT}/50`}>
             &copy; {new Date().getFullYear()} {FOOTER_BRAND.name}. All rights reserved.
+          </p>
+          <p className={`${TYPOGRAPHY.BODY_SM} text-${COLORS.TEXT.LIGHT}/30 mt-1`}>
+            Version {APP_VERSION}
           </p>
         </div>
       </div>

@@ -9,6 +9,8 @@
  * - if (file.size > LIMITS.MAX_FILE_SIZE) { ... }
  */
 
+export const APP_VERSION = '3.0.0' as const
+
 export const LIMITS = {
   // Chat and AI limits
   CHAT_HISTORY_LIMIT: 25,

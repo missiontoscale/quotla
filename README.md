@@ -1,324 +1,379 @@
-# Quotla
+# Quotla Product Requirements Document (PRD)
 
-**Empowering Small Businesses with Intelligent Document Management**
+## Executive Summary
 
-Quotla is more than a quote and invoice generator—it's your intelligent business companion. We're on a mission to help small businesses and entrepreneurs streamline operations, reduce administrative overhead, and focus on what truly matters: growing their business.
+Quotla is an intelligent business management platform designed to help small businesses and entrepreneurs streamline their operations through AI-powered document generation and comprehensive business tools.
 
-## Our Vision
-
-We envision a world where every business owner has access to enterprise-grade tools without the enterprise complexity or cost. Quotla combines cutting-edge AI technology with intuitive design to deliver professional business documents in seconds, not hours.
-
-### Why Quotla?
-
-- **Speed & Efficiency**: Generate professional quotes and invoices through natural conversation—no forms, no friction
-- **Intelligence Built-In**: AI-powered content generation that understands your business context
-- **Built for Growth**: From your first invoice to your thousandth, Quotla scales with you
-- **Professional Without the Premium**: Enterprise features accessible to businesses of all sizes
+**Mission**: Empower small businesses with enterprise-grade tools that are simple to use and accessible to all.
 
 ---
 
-## ✨ Features
+## Current Features (v1.0)
 
-### Core Functionality
+### 1. Core Document Management
 
-- **Professional Quote & Invoice Management**: Create, edit, and track business documents with customizable line items, automatic tax calculations, and multi-currency support
-- **AI-Powered Document Generation**: Generate invoices and quotes from natural language using conversational AI with support for voice input
-- **File Processing**: Upload PDF, DOCX, TXT, and images to extract data automatically with Vision AI
-- **Smart Export Options**: Export documents as PDF, DOCX, or PNG with professional formatting
-- **Client Management**: Store and manage client information with full contact details and document history
-- **Business Profile**: Customize your business profile with logo, company details, tax information, and branding
+#### 1.1 Intelligent Quote Generation
+- **Status**: Live
+- **Description**: Create professional quotes using AI or manual forms
+- **Key Features**:
+  - AI-powered quote generation from natural language
+  - Conversational interface for quick quote creation
+  - Manual form-based quote creation
+  - Customizable line items with descriptions, quantities, and pricing
+  - Automatic tax calculations
+  - Multi-currency support (8 major currencies)
+  - Draft and sent status tracking
+  - Export to PDF, DOCX, and PNG formats
 
-### Content & Marketing
+#### 1.2 Invoice Management
+- **Status**: Live
+- **Description**: Generate and manage professional invoices
+- **Key Features**:
+  - AI-powered invoice generation from natural language
+  - Voice input support for hands-free creation
+  - File upload (PDF, DOCX, images) for data extraction
+  - Convert quotes to invoices
+  - Payment terms and due date management
+  - Invoice status tracking (draft, sent, paid, overdue)
+  - Professional export formats
 
-- **Blog System**: Full-featured blog with markdown support, categories, tags, and featured posts
-- **Newsletter**: Email subscription system with admin management
-- **Admin Dashboard**: Moderate comments, view subscribers, and manage content
+#### 1.3 Client Management
+- **Status**: Live
+- **Description**: Centralized client database and relationship management
+- **Key Features**:
+  - Complete client profiles with contact information
+  - Client address management
+  - Document history per client
+  - Quick client selection during document creation
 
-### Security & Compliance
+### 2. AI & Automation
 
-- **Row-Level Security**: Users can only access their own data
-- **Rate Limiting**: Prevents spam and abuse
-- **Password Requirements**: Strong password validation with complexity rules
-- **Input Sanitization**: All user inputs are sanitized to prevent XSS attacks
-- **Audit Logging**: Track security events and admin actions
+#### 2.1 Natural Language Processing
+- **Status**: Live
+- **Description**: Generate documents through conversation
+- **Key Features**:
+  - Text-based conversational AI
+  - Voice recording and transcription
+  - Intent classification (quote vs invoice detection)
+  - Automatic data extraction from descriptions
 
----
+#### 2.2 Vision AI
+- **Status**: Live
+- **Description**: Extract data from uploaded files
+- **Key Features**:
+  - PDF data extraction
+  - Image-to-text conversion
+  - Document parsing and structuring
+  - Support for DOCX and TXT files
 
-## 🛠 Tech Stack
+#### 2.3 Content Generation
+- **Status**: Live
+- **Description**: AI-generated professional descriptions
+- **Key Features**:
+  - Line item description enhancement
+  - Professional language optimization
+  - Context-aware content generation
 
-| Layer | Technology |
-| ----- | ---------- |
-| **Frontend** | Next.js 15, React 19, TypeScript, Tailwind CSS |
-| **Backend** | Next.js API Routes + External FastAPI for AI operations |
-| **Database** | Supabase (PostgreSQL with Row Level Security) |
-| **Authentication** | Supabase Auth with JWT tokens |
-| **AI** | External FastAPI backend (OpenAI GPT-4, Anthropic Claude, Google Gemini) |
-| **Storage** | Supabase Storage for logos and file uploads |
-| **Deployment** | Vercel (recommended) |
+### 3. Business Operations
 
----
+#### 3.1 Dashboard & Analytics
+- **Status**: Live
+- **Description**: Central hub for business overview
+- **Key Features**:
+  - Recent quotes and invoices overview
+  - Quick action buttons
+  - Status summaries
+  - Navigation to all features
 
-## 🚀 Getting Started
+#### 3.2 Business Profile Management
+- **Status**: Live
+- **Description**: Customize business information
+- **Key Features**:
+  - Company logo upload
+  - Business details configuration
+  - Tax information setup
+  - Branding customization
 
-### Prerequisites
+#### 3.3 Export & Sharing
+- **Status**: Live
+- **Description**: Professional document export
+- **Key Features**:
+  - PDF generation with branded templates
+  - DOCX export for editing
+  - PNG export for quick sharing
+  - Automatic formatting and styling
 
-Before you begin, ensure you have:
+### 4. Content & Marketing
 
-- **Node.js 18+** and npm installed
-- A **Supabase account** and project ([Sign up free](https://supabase.com))
-- A **FastAPI backend** deployed and accessible for AI operations
-- **API keys** for your chosen AI provider (OpenAI, Anthropic, or Google)
+#### 4.1 Blog System
+- **Status**: Live
+- **Description**: Content marketing platform
+- **Key Features**:
+  - Markdown-based blog posts
+  - Categories and tags
+  - Featured posts
+  - Comment system with moderation
+  - Reading time calculation
+  - SEO-friendly URLs
 
-### Installation
+#### 4.2 Newsletter
+- **Status**: Live
+- **Description**: Email subscription management
+- **Key Features**:
+  - Subscription forms
+  - Subscriber database
+  - Admin dashboard for subscriber management
 
-1. **Clone the repository**
+### 5. Security & Compliance
 
-   ```bash
-   git clone <repository-url>
-   cd quotla
-   ```
+#### 5.1 Authentication & Authorization
+- **Status**: Live
+- **Description**: Secure user management
+- **Key Features**:
+  - Email/password authentication
+  - JWT token-based sessions
+  - Row-level security (RLS)
+  - Password complexity requirements
+  - Secure session management
 
-2. **Install dependencies**
+#### 5.2 Data Protection
+- **Status**: Live
+- **Description**: Enterprise-grade security
+- **Key Features**:
+  - Rate limiting on sensitive endpoints
+  - Input sanitization (XSS prevention)
+  - File upload validation
+  - Audit logging
+  - HTTPS encryption
 
-   ```bash
-   npm install
-   ```
+### 6. Administrative Tools
 
-3. **Set up environment variables**
-
-   Create a `.env.local` file in the root directory:
-
-   ```env
-   # Supabase Configuration
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-
-   # AI Backend Configuration
-   NEXT_PUBLIC_EXTERNAL_API_BASE_URL=your_fastapi_backend_url
-   EXTERNAL_API_KEY=your_api_key_for_backend
-   ```
-
-4. **Set up Supabase database**
-
-   Run the database schema in your Supabase SQL Editor:
-   - Navigate to your Supabase project dashboard
-   - Go to SQL Editor
-   - Create tables for: `profiles`, `clients`, `quotes`, `invoices`, `blog_posts`, `blog_comments`, `newsletter_subscribers`
-   - Enable Row Level Security (RLS) policies
-
-5. **Run the development server**
-
-   ```bash
-   npm run dev
-   ```
-
-6. **Open your browser**
-
-   Navigate to [http://localhost:3000](http://localhost:3000)
-
-### Deployment
-
-#### Deploy to Vercel (Recommended)
-
-1. Push your code to GitHub
-2. Import your repository in Vercel
-3. Add environment variables in Vercel project settings
-4. Deploy
-
-```bash
-# Or use Vercel CLI
-npm install -g vercel
-vercel
-```
-
----
-
-## 📖 Usage Guide
-
-### Creating Documents with AI
-
-Quotla's AI assistant can generate quotes and invoices through natural conversation.
-
-**How it works:**
-
-1. Click **"Intelligent generation in seconds"** on the dashboard
-2. Describe what you need in plain language:
-   - "Create an invoice for website design services worth $2,500 for ABC Corp"
-   - "I need a quote for 50 units of product X at $100 each with 10% discount"
-3. The AI will:
-   - Extract client information
-   - Parse line items with quantities and prices
-   - Calculate totals and taxes
-   - Generate a complete document
-4. Review and save the generated document
-
-**Supported inputs:**
-
-- Text descriptions
-- Voice recordings (click microphone icon)
-- File uploads (PDF, DOCX, images) for data extraction
-
-### Manual Document Creation
-
-For traditional workflows:
-
-1. Navigate to **Quotes** or **Invoices**
-2. Click **"New Quote"** or **"New Invoice"**
-3. Fill in the form:
-   - Select a client (or create new)
-   - Add line items with descriptions, quantities, and prices
-   - Set tax rates and discounts
-   - Add notes and payment terms
-4. Click **"Generate with AI"** on any line item for professional descriptions
-5. Save as draft or mark as sent
-
-### Managing Clients
-
-1. Go to **Clients** section
-2. Add client details:
-   - Company name
-   - Contact person
-   - Email and phone
-   - Address
-3. View client history with all associated quotes and invoices
-
-### Exporting Documents
-
-Documents can be exported in multiple formats:
-- **PDF**: Professional print-ready format
-- **DOCX**: Editable Microsoft Word document
-- **PNG**: Image format for quick sharing
-
-Click the export button on any document and choose your format.
-
-### Blog Management
-
-Create blog posts using markdown files:
-
-1. Create a `.md` file in `content/blog/` directory
-2. Add frontmatter metadata:
-
-   ```yaml
-   ---
-   title: "Your Post Title"
-   date: "2024-01-15"
-   author: "Your Name"
-   category: "Business Tips"
-   tags: ["invoicing", "productivity"]
-   featured: true
-   excerpt: "Brief description of the post"
-   ---
-   ```
-
-3. Write content in markdown
-4. Posts automatically appear at `/blog`
-
-**Features:**
-
-- GitHub Flavored Markdown (GFM) support
-- Automatic reading time calculation
-- Category and tag filtering
-- Featured posts
-- SEO-friendly URLs
-
-### Admin Features
-
-Admins have additional capabilities accessible from the admin dashboard:
-
-- **Comment Moderation**: Approve or reject blog comments
-- **Subscriber Management**: View and export newsletter subscribers
-- **Audit Logs**: Review security events and user actions
+#### 6.1 Admin Dashboard
+- **Status**: Live
+- **Description**: Platform administration
+- **Key Features**:
+  - Comment moderation
+  - Newsletter subscriber management
+  - Audit log viewing
+  - User activity monitoring
 
 ---
 
-## 🌍 Multi-Currency Support
+## Future Features Roadmap
 
-Quotla supports 8 major currencies with automatic formatting:
+### Phase 1: Enhanced Business Operations (Q1 2026)
 
-| Currency | Code | Symbol |
-| -------- | ---- | ------ |
-| US Dollar | USD | $ |
-| Euro | EUR | € |
-| British Pound | GBP | £ |
-| Canadian Dollar | CAD | CA$ |
-| Australian Dollar | AUD | A$ |
-| Japanese Yen | JPY | ¥ |
-| Chinese Yuan | CNY | ¥ |
-| Indian Rupee | INR | ₹ |
+#### 1.1 Inventory Management
+- **Priority**: High
+- **Target**: Small businesses with physical or digital products
+- **Key Features**:
+  - Product catalog management
+  - Stock level tracking
+  - Low stock alerts
+  - Inventory history and analytics
+  - Barcode/SKU support
+  - Multi-location inventory
+  - Automatic stock deduction on invoice creation
+  - Reorder point notifications
+  - Supplier management
+  - Cost tracking and profit margin calculation
+
+#### 1.2 Payment Processing Integration
+- **Priority**: High
+- **Target**: Streamline payment collection
+- **Key Features**:
+  - Stripe/PayPal integration
+  - Pay Now buttons on invoices
+  - Payment status tracking
+  - Automatic invoice status updates
+  - Payment reminders
+  - Recurring billing support
+
+#### 1.3 Expense Tracking
+- **Priority**: Medium
+- **Target**: Complete financial overview
+- **Key Features**:
+  - Expense entry and categorization
+  - Receipt photo upload
+  - Expense reports
+  - Profit & loss calculations
+  - Tax-deductible expense tracking
+  - Vendor/supplier expense linking
+
+### Phase 2: Advanced Analytics & Insights (Q2 2026)
+
+#### 2.1 Business Intelligence Dashboard
+- **Priority**: High
+- **Key Features**:
+  - Revenue analytics and trends
+  - Client lifetime value (CLV)
+  - Payment collection metrics
+  - Outstanding invoice tracking
+  - Sales forecasting
+  - Profit margin analysis
+  - Custom date range reporting
+
+#### 2.2 Automated Reporting
+- **Priority**: Medium
+- **Key Features**:
+  - Scheduled email reports
+  - Monthly financial summaries
+  - Tax preparation reports
+  - Client activity reports
+  - Export to accounting software formats
+
+### Phase 3: Collaboration & Team Features (Q3 2026)
+
+#### 3.1 Multi-User Support
+- **Priority**: Medium
+- **Target**: Growing teams
+- **Key Features**:
+  - Team member invitations
+  - Role-based access control
+  - Activity attribution
+  - Team performance metrics
+
+#### 3.2 Client Portal
+- **Priority**: Medium
+- **Target**: Enhanced client experience
+- **Key Features**:
+  - Client login and dashboard
+  - View quotes and invoices
+  - Approve quotes online
+  - Make payments directly
+  - Download documents
+  - Communication history
+
+### Phase 4: Industry-Specific Tools (Q4 2026)
+
+#### 4.1 Time Tracking
+- **Priority**: Medium
+- **Target**: Service-based businesses
+- **Key Features**:
+  - Time entry by project/client
+  - Billable hours tracking
+  - Automatic invoice generation from time entries
+  - Project budget tracking
+  - Team time tracking
+
+#### 4.2 Project Management
+- **Priority**: Low
+- **Target**: Agencies and consultancies
+- **Key Features**:
+  - Project milestones
+  - Task management
+  - Project-based invoicing
+  - Budget vs. actual tracking
+  - Client collaboration spaces
+
+#### 4.3 Recurring Invoices & Subscriptions
+- **Priority**: High
+- **Target**: Subscription-based businesses
+- **Key Features**:
+  - Recurring invoice templates
+  - Automatic invoice generation
+  - Subscription management
+  - Payment reminder automation
+  - Dunning management
+
+### Phase 5: Mobile & Integrations (2027)
+
+#### 5.1 Mobile Applications
+- **Priority**: High
+- **Key Features**:
+  - iOS and Android apps
+  - Mobile-optimized invoice creation
+  - Photo receipt capture
+  - Push notifications
+  - Offline mode
+
+#### 5.2 Third-Party Integrations
+- **Priority**: Medium
+- **Key Features**:
+  - QuickBooks/Xero sync
+  - Google Workspace integration
+  - Microsoft 365 integration
+  - CRM integrations (HubSpot, Salesforce)
+  - E-commerce platform connectors
+  - Zapier/Make.com webhooks
 
 ---
 
-## 🔒 Security Features
+## Technology Stack
 
-Quotla implements enterprise-grade security:
-
-- **Row Level Security (RLS)**: Database-level isolation ensures users can only access their own data
-- **Rate Limiting**: API endpoints are rate-limited to prevent abuse (5 requests/hour for sensitive operations)
-- **Password Requirements**: Enforces strong passwords with minimum length, uppercase, lowercase, numbers, and special characters
-- **File Upload Security**: Validates file types, sizes, and content to prevent malicious uploads
-- **Input Sanitization**: All user inputs are sanitized to prevent XSS, SQL injection, and other attacks
-- **JWT Authentication**: Secure token-based authentication with automatic refresh
-- **Audit Logging**: Comprehensive logging of security events and admin actions
-- **HTTPS Only**: All traffic encrypted in transit
-
----
-
-## Project Structure
-
-```text
-quotla/
-├── app/                      # Next.js app directory
-│   ├── api/                 # API routes
-│   │   ├── ai/             # AI generation endpoints
-│   │   ├── blog/           # Blog comment submission
-│   │   └── newsletter/     # Newsletter subscription
-│   ├── admin/              # Admin dashboard
-│   ├── blog/               # Public blog pages
-│   ├── clients/            # Client management
-│   ├── dashboard/          # Main dashboard
-│   ├── invoices/           # Invoice management
-│   ├── newsletter/         # Newsletter subscription page
-│   ├── quotes/             # Quote management
-│   ├── settings/           # User settings
-│   ├── login/              # Authentication
-│   └── signup/             # User registration
-├── components/             # Reusable React components
-├── contexts/              # React contexts (Auth)
-├── lib/                   # Utility libraries
-│   ├── ai/               # AI integration
-│   ├── supabase/         # Database clients
-│   └── utils/            # Helper functions
-├── types/                # TypeScript type definitions
-├── supabase-schema.sql   # Database schema
-└── README.md            # This file
-```
-
-## Usage Guide
-
-### For Regular Users
-
-1. **Sign Up**: Create an account with email and secure password
-2. **Complete Profile**: Add your business information and logo in Settings
-3. **Add Clients**: Go to Clients and add your customer information
-4. **Create Quotes**: Use AI to generate professional descriptions
-5. **Create Invoices**: Convert quotes to invoices or create new ones
-6. **Track Status**: Monitor document status from the dashboard
-
-### For Admins
-
-Admins have additional capabilities:
-1. **Moderate Comments**: Approve or reject blog comments
-2. **View Subscribers**: See newsletter subscriber list
-3. **Access Audit Logs**: Review security events
-
-## License
-
-This project is proprietary software developed for Mission To Scale.
-
-## Support
-
-For issues or questions, please contact the development team.
+| Component | Technology | Purpose |
+|-----------|------------|---------|
+| Frontend | Next.js 15, React 19 | Server-side rendering, modern UI |
+| Backend | Next.js API Routes | Serverless API endpoints |
+| AI Backend | FastAPI (External) | AI operations, model orchestration |
+| Database | Supabase (PostgreSQL) | Data storage with RLS |
+| Authentication | Supabase Auth | Secure user management |
+| AI Models | OpenAI, Anthropic, Google | Content generation, NLP |
+| Storage | Supabase Storage | File and image storage |
+| Deployment | Vercel | Edge deployment, CDN |
 
 ---
 
-Built with Next.js, Supabase, and Anthropic Claude
+## Success Metrics
+
+### Current KPIs
+- User signup rate
+- Document generation success rate
+- AI usage vs manual creation ratio
+- User retention rate
+- Export completion rate
+
+### Future KPIs (Post-Inventory Launch)
+- Average products per user
+- Inventory turnover rate
+- Payment processing volume
+- Client portal adoption rate
+- Mobile app daily active users
+
+---
+
+## Competitive Advantages
+
+1. **AI-First Approach**: Natural language document generation sets us apart from traditional accounting software
+2. **All-in-One Platform**: From quotes to inventory to payments—everything in one place
+3. **User Experience**: Conversational interface removes friction from business operations
+4. **Scalability**: Grow from freelancer to enterprise without changing platforms
+5. **Modern Technology**: Built on latest tech stack ensures speed and reliability
+
+---
+
+## Target Users
+
+### Primary
+- Freelancers and solopreneurs
+- Small business owners (1-10 employees)
+- Service providers (consultants, agencies)
+
+### Secondary (Future)
+- Growing businesses (11-50 employees)
+- E-commerce businesses
+- Subscription-based businesses
+- Retail businesses with inventory needs
+
+---
+
+## Appendix: Feature Priority Matrix
+
+| Feature | Impact | Effort | Priority |
+|---------|--------|--------|----------|
+| Inventory Management | High | High | High |
+| Payment Processing | High | Medium | High |
+| Business Analytics | High | Medium | High |
+| Recurring Invoices | High | Low | High |
+| Multi-User Support | Medium | High | Medium |
+| Time Tracking | Medium | Medium | Medium |
+| Client Portal | Medium | High | Medium |
+| Mobile Apps | High | Very High | Medium |
+| Expense Tracking | Medium | Low | Medium |
+| Project Management | Low | High | Low |
+
+---
+
+**Document Version**: 1.0
+**Last Updated**: December 24, 2025
+**Owner**: Product Team, Mission To Scale
