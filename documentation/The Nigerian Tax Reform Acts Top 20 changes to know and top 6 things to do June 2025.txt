@@ -1,0 +1,420 @@
+The Nigerian Tax
+Reform Acts: Top 20
+changes to know and
+top 6 things to do
+June 2025
+
+www.pwc.com/ng
+
+The Nigerian Tax Reform Acts
+
+PwC
+
+02
+
+Overview
+On 26 June 2025, President Bola Ahmed Tinubu signed the four (4) Tax Reform Bills
+into law. These laws include the Nigeria Tax Act (NTA), The Nigeria Tax
+Administration Act (NTAA), The Nigeria Revenue Service Act (NRSA) and the Joint
+Revenue Board Act (JRBA), collectively referred to as “the Acts”. As of the time of this
+publication, the effective date of the Acts has not yet been publicised. However, there
+are indications that this date will not be earlier than 1 January 2026.
+The Acts comprehensively overhaul the Nigerian tax system to drive economic
+growth, increase revenue generation, improve the business environment and
+enhance effective tax administration across the different levels of government.
+Here are the top 20 changes to know about the Acts.
+
+Top 20 changes to know
+
+01
+
+Increased exemption threshold for small companies - Small companies are
+
+02
+
+Increased Capital Gains Tax (CGT) rate – The NTA increases the Capital Gains
+
+03
+
+CGT on Indirect transfer of shares - The NTA introduces CGT on indirect
+
+04
+
+Introduction of Development Levy - Nigerian companies except small
+
+05
+
+Minimum Effective Tax Rate (ETR) - Nigerian companies who are members of a
+
+now exempt from Companies Income Tax (CIT), Capital Gains Tax (CGT) and the
+newly introduced Development levy (see below). Small companies are defined as
+companies with annual gross turnovers of NGN100million (previously
+NGN25million) and below and total fixed assets not exceeding NGN250million.
+
+Tax rate from 10% to 30% for companies. This effectively aligns the CGT and
+Companies Income Tax rate and reduces any tax arbitrage that could have been
+unduly enjoyed in the classification between chargeable gains and trading income.
+For individuals, capital gains will be taxed at the applicable income tax rate based on
+the progressive tax band of the individual.
+
+transfers of shares in Nigerian companies so that where shares are disposed of in
+intermediary holding companies offshore, a Nigeria CGT is triggered (subject to
+treaty exemptions). Also, the tax exemption threshold for the sale of shares in
+Nigerian companies has been increased to NGN150million (from NGN 100 million)
+in any 12 consecutive months, provided that the gains do not exceed NGN10million.
+
+companies will pay a “Development Levy” at 4% of their assessable profits (i,e. tax
+profits before deducting tax depreciation and losses). The Development Levy
+consolidates the Tertiary Education Tax (TET), Information Technology Levy (IT),
+the National Agency for Science and Engineering Infrastructure (NASENI) levy and
+the Police Trust Fund (PTF) levy.
+
+multinational group with aggregate group turnover of EUR750million and above or
+have an annual turnover of NGN50billion and above, will now be subject to a
+minimum effective tax rate (ETR) of 15% of their “Net Income”. Net Income is
+defined as profits before tax excluding franked investment income and unrealised
+gains or losses, except for life insurance companies where the definition of Net
+Income also excludes gross and investment income for policyholders. The minimum
+effective tax rule does not apply to Free Zone companies on their exports out of
+Nigeria, provided that such companies are not part of multinational groups.
+
+The Nigerian Tax Reform Acts
+
+PwC
+
+03
+
+The Nigerian parent company of a multinational group will have to pay a top up tax
+where its subsidiaries have paid taxes below the minimum 15% ETR.
+
+06
+
+Controlled Foreign Company rules - The NTA imposes a tax on undistributed
+
+07
+
+Taxable profits of non-residents – The NTA expands the scope of the activities
+
+08
+
+Minimum Tax for Non-resident companies - Non-resident companies who
+
+09
+
+Restriction on the tax exemption status of free zone entities – Based on
+
+10
+
+Introduction of Economic Development Incentive - The Acts replace the
+
+11
+
+A more progressive Personal Income Tax (PIT) regime - The NTA changes
+
+12
+
+Resident and Non-Resident Individuals defined - PIT will apply to the
+
+profits of foreign companies controlled by Nigerian companies, where it is considered
+that the foreign subsidiary could have distributed dividends without harming its
+business.
+
+of non-resident companies that are subject to tax in Nigeria. Notably, the NTA
+introduces "force of attraction" rules. Under these rules, certain activities carried out
+by a non-resident company or its related parties, can be taxed as part of the nonresident company’s permanent establishment (PE) in Nigeria, even if those activities
+are not physically conducted through the PE. In addition, profits from Engineering,
+Procurement, and Construction contracts can be taxed in Nigeria, even if some of the
+activities are performed under separate contracts or outside Nigeria.
+
+have a taxable presence in Nigeria will now be subject to minimum tax based on the
+percentage of their earnings before interest and tax (EBIT) to the total income
+generated from Nigeria. In any case, tax payable by such companies cannot be less
+than the withholding tax (WHT) rate applicable to the income, or 4% of the income.
+
+the publicly available version of the bills submitted for presidential assent, Free Zone
+companies will continue to enjoy full tax exemption on their exports, or output that
+go into goods or services eventually exported, or supplied to oil and gas companies.
+Proportionate taxes apply where more than 25% of the Free Zone company’s sales are
+made to the customs territory. From 1 January 2028, the full profits of Free Zone
+entities will be subject to tax if they make any sales to the customs territory.
+
+“pioneer” tax holiday incentive, with an “Economic Development Incentive” (or EDI).
+This incentive introduces a tax credit of 5% per annum for 5 years on qualifying
+capital expenditure purchased by eligible companies within 5 years effective from the
+production date. If a company has unused tax credits or qualifying capital expenses, it
+can carry them forward for another 5 years. Any credits still unused after this
+timeline will expire.
+
+the income brackets and applicable tax rates for each bracket. Individuals earning
+NGN800,000 or less per annum will now be exempt from tax on their income and
+gains, while higher income earners will be taxed at a higher rate up to 25%. The Act
+also increases the tax exemption threshold for compensation for loss of employment
+or injury from NGN10million to NGN50million
+
+worldwide income of a resident individual which is now clearly defined in the new
+Act. Prior to now there had been varied interpretations due to a lack of proper
+definition of “residence”. With the definition extending to individuals with
+substantial economic and immediate family ties in a year of assessment, the law
+widens the tax net. Employment income will now be taxed in Nigeria only if the
+individual is resident in Nigeria or performs duties in Nigeria without paying tax in
+their country of residence.
+
+The Nigerian Tax Reform Acts
+
+PwC
+
+04
+
+13
+
+Introduction of the Tax Ombuds office - The Acts introduce the Tax Ombuds
+
+14
+
+Input VAT Recovery - The VAT rate of 7.5% has been retained. Nigeria now
+
+15
+
+VAT at zero rate on essential goods and services - The NTA expands the list
+
+16
+
+VAT fiscalisation rules - Nigeria has now codified VAT fiscalisation rules and
+
+17
+
+Update to the VAT sharing formula The Acts reduce the Federal
+
+18
+
+Increased penalties for non-compliance - There has been a significant
+
+19
+
+Disclosure of tax planning arrangements - The NTAA requires companies to
+
+office to liaise with the tax authorities on behalf of taxpayers, and serve as an
+independent arbiter to review and resolve complaints relating to taxes, levies,
+duties or similar regulatory charges.
+
+adopts globally recognised VAT principles that allow for the claim of input VAT on
+all purchases including services and fixed assets. Businesses can now recover input
+VAT provided that the input VAT is directly related to their supplies that are also
+subject to VAT
+
+of zero-rated items to include essential goods and services such as basic food items,
+medical and pharmaceutical products, educational books and materials, electricity
+generation and transmission services, medical equipment and services, tuition fees,
+exports (excluding oil and gas exports) etc. The impact of this is that businesses
+selling these goods and services can recover their VAT costs, despite the zero rate
+which was previously not possible by law.
+
+mandatory e-invoicing for businesses operating in the country. This sets Nigeria
+apart as an early adopter of e-invoicing in Africa. Companies in Nigeria are now
+mandated to implement the fiscalisation system deployed by the tax authority for
+the collection of VAT.
+
+Government’s share of VAT from 15% to 10%, while increasing the allocations of
+states and Local Government Areas to 55% and 35%, respectively. The VAT
+revenue assigned to states and local governments is further allocated as follows:
+50% divided equally, 20% based on population, and 30% based on place of
+consumption.
+
+increase in non-compliance penalties and the introduction of new penalties. Some
+of the updates include increase in the penalty for failure to file returns to
+NGN100,000 in the first month, and NGN50,000 for every month the failure
+continues, introduction of new penalties such as penalty of NGN5million for
+awarding contracts to individuals or entities that are not registered for tax,
+penalties for failure to grant access for deployment of technology, inducing a tax
+officer etc.
+
+voluntarily and proactively notify the tax authorities of tax planning transactions or
+schemes which can provide a tax advantage. The term "tax advantage" refers
+broadly to any situation where a person or entity benefits from a favorable tax
+outcome. This includes obtaining new or increased tax reliefs, receiving or
+increasing tax repayments, reducing or avoiding tax charges or assessments,
+deferring tax payments or accelerating tax repayments, and avoiding obligations to
+deduct or account for tax. Essentially, it covers any arrangement or action that
+results in a more beneficial tax position than would otherwise occur.
+
+The Nigerian Tax Reform Acts
+
+20
+
+PwC
+
+05
+
+FIRS renamed the Nigeria Revenue Service and SIRS become
+autonomous - The Federal Inland Revenue Service (FIRS) has now been renamed
+the Nigeria Revenue Service (NRS) to reflect its responsibilities as the body to assess,
+collect and account for revenue due to federation. The Acts also provide that State
+Internal Revenue Services will be autonomous in the running of their affairs. The Law
+also provides the framework for joint audits and for NRS to, upon request, support
+State and Local governments to collect and administer taxes.
+
+Top 6 things to do
+In view of the changes introduced by the Acts, companies and businesses need to:
+
+01
+
+Become aware
+Sensitise management –
+Organise sensitisation
+workshops for relevant
+board committees and
+executive management on
+the impact of the reforms
+on your business
+
+02
+
+Empower your peopleTrain and upskill staff to
+ensure seamless adoption of
+new tax laws in specific
+roles and processes that are
+impacted.
+
+03
+
+Assess
+Carry out a holistic impact
+analysis - Proactively assess
+the corporate structure,
+operational, financial and
+compliance implications
+arising from the tax laws.
+This can also include
+considering the impact on
+supply chains, commercial
+arrangements such as
+acquisitions and
+divestments, incentive
+regimes and so on.
+
+Articulate
+Reframe tax strategy- Reframe your tax strategy to align with the
+commercial goals of the business. More will be expected from the tax
+function to protect business value amidst the various changes arising
+from the new laws or technology changes such as the VAT fiscalisation.
+Set up a Tax Risk Register- Implement a living risk register to
+continuously identify, monitor, and control tax risks and opportunities
+that have been triggered by the reforms in real time.
+
+04
+
+Operationalise and implement
+Update compliance processes- Taxpayers will need to update their
+compliance processes in line with the tax laws. For example, taxpayers
+will need to update their systems to cater for new rates, revised
+compliance obligations and filing requirements, information sharing,
+claim of input VAT etc.
+Execute your implementation plan- Achieve tasks in your
+implementation plan effectively and efficiently in line with your
+strategic objectives.
+Leverage technology- Update the logic in accounting software and
+ERP to align with the new rules. Ensure processes and technology align
+to ensure end-to-end compliance and prepare for changes such as einvoicing.
+Optimise tax governance & management frameworks- Evaluate,
+expand, or eliminate tax functions and processes for effectiveness and
+efficiency, closing compliance gaps and embedding robust internal
+controls.
+
+The Nigerian Tax Reform Acts
+
+05
+
+Engage
+Engage stakeholders Determine a
+communication strategy
+and protocol for key
+internal and external
+stakeholders. Some
+examples include:
+Shareholders – ROI impact,
+Employees – PAYE impact,
+Customers – e-invoicing
+processes, Vendors – KYC
+and validation, Tax
+authorities – rulings on new
+risks, host communities etc
+to ensure a smooth
+transition and adoption
+process.
+
+PwC
+
+06
+
+06
+
+Monitor
+Stay updated- Regularly
+monitor official
+communications,
+information circulars or
+regulations from the
+government authorities
+issued pursuant to the Tax
+laws.
+Manage change - Apart
+from training and
+upskilling, there should be a
+deliberate change
+management plan to drive
+behaviour, review and
+monitor the transition and
+adoption of the new rules.
+
+Conclusion
+The recent enactment of the Acts marks a significant transformation in Nigeria’s tax
+landscape. It is crucial for businesses to carry out a comprehensive review of their tax
+strategies, processes, and compliance frameworks to ensure readiness and resilience.
+PwC has developed a robust sector-by-sector analysis of these changes, which will
+provide more insights and guidance to help businesses understand and respond to the
+evolving tax environment.
+
+Contacts
+
+Chijioke Uwaegbute
+
+Kenneth Erikume
+
+Esiri Agbeyi
+
+Partner and Tax & Regulatory
+Services Leader
+chijioke.uwaegbute@pwc.com
+
+Partner
+Tax
+kenneth.y.erikume@pwc.com
+
+Partner
+Tax
+emuesiri.agbeyi@pwc.com
+
+Seun Adu
+
+Tiwalade Otufale
+
+Tim Siloma
+
+Partner
+Tax
+seun.y.adu@pwc.com
+
+Partner
+Tax
+tiwalade.otufale@pwc.com
+
+Partner
+Tax
+timothy.s.siloma@pwc.com
+
+At PwC, we help clients build trust and reinvent so they can turn complexity into competitive advantage. We’re a
+tech-forward, people-empowered network with more than 370,000 people in 149 countries. Across audit and
+assurance, tax and legal, deals and consulting we help clients build, accelerate and sustain momentum. Find out
+more at www.pwc.com.
+
+

@@ -3,6 +3,9 @@ import { createServerClient } from '@supabase/ssr'
 import { getExternalAIClient } from '@/lib/api/external-ai-client'
 import { sanitizeHtml } from '@/lib/utils/security'
 
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+
 export async function POST(request: NextRequest) {
   try {
     // Check authentication

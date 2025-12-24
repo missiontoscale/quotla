@@ -28,10 +28,10 @@ const publicRoutes = [
   '/newsletter'
 ]
 
-export default async function middleware(req: NextRequest) {
+export default async function proxy(req: NextRequest) {
   const pathname = req.nextUrl.pathname
 
-  // Skip middleware for API routes, static files, and public routes
+  // Skip proxy for API routes, static files, and public routes
   if (
     pathname.startsWith('/api/') ||
     pathname.startsWith('/_next/') ||

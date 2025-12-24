@@ -159,7 +159,7 @@ const FilterPanel: FC<FilterPanelProps> = ({
         {hasActiveFilters && (
           <button
             onClick={handleReset}
-            className="w-full px-4 py-2 text-sm font-medium text-quotla-light bg-quotla-orange hover:bg-orange-600 rounded-lg transition-colors"
+            className="w-full px-4 py-2 text-sm font-medium text-quotla-light bg-quotla-orange hover:bg-orange-600 rounded-lg transition-colors shadow-md shadow-quotla-orange/40 hover:shadow-quotla-orange/60"
           >
             Reset Filters
           </button>

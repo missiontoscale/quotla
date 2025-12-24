@@ -1,0 +1,5 @@
+1. Input validation and sanitization.
+2. Use secure dependencies and audit regularly.
+3. Implement HTTPS and security headers.
+4. Secure authentication and role-based access control.
+5. Rate limiting and throttling.

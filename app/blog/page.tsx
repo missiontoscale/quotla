@@ -11,6 +11,7 @@ import SearchBar from '@/components/blog/SearchBar'
 import FilterPanel from '@/components/blog/FilterPanel'
 import BlogCard from '@/components/blog/BlogCard'
 import ThemeToggle from '@/components/blog/ThemeToggle'
+import Navbar from '@/components/Navbar'
 
 export default function BlogPage() {
   const [internalPosts, setInternalPosts] = useState<BlogPost[]>([])
@@ -204,34 +205,7 @@ export default function BlogPage() {
 
   return (
     <div className="min-h-screen bg-[#FAF9F6] dark:bg-primary-800 transition-colors" style={{backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px)', backgroundSize: '60px 60px'}}>
-      <nav className="sticky top-0 z-50 bg-quotla-dark/95 dark:bg-quotla-dark/95 backdrop-blur-xl border-b border-quotla-light/20 dark:border-quotla-light/20 transition-colors">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link href="/" className="flex items-center gap-3 group">
-              <img src="/images/logos/icons/Quotla icon light.svg" alt="Quotla" className="h-12 w-auto transform group-hover:scale-105 transition-transform dark:hidden" />
-              <img src="/images/logos/icons/Quotla icon light.svg" alt="Quotla" className="h-12 w-auto transform group-hover:scale-105 transition-transform hidden dark:block" />
-              <span className="text-xl font-bold text-quotla-light dark:text-quotla-light transition-colors">Quotla Blog</span>
-            </Link>
-            <div className="flex items-center gap-3">
-              {isDarkModeEnabled && <ThemeToggle />}
-              {isAuthenticated ? (
-                <Link href="/dashboard" className="px-4 py-2 rounded-lg text-sm font-semibold bg-quotla-orange text-quotla-light hover:bg-secondary-600 transition-all shadow-sm">
-                  Dashboard
-                </Link>
-              ) : (
-                <>
-                  <Link href="/login" className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-primary-300 hover:text-quotla-dark dark:hover:text-quotla-light transition-colors">
-                    Sign In
-                  </Link>
-                  <Link href="/signup" className="px-4 py-2 rounded-lg text-sm font-semibold bg-quotla-orange text-quotla-light hover:bg-secondary-600 transition-all shadow-sm">
-                    Get Started Free
-                  </Link>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Blog Header */}

@@ -247,7 +247,7 @@ function DashboardContent() {
             </svg>
             <p className="text-lg mb-2 font-heading">No documents yet</p>
             <p className="text-sm text-primary-400 mb-6">Start by creating your first quote or invoice</p>
-            <button onClick={() => setIsCreateModalOpen(true)} className="px-6 py-3 rounded-xl bg-quotla-orange text-white hover:bg-secondary-600 transition-all shadow-lg font-semibold">
+            <button onClick={() => setIsCreateModalOpen(true)} className="px-6 py-3 rounded-xl bg-quotla-orange text-white hover:bg-secondary-600 transition-all shadow-lg shadow-quotla-orange/40 hover:shadow-quotla-orange/60 font-semibold">
               Create now
             </button>
           </div>

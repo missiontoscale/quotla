@@ -1,0 +1,511 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Quotla AI Document Generator",
+    "description": "\n## AI-Powered Invoice & Quote Generator\n\nConvert natural language descriptions into structured business documents using AI.\n\n### Key Features\n\n* **Natural Language Processing**: Describe documents in plain English\n* **Multi-Provider AI**: OpenAI GPT-4, Anthropic Claude, or Google Gemini\n* **File Upload Support**: Extract data from PDF, DOCX, TXT, and image files\n* **Vision AI**: Process scanned receipts and invoice photos\n* **Multiple Export Formats**: JSON, PDF, DOCX, PNG\n* **Conversation History**: Multi-turn conversations to refine documents\n* **Auto-Detection**: Automatically determines if input is an invoice or quote\n* **Smart Currency Detection**: Prompts user if currency not specified\n\n### Supported Document Types\n\n* **Invoices**: Full invoicing with tax and delivery charges\n* **Quotes**: Professional quotations with tax calculations\n\n### AI Models Used\n\n* **OpenAI**: gpt-4 (text), gpt-4o (vision)\n* **Anthropic**: claude-3-5-sonnet-20241022 (text & vision)\n* **Gemini**: gemini-pro (text), gemini-1.5-flash (vision)\n\nConfigure via `AI_PROVIDER` environment variable.\n    ",
+    "contact": {
+      "name": "Quotla Support",
+      "url": "https://github.com/missiontoscale/quotla"
+    },
+    "license": {
+      "name": "See LICENSE file"
+    },
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "tags": [
+          "General"
+        ],
+        "summary": "API Root",
+        "description": "Returns basic API information and version.",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "General"
+        ],
+        "summary": "Health Check",
+        "description": "Check if the API server is running and healthy. Use this for monitoring and uptime checks.",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/generate": {
+      "post": {
+        "tags": [
+          "Document Generation"
+        ],
+        "summary": "Generate Document (JSON)",
+        "description": "Generate structured business document data from a natural language prompt.\n\n**Features:**\n- AI-powered document type detection (invoice vs quote) based on context\n- Intelligent currency detection - asks user if currency not specified\n- Extracts customer information, line items, and pricing\n- Calculates subtotals, tax, and delivery charges based on context\n- Supports conversation history for multi-turn refinement\n- Returns JSON data and formatted text output\n\n**Example Prompts:**\n- \"Invoice for John Doe at 123 Main St, Lagos. 100 units of Product X at 5000 NGN each\"\n- \"Quote for Jane Smith in Abuja. 50 consulting hours at 15000 NGN per hour\"\n- \"Create invoice for Tech Corp with 200 units HWY Granola at 5000 NGN, 100 Coffee at 8000 NGN\"\n\n**Currency Handling:**\n- Automatically detects currency from prompt (NGN, USD, EUR, GBP, etc.)\n- If no currency specified, returns error asking user to specify\n- Supports multiple currencies and symbols (₦, $, €, £)\n\n**Response includes:**\n- `success`: Boolean indicating success\n- `document_type`: AI-detected or specified document type\n- `data`: Structured document data with all fields\n- `text_output`: Formatted text representation\n- `needs_currency`: Boolean (true if currency must be specified)\n\n**Auto-generated fields:**\n- Invoice/Quote number with timestamp\n- Current date\n- Item amounts (quantity × unit_price)\n- Subtotal, tax, delivery (invoices only), and total",
+        "operationId": "generate_document_api_generate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Structured document data with enriched fields and calculations",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/generate/invoice": {
+      "post": {
+        "tags": [
+          "Document Generation"
+        ],
+        "summary": "Generate Invoice (Specific Type)",
+        "description": "Shortcut endpoint that forces document type to \"invoice\".\n\nUse this when you know you're creating an invoice and want to skip auto-detection.\n\n**Same as `/api/generate` but:**\n- Always generates an invoice (never a quote)\n- Includes delivery charges (3% of subtotal)\n- Uses invoice numbering format: INV{timestamp}\n\n**Example:**\n```json\n{\n  \"prompt\": \"John at Lagos for 500 units at 5000 NGN\"\n}\n```",
+        "operationId": "generate_invoice_api_generate_invoice_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Invoice data with tax and delivery calculations",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/generate/quote": {
+      "post": {
+        "tags": [
+          "Document Generation"
+        ],
+        "summary": "Generate Quote (Specific Type)",
+        "description": "Shortcut endpoint that forces document type to \"quote\".\n\nUse this when you know you're creating a quote/quotation and want to skip auto-detection.\n\n**Same as `/api/generate` but:**\n- Always generates a quote (never an invoice)\n- No delivery charges (quotes only include tax)\n- Uses quote numbering format: QT{timestamp}\n\n**Example:**\n```json\n{\n  \"prompt\": \"Jane Smith in Abuja. 50 consulting hours at 15000 NGN per hour\"\n}\n```",
+        "operationId": "generate_quote_api_generate_quote_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Quote data with tax calculations (no delivery)",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/generate/with-file": {
+      "post": {
+        "tags": [
+          "Document Generation"
+        ],
+        "summary": "Generate from File (Documents & Images)",
+        "description": "Extract document data from uploaded files using AI - supports both document files and images.\n\n**Supported File Types:**\n\n*Documents (Text Extraction):*\n- PDF (.pdf)\n- Word Documents (.docx, .doc)\n- Text Files (.txt)\n\n*Images (Vision AI):*\n- JPEG / JPG\n- PNG\n- Other image formats\n\n**AI Models Used:**\n\n*For Images (Vision):*\n- OpenAI: gpt-4o\n- Anthropic: claude-3-5-sonnet-20241022\n- Gemini: gemini-1.5-flash\n\n*For Documents (Text):*\n- OpenAI: gpt-4\n- Anthropic: claude-3-5-sonnet-20241022\n- Gemini: gemini-pro\n\n**Use Cases:**\n- Extract data from PDF invoices\n- Parse Word document quotes\n- Digitize scanned receipts (images)\n- Convert any document format to structured data\n- Process email attachments\n\n**Tips:**\n- For PDFs: Ensure text is selectable (not scanned images)\n- For images: Use clear, well-lit photos with readable text\n- For DOCX: Standard Microsoft Word format works best\n- Provide clear instructions in the prompt\n\n**Example prompts:**\n- \"Extract invoice data from this PDF\"\n- \"Parse the quote information from this document\"\n- \"Get customer and item details from this file\"",
+        "operationId": "generate_with_file_api_generate_with_file_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_generate_with_file_api_generate_with_file_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Extracted document data from file",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/export/pdf": {
+      "post": {
+        "tags": [
+          "Export Formats"
+        ],
+        "summary": "Export as PDF",
+        "description": "Generate document and download as professionally formatted PDF.\n\n**Features:**\n- Professional layout with headers and branding\n- Formatted tables for line items\n- Color-coded sections (header, items, totals)\n- Automatic calculations displayed\n- Currency formatting with proper alignment\n- Letter-sized pages (8.5\" × 11\")\n\n**Use Cases:**\n- Print-ready invoices\n- Professional client delivery\n- Accounting records\n- Archive storage\n\n**Response:**\nBinary PDF file with appropriate filename (e.g., INV20241201.pdf)\n\n**Same request format as `/api/generate`**",
+        "operationId": "export_pdf_api_export_pdf_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully generated PDF document",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              },
+              "application/pdf": {
+
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/export/docx": {
+      "post": {
+        "tags": [
+          "Export Formats"
+        ],
+        "summary": "Export as DOCX",
+        "description": "Generate document and download as Microsoft Word document.\n\n**Features:**\n- Editable Word document format (.docx)\n- Professional table styling with grid borders\n- Bold headers and emphasis on totals\n- Standard Word compatibility\n- Preserves formatting for easy customization\n- Ready for further editing and branding\n\n**Use Cases:**\n- Editable templates\n- Custom branding additions\n- Company letterhead integration\n- Further modifications needed\n\n**Benefits:**\n- Fully editable in Microsoft Word, Google Docs, LibreOffice\n- Add logos, signatures, notes after generation\n- Customize colors and fonts\n- Easy to adapt to company style guides\n\n**Response:**\nBinary DOCX file with appropriate filename (e.g., INV20241201.docx)\n\n**Same request format as `/api/generate`**",
+        "operationId": "export_docx_api_export_docx_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully generated DOCX document",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              },
+              "application/vnd.openxmlformats-officedocument.wordprocessingml.document": {
+
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/export/png": {
+      "post": {
+        "tags": [
+          "Export Formats"
+        ],
+        "summary": "Export as PNG Image",
+        "description": "Generate document and download as PNG image.\n\n**Image Specifications:**\n- Resolution: 800×1000 pixels\n- Format: PNG (lossless)\n- Background: Clean white\n- Professional typography\n- High-quality rendering\n\n**Use Cases:**\n- Social media sharing\n- WhatsApp/messaging apps\n- Quick previews\n- Mobile-friendly format\n- Email attachments\n- Web display\n\n**Benefits:**\n- Universal compatibility\n- No special software needed to view\n- Easy to share on mobile\n- Perfect for instant messaging\n- Lightweight file size\n- Screenshot-like appearance\n\n**Response:**\nBinary PNG image file with appropriate filename (e.g., INV20241201.png)\n\n**Same request format as `/api/generate`**",
+        "operationId": "export_png_api_export_png_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully generated PNG image",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              },
+              "image/png": {
+
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Body_generate_with_file_api_generate_with_file_post": {
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "title": "Prompt",
+            "description": "Instructions for extracting data from the file"
+          },
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "title": "File",
+            "description": "Document or image file (PDF, DOCX, TXT, JPEG, PNG, etc.)"
+          },
+          "document_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Document Type",
+            "description": "Force document type: 'invoice' or 'quote' (auto-detected if omitted)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "prompt",
+          "file"
+        ],
+        "title": "Body_generate_with_file_api_generate_with_file_post"
+      },
+      "GenerateRequest": {
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "title": "Prompt",
+            "description": "Natural language description of the document. Example: 'Invoice for John Doe at Lagos for 100 units of Product X at 5000 NGN each'",
+            "example": "Invoice for John Doe at 123 Main St, Lagos. 100 units of Product X at 5000 NGN each"
+          },
+          "history": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/Message"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "History",
+            "description": "Conversation history for context. Use this to refine documents across multiple requests.",
+            "default": []
+          },
+          "document_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Document Type",
+            "description": "Document type: 'invoice' or 'quote'. If not provided, will auto-detect from prompt.",
+            "example": "invoice"
+          }
+        },
+        "type": "object",
+        "required": [
+          "prompt"
+        ],
+        "title": "GenerateRequest"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "Message": {
+        "properties": {
+          "role": {
+            "type": "string",
+            "title": "Role",
+            "description": "Role of the message sender: 'user' or 'assistant'"
+          },
+          "content": {
+            "type": "string",
+            "title": "Content",
+            "description": "Content of the message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "role",
+          "content"
+        ],
+        "title": "Message"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

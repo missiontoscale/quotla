@@ -22,12 +22,12 @@ const bricolageGrotesque = Bricolage_Grotesque({
 })
 
 export const metadata: Metadata = {
-  title: 'Quotla - Professional Quote & Invoice Management',
-  description: 'Create professional quotes and invoices with AI-powered content generation',
+  title: 'Quotla | Top product innovation helping seal more deals. - Professional Quote, Invoice, and InventoryManagement',
+  description: 'Bespoke product for business owners, and professionals with invoice, quote, and inventory management.',
   manifest: '/manifest.json',
   icons: {
-    icon: '/images/logos/icons/Quotla icon dark.svg',
-    apple: '/images/logos/icons/Quotla icon dark.svg',
+    icon: '/images/logos/icons/Quotla icon orange.svg',
+    apple: '/images/logos/icons/Quotla icon orange.svg',
   },
   other: {
     'dns-prefetch': 'https://img.logo.dev',
@@ -47,8 +47,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${bricolageGrotesque.variable}`}>
-      <body className={inter.className}>
+    <html lang="en" className={`${inter.variable} ${bricolageGrotesque.variable}`} suppressHydrationWarning>
+      <body className={inter.className} suppressHydrationWarning>
         <Providers>{children}</Providers>
       </body>
     </html>

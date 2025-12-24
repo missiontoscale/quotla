@@ -33,15 +33,21 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
 
       return fetch(url, {
         ...options,
-        signal: AbortSignal.timeout(timeout),
+        signal: options.signal || AbortSignal.timeout(timeout),
       }).catch((error) => {
-        // Only log detailed errors in development
+        // Only log meaningful errors in development, skip timeout/abort errors
         if (process.env.NODE_ENV === 'development') {
-          console.error('Supabase fetch error:', {
-            url,
-            error: error.message,
-            type: error.name,
-          })
+          // Skip logging for timeout errors on profile fetches (common during background refresh)
+          const isTimeoutError = error?.name === 'AbortError' || error?.name === 'TimeoutError'
+          const isProfileFetch = url.toString().includes('/profiles')
+
+          if (!isTimeoutError || !isProfileFetch) {
+            console.error('Supabase fetch error:', {
+              url: url.toString(),
+              message: error?.message || String(error) || 'Unknown error',
+              name: error?.name || typeof error,
+            })
+          }
         }
         throw error
       })

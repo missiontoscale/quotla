@@ -1,8 +1,19 @@
 # Quotla
 
-**A professional business management platform for creating quotes and invoices with AI-powered content generation.**
+**Empowering Small Businesses with Intelligent Document Management**
 
-Quotla simplifies document creation for businesses by combining intelligent AI assistance with a powerful, easy-to-use interface. Create professional quotes and invoices in seconds through natural conversation or traditional forms.
+Quotla is more than a quote and invoice generator—it's your intelligent business companion. We're on a mission to help small businesses and entrepreneurs streamline operations, reduce administrative overhead, and focus on what truly matters: growing their business.
+
+## Our Vision
+
+We envision a world where every business owner has access to enterprise-grade tools without the enterprise complexity or cost. Quotla combines cutting-edge AI technology with intuitive design to deliver professional business documents in seconds, not hours.
+
+### Why Quotla?
+
+- **Speed & Efficiency**: Generate professional quotes and invoices through natural conversation—no forms, no friction
+- **Intelligence Built-In**: AI-powered content generation that understands your business context
+- **Built for Growth**: From your first invoice to your thousandth, Quotla scales with you
+- **Professional Without the Premium**: Enterprise features accessible to businesses of all sizes
 
 ---
 

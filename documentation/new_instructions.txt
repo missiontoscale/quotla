@@ -1,0 +1,17 @@
+A. ## Error Type
+Console AuthApiError
+
+## Error Message
+Invalid login credentials
+
+
+    at handleError (file://C:/Users/ASUS/Documents/Projects/Projects completed @ Mission To Scale/quotla/.next/dev/static/chunks/node_modules_c1e26789._.js:10112:11)
+    at async _handleRequest (file://C:/Users/ASUS/Documents/Projects/Projects completed @ Mission To Scale/quotla/.next/dev/static/chunks/node_modules_c1e26789._.js:10162:9)
+    at async _request (file://C:/Users/ASUS/Documents/Projects/Projects completed @ Mission To Scale/quotla/.next/dev/static/chunks/node_modules_c1e26789._.js:10142:18)
+    at async SupabaseAuthClient.signInWithPassword (file://C:/Users/ASUS/Documents/Projects/Projects completed @ Mission To Scale/quotla/.next/dev/static/chunks/node_modules_c1e26789._.js:12363:23)
+    at async handleSubmit (file://C:/Users/ASUS/Documents/Projects/Projects completed @ Mission To Scale/quotla/.next/dev/static/chunks/_2e87c75a._.js:494:37)
+
+Next.js version: 16.0.10 (Turbopack)
+
+
+B. For the loader, the spiral pattern should be 19x larger than it currently is, and drop the opacity by 15% more

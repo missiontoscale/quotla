@@ -110,15 +110,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const refreshProfile = async (userId: string, cacheKey: string) => {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .maybeSingle()
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .maybeSingle()
 
-    if (!error && data) {
-      setProfile(data as Profile)
-      sessionStorage.setItem(cacheKey, JSON.stringify(data))
+      if (!error && data) {
+        setProfile(data as unknown as Profile)
+        sessionStorage.setItem(cacheKey, JSON.stringify(data))
+      }
+    } catch (err) {
+      // Silently fail for background refresh - cached profile is still valid
+      // Don't log timeout errors as they're expected during background refreshes
+      if (err instanceof Error && !err.name.includes('Abort') && !err.name.includes('Timeout')) {
+        console.warn('Background profile refresh failed:', err.message)
+      }
     }
   }
 

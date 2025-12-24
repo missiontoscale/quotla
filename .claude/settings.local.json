@@ -67,7 +67,13 @@
       "Bash(if exist \"app\\\\api\\\\ai\\\\invoice\" rmdir \"app\\\\api\\\\ai\\\\invoice\")",
       "Bash(if exist \"content\" rmdir \"content\")",
       "Bash(if exist \"nul\" del \"nul\")",
-      "Bash(rmdir:*)"
+      "Bash(rmdir:*)",
+      "Bash(npx @next/codemod@canary middleware-to-proxy:*)",
+      "Bash(move proxy.ts middleware.ts)",
+      "Bash(netstat:*)",
+      "Bash(npx ts-node:*)",
+      "Bash(timeout:*)",
+      "Bash(npm cache clean:*)"
     ],
     "deny": [],
     "ask": []

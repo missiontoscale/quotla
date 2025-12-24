@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { supabase } from '@/lib/supabase/client'
 import { validateEmail } from '@/lib/utils/validation'
 import Footer from '@/components/Footer'
+import { ROUTES, STORAGE_KEYS, ERROR_MESSAGES, PLACEHOLDER_TEXT } from '@/lib/constants'
 
 function LoginForm() {
   const router = useRouter()
@@ -35,13 +36,17 @@ function LoginForm() {
       if (error) {
         // Check for network errors
         if (error.message.includes('Failed to fetch') || error.message.includes('fetch')) {
-          setError('Unable to connect to authentication server. Please check your internet connection and try again.')
+          setError(ERROR_MESSAGES.CONNECTION_FAILED)
         }
         // Check if it's an email confirmation error
         else if (error.message.includes('Email not confirmed')) {
           setError('Please confirm your email address before signing in. Check your inbox for the confirmation link.')
+        }
+        // Check for invalid credentials
+        else if (error.message.includes('Invalid login credentials')) {
+          setError('Invalid email or password. Please check your credentials and try again.')
         } else {
-          throw error
+          setError(error.message || ERROR_MESSAGES.SOMETHING_WENT_WRONG)
         }
         setLoading(false)
         return
@@ -73,9 +78,9 @@ function LoginForm() {
       const redirectTo = searchParams.get('redirect')
 
       // Check if there's a redirect flag for chat history restoration
-      const shouldRedirect = localStorage.getItem('quotla_redirect_after_auth')
+      const shouldRedirect = localStorage.getItem(STORAGE_KEYS.REDIRECT_AFTER_AUTH)
       if (shouldRedirect) {
-        localStorage.removeItem('quotla_redirect_after_auth')
+        localStorage.removeItem(STORAGE_KEYS.REDIRECT_AFTER_AUTH)
       }
 
       // Small delay to ensure session is properly established
@@ -83,17 +88,17 @@ function LoginForm() {
 
       // Redirect to the intended page or default to dashboard
       // Use window.location for a full page reload to ensure middleware picks up the new session
-      window.location.href = redirectTo || '/dashboard'
+      window.location.href = redirectTo || ROUTES.DASHBOARD
     } catch (err) {
       console.error('Login error:', err)
 
       // Provide more helpful error messages
       if (err instanceof TypeError && err.message.includes('fetch')) {
-        setError('Network error: Unable to reach the authentication server. Please check your internet connection.')
+        setError(ERROR_MESSAGES.NETWORK)
       } else if (err instanceof Error) {
         setError(err.message)
       } else {
-        setError('An unexpected error occurred. Please try again.')
+        setError(ERROR_MESSAGES.SOMETHING_WENT_WRONG)
       }
     } finally {
       setLoading(false)
@@ -105,7 +110,7 @@ function LoginForm() {
       <div className="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full">
           <div className="text-center mb-8">
-            <Link href="/" className="text-3xl font-bold text-primary-600">
+            <Link href={ROUTES.HOME} className="text-3xl font-bold text-primary-600">
               Quotla
             </Link>
             <h2 className="mt-6 text-2xl font-bold text-primary-50">
@@ -197,14 +202,16 @@ function LoginForm() {
 
             <div className="mt-6 text-center text-sm">
               <span className="text-primary-300">Don&apos;t have an account? </span>
-              <Link href="/signup" className="text-primary-600 hover:text-primary-700 font-medium">
+              <Link href={ROUTES.SIGNUP} className="text-primary-600 hover:text-primary-700 font-medium">
                 Sign up
               </Link>
             </div>
           </div>
         </div>
       </div>
-      <Footer />
+      <div className="mt-16">
+        <Footer />
+      </div>
     </div>
   )
 }

@@ -2,98 +2,83 @@
 
 import Link from 'next/link'
 import Footer from '@/components/Footer'
+import Navbar from '@/components/Navbar'
 
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-primary-700">
       {/* Header */}
-      <nav className="bg-quotla-dark/95 backdrop-blur-xl border-b border-quotla-light/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link href="/" className="flex items-center gap-3">
-              <img src="/images/logos/icons/Quotla icon light.svg" alt="Quotla Logo" className="h-12 w-auto" />
-              <span className="text-2xl font-bold text-quotla-light">Quotla</span>
-            </Link>
-            <div className="flex gap-4">
-              <Link href="/login" className="px-4 py-2 text-sm font-medium text-quotla-light/80 hover:text-quotla-light transition-colors">
-                Sign In
-              </Link>
-              <Link href="/signup" className="px-4 py-2 rounded-lg text-sm font-semibold bg-quotla-orange text-white hover:bg-secondary-600 transition-all">
-                Get Started Free
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-primary-600 to-primary-800 text-white py-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl font-bold mb-6">
+      <section className="relative min-h-[60vh] flex items-center py-20 lg:py-28">
+        <div className="absolute inset-0 bg-[url('/images/patterns/grid/Quotla%20grid%20pattern%20light.svg')] bg-cover bg-center opacity-15"></div>
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="font-heading text-5xl md:text-6xl font-bold text-primary-50 mb-6 leading-tight">
             Professional Quotes in 2 Minutes or Less
           </h1>
-          <p className="text-xl text-primary-100 max-w-2xl mx-auto">
+          <p className="font-sans text-xl text-primary-300 max-w-2xl mx-auto leading-relaxed">
             Quotla helps you create professional quotes and invoices quickly using AI to generate clear, client-ready documents.
           </p>
         </div>
-      </div>
+      </section>
 
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <section className="mb-16">
-          <h2 className="text-3xl font-bold text-primary-50 mb-6">What We Do</h2>
+          <h2 className="text-3xl font-bold text-primary-50 mb-6">Your Time Matters</h2>
           <p className="text-lg text-primary-200 mb-4">
-            Quotla is a platform that helps you create professional quotes and invoices in 2 minutes or less using AI to generate documents.
+            Every minute you spend formatting quotes and invoices is a minute away from building your business, serving clients, or doing what you actually love. We built Quotla to give you those minutes back.
           </p>
           <p className="text-lg text-primary-200 mb-4">
-            Our platform combines intelligent conversation-based document creation with traditional manual controls, giving you the flexibility to work however you prefer.
+            Quotla transforms how professionals create business documents. Describe what you need in plain language, like you're talking to a colleague, and our AI generates a polished, client-ready quote in seconds. No templates to fight with. No repetitive data entry. Just fast, professional results.
           </p>
         </section>
 
         <section className="mb-16">
-          <h2 className="text-3xl font-bold text-primary-50 mb-6">Why We Built Quotla</h2>
+          <h2 className="text-3xl font-bold text-primary-50 mb-6">Built for How You Work</h2>
           <p className="text-lg text-primary-200 mb-4">
-            We understand that as a business owner, your time is valuable. Creating quotes and invoices traditionally takes too long and often requires switching between multiple tools.
+            Whether you're a freelancer juggling multiple projects, a small business scaling operations, or an agency managing dozens of clients, Quotla adapts to your workflow.
           </p>
           <p className="text-lg text-primary-200 mb-4">
-            Quotla was built to solve this problem. Our AI assistant understands natural conversation, so you can describe your quote requirements the same way you would explain them to a colleague. Within minutes, you have a professional document ready to send.
+            Our platform offers both AI-powered generation and traditional manual controls. Love automation? Let our AI handle the heavy lifting. Prefer hands-on control? Use our intuitive forms for complete customization. You choose how you want to work.
           </p>
         </section>
 
         <section className="mb-16">
           <h2 className="text-3xl font-bold text-primary-50 mb-6">Key Features</h2>
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-white p-6 rounded-lg border border-primary-600">
+            <div className="bg-primary-600 p-6 rounded-lg border border-primary-500">
               <h3 className="text-xl font-semibold text-primary-50 mb-3">AI-Powered Creation</h3>
               <p className="text-primary-200">
                 Describe your quote or invoice in plain language, and our AI will generate a professional document with all the details properly formatted.
               </p>
             </div>
-            <div className="bg-white p-6 rounded-lg border border-primary-600">
+            <div className="bg-primary-600 p-6 rounded-lg border border-primary-500">
               <h3 className="text-xl font-semibold text-primary-50 mb-3">Lightning Fast</h3>
               <p className="text-primary-200">
                 Create complete quotes in under 2 minutes. No more wasting time on repetitive data entry or formatting.
               </p>
             </div>
-            <div className="bg-white p-6 rounded-lg border border-primary-600">
+            <div className="bg-primary-600 p-6 rounded-lg border border-primary-500">
               <h3 className="text-xl font-semibold text-primary-50 mb-3">Multi-Currency Support</h3>
               <p className="text-primary-200">
                 Work with clients globally. Support for USD, NGN, EUR, GBP, and more currencies out of the box.
               </p>
             </div>
-            <div className="bg-white p-6 rounded-lg border border-primary-600">
+            <div className="bg-primary-600 p-6 rounded-lg border border-primary-500">
               <h3 className="text-xl font-semibold text-primary-50 mb-3">Complete Control</h3>
               <p className="text-primary-200">
                 Prefer manual creation? Use our traditional forms to create quotes and invoices with full customization options.
               </p>
             </div>
-            <div className="bg-white p-6 rounded-lg border border-primary-600">
+            <div className="bg-primary-600 p-6 rounded-lg border border-primary-500">
               <h3 className="text-xl font-semibold text-primary-50 mb-3">Client Management</h3>
               <p className="text-primary-200">
                 Keep track of all your clients, their contact information, and transaction history in one place.
               </p>
             </div>
-            <div className="bg-white p-6 rounded-lg border border-primary-600">
+            <div className="bg-primary-600 p-6 rounded-lg border border-primary-500">
               <h3 className="text-xl font-semibold text-primary-50 mb-3">PDF Export</h3>
               <p className="text-primary-200">
                 Generate professional PDF documents that you can download, print, or email directly to clients.
@@ -106,7 +91,7 @@ export default function AboutPage() {
           <h2 className="text-3xl font-bold text-primary-50 mb-6">How It Works</h2>
           <div className="space-y-6">
             <div className="flex gap-4">
-              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary-600 text-white flex items-center justify-center font-bold">
+              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary-600 text-quotla-light flex items-center justify-center font-bold">
                 1
               </div>
               <div>
@@ -117,7 +102,7 @@ export default function AboutPage() {
               </div>
             </div>
             <div className="flex gap-4">
-              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary-600 text-white flex items-center justify-center font-bold">
+              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary-600 text-quotla-light flex items-center justify-center font-bold">
                 2
               </div>
               <div>
@@ -128,7 +113,7 @@ export default function AboutPage() {
               </div>
             </div>
             <div className="flex gap-4">
-              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary-600 text-white flex items-center justify-center font-bold">
+              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary-600 text-quotla-light flex items-center justify-center font-bold">
                 3
               </div>
               <div>
@@ -142,56 +127,65 @@ export default function AboutPage() {
         </section>
 
         <section className="mb-16">
-          <h2 className="text-3xl font-bold text-primary-50 mb-6">Who Uses Quotla</h2>
+          <h2 className="text-3xl font-bold text-primary-50 mb-6">Trusted by Professionals Worldwide</h2>
           <p className="text-lg text-primary-200 mb-6">
-            Quotla serves businesses of all sizes across various industries:
+            From solo freelancers to growing agencies, Quotla helps professionals work smarter:
           </p>
-          <ul className="space-y-3">
+          <ul className="space-y-4">
             <li className="flex items-start gap-3">
-              <svg className="w-6 h-6 text-primary-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-quotla-orange flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
-              <span className="text-primary-200">Freelancers and consultants who need to send quotes quickly</span>
+              <div>
+                <span className="text-primary-50 font-semibold">Freelancers & Consultants</span>
+                <p className="text-primary-300 text-sm">Send professional quotes in minutes, not hours</p>
+              </div>
             </li>
             <li className="flex items-start gap-3">
-              <svg className="w-6 h-6 text-primary-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-quotla-orange flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
-              <span className="text-primary-200">Small businesses managing multiple clients and projects</span>
+              <div>
+                <span className="text-primary-50 font-semibold">Small Businesses</span>
+                <p className="text-primary-300 text-sm">Manage multiple clients and projects with organized billing</p>
+              </div>
             </li>
             <li className="flex items-start gap-3">
-              <svg className="w-6 h-6 text-primary-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-quotla-orange flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
-              <span className="text-primary-200">Service providers who need to organize billing records</span>
+              <div>
+                <span className="text-primary-50 font-semibold">Creative Agencies</span>
+                <p className="text-primary-300 text-sm">Streamline client work from quote to payment</p>
+              </div>
             </li>
             <li className="flex items-start gap-3">
-              <svg className="w-6 h-6 text-primary-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-quotla-orange flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
-              <span className="text-primary-200">E-commerce businesses needing to generate custom quotes</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <svg className="w-6 h-6 text-primary-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              <span className="text-primary-200">International businesses working with multiple currencies</span>
+              <div>
+                <span className="text-primary-50 font-semibold">Global Teams</span>
+                <p className="text-primary-300 text-sm">Work seamlessly across currencies and time zones</p>
+              </div>
             </li>
           </ul>
         </section>
 
-        <section className="bg-primary-50 p-8 rounded-lg border border-primary-200">
-          <h2 className="text-3xl font-bold text-primary-50 mb-4 text-center">Ready to Get Started?</h2>
-          <p className="text-lg text-primary-200 mb-6 text-center max-w-2xl mx-auto">
-            Create your first professional quote in under 2 minutes.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/signup" className="px-8 py-4 rounded-lg text-lg font-semibold bg-primary-600 text-white hover:bg-primary-700 transition-colors text-center">
-              Start Free Trial
-            </Link>
-            <Link href="/login" className="px-8 py-4 rounded-lg text-lg font-semibold bg-white text-primary-600 hover:bg-primary-700 transition-colors border-2 border-primary-600 text-center">
-              Sign In
-            </Link>
+        <section className="bg-gradient-to-br from-quotla-dark via-quotla-dark/95 to-quotla-dark relative overflow-hidden p-8 rounded-lg border border-quotla-orange/30">
+          <div className="absolute inset-0 bg-[url('/images/patterns/spiral/Quotla%20Spiral%20orange.svg')] bg-center opacity-10" style={{backgroundSize: 'cover'}}></div>
+          <div className="relative">
+            <h2 className="text-3xl font-bold text-quotla-light mb-4 text-center">Ready to Get Started?</h2>
+            <p className="text-lg text-primary-300 mb-6 text-center max-w-2xl mx-auto">
+              Create your first professional quote in under 2 minutes.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/signup" className="px-8 py-4 rounded-lg text-lg font-semibold bg-quotla-orange text-quotla-light hover:bg-secondary-600 transition-all shadow-lg shadow-quotla-orange/40 hover:shadow-quotla-orange/60 text-center">
+                Start Free Trial
+              </Link>
+              <Link href="/login" className="px-8 py-4 rounded-lg text-lg font-semibold bg-transparent text-quotla-light hover:bg-quotla-light/10 transition-all border-2 border-quotla-light/20 text-center">
+                Sign In
+              </Link>
+            </div>
           </div>
         </section>
       </div>

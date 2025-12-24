@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getExternalAIClient } from '@/lib/api/external-ai-client'
 
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+
 export async function POST(request: NextRequest) {
   try {
     const { prompt, history } = await request.json()

@@ -21,17 +21,7 @@ const nextConfig = {
   },
   experimental: {
     optimizePackageImports: ['@supabase/supabase-js', '@google/generative-ai', 'openai', '@anthropic-ai/sdk'],
-    turbo: {
-      // Enable faster development builds
-      resolveAlias: {
-        canvas: './empty-module.js',
-      },
-    },
   },
-  // Enable SWC minification for faster builds
-  swcMinify: true,
-  // Optimize fonts
-  optimizeFonts: true,
   // Security headers
   async headers() {
     return [
