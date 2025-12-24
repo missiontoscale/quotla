@@ -1,9 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+let openai: OpenAI | null = null
+
+function getOpenAIClient(): OpenAI {
+  if (!openai) {
+    const apiKey = process.env.OPENAI_API_KEY
+    if (!apiKey) {
+      throw new Error('OPENAI_API_KEY environment variable is not set')
+    }
+    openai = new OpenAI({
+      apiKey,
+    })
+  }
+  return openai
+}
 
 // Domain-specific prompt to improve transcription accuracy for business/invoicing context
 const TRANSCRIPTION_PROMPT = `This is a business conversation about quotes, invoices, pricing, clients, deliveries, taxes, payments, and financial terms. Common terms include: quote, invoice, subtotal, tax rate, delivery charge, client name, due date, payment terms, line items, unit price, quantity, amount, total, NGN (Nigerian Naira), USD, EUR, GBP, VAT, business registration, Tax Identification Number (TIN).`
@@ -40,7 +51,7 @@ export async function POST(request: NextRequest) {
     // gpt-4o-mini-transcribe is faster and more cost-effective than gpt-4o-transcribe
     // while still providing better accuracy than whisper-1
     if (stream) {
-      const transcription = await openai.audio.transcriptions.create({
+      const transcription = await getOpenAIClient().audio.transcriptions.create({
         file: file,
         model: 'gpt-4o-mini-transcribe',
         prompt: TRANSCRIPTION_PROMPT,

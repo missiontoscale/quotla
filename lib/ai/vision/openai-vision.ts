@@ -7,9 +7,20 @@ import OpenAI from 'openai'
 import { VisionExtractionResult, ExtractedDocumentData } from './types'
 import { VISION_EXTRACTION_PROMPT, VISION_CONFIG } from '@/lib/utils/prompts'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+let openai: OpenAI | null = null
+
+function getOpenAIClient(): OpenAI {
+  if (!openai) {
+    const apiKey = process.env.OPENAI_API_KEY
+    if (!apiKey) {
+      throw new Error('OPENAI_API_KEY environment variable is not set')
+    }
+    openai = new OpenAI({
+      apiKey,
+    })
+  }
+  return openai
+}
 
 /**
  * Extract structured document data from an image using GPT-4o vision
@@ -20,7 +31,7 @@ export async function extractFromImageOpenAI(
   additionalPrompt?: string
 ): Promise<VisionExtractionResult> {
   try {
-    const completion = await openai.chat.completions.create({
+    const completion = await getOpenAIClient().chat.completions.create({
       model: VISION_CONFIG.model, // gpt-4o
       messages: [
         {

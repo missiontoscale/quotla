@@ -1,8 +1,19 @@
 import OpenAI from 'openai'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+let openai: OpenAI | null = null
+
+function getOpenAIClient(): OpenAI {
+  if (!openai) {
+    const apiKey = process.env.OPENAI_API_KEY
+    if (!apiKey) {
+      throw new Error('OPENAI_API_KEY environment variable is not set')
+    }
+    openai = new OpenAI({
+      apiKey,
+    })
+  }
+  return openai
+}
 
 interface GenerateParams {
   prompt: string
@@ -53,7 +64,7 @@ When users ask you to create quotes or invoices, help them by gathering the nece
         { role: 'user' as const, content: prompt }
       ]
 
-      const response = await openai.chat.completions.create({
+      const response = await getOpenAIClient().chat.completions.create({
         model: 'gpt-4o-mini',
         messages,
         max_tokens: 2000,
@@ -104,7 +115,7 @@ Provide clear, structured information that can be used to create a formal quote.
         { role: 'user' as const, content: prompt }
       ]
 
-      const response = await openai.chat.completions.create({
+      const response = await getOpenAIClient().chat.completions.create({
         model: 'gpt-4o-mini',
         messages,
         max_tokens: 2000,
@@ -156,7 +167,7 @@ Provide clear, structured information that can be used to create a formal invoic
         { role: 'user' as const, content: prompt }
       ]
 
-      const response = await openai.chat.completions.create({
+      const response = await getOpenAIClient().chat.completions.create({
         model: 'gpt-4o-mini',
         messages,
         max_tokens: 2000,
