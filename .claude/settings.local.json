@@ -73,7 +73,9 @@
       "Bash(netstat:*)",
       "Bash(npx ts-node:*)",
       "Bash(timeout:*)",
-      "Bash(npm cache clean:*)"
+      "Bash(npm cache clean:*)",
+      "Bash(git restore:*)",
+      "Bash(git config:*)"
     ],
     "deny": [],
     "ask": []
