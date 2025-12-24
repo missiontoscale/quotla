@@ -39,6 +39,7 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "@netlify/plugin-nextjs": "^5.7.2",
     "@types/file-saver": "^2.0.7",
     "@types/node": "^20.11.16",
     "@types/react": "^19.2.7",
