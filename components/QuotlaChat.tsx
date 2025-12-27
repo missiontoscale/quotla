@@ -74,10 +74,13 @@ export default function QuotlaChat({ onClose }: { onClose?: () => void } = {}) {
         return
       }
 
-      const response = await fetch('/api/ai/generate-quote', {
+      const response = await fetch('/api/ai/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: userMessage }),
+        body: JSON.stringify({
+          prompt: userMessage,
+          history: messages.slice(-10).map(m => ({ role: m.role, content: m.content }))
+        }),
       })
 
       const data = await response.json()
@@ -86,24 +89,24 @@ export default function QuotlaChat({ onClose }: { onClose?: () => void } = {}) {
         throw new Error(data.error || 'Failed to generate quote')
       }
 
-      // Check if currency is needed
-      if (data.needs_currency) {
+      // Check if currency is needed (from external API)
+      if (data.extractedData && data.extractedData.needs_currency) {
         setMessages((prev) => [
           ...prev,
           {
             role: 'assistant',
-            content: data.text_output || 'Please specify the currency (e.g., NGN, USD, EUR, GBP) for this quote.',
+            content: data.description || 'Please specify the currency (e.g., NGN, USD, EUR, GBP) for this quote.',
           },
         ])
         return
       }
 
       // Validate quote data exists
-      if (!data.quote || typeof data.quote !== 'object') {
+      if (!data.extractedData || typeof data.extractedData !== 'object') {
         throw new Error('Invalid quote data received from API')
       }
 
-      const quote = data.quote
+      const quote = data.extractedData
 
       // Validate required fields
       if (!quote.client_name || !quote.items || !Array.isArray(quote.items)) {
@@ -192,14 +195,13 @@ export default function QuotlaChat({ onClose }: { onClose?: () => void } = {}) {
         content: m.content
       }))
 
-      // Combine conversation history for context
-      const conversationContext = recentMessages.map(m => `${m.role}: ${m.content}`).join('\n')
-      const fullPrompt = `${conversationContext}\nuser: ${userMessage}`
-
-      const response = await fetch('/api/ai/generate-invoice', {
+      const response = await fetch('/api/ai/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: fullPrompt }),
+        body: JSON.stringify({
+          prompt: userMessage,
+          history: recentMessages
+        }),
       })
 
       const data = await response.json()
@@ -208,24 +210,24 @@ export default function QuotlaChat({ onClose }: { onClose?: () => void } = {}) {
         throw new Error(data.error || 'Failed to generate invoice')
       }
 
-      // Check if currency is needed
-      if (data.needs_currency) {
+      // Check if currency is needed (from external API)
+      if (data.extractedData && data.extractedData.needs_currency) {
         setMessages((prev) => [
           ...prev,
           {
             role: 'assistant',
-            content: data.text_output || 'Please specify the currency (e.g., NGN, USD, EUR, GBP) for this invoice.',
+            content: data.description || 'Please specify the currency (e.g., NGN, USD, EUR, GBP) for this invoice.',
           },
         ])
         return
       }
 
       // Validate invoice data exists
-      if (!data.invoice || typeof data.invoice !== 'object') {
+      if (!data.extractedData || typeof data.extractedData !== 'object') {
         throw new Error('Invalid invoice data received from API')
       }
 
-      const invoice = data.invoice
+      const invoice = data.extractedData
 
       // Validate required fields
       if (!invoice.client_name || !invoice.items || !Array.isArray(invoice.items)) {
