@@ -1,19 +1,5 @@
-import OpenAI from 'openai'
-
-let openai: OpenAI | null = null
-
-function getOpenAIClient(): OpenAI {
-  if (!openai) {
-    const apiKey = process.env.OPENAI_API_KEY
-    if (!apiKey) {
-      throw new Error('OPENAI_API_KEY environment variable is not set')
-    }
-    openai = new OpenAI({
-      apiKey,
-    })
-  }
-  return openai
-}
+// External ML API Configuration
+const EXTERNAL_API_URL = process.env.EXTERNAL_AI_API_URL || 'http://127.0.0.1:8000'
 
 interface GenerateParams {
   prompt: string
@@ -31,56 +17,93 @@ interface ExportParams {
   document_type: 'quote' | 'invoice'
 }
 
+// Response types matching OpenAPI spec
+interface DocumentItem {
+  description: string
+  quantity: number
+  unit_price: number
+  amount: number
+}
+
+interface InvoiceData {
+  client_name: string
+  client_address?: string
+  invoice_number: string
+  date: string
+  due_date?: string
+  items: DocumentItem[]
+  subtotal: number
+  tax_rate: number
+  tax_amount: number
+  delivery_charge?: number
+  total: number
+  currency: string
+  payment_terms?: string
+  notes?: string
+}
+
+interface QuoteData {
+  client_name: string
+  client_address?: string
+  quote_number: string
+  date: string
+  valid_until?: string
+  items: DocumentItem[]
+  subtotal: number
+  tax_rate: number
+  tax_amount: number
+  total: number
+  currency: string
+  notes?: string
+}
+
 interface AIResponse {
   success: boolean
   text_output: string
-  data?: any
+  data?: InvoiceData | QuoteData
   document_type?: 'quote' | 'invoice'
   needs_currency?: boolean
   error?: string
 }
 
 /**
- * External AI Client using OpenAI GPT-4
- * This client provides AI generation capabilities for quotes, invoices, and general responses
+ * External AI Client for Quotla ML API
+ * This client communicates with the external Python ML API backend
+ * that provides structured document generation using AI (OpenAI/Anthropic/Gemini)
  */
 class ExternalAIClient {
+  /**
+   * Generate a document (auto-detects type: invoice or quote)
+   * Calls POST /api/generate
+   */
   async generate(params: GenerateParams): Promise<AIResponse> {
     try {
       const { prompt, history = [] } = params
 
-      // Build messages for GPT-4
-      const messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
-        {
-          role: 'system',
-          content: `You are Quotla AI, an intelligent business assistant specialized in helping users create professional quotes and invoices. You provide helpful, accurate, and friendly responses about business matters, pricing, and financial documentation.
-
-When users ask you to create quotes or invoices, help them by gathering the necessary information and providing clear, professional output.`
+      const response = await fetch(`${EXTERNAL_API_URL}/api/generate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        ...history.map(msg => ({
-          role: msg.role as 'user' | 'assistant',
-          content: msg.content
-        })),
-        { role: 'user' as const, content: prompt }
-      ]
-
-      const response = await getOpenAIClient().chat.completions.create({
-        model: 'gpt-4o-mini',
-        messages,
-        max_tokens: 2000,
-        temperature: 0.7,
+        body: JSON.stringify({
+          prompt,
+          history: history.length > 0 ? history : undefined,
+        }),
       })
 
-      const textContent = response.choices[0]?.message?.content
-      if (!textContent) {
-        throw new Error('No text response from AI')
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.detail || errorData.error || `API returned ${response.status}`)
       }
 
+      const data = await response.json()
+
       return {
-        success: true,
-        text_output: textContent,
-        document_type: this.detectDocumentType(prompt),
-        needs_currency: this.needsCurrencyInfo(prompt, textContent),
+        success: data.success ?? true,
+        text_output: data.text_output || '',
+        data: data.data,
+        document_type: data.document_type,
+        needs_currency: data.needs_currency ?? false,
       }
     } catch (error) {
       return {
@@ -91,46 +114,38 @@ When users ask you to create quotes or invoices, help them by gathering the nece
     }
   }
 
+  /**
+   * Generate a quote specifically
+   * Calls POST /api/generate/quote
+   */
   async generateQuote(params: GenerateParams): Promise<AIResponse> {
     try {
       const { prompt, history = [] } = params
 
-      const messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
-        {
-          role: 'system',
-          content: `You are Quotla AI, a quote generation specialist. Help users create professional quotes by extracting or gathering:
-- Client name and details
-- Line items with descriptions and prices
-- Payment terms
-- Currency (USD, NGN, EUR, GBP)
-- Any additional notes
-
-Provide clear, structured information that can be used to create a formal quote.`
+      const response = await fetch(`${EXTERNAL_API_URL}/api/generate/quote`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        ...history.map(msg => ({
-          role: msg.role as 'user' | 'assistant',
-          content: msg.content
-        })),
-        { role: 'user' as const, content: prompt }
-      ]
-
-      const response = await getOpenAIClient().chat.completions.create({
-        model: 'gpt-4o-mini',
-        messages,
-        max_tokens: 2000,
-        temperature: 0.7,
+        body: JSON.stringify({
+          prompt,
+          history: history.length > 0 ? history : undefined,
+        }),
       })
 
-      const textContent = response.choices[0]?.message?.content
-      if (!textContent) {
-        throw new Error('No text response from AI')
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.detail || errorData.error || `API returned ${response.status}`)
       }
 
+      const data = await response.json()
+
       return {
-        success: true,
-        text_output: textContent,
+        success: data.success ?? true,
+        text_output: data.text_output || '',
+        data: data.data,
         document_type: 'quote',
-        needs_currency: this.needsCurrencyInfo(prompt, textContent),
+        needs_currency: data.needs_currency ?? false,
       }
     } catch (error) {
       return {
@@ -141,47 +156,38 @@ Provide clear, structured information that can be used to create a formal quote.
     }
   }
 
+  /**
+   * Generate an invoice specifically
+   * Calls POST /api/generate/invoice
+   */
   async generateInvoice(params: GenerateParams): Promise<AIResponse> {
     try {
       const { prompt, history = [] } = params
 
-      const messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
-        {
-          role: 'system',
-          content: `You are Quotla AI, an invoice generation specialist. Help users create professional invoices by extracting or gathering:
-- Client name and details
-- Invoice number and date
-- Line items with descriptions and prices
-- Payment terms and due date
-- Currency (USD, NGN, EUR, GBP)
-- Any additional notes
-
-Provide clear, structured information that can be used to create a formal invoice.`
+      const response = await fetch(`${EXTERNAL_API_URL}/api/generate/invoice`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        ...history.map(msg => ({
-          role: msg.role as 'user' | 'assistant',
-          content: msg.content
-        })),
-        { role: 'user' as const, content: prompt }
-      ]
-
-      const response = await getOpenAIClient().chat.completions.create({
-        model: 'gpt-4o-mini',
-        messages,
-        max_tokens: 2000,
-        temperature: 0.7,
+        body: JSON.stringify({
+          prompt,
+          history: history.length > 0 ? history : undefined,
+        }),
       })
 
-      const textContent = response.choices[0]?.message?.content
-      if (!textContent) {
-        throw new Error('No text response from AI')
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.detail || errorData.error || `API returned ${response.status}`)
       }
 
+      const data = await response.json()
+
       return {
-        success: true,
-        text_output: textContent,
+        success: data.success ?? true,
+        text_output: data.text_output || '',
+        data: data.data,
         document_type: 'invoice',
-        needs_currency: this.needsCurrencyInfo(prompt, textContent),
+        needs_currency: data.needs_currency ?? false,
       }
     } catch (error) {
       return {
@@ -192,47 +198,120 @@ Provide clear, structured information that can be used to create a formal invoic
     }
   }
 
+  /**
+   * Generate document from uploaded file (supports PDF, DOCX, images)
+   * Calls POST /api/generate/with-file
+   */
   async generateWithFile(params: GenerateWithFileParams): Promise<AIResponse> {
-    // File upload with vision is not implemented in this basic version
-    // This would require image processing or OCR
-    return {
-      success: false,
-      text_output: '',
-      error: 'File upload not yet implemented. Please type your request instead.'
+    try {
+      const { prompt, file } = params
+
+      const formData = new FormData()
+      formData.append('prompt', prompt)
+      formData.append('file', file)
+
+      const response = await fetch(`${EXTERNAL_API_URL}/api/generate/with-file`, {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.detail || errorData.error || `API returned ${response.status}`)
+      }
+
+      const data = await response.json()
+
+      return {
+        success: data.success ?? true,
+        text_output: data.text_output || '',
+        data: data.data,
+        document_type: data.document_type,
+        needs_currency: data.needs_currency ?? false,
+      }
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error occurred'
+      return {
+        success: false,
+        text_output: '',
+        error: `File upload failed: ${errorMsg}`
+      }
     }
   }
 
+  /**
+   * Export document as PDF
+   * Calls POST /api/export/pdf
+   */
   async exportPdf(params: ExportParams): Promise<Blob> {
-    throw new Error('PDF export should be handled by the frontend or a separate service')
+    const response = await fetch(`${EXTERNAL_API_URL}/api/export/pdf`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        prompt: params.prompt,
+        history: params.history,
+        document_type: params.document_type,
+      }),
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}))
+      throw new Error(errorData.detail || errorData.error || 'Failed to export PDF')
+    }
+
+    return await response.blob()
   }
 
+  /**
+   * Export document as DOCX
+   * Calls POST /api/export/docx
+   */
   async exportDocx(params: ExportParams): Promise<Blob> {
-    throw new Error('DOCX export should be handled by the frontend or a separate service')
+    const response = await fetch(`${EXTERNAL_API_URL}/api/export/docx`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        prompt: params.prompt,
+        history: params.history,
+        document_type: params.document_type,
+      }),
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}))
+      throw new Error(errorData.detail || errorData.error || 'Failed to export DOCX')
+    }
+
+    return await response.blob()
   }
 
+  /**
+   * Export document as PNG image
+   * Calls POST /api/export/png
+   */
   async exportPng(params: ExportParams): Promise<Blob> {
-    throw new Error('PNG export should be handled by the frontend or a separate service')
-  }
+    const response = await fetch(`${EXTERNAL_API_URL}/api/export/png`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        prompt: params.prompt,
+        history: params.history,
+        document_type: params.document_type,
+      }),
+    })
 
-  private detectDocumentType(prompt: string): 'quote' | 'invoice' | undefined {
-    const lowerPrompt = prompt.toLowerCase()
-    if (lowerPrompt.includes('quote') || lowerPrompt.includes('estimate')) {
-      return 'quote'
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}))
+      throw new Error(errorData.detail || errorData.error || 'Failed to export PNG')
     }
-    if (lowerPrompt.includes('invoice') || lowerPrompt.includes('bill')) {
-      return 'invoice'
-    }
-    return undefined
-  }
 
-  private needsCurrencyInfo(prompt: string, response: string): boolean {
-    const lowerPrompt = prompt.toLowerCase()
-    const lowerResponse = response.toLowerCase()
-
-    // Check if currency is mentioned
-    const hasCurrency = /\b(usd|ngn|eur|gbp|naira|dollar|euro|pound|\$|₦|€|£)\b/i.test(lowerPrompt + ' ' + lowerResponse)
-
-    return !hasCurrency
+    return await response.blob()
   }
 }
 

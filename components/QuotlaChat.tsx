@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import VoiceRecorder from './VoiceRecorder'
 import { classifyIntent, classifyIntentFast, type Intent } from '@/lib/ai/intent-classifier'
 import { storeTransferData } from '@/lib/utils/secure-transfer'
@@ -16,7 +15,8 @@ interface Message {
 
 export default function QuotlaChat({ onClose }: { onClose?: () => void } = {}) {
   const initialMessage: Message = {
-    role: 'assistant'
+    role: 'assistant',
+    content: 'Hello! I\'m Quotla, your AI assistant. I can help you generate quotes and invoices, or answer business questions. What can I help you with today?'
   }
 
   const [messages, setMessages] = useState<Message[]>([initialMessage])
@@ -61,9 +61,6 @@ export default function QuotlaChat({ onClose }: { onClose?: () => void } = {}) {
       // Check if the message has enough detail
       const lowerMsg = userMessage.toLowerCase()
       const hasClient = lowerMsg.match(/for\s+([a-z\s]+)/i) || lowerMsg.includes('client')
-      const hasService = lowerMsg.includes('web') || lowerMsg.includes('development') ||
-                        lowerMsg.includes('design') || lowerMsg.includes('consulting') ||
-                        lowerMsg.includes('service') || lowerMsg.includes('product')
 
       // Ask clarifying questions if details are missing
       if (!hasClient && !lowerMsg.includes('generate')) {
@@ -101,16 +98,27 @@ export default function QuotlaChat({ onClose }: { onClose?: () => void } = {}) {
         return
       }
 
+      // Validate quote data exists
+      if (!data.quote || typeof data.quote !== 'object') {
+        throw new Error('Invalid quote data received from API')
+      }
+
       const quote = data.quote
 
-      // Get currency symbol
-      const currencySymbol = quote.currency === 'NGN' ? '₦' :
-                            quote.currency === 'EUR' ? '€' :
-                            quote.currency === 'GBP' ? '£' : '$'
+      // Validate required fields
+      if (!quote.client_name || !quote.items || !Array.isArray(quote.items)) {
+        throw new Error('Quote is missing required fields (client_name or items)')
+      }
+
+      // Get currency symbol with default
+      const currency = quote.currency || 'USD'
+      const currencySymbol = currency === 'NGN' ? '₦' :
+                            currency === 'EUR' ? '€' :
+                            currency === 'GBP' ? '£' : '$'
 
       const assistantMessage: Message = {
         role: 'assistant',
-        content: `I've generated a quote for you! Here's what I created:\n\n**Client:** ${quote.client_name}\n**Currency:** ${quote.currency || 'USD'}\n\n**Items:**\n${quote.items.map((item: any, i: number) =>
+        content: `I've generated a quote for you! Here's what I created:\n\n**Client:** ${quote.client_name}\n**Currency:** ${currency}\n\n**Items:**\n${quote.items.map((item: any, i: number) =>
           `${i + 1}. ${item.description}\n   Qty: ${item.quantity} × ${currencySymbol}${item.unit_price.toFixed(2)} = ${currencySymbol}${item.amount.toFixed(2)}`
         ).join('\n\n')}\n\n**Subtotal:** ${currencySymbol}${quote.subtotal.toFixed(2)}\n**Tax (${(quote.tax_rate * 100).toFixed(1)}%):** ${currencySymbol}${quote.tax_amount.toFixed(2)}\n**Total:** ${currencySymbol}${quote.total.toFixed(2)}\n\n${quote.notes ? `**Notes:** ${quote.notes}\n\n` : ''}Would you like me to create this quote in your system?`,
         generatedQuote: quote,
@@ -118,11 +126,12 @@ export default function QuotlaChat({ onClose }: { onClose?: () => void } = {}) {
 
       setMessages((prev) => [...prev, assistantMessage])
     } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error occurred'
       setMessages((prev) => [
         ...prev,
         {
           role: 'assistant',
-          content: `I apologize, but I encountered an error generating the quote: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again with more details.`,
+          content: `I apologize, but I encountered an error generating the quote: ${errorMsg}. Please try again with more details or check if the AI service is running.`,
         },
       ])
     }
@@ -151,6 +160,11 @@ export default function QuotlaChat({ onClose }: { onClose?: () => void } = {}) {
         throw new Error(data.error || 'Failed to get advice')
       }
 
+      // Ensure we have valid response data
+      if (!data.description) {
+        throw new Error('No response generated')
+      }
+
       setMessages((prev) => [
         ...prev,
         {
@@ -159,11 +173,12 @@ export default function QuotlaChat({ onClose }: { onClose?: () => void } = {}) {
         },
       ])
     } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error occurred'
       setMessages((prev) => [
         ...prev,
         {
           role: 'assistant',
-          content: 'I apologize, but I encountered an error. Please try again.',
+          content: `I apologize, but I encountered an error: ${errorMsg}. Please try again or check if the AI service is running.`,
         },
       ])
     }
@@ -205,16 +220,27 @@ export default function QuotlaChat({ onClose }: { onClose?: () => void } = {}) {
         return
       }
 
+      // Validate invoice data exists
+      if (!data.invoice || typeof data.invoice !== 'object') {
+        throw new Error('Invalid invoice data received from API')
+      }
+
       const invoice = data.invoice
 
-      // Get currency symbol
-      const currencySymbol = invoice.currency === 'NGN' ? '₦' :
-                            invoice.currency === 'EUR' ? '€' :
-                            invoice.currency === 'GBP' ? '£' : '$'
+      // Validate required fields
+      if (!invoice.client_name || !invoice.items || !Array.isArray(invoice.items)) {
+        throw new Error('Invoice is missing required fields (client_name or items)')
+      }
+
+      // Get currency symbol with default
+      const currency = invoice.currency || 'USD'
+      const currencySymbol = currency === 'NGN' ? '₦' :
+                            currency === 'EUR' ? '€' :
+                            currency === 'GBP' ? '£' : '$'
 
       const assistantMessage: Message = {
         role: 'assistant',
-        content: `I've generated an invoice for you! Here's what I created:\n\n**Client:** ${invoice.client_name}\n**Currency:** ${invoice.currency || 'USD'}\n**Invoice #:** ${invoice.invoice_number || 'Auto-generated'}\n${invoice.payment_terms ? `**Payment Terms:** ${invoice.payment_terms}\n` : ''}\n**Items:**\n${invoice.items.map((item: any, i: number) =>
+        content: `I've generated an invoice for you! Here's what I created:\n\n**Client:** ${invoice.client_name}\n**Currency:** ${currency}\n**Invoice #:** ${invoice.invoice_number || 'Auto-generated'}\n${invoice.payment_terms ? `**Payment Terms:** ${invoice.payment_terms}\n` : ''}\n**Items:**\n${invoice.items.map((item: any, i: number) =>
           `${i + 1}. ${item.description}\n   Qty: ${item.quantity} × ${currencySymbol}${item.unit_price.toFixed(2)} = ${currencySymbol}${item.amount.toFixed(2)}`
         ).join('\n\n')}\n\n**Subtotal:** ${currencySymbol}${invoice.subtotal.toFixed(2)}\n**Tax (${(invoice.tax_rate * 100).toFixed(1)}%):** ${currencySymbol}${invoice.tax_amount.toFixed(2)}${invoice.delivery_charge ? `\n**Delivery:** ${currencySymbol}${invoice.delivery_charge.toFixed(2)}` : ''}\n**Total:** ${currencySymbol}${invoice.total.toFixed(2)}\n\n${invoice.notes ? `**Notes:** ${invoice.notes}\n\n` : ''}${invoice.due_date ? `**Due Date:** ${invoice.due_date}\n\n` : ''}Would you like me to create this invoice in your system?`,
         generatedInvoice: invoice,
@@ -222,11 +248,12 @@ export default function QuotlaChat({ onClose }: { onClose?: () => void } = {}) {
 
       setMessages((prev) => [...prev, assistantMessage])
     } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error occurred'
       setMessages((prev) => [
         ...prev,
         {
           role: 'assistant',
-          content: `I apologize, but I encountered an error generating the invoice: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again with more details.`,
+          content: `I apologize, but I encountered an error generating the invoice: ${errorMsg}. Please try again with more details or check if the AI service is running.`,
         },
       ])
     }
@@ -340,11 +367,6 @@ export default function QuotlaChat({ onClose }: { onClose?: () => void } = {}) {
     } finally {
       setTranscribing(false)
     }
-  }
-
-  const handleClearChat = () => {
-    setMessages([initialMessage])
-    setInput('')
   }
 
   return (
