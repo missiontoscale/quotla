@@ -114,41 +114,41 @@ export default function VoiceRecorder({ onRecordingComplete, disabled }: VoiceRe
 
   if (isRecording) {
     return (
-      <div className="flex items-center gap-3 p-3 bg-red-50 border-2 border-red-200 rounded-lg">
-        <div className="flex items-center gap-2 flex-1">
-          <div className={`w-3 h-3 rounded-full bg-red-600 ${isPaused ? '' : 'animate-pulse'}`}></div>
-          <span className="text-sm font-medium text-red-900">
+      <div className="flex items-center gap-2 p-2 bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-700 rounded-xl">
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          <div className={`w-2.5 h-2.5 rounded-full bg-red-600 ${isPaused ? '' : 'animate-pulse'}`}></div>
+          <span className="text-xs font-medium text-red-900 dark:text-red-300 whitespace-nowrap">
             {isPaused ? 'Paused' : 'Recording'} {formatTime(recordingTime)}
           </span>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-1 flex-shrink-0">
           <button
             onClick={togglePauseResume}
-            className="p-2 rounded-lg hover:bg-red-100 transition-colors"
+            className="p-1.5 rounded-lg hover:bg-red-100 dark:hover:bg-red-800/50 transition-colors"
             title={isPaused ? 'Resume' : 'Pause'}
           >
             {isPaused ? (
-              <svg className="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-red-600 dark:text-red-400" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M8 5v14l11-7z" />
               </svg>
             ) : (
-              <svg className="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-red-600 dark:text-red-400" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
               </svg>
             )}
           </button>
           <button
             onClick={cancelRecording}
-            className="p-2 rounded-lg hover:bg-red-100 transition-colors"
+            className="p-1.5 rounded-lg hover:bg-red-100 dark:hover:bg-red-800/50 transition-colors"
             title="Cancel"
           >
-            <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
           <button
             onClick={stopRecording}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium text-sm"
+            className="px-3 py-1.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium text-xs"
           >
             Send
           </button>
@@ -161,10 +161,10 @@ export default function VoiceRecorder({ onRecordingComplete, disabled }: VoiceRe
     <button
       onClick={startRecording}
       disabled={disabled}
-      className="p-3 rounded-lg border-2 border-primary-500 hover:border-primary-400 hover:bg-primary-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed self-end"
+      className="p-2 rounded-xl border-2 border-gray-200 dark:border-primary-600 hover:border-quotla-orange dark:hover:border-quotla-orange hover:bg-quotla-orange/5 dark:hover:bg-quotla-orange/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
       title="Record voice message"
     >
-      <svg className="w-5 h-5 text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-5 h-5 text-gray-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
       </svg>
     </button>

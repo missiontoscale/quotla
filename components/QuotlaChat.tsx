@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import VoiceRecorder from './VoiceRecorder'
 import { classifyIntent, classifyIntentFast, type Intent } from '@/lib/ai/intent-classifier'
 import { storeTransferData } from '@/lib/utils/secure-transfer'
@@ -13,16 +14,17 @@ interface Message {
   generatedInvoice?: any
 }
 
-export default function QuotlaChat({ onClose }: { onClose: () => void }) {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: 'assistant',
-      content: 'Hi! I\'m Quotla AI Assistant. I can help you:\n\n• Generate complete quotes with line items and pricing\n• Create invoices\n• Provide business advice\n• Understand Nigeria\'s 2026 tax reforms\n\nWhat would you like to do today?',
-    },
-  ])
+export default function QuotlaChat({ onClose }: { onClose?: () => void } = {}) {
+  const initialMessage: Message = {
+    role: 'assistant'
+  }
+
+  const [messages, setMessages] = useState<Message[]>([initialMessage])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [transcribing, setTranscribing] = useState(false)
+  const [showSelectionModal, setShowSelectionModal] = useState(false)
+  const [showDifferenceInfo, setShowDifferenceInfo] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
@@ -71,7 +73,7 @@ export default function QuotlaChat({ onClose }: { onClose: () => void }) {
           ...prev,
           {
             role: 'assistant',
-            content: 'I can help you create a quote! To make it accurate, please tell me:\n\n1. **Client name** - Who is this quote for?\n2. **Service/Product** - What are you quoting?\n3. **Currency** (optional) - USD, NGN, EUR, or GBP?\n\nFor example: "Generate a quote for web development services for Acme Corp in NGN"',
+            content: 'Perfect! Let\'s craft a winning quote together. To ensure precision, I\'ll need:\n\n1. **Client name** - Who are we impressing?\n2. **Service/Product** - What value are you delivering?\n3. **Currency** (optional) - USD, NGN, EUR, or GBP?\n\nExample: "Create a quote for web development services for Acme Corp in NGN"',
           },
         ])
         return
@@ -237,7 +239,7 @@ export default function QuotlaChat({ onClose }: { onClose: () => void }) {
       // ✅ SECURE: Store data in sessionStorage, pass only ID via URL
       const transferId = storeTransferData('quote', quote)
       router.push(`/quotes/new?transfer=${transferId}`)
-      onClose()
+      if (onClose) onClose()
     } catch (error) {
       console.error('Failed to store quote data securely:', error)
       setMessages((prev) => [
@@ -255,7 +257,7 @@ export default function QuotlaChat({ onClose }: { onClose: () => void }) {
       // ✅ SECURE: Store data in sessionStorage, pass only ID via URL
       const transferId = storeTransferData('invoice', invoice)
       router.push(`/invoices/new?transfer=${transferId}`)
-      onClose()
+      if (onClose) onClose()
     } catch (error) {
       console.error('Failed to store invoice data securely:', error)
       setMessages((prev) => [
@@ -345,61 +347,33 @@ export default function QuotlaChat({ onClose }: { onClose: () => void }) {
     }
   }
 
+  const handleClearChat = () => {
+    setMessages([initialMessage])
+    setInput('')
+  }
+
   return (
-    <div className="fixed inset-y-0 right-0 w-full sm:w-96 bg-white shadow-2xl flex flex-col z-50 border-l">
-      {/* Header */}
-      <div className="bg-primary-600 text-white p-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center">
-            <span className="text-primary-600 font-bold text-lg">Q</span>
-          </div>
-          <div>
-            <h2 className="font-semibold">Quotla AI Assistant</h2>
-            <p className="text-xs opacity-90 flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-green-400"></span>
-              Online
-            </p>
-          </div>
-        </div>
-        <button
-          onClick={onClose}
-          className="text-white hover:bg-primary-700 rounded-full p-2 transition-colors"
-        >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-      </div>
+    <div className="flex flex-col bg-white dark:bg-primary-800" style={{ minHeight: '120px', maxHeight: messages.length > 1 ? '600px' : '120px' }}>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-primary-900/30" style={{ maxHeight: messages.length > 1 ? '400px' : '0px' }}>
         {messages.map((message, index) => (
           <div
             key={index}
             className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
-              className={`max-w-[80%] rounded-lg px-4 py-2 ${
+              className={`max-w-[85%] rounded-2xl px-4 py-3 shadow-sm ${
                 message.role === 'user'
-                  ? 'bg-primary-600 text-white'
-                  : 'bg-primary-600 text-primary-50'
+                  ? 'bg-gradient-to-br from-quotla-green to-quotla-orange text-white rounded-tr-sm'
+                  : 'bg-white dark:bg-primary-700 text-gray-800 dark:text-primary-50 border border-gray-200 dark:border-primary-600 rounded-tl-sm'
               }`}
             >
-              <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+              <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
               {message.generatedQuote && (
                 <button
                   onClick={() => handleSaveQuote(message.generatedQuote)}
-                  className="mt-3 w-full bg-white text-primary-600 px-3 py-2 rounded text-sm font-medium hover:bg-primary-700 transition-colors"
+                  className="mt-3 w-full bg-quotla-green hover:bg-quotla-green/90 text-white px-4 py-2.5 rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5"
                 >
                   Create This Quote →
                 </button>
@@ -407,7 +381,7 @@ export default function QuotlaChat({ onClose }: { onClose: () => void }) {
               {message.generatedInvoice && (
                 <button
                   onClick={() => handleSaveInvoice(message.generatedInvoice)}
-                  className="mt-3 w-full bg-white text-primary-600 px-3 py-2 rounded text-sm font-medium hover:bg-primary-700 transition-colors"
+                  className="mt-3 w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2.5 rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5"
                 >
                   Create This Invoice →
                 </button>
@@ -417,25 +391,28 @@ export default function QuotlaChat({ onClose }: { onClose: () => void }) {
         ))}
         {loading && (
           <div className="flex justify-start">
-            <div className="bg-primary-600 rounded-lg px-4 py-2">
-              <div className="flex space-x-2">
-                <div className="w-2 h-2 bg-primary-500 rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-primary-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                <div className="w-2 h-2 bg-primary-500 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+            <div className="bg-white dark:bg-primary-700 border border-gray-200 dark:border-primary-600 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
+              <div className="flex items-center gap-2">
+                <div className="flex space-x-1.5">
+                  <div className="w-2 h-2 bg-quotla-green rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-quotla-orange rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
+                  <div className="w-2 h-2 bg-quotla-green rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
+                </div>
+                <span className="text-xs text-gray-600 dark:text-primary-300 font-medium">Quotla is thinking...</span>
               </div>
             </div>
           </div>
         )}
         {transcribing && (
           <div className="flex justify-start">
-            <div className="bg-quotla-light border border-quotla-green/30 rounded-lg px-4 py-2">
+            <div className="bg-white dark:bg-primary-700 border border-quotla-orange/30 dark:border-quotla-orange/50 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
               <div className="flex items-center gap-2">
-                <div className="flex space-x-1">
-                  <div className="w-1.5 h-1.5 bg-quotla-orange rounded-full animate-bounce"></div>
-                  <div className="w-1.5 h-1.5 bg-quotla-orange rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                  <div className="w-1.5 h-1.5 bg-quotla-orange rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                <div className="flex space-x-1.5">
+                  <div className="w-2 h-2 bg-quotla-orange rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-quotla-orange rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
+                  <div className="w-2 h-2 bg-quotla-orange rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
                 </div>
-                <span className="text-xs text-quotla-dark font-medium">Transcribing audio...</span>
+                <span className="text-xs text-gray-600 dark:text-primary-300 font-medium">Transcribing audio...</span>
               </div>
             </div>
           </div>
@@ -444,16 +421,16 @@ export default function QuotlaChat({ onClose }: { onClose: () => void }) {
       </div>
 
       {/* Input */}
-      <div className="p-4 border-t bg-primary-700">
+      <div className="p-4 border-t border-gray-200 dark:border-primary-700 bg-white dark:bg-primary-800">
         <div className="flex gap-2 items-end">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-            placeholder="Ask me anything or describe what you need..."
-            className="flex-1 input text-sm"
-            disabled={loading}
+            onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
+            placeholder="Let's seal a deal together..."
+            className="flex-1 px-4 py-2 text-sm bg-gray-100 dark:bg-primary-700 border border-gray-200 dark:border-primary-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-quotla-green dark:focus:ring-quotla-orange focus:border-transparent text-gray-900 dark:text-primary-50 placeholder-gray-500 dark:placeholder-primary-400"
+            disabled={loading || transcribing}
           />
           <VoiceRecorder
             onRecordingComplete={handleVoiceRecording}
@@ -462,7 +439,7 @@ export default function QuotlaChat({ onClose }: { onClose: () => void }) {
           <button
             onClick={handleSend}
             disabled={!input.trim() || loading || transcribing}
-            className="btn btn-primary px-4 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 bg-gradient-to-r from-quotla-green to-quotla-orange text-white rounded-xl hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none hover:-translate-y-0.5"
           >
             <svg
               className="w-5 h-5"
@@ -479,10 +456,107 @@ export default function QuotlaChat({ onClose }: { onClose: () => void }) {
             </svg>
           </button>
         </div>
-        <p className="text-xs text-primary-400 mt-2">
+        <p className="text-xs text-gray-500 dark:text-primary-400 mt-2 px-1">
           Try: "Generate a quote for website development" or "Explain the 2026 VAT changes"
         </p>
       </div>
+
+      <div className="flex justify-center">
+        <button
+          onClick={() => setShowSelectionModal(true)}
+          className="group flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/30 text-white rounded-lg transition-all shadow-sm hover:shadow-md"
+        >
+          <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center flex-shrink-0">
+            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+          </div>
+          <div className="text-left">
+            <div className="font-heading font-semibold text-sm">Create myself</div>
+            <div className="font-sans text-xs text-white/80">Manual creation</div>
+          </div>
+        </button>
+      </div>
+
+      {/* Selection Modal */}
+      {showSelectionModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowSelectionModal(false)}>
+          <div className="bg-white dark:bg-primary-700 rounded-2xl shadow-2xl max-w-md w-full p-6" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-heading font-bold text-quotla-dark dark:text-primary-50">What would you like to create?</h3>
+              <button
+                onClick={() => setShowSelectionModal(false)}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="space-y-3 mb-4">
+              <button
+                onClick={() => {
+                  setShowSelectionModal(false)
+                  router.push('/quotes/new')
+                }}
+                className="w-full group flex items-center gap-4 p-4 bg-quotla-green/10 hover:bg-quotla-green/20 border-2 border-quotla-green/30 hover:border-quotla-green rounded-xl transition-all"
+              >
+                <div className="w-12 h-12 rounded-lg bg-quotla-green flex items-center justify-center flex-shrink-0">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <div className="flex-1 text-left">
+                  <div className="font-heading font-bold text-base text-quotla-dark dark:text-primary-50">Quote</div>
+                  <div className="font-sans text-sm text-gray-600 dark:text-primary-300">Create a new quote</div>
+                </div>
+              </button>
+
+              <button
+                onClick={() => {
+                  setShowSelectionModal(false)
+                  router.push('/invoices/new')
+                }}
+                className="w-full group flex items-center gap-4 p-4 bg-purple-500/10 hover:bg-purple-500/20 border-2 border-purple-500/30 hover:border-purple-500 rounded-xl transition-all"
+              >
+                <div className="w-12 h-12 rounded-lg bg-purple-500 flex items-center justify-center flex-shrink-0">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                </div>
+                <div className="flex-1 text-left">
+                  <div className="font-heading font-bold text-base text-quotla-dark dark:text-primary-50">Invoice</div>
+                  <div className="font-sans text-sm text-gray-600 dark:text-primary-300">Create a new invoice</div>
+                </div>
+              </button>
+            </div>
+
+            <button
+              onClick={() => setShowDifferenceInfo(!showDifferenceInfo)}
+              className="w-full text-center text-sm text-quotla-orange hover:text-secondary-600 font-medium transition-colors flex items-center justify-center gap-1"
+            >
+              <span>What's the difference?</span>
+              <svg className={`w-4 h-4 transition-transform ${showDifferenceInfo ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            {showDifferenceInfo && (
+              <div className="mt-4 p-4 bg-gray-50 dark:bg-primary-800 rounded-lg space-y-3 text-sm">
+                <div>
+                  <h4 className="font-heading font-bold text-quotla-green mb-1">Quote</h4>
+                  <p className="text-gray-600 dark:text-primary-300">A quote is a proposal sent to potential clients showing estimated prices for products or services. It's not a request for payment.</p>
+                </div>
+                <div>
+                  <h4 className="font-heading font-bold text-purple-600 mb-1">Invoice</h4>
+                  <p className="text-gray-600 dark:text-primary-300">An invoice is a payment request sent after delivering products or services. It includes payment terms and due dates.</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

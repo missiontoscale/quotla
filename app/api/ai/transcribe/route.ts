@@ -47,13 +47,11 @@ export async function POST(request: NextRequest) {
     // Create a File-like object that OpenAI SDK accepts
     const file = new File([buffer], 'audio.webm', { type: audioFile.type })
 
-    // Use OpenAI's newer transcription model with improved accuracy
-    // gpt-4o-mini-transcribe is faster and more cost-effective than gpt-4o-transcribe
-    // while still providing better accuracy than whisper-1
+    // Use OpenAI's Whisper transcription model
     if (stream) {
       const transcription = await getOpenAIClient().audio.transcriptions.create({
         file: file,
-        model: 'gpt-4o-mini-transcribe',
+        model: 'whisper-1',
         prompt: TRANSCRIPTION_PROMPT,
         response_format: 'text',
         stream: true,
@@ -85,9 +83,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Non-streaming response
-    const transcription = await openai.audio.transcriptions.create({
+    const transcription = await getOpenAIClient().audio.transcriptions.create({
       file: file,
-      model: 'gpt-4o-mini-transcribe',
+      model: 'whisper-1',
       // Remove hardcoded language to enable auto-detection
       // The model will automatically detect the language
       prompt: TRANSCRIPTION_PROMPT, // Improves accuracy for domain-specific terms

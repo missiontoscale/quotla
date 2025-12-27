@@ -75,7 +75,9 @@
       "Bash(timeout:*)",
       "Bash(npm cache clean:*)",
       "Bash(git restore:*)",
-      "Bash(git config:*)"
+      "Bash(git config:*)",
+      "Bash(set PORT=3001)",
+      "Bash(ping:*)"
     ],
     "deny": [],
     "ask": []
