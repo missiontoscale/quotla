@@ -112,27 +112,24 @@ function DashboardContent() {
 
         {/* Pane 1: Seal with Quotla Agent - Full Width */}
         <section className="mb-8 sm:mb-10 w-full">
-          <div className="bg-white dark:bg-primary-700 rounded-2xl sm:rounded-3xl shadow-lg border border-primary-200 dark:border-quotla-light/20 overflow-hidden transition-colors h-auto flex flex-col">
-            <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-quotla-green to-quotla-orange">
+          <div className="bg-white dark:bg-primary-700 rounded-2xl sm:rounded-3xl shadow-lg border border-primary-200 dark:border-quotla-light/20 overflow-hidden transition-colors">
+            <div className="flex items-center gap-3 p-4 sm:p-5 bg-gradient-to-r from-quotla-green to-quotla-orange">
               <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0 shadow-md">
                 <svg className="w-6 h-6 sm:w-7 sm:h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                 </svg>
               </div>
               <div className="flex-1">
                 <h2 className="font-heading text-lg sm:text-xl font-bold text-white">
-                  Seal with the Quotla Agent
+                  Quotla AI Assistant
                 </h2>
-                <p className="text-sm text-white/90 flex items-center gap-1.5 mt-1">
-                  <span className="font-semibold">Quotla – Deal Expert</span>
+                <p className="text-sm text-white/90 flex items-center gap-1.5 mt-0.5">
                   <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-                  <span>Ready to help</span>
+                  <span className="font-medium">Online & Ready</span>
                 </p>
               </div>
             </div>
-            <div className="overflow-hidden">
-              <QuotlaChat />
-            </div>
+            <QuotlaChat />
           </div>
         </section>
 
@@ -232,78 +229,49 @@ function DashboardContent() {
             {/* Card 2: Insights - Right Side */}
             <div className="bg-white dark:bg-primary-700 rounded-2xl shadow-lg border border-primary-200 dark:border-quotla-light/20 overflow-hidden transition-colors">
               <div className="p-5 sm:p-6">
-                <h3 className="font-heading text-lg sm:text-xl font-bold text-quotla-dark dark:text-primary-50 mb-4">
-                  Insights
-                </h3>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-heading text-lg sm:text-xl font-bold text-quotla-dark dark:text-primary-50">
+                    Insights
+                  </h3>
+                  <Link
+                    href="/dashboard/analytics"
+                    className="text-quotla-orange hover:text-secondary-600 transition-colors"
+                    aria-label="View detailed analytics"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </Link>
+                </div>
                 <div className="border-t border-gray-200 dark:border-primary-600"></div>
 
                 {/* Chart Placeholder - Using simple bar representation */}
-                <div className="mt-4 h-[240px] flex items-end justify-around gap-2 px-2">
+                <div className="mt-4 h-[280px] flex items-end justify-around gap-2 px-2">
                   {[
-                    { label: 'Q', value: stats.totalQuotes, color: 'bg-quotla-green' },
-                    { label: 'I', value: stats.totalInvoices, color: 'bg-purple-500' },
-                    { label: 'P', value: stats.paidInvoices, color: 'bg-quotla-orange' },
-                    { label: 'Pen', value: stats.pendingInvoices, color: 'bg-yellow-500' }
+                    { label: 'Quotes', value: stats.totalQuotes, color: 'bg-quotla-green' },
+                    { label: 'Invoices', value: stats.totalInvoices, color: 'bg-purple-500' },
+                    { label: 'Paid', value: stats.paidInvoices, color: 'bg-quotla-orange' },
+                    { label: 'Pending', value: stats.pendingInvoices, color: 'bg-yellow-500' }
                   ].map((item, index) => {
                     const maxValue = Math.max(stats.totalQuotes, stats.totalInvoices, stats.paidInvoices, stats.pendingInvoices, 1)
-                    const heightPercent = (item.value / maxValue) * 80
+                    const heightPercent = (item.value / maxValue) * 75
                     return (
                       <div key={index} className="flex-1 flex flex-col items-center gap-2">
-                        <div className="w-full flex flex-col justify-end items-center" style={{ height: '180px' }}>
-                          <div className="font-heading font-bold text-sm text-quotla-dark dark:text-primary-50 mb-1">
+                        <div className="w-full flex flex-col justify-end items-center" style={{ height: '220px' }}>
+                          <div className="font-heading font-bold text-base text-quotla-dark dark:text-primary-50 mb-2">
                             {item.value}
                           </div>
                           <div
-                            className={`w-full ${item.color} rounded-t-lg transition-all`}
-                            style={{ height: `${heightPercent}%`, minHeight: item.value > 0 ? '20px' : '0px' }}
+                            className={`w-full ${item.color} rounded-t-lg transition-all shadow-sm`}
+                            style={{ height: `${heightPercent}%`, minHeight: item.value > 0 ? '30px' : '0px' }}
                           ></div>
                         </div>
-                        <div className="font-sans text-xs font-semibold text-gray-600 dark:text-primary-400">
+                        <div className="font-sans text-xs font-semibold text-gray-600 dark:text-primary-400 text-center">
                           {item.label}
                         </div>
                       </div>
                     )
                   })}
-                </div>
-
-                {/* Chart Legend */}
-                <div className="mt-4 pt-4 border-t border-gray-200 dark:border-primary-600">
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded bg-quotla-green"></div>
-                      <span className="font-sans text-gray-600 dark:text-primary-400">Quotes</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded bg-purple-500"></div>
-                      <span className="font-sans text-gray-600 dark:text-primary-400">Invoices</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded bg-quotla-orange"></div>
-                      <span className="font-sans text-gray-600 dark:text-primary-400">Paid</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded bg-yellow-500"></div>
-                      <span className="font-sans text-gray-600 dark:text-primary-400">Pending</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Row of Overview Metrics - Below Graph */}
-                <div className="mt-6 pt-4 border-t border-gray-200 dark:border-primary-600">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="p-3 bg-gray-50 dark:bg-primary-600/30 rounded-lg">
-                      <div className="font-sans text-xs text-gray-600 dark:text-primary-400 mb-1">Total Revenue</div>
-                      <div className="font-heading text-lg font-bold text-quotla-green">
-                        {formatCurrency(stats.totalRevenue, invoices[0]?.currency || 'USD')}
-                      </div>
-                    </div>
-                    <div className="p-3 bg-gray-50 dark:bg-primary-600/30 rounded-lg">
-                      <div className="font-sans text-xs text-gray-600 dark:text-primary-400 mb-1">Outstanding</div>
-                      <div className="font-heading text-lg font-bold text-quotla-orange">
-                        {formatCurrency(stats.outstandingRevenue, invoices[0]?.currency || 'USD')}
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
@@ -390,75 +358,6 @@ function DashboardContent() {
             </div>
           </div>
         </section>
-
-        {/* Recent Deals Section */}
-        {allDeals.length > 0 && (
-          <section className="mb-10 sm:mb-12">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-5 sm:mb-6">
-              <div>
-                <h2 className="font-heading text-2xl sm:text-3xl font-bold text-quotla-dark dark:text-primary-50 mb-1 sm:mb-2">
-                  Recent Deals
-                </h2>
-                <p className="font-sans text-sm sm:text-base text-gray-600 dark:text-primary-400">
-                  Your latest quotes and invoices
-                </p>
-              </div>
-              <Link
-                href="/dashboard/deals"
-                className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-quotla-orange text-white text-sm sm:text-base font-semibold hover:bg-secondary-600 transition-all shadow-md shadow-quotla-orange/30 hover:shadow-lg hover:-translate-y-0.5"
-              >
-                View All
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-              {allDeals.slice(0, 6).map((deal) => (
-                <Link
-                  key={deal.id}
-                  href={deal.type === 'quote' ? `/quotes/${deal.id}` : `/invoices/${deal.id}`}
-                  className="group block bg-white dark:bg-primary-700 rounded-2xl p-5 sm:p-6 border border-primary-200 dark:border-quotla-light/20 shadow-sm hover:border-quotla-orange dark:hover:border-quotla-orange hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-                >
-                  <div className="flex items-start justify-between mb-3 sm:mb-4">
-                    <div className="flex items-center gap-2">
-                      <div className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full ${deal.type === 'quote' ? 'bg-quotla-green' : 'bg-purple-500'}`}></div>
-                      <span className="font-sans text-xs font-bold text-gray-600 dark:text-primary-400 uppercase tracking-wider">
-                        {deal.type}
-                      </span>
-                    </div>
-                    <span
-                      className={`px-2.5 sm:px-3 py-1 text-xs font-semibold rounded-full ${
-                        deal.status === 'approved' || deal.status === 'paid'
-                          ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-                          : deal.status === 'sent'
-                          ? 'bg-quotla-green/10 text-quotla-dark dark:bg-quotla-green/20 dark:text-quotla-light'
-                          : deal.status === 'overdue'
-                          ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
-                          : 'bg-gray-100 text-gray-700 dark:bg-primary-600 dark:text-primary-100'
-                      }`}
-                    >
-                      {deal.status}
-                    </span>
-                  </div>
-                  <div className="font-heading font-bold text-lg sm:text-xl text-quotla-dark dark:text-primary-50 mb-2 group-hover:text-quotla-orange transition-colors">
-                    {deal.type === 'quote' ? (deal as any).quote_number : (deal as any).invoice_number}
-                  </div>
-                  {deal.title && (
-                    <div className="font-sans text-sm text-gray-600 dark:text-primary-300 mb-3 sm:mb-4 line-clamp-2">
-                      {deal.title}
-                    </div>
-                  )}
-                  <div className="flex justify-between items-center pt-3 sm:pt-4 border-t border-gray-200 dark:border-primary-600">
-                    <div className="font-heading font-bold text-base sm:text-lg text-quotla-orange">
-                      {formatCurrency(deal.total, deal.currency)}
-                    </div>
-                    <div className="font-sans text-xs text-gray-500 dark:text-primary-400">
-                      {format(new Date(deal.created_at), 'MMM d, yyyy')}
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
 
         {/* Modals */}
         <CreateModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} />

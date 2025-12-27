@@ -1,5 +1,5 @@
 // External ML API Configuration
-const EXTERNAL_API_URL = process.env.EXTERNAL_AI_API_URL'
+const EXTERNAL_API_URL = process.env.EXTERNAL_AI_API_URL || 'http://127.0.0.1:8000'
 
 interface GenerateParams {
   prompt: string
