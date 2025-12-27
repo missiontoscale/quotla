@@ -94,6 +94,7 @@ export async function POST(request: NextRequest) {
         history,
       })
     } catch (apiError) {
+      console.error('[Generate Route] External API Error:', apiError)
 
       // Check if it's a connection error
       const errorMessage = apiError instanceof Error ? apiError.message : 'Unknown error'
@@ -112,6 +113,8 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       )
     }
+
+    console.log('[Generate Route] External API Result:', { success: result.success, hasData: !!result.data, documentType: result.document_type })
 
     if (!result.success) {
       return NextResponse.json(

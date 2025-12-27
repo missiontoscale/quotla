@@ -80,6 +80,9 @@ class ExternalAIClient {
     try {
       const { prompt, history = [] } = params
 
+      console.log('[External AI Client] Calling:', `${EXTERNAL_API_URL}/api/generate`)
+      console.log('[External AI Client] Payload:', { prompt: prompt.substring(0, 50) + '...', historyLength: history.length })
+
       const response = await fetch(`${EXTERNAL_API_URL}/api/generate`, {
         method: 'POST',
         headers: {
@@ -91,12 +94,16 @@ class ExternalAIClient {
         }),
       })
 
+      console.log('[External AI Client] Response status:', response.status)
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
+        console.error('[External AI Client] Error response:', errorData)
         throw new Error(errorData.detail || errorData.error || `API returned ${response.status}`)
       }
 
       const data = await response.json()
+      console.log('[External AI Client] Success response:', { hasData: !!data.data, documentType: data.document_type })
 
       return {
         success: data.success ?? true,
@@ -106,6 +113,7 @@ class ExternalAIClient {
         needs_currency: data.needs_currency ?? false,
       }
     } catch (error) {
+      console.error('[External AI Client] Exception:', error)
       return {
         success: false,
         text_output: '',
