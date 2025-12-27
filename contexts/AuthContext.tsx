@@ -27,7 +27,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     supabase.auth.getSession().then(({ data: { session }, error }) => {
       // If there's an error getting the session (like invalid refresh token), clear it
       if (error) {
-        console.warn('Session error:', error.message)
         // Sign out to clear invalid session
         supabase.auth.signOut({ scope: 'local' }).catch(() => {})
         setUser(null)
@@ -49,7 +48,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } = supabase.auth.onAuthStateChange((event, session) => {
       // Handle token refresh errors
       if (event === 'TOKEN_REFRESHED' && !session) {
-        console.warn('Token refresh failed, clearing session')
         setUser(null)
         setProfile(null)
         setLoading(false)
@@ -123,10 +121,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     } catch (err) {
       // Silently fail for background refresh - cached profile is still valid
-      // Don't log timeout errors as they're expected during background refreshes
-      if (err instanceof Error && !err.name.includes('Abort') && !err.name.includes('Timeout')) {
-        console.warn('Background profile refresh failed:', err.message)
-      }
+      // Timeout errors are expected during background refreshes
     }
   }
 

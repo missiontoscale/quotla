@@ -92,7 +92,7 @@ export default function BlogPostPage() {
         // Markdown posts don't have comments in database
       }
     } catch (err) {
-      console.error('Error loading markdown post:', err)
+      // Silently fail if unable to load markdown post
     }
 
     setLoading(false)

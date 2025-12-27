@@ -37,13 +37,11 @@ export default function BlogPage() {
     try {
       const { data: { session }, error } = await supabase.auth.getSession()
       if (error) {
-        console.warn('Auth check failed:', error.message)
         setIsAuthenticated(false)
         return
       }
       setIsAuthenticated(!!session)
     } catch (error) {
-      console.warn('Auth check error:', error)
       setIsAuthenticated(false)
     }
   }
@@ -58,12 +56,12 @@ export default function BlogPage() {
         .order('published_at', { ascending: false })
 
       if (error) {
-        console.warn('Failed to load blog posts from database:', error.message)
+        // Silently fail if unable to load from database
       } else if (data) {
         setInternalPosts(data)
       }
     } catch (error) {
-      console.warn('Error fetching blog posts:', error)
+      // Silently fail
     }
 
     // Also load markdown posts
@@ -91,7 +89,7 @@ export default function BlogPage() {
         setInternalPosts(prev => [...prev, ...convertedPosts])
       }
     } catch (error) {
-      console.warn('Error loading markdown posts:', error)
+      // Silently fail
     }
 
     setLoading(false)
@@ -105,7 +103,7 @@ export default function BlogPage() {
         setExternalConfig(config)
       }
     } catch (error) {
-      console.error('Failed to load external blog config:', error)
+      // Silently fail if unable to load external config
     }
   }
 

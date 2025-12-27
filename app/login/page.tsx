@@ -68,7 +68,6 @@ function LoginForm() {
         .maybeSingle()
 
       if (profileError || !profile) {
-        console.error('Profile not found for user:', data.user.id, profileError)
         setError('Unable to access your profile. Please contact support.')
         setLoading(false)
         return
@@ -90,7 +89,6 @@ function LoginForm() {
       // Use window.location for a full page reload to ensure middleware picks up the new session
       window.location.href = redirectTo || ROUTES.DASHBOARD
     } catch (err) {
-      console.error('Login error:', err)
 
       // Provide more helpful error messages
       if (err instanceof TypeError && err.message.includes('fetch')) {

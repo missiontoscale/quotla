@@ -37,7 +37,6 @@ export async function POST(request: NextRequest) {
       needs_currency: result.needs_currency || false,
     })
   } catch (error) {
-    console.error('AI invoice generation error:', error)
     const errorMessage = error instanceof Error ? error.message : 'Failed to generate invoice'
     return NextResponse.json(
       { error: errorMessage },

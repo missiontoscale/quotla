@@ -83,7 +83,6 @@ When users ask you to create quotes or invoices, help them by gathering the nece
         needs_currency: this.needsCurrencyInfo(prompt, textContent),
       }
     } catch (error) {
-      console.error('AI generation error:', error)
       return {
         success: false,
         text_output: '',
@@ -134,7 +133,6 @@ Provide clear, structured information that can be used to create a formal quote.
         needs_currency: this.needsCurrencyInfo(prompt, textContent),
       }
     } catch (error) {
-      console.error('Quote generation error:', error)
       return {
         success: false,
         text_output: '',
@@ -186,7 +184,6 @@ Provide clear, structured information that can be used to create a formal invoic
         needs_currency: this.needsCurrencyInfo(prompt, textContent),
       }
     } catch (error) {
-      console.error('Invoice generation error:', error)
       return {
         success: false,
         text_output: '',

@@ -72,7 +72,6 @@ export default function SignUpPage() {
 
         if (profileError || !profile) {
           // This should rarely happen since trigger creates profile
-          console.error('Profile not found after signup:', profileError)
           setError('Account created but profile setup is pending. Please try logging in again.')
           setLoading(false)
           return

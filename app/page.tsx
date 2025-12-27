@@ -176,7 +176,6 @@ export default function HomePage() {
         localStorage.setItem('quotla_chat_history', JSON.stringify(updatedMessages))
       }
     } catch (error) {
-      console.error('Chat error:', error)
       const errorText = error instanceof Error ? error.message : 'Sorry, I encountered an error. Please try again.'
       const errorMessage = { role: 'assistant', content: errorText }
       const updatedMessages = [...chatMessages, newUserMessage, errorMessage]

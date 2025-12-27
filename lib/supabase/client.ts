@@ -35,20 +35,6 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
         ...options,
         signal: options.signal || AbortSignal.timeout(timeout),
       }).catch((error) => {
-        // Only log meaningful errors in development, skip timeout/abort errors
-        if (process.env.NODE_ENV === 'development') {
-          // Skip logging for timeout errors on profile fetches (common during background refresh)
-          const isTimeoutError = error?.name === 'AbortError' || error?.name === 'TimeoutError'
-          const isProfileFetch = url.toString().includes('/profiles')
-
-          if (!isTimeoutError || !isProfileFetch) {
-            console.error('Supabase fetch error:', {
-              url: url.toString(),
-              message: error?.message || String(error) || 'Unknown error',
-              name: error?.name || typeof error,
-            })
-          }
-        }
         throw error
       })
     },
@@ -57,15 +43,6 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
 
 // Handle auth state changes and clean up invalid sessions
 supabase.auth.onAuthStateChange(async (event, session) => {
-  if (process.env.NODE_ENV === 'development') {
-    if (event === 'TOKEN_REFRESHED') {
-      console.log('Token refreshed successfully')
-    }
-    if (event === 'SIGNED_OUT') {
-      console.log('User signed out')
-    }
-  }
-
   // Clear invalid sessions
   if (event === 'TOKEN_REFRESH_FAILED' || event === 'USER_DELETED') {
     await supabase.auth.signOut()

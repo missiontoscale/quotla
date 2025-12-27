@@ -96,7 +96,6 @@ export async function POST(request: NextRequest) {
       text: transcription.text,
     })
   } catch (error) {
-    console.error('Transcription error:', error)
 
     if (error instanceof Error) {
       return NextResponse.json(

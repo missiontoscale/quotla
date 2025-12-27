@@ -48,7 +48,7 @@ export default function PricingPage() {
         }
         setUsageStats(mockStats)
       } catch (error) {
-        console.error('Failed to fetch usage stats:', error)
+        // Silently fail if unable to fetch usage stats
       }
     }
 

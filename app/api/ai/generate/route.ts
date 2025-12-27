@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
         try {
           history = JSON.parse(historyStr)
         } catch (e) {
-          console.error('Error parsing history:', e)
+          // Silently fail if unable to parse history
         }
       }
 
@@ -94,7 +94,6 @@ export async function POST(request: NextRequest) {
         history,
       })
     } catch (apiError) {
-      console.error('External API call failed:', apiError)
 
       // Check if it's a connection error
       const errorMessage = apiError instanceof Error ? apiError.message : 'Unknown error'
@@ -141,8 +140,6 @@ export async function POST(request: NextRequest) {
       shouldCreateDocument: isCreationRequest || isFollowUpCreate || result.needs_currency === false,
     })
   } catch (error) {
-    console.error('AI generation error:', error)
-    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace')
 
     const errorMessage = error instanceof Error ? error.message : 'Failed to generate description'
     return NextResponse.json(

@@ -54,7 +54,7 @@ export default function CreateModal({ isOpen, onClose }: CreateModalProps) {
           })))
           localStorage.removeItem('quotla_chat_history')
         } catch (error) {
-          console.error('Error loading chat history:', error)
+          // Silently fail if unable to load chat history
         }
       }
     }
@@ -308,7 +308,6 @@ export default function CreateModal({ isOpen, onClose }: CreateModalProps) {
         setChatMessages(prev => [...prev.slice(-24), { role: 'assistant', content: aiResponse, timestamp: new Date() }])
       }
     } catch (error) {
-      console.error('Chat send error:', error)
 
       // Handle authentication errors
       if (error instanceof Error && error.message === 'AUTHENTICATION_REQUIRED') {

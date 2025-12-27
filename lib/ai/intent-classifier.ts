@@ -142,7 +142,6 @@ Classify the user's intent and respond with JSON.`
 
     // Validate the classification
     if (!classification.intent || !['generate_quote', 'save_quote', 'generate_invoice', 'save_invoice', 'general'].includes(classification.intent)) {
-      console.warn('Invalid intent from AI:', classification.intent, '- defaulting to general')
       return {
         intent: 'general',
         confidence: 0.5,
@@ -152,13 +151,11 @@ Classify the user's intent and respond with JSON.`
 
     // Validate save intents - they require a generated item
     if (classification.intent === 'save_quote' && !hasGeneratedQuote) {
-      console.warn('AI suggested save_quote but no quote exists - switching to generate_quote')
       classification.intent = 'generate_quote'
       classification.reasoning = 'User wants a quote but none exists yet'
     }
 
     if (classification.intent === 'save_invoice' && !hasGeneratedInvoice) {
-      console.warn('AI suggested save_invoice but no invoice exists - switching to generate_invoice')
       classification.intent = 'generate_invoice'
       classification.reasoning = 'User wants an invoice but none exists yet'
     }
@@ -166,7 +163,6 @@ Classify the user's intent and respond with JSON.`
     return classification
 
   } catch (error) {
-    console.error('Intent classification error:', error)
 
     // Fallback to simple heuristics if AI fails
     const lowerMsg = currentMessage.toLowerCase()

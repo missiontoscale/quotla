@@ -43,7 +43,7 @@ export function useChatHistory(options: UseChatHistoryOptions = {}) {
           setMessages(messagesWithDates)
         }
       } catch (error) {
-        console.error('Failed to load chat history:', error)
+        // Silently fail if unable to load chat history
       } finally {
         setIsLoaded(true)
       }
@@ -56,7 +56,7 @@ export function useChatHistory(options: UseChatHistoryOptions = {}) {
       try {
         localStorage.setItem(storageKey, JSON.stringify(messages))
       } catch (error) {
-        console.error('Failed to save chat history:', error)
+        // Silently fail if unable to save chat history
       }
     }
   }, [messages, autoSave, isLoaded, storageKey])

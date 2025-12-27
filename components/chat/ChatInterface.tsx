@@ -190,7 +190,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
         onInvoiceGenerated(data)
       }
     } catch (error) {
-      console.error('Chat error:', error)
       const errorText = error instanceof Error ? error.message : ERROR_MESSAGES.GENERIC
       addMessage({
         role: 'assistant',
@@ -210,7 +209,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   // Handle voice recording
   const handleVoiceRecord = () => {
     // TODO: Implement voice recording
-    console.log('Voice recording not yet implemented')
   }
 
   // Variant-specific styles

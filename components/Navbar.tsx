@@ -55,7 +55,7 @@ export default function Navbar() {
       await signOut()
       router.push(NAVBAR_BRAND.homeUrl)
     } catch (error) {
-      console.error('Error signing out:', error)
+      // Handle error silently
     }
   }
 

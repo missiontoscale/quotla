@@ -79,7 +79,6 @@ export async function extractFromImageOpenAI(
     // Validate the structure
     return validateExtraction(extracted)
   } catch (error) {
-    console.error('OpenAI vision extraction error:', error)
 
     // Handle JSON parse errors
     if (error instanceof SyntaxError) {

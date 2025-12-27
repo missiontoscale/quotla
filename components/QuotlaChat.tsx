@@ -45,10 +45,8 @@ export default function QuotlaChat({ onClose }: { onClose?: () => void } = {}) {
     // Uncomment this for production use with full AI classification
     try {
       const classification = await classifyIntent(messages, userMessage)
-      console.log('AI Intent Classification:', classification)
       return classification.intent
     } catch (error) {
-      console.error('AI classification failed, falling back to fast heuristics:', error)
       // Fallback to fast heuristics if AI fails
       return classifyIntentFast(messages, userMessage)
     }
@@ -241,7 +239,6 @@ export default function QuotlaChat({ onClose }: { onClose?: () => void } = {}) {
       router.push(`/quotes/new?transfer=${transferId}`)
       if (onClose) onClose()
     } catch (error) {
-      console.error('Failed to store quote data securely:', error)
       setMessages((prev) => [
         ...prev,
         {
@@ -259,7 +256,6 @@ export default function QuotlaChat({ onClose }: { onClose?: () => void } = {}) {
       router.push(`/invoices/new?transfer=${transferId}`)
       if (onClose) onClose()
     } catch (error) {
-      console.error('Failed to store invoice data securely:', error)
       setMessages((prev) => [
         ...prev,
         {
@@ -298,7 +294,7 @@ export default function QuotlaChat({ onClose }: { onClose?: () => void } = {}) {
         await handleGeneralAdvice(userMessage)
       }
     } catch (error) {
-      console.error('Chat error:', error)
+      // Handle error silently
     } finally {
       setLoading(false)
     }
@@ -334,7 +330,6 @@ export default function QuotlaChat({ onClose }: { onClose?: () => void } = {}) {
         },
       ])
     } catch (error) {
-      console.error('Transcription error:', error)
       setMessages((prev) => [
         ...prev,
         {
