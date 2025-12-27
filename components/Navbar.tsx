@@ -68,6 +68,9 @@ export default function Navbar() {
     if (link.authRequired && !isAuthenticated) return null
     if (link.guestOnly && isAuthenticated) return null
 
+    // Skip Settings link on desktop view
+    if (!isMobile && link.label === 'Settings') return null
+
     const baseClasses = isMobile
       ? 'block px-4 py-2 text-base font-medium'
       : 'text-sm font-medium'

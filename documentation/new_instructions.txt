@@ -1,7 +1,6 @@
-A. Redesign the Create myself button so it does not look more enticing thatn the AI Agent button, but enough to show its essence
+A. For all chats, whether inline or sidebar, the scroll should only exist when user clicks it, otherwise, it looks ugly
 
-B. Make Insights a bit more colorful, and add a variant of chats that user can choose from by clicking neat text buttons[views] on top of the chart.
-Just like Sealed Deals has a button to view more, do the same for Insights.
+B. when user clicks button on bottom right, it should have a close button x at its top right. 
 
-C. Due to the existence of elete the following views /quotes, /invoices
-Just like
+C. Settings should NOt be a nav link for desktop view
+

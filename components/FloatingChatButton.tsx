@@ -25,7 +25,17 @@ export default function FloatingChatButton() {
       {/* Chat Modal/Sidebar */}
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-end bg-black/50 backdrop-blur-sm animate-fadeIn">
-          <div className="w-full sm:w-[480px] lg:w-[520px] h-[90vh] sm:h-[85vh] sm:max-h-[700px] sm:m-4 sm:mr-8 bg-white dark:bg-primary-800 rounded-t-2xl sm:rounded-2xl shadow-2xl border-t border-gray-200 dark:border-primary-700 sm:border animate-slideUp sm:animate-slideInRight overflow-hidden">
+          <div className="w-full sm:w-[480px] lg:w-[520px] h-[90vh] sm:h-[85vh] sm:max-h-[700px] sm:m-4 sm:mr-8 bg-white dark:bg-primary-800 rounded-t-2xl sm:rounded-2xl shadow-2xl border-t border-gray-200 dark:border-primary-700 sm:border animate-slideUp sm:animate-slideInRight overflow-hidden relative">
+            {/* Close Button */}
+            <button
+              onClick={() => setIsOpen(false)}
+              className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-gray-100 dark:bg-primary-700 hover:bg-gray-200 dark:hover:bg-primary-600 text-gray-600 dark:text-primary-300 hover:text-gray-800 dark:hover:text-primary-100 transition-all shadow-sm hover:shadow-md flex items-center justify-center"
+              title="Close chat"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
             <QuotlaChat onClose={() => setIsOpen(false)} />
           </div>
         </div>

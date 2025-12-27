@@ -356,7 +356,20 @@ export default function QuotlaChat({ onClose }: { onClose?: () => void } = {}) {
     <div className="flex flex-col bg-white dark:bg-primary-800" style={{ minHeight: '120px', maxHeight: messages.length > 1 ? '600px' : '120px' }}>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-primary-900/30" style={{ maxHeight: messages.length > 1 ? '400px' : '0px' }}>
+      <div
+        className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-primary-900/30 scrollbar-thin scrollbar-thumb-transparent hover:scrollbar-thumb-gray-300 scrollbar-track-transparent"
+        style={{
+          maxHeight: messages.length > 1 ? '400px' : '0px',
+          scrollbarWidth: 'thin',
+          scrollbarColor: 'transparent transparent'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.scrollbarColor = 'rgb(209 213 219) transparent'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.scrollbarColor = 'transparent transparent'
+        }}
+      >
         {messages.map((message, index) => (
           <div
             key={index}

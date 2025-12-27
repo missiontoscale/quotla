@@ -244,7 +244,18 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
           space-y-4 p-4
           bg-${COLORS.BG.PRIMARY}
           rounded-t-lg
+          scrollbar-thin scrollbar-thumb-transparent hover:scrollbar-thumb-gray-300 scrollbar-track-transparent
         `.trim().replace(/\s+/g, ' ')}
+        style={{
+          scrollbarWidth: 'thin',
+          scrollbarColor: 'transparent transparent'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.scrollbarColor = 'rgb(209 213 219) transparent'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.scrollbarColor = 'transparent transparent'
+        }}
       >
         {messages.length === 0 ? (
           <EmptyStates.NoMessages />
