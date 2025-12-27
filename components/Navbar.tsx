@@ -15,7 +15,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
-import { Menu, X, Zap, Sun, Moon } from 'lucide-react'
+import { Menu, X, Zap } from 'lucide-react'
 import { GUEST_NAV_LINKS, AUTH_NAV_LINKS, NAVBAR_BRAND, NavLink } from './navbar/nav-data'
 import { COLORS, TRANSITIONS, STORAGE_KEYS } from '@/lib/constants'
 
@@ -25,16 +25,9 @@ export default function Navbar() {
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
-  const [theme, setTheme] = useState<'light' | 'dark'>('dark')
 
   useEffect(() => {
     setMounted(true)
-    // Check for saved theme preference or default to dark
-    const savedTheme = localStorage.getItem(STORAGE_KEYS.THEME) as 'light' | 'dark' | null
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light')
-    setTheme(initialTheme)
-    document.documentElement.classList.toggle('dark', initialTheme === 'dark')
   }, [])
 
   // Prevent hydration mismatch
@@ -42,13 +35,6 @@ export default function Navbar() {
 
   // Check if we're on Dashboard or Settings page to show Sign Out
   const showSignOut = pathname?.startsWith('/dashboard') || pathname?.startsWith('/settings')
-
-  const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark'
-    setTheme(newTheme)
-    localStorage.setItem(STORAGE_KEYS.THEME, newTheme)
-    document.documentElement.classList.toggle('dark', newTheme === 'dark')
-  }
 
   const handleSignOut = async () => {
     try {
@@ -151,15 +137,6 @@ export default function Navbar() {
                 Sign Out
               </button>
             )}
-
-            {/* Theme toggle */}
-            <button
-              onClick={toggleTheme}
-              className={`p-2 text-${COLORS.TEXT.LIGHT}/80 hover:text-${COLORS.TEXT.LIGHT} ${TRANSITIONS.COLORS}`}
-              aria-label="Toggle theme"
-            >
-              {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-            </button>
           </div>
 
           {/* Mobile menu button */}
@@ -193,20 +170,6 @@ export default function Navbar() {
                 Sign Out
               </button>
             )}
-
-            {/* Theme toggle (mobile) */}
-            <button
-              onClick={toggleTheme}
-              className={`
-                flex items-center gap-2 w-full px-4 py-2 text-base font-medium
-                text-${COLORS.TEXT.LIGHT}/80
-                hover:text-${COLORS.TEXT.LIGHT}
-                ${TRANSITIONS.COLORS}
-              `.trim().replace(/\s+/g, ' ')}
-            >
-              {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-              {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
-            </button>
           </div>
         </div>
       )}

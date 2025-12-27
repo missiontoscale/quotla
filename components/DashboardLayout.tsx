@@ -4,32 +4,14 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
-import { LayoutDashboard, FileText, Receipt, Users, Settings, Sun, Moon } from 'lucide-react'
+import { LayoutDashboard, FileText, Receipt, Users, Settings } from 'lucide-react'
 import FloatingChatButton from './FloatingChatButton'
 import { STORAGE_KEYS } from '@/lib/constants'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const { profile } = useAuth()
-  const [mounted, setMounted] = useState(false)
-  const [theme, setTheme] = useState<'light' | 'dark'>('dark')
   const [sidebarExpanded, setSidebarExpanded] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-    const savedTheme = localStorage.getItem(STORAGE_KEYS.THEME) as 'light' | 'dark' | null
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light')
-    setTheme(initialTheme)
-    document.documentElement.classList.toggle('dark', initialTheme === 'dark')
-  }, [])
-
-  const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark'
-    setTheme(newTheme)
-    localStorage.setItem(STORAGE_KEYS.THEME, newTheme)
-    document.documentElement.classList.toggle('dark', newTheme === 'dark')
-  }
 
   const toggleSidebar = () => {
     setSidebarExpanded(!sidebarExpanded)
@@ -123,25 +105,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
           )}
 
-          {/* Theme Toggle */}
-          <div className="p-3">
-            <button
-              onClick={toggleTheme}
-              className={`flex items-center ${sidebarExpanded ? 'justify-start gap-3 px-4' : 'justify-center'} p-3 rounded-lg transition-all hover:bg-primary-600 text-gray-400 hover:text-primary-50 active:opacity-70 group w-full`}
-              aria-label="Toggle theme"
-            >
-              {mounted && (theme === 'dark' ? <Sun className="h-6 w-6 flex-shrink-0" /> : <Moon className="h-6 w-6 flex-shrink-0" />)}
-              {sidebarExpanded && <span className="text-sm font-medium">{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>}
-              {/* Tooltip - only show when collapsed */}
-              {!sidebarExpanded && (
-                <div className="absolute left-full ml-2 px-3 py-1.5 text-xs rounded-md whitespace-nowrap shadow-lg z-50 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none bg-primary-600 text-primary-50">
-                  {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
-                  <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-primary-600"></div>
-                </div>
-              )}
-            </button>
-          </div>
-
           {/* User Profile */}
           <div className="p-3">
             <Link
@@ -218,13 +181,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <Link href="/billing" className="block px-4 py-2 text-sm transition-colors text-gray-400 hover:bg-quotla-green">
                 Billing
               </Link>
-              <button
-                onClick={toggleTheme}
-                className="flex items-center gap-2 w-full px-4 py-2 text-sm transition-colors text-gray-400 hover:bg-quotla-green"
-              >
-                {mounted && (theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />)}
-                {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
-              </button>
             </div>
           </div>
         </div>

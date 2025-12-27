@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           {
             error: 'Unable to connect to the AI service. Please ensure the external API backend is running at ' +
-                   (process.env.EXTERNAL_AI_API_URL || 'http://127.0.0.1:8000')
+                   (process.env.EXTERNAL_AI_API_URL')
           },
           { status: 503 }
         )

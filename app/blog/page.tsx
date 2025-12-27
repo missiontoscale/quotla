@@ -205,6 +205,13 @@ export default function BlogPage() {
     <div className="min-h-screen bg-[#FAF9F6] dark:bg-primary-800 transition-colors" style={{backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px)', backgroundSize: '60px 60px'}}>
       <Navbar />
 
+      {/* Theme Toggle - Fixed Position */}
+      {isDarkModeEnabled && (
+        <div className="fixed top-20 right-4 z-50">
+          <ThemeToggle />
+        </div>
+      )}
+
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Blog Header */}
         <div className="mb-8">
