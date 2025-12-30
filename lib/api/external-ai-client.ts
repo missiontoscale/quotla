@@ -123,10 +123,21 @@ class ExternalAIClient {
       const data = await response.json()
       console.log('[External AI Client] Success response:', { hasData: !!data.data, documentType: data.document_type, needsCurrency: data.needs_currency })
 
+      // Normalize field names: external API uses "customer_name", frontend expects "client_name"
+      let normalizedData = data.data
+      if (normalizedData && normalizedData.customer_name) {
+        normalizedData = {
+          ...normalizedData,
+          client_name: normalizedData.customer_name,
+          client_address: normalizedData.address || normalizedData.client_address,
+        }
+        delete normalizedData.customer_name
+      }
+
       return {
         success: data.success ?? true,
         text_output: data.text_output || '',
-        data: data.data,
+        data: normalizedData,
         document_type: data.document_type,
         needs_currency: data.needs_currency ?? false,
       }
@@ -169,10 +180,21 @@ class ExternalAIClient {
 
       const data = await response.json()
 
+      // Normalize field names: external API uses "customer_name", frontend expects "client_name"
+      let normalizedData = data.data
+      if (normalizedData && normalizedData.customer_name) {
+        normalizedData = {
+          ...normalizedData,
+          client_name: normalizedData.customer_name,
+          client_address: normalizedData.address || normalizedData.client_address,
+        }
+        delete normalizedData.customer_name
+      }
+
       return {
         success: data.success ?? true,
         text_output: data.text_output || '',
-        data: data.data,
+        data: normalizedData,
         document_type: 'quote',
         needs_currency: data.needs_currency ?? false,
       }
@@ -214,10 +236,21 @@ class ExternalAIClient {
 
       const data = await response.json()
 
+      // Normalize field names: external API uses "customer_name", frontend expects "client_name"
+      let normalizedData = data.data
+      if (normalizedData && normalizedData.customer_name) {
+        normalizedData = {
+          ...normalizedData,
+          client_name: normalizedData.customer_name,
+          client_address: normalizedData.address || normalizedData.client_address,
+        }
+        delete normalizedData.customer_name
+      }
+
       return {
         success: data.success ?? true,
         text_output: data.text_output || '',
-        data: data.data,
+        data: normalizedData,
         document_type: 'invoice',
         needs_currency: data.needs_currency ?? false,
       }
@@ -255,10 +288,21 @@ class ExternalAIClient {
 
       const data = await response.json()
 
+      // Normalize field names: external API uses "customer_name", frontend expects "client_name"
+      let normalizedData = data.data
+      if (normalizedData && normalizedData.customer_name) {
+        normalizedData = {
+          ...normalizedData,
+          client_name: normalizedData.customer_name,
+          client_address: normalizedData.address || normalizedData.client_address,
+        }
+        delete normalizedData.customer_name
+      }
+
       return {
         success: data.success ?? true,
         text_output: data.text_output || '',
-        data: data.data,
+        data: normalizedData,
         document_type: data.document_type,
         needs_currency: data.needs_currency ?? false,
       }
