@@ -1,5 +1,6 @@
 // External ML API Configuration
-const EXTERNAL_API_URL = process.env.EXTERNAL_AI_API_URL || 'https://quotla-ml.onrender.com'
+// Remove trailing slash to avoid issues with URL construction
+const EXTERNAL_API_URL = (process.env.EXTERNAL_AI_API_URL || 'https://quotla-ml.onrender.com').replace(/\/$/, '')
 
 interface GenerateParams {
   prompt: string
@@ -79,31 +80,48 @@ class ExternalAIClient {
   async generate(params: GenerateParams): Promise<AIResponse> {
     try {
       const { prompt, history = [] } = params
+      const url = `${EXTERNAL_API_URL}/api/generate`
 
-      console.log('[External AI Client] Calling:', `${EXTERNAL_API_URL}/api/generate`)
+      console.log('[External AI Client] Calling:', url)
       console.log('[External AI Client] Payload:', { prompt: prompt.substring(0, 50) + '...', historyLength: history.length })
 
-      const response = await fetch(`${EXTERNAL_API_URL}/api/generate`, {
+      // New API schema requires multipart/form-data with history as JSON string
+      const formData = new FormData()
+      formData.append('prompt', prompt)
+
+      // History must be sent as JSON string according to OpenAPI schema
+      if (history.length > 0) {
+        formData.append('history', JSON.stringify(history))
+      }
+
+      const response = await fetch(url, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          prompt,
-          history: history.length > 0 ? history : undefined,
-        }),
+        body: formData,
+        // Don't set Content-Type header - let browser set it with boundary for multipart
       })
 
       console.log('[External AI Client] Response status:', response.status)
+      console.log('[External AI Client] Response headers:', Object.fromEntries(response.headers.entries()))
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        console.error('[External AI Client] Error response:', errorData)
+        // Try to get response text first
+        const responseText = await response.text()
+        console.error('[External AI Client] Error response body:', responseText)
+
+        // Try to parse as JSON
+        let errorData: any = {}
+        try {
+          errorData = JSON.parse(responseText)
+        } catch {
+          // Not JSON, use the text
+          throw new Error(`API error (${response.status}): ${responseText.substring(0, 200)}`)
+        }
+
         throw new Error(errorData.detail || errorData.error || `API returned ${response.status}`)
       }
 
       const data = await response.json()
-      console.log('[External AI Client] Success response:', { hasData: !!data.data, documentType: data.document_type })
+      console.log('[External AI Client] Success response:', { hasData: !!data.data, documentType: data.document_type, needsCurrency: data.needs_currency })
 
       return {
         success: data.success ?? true,
@@ -124,21 +142,24 @@ class ExternalAIClient {
 
   /**
    * Generate a quote specifically
-   * Calls POST /api/generate/quote
+   * Uses /api/generate with document_type='quote'
    */
   async generateQuote(params: GenerateParams): Promise<AIResponse> {
     try {
       const { prompt, history = [] } = params
 
-      const response = await fetch(`${EXTERNAL_API_URL}/api/generate/quote`, {
+      // Use new unified endpoint with document_type parameter
+      const formData = new FormData()
+      formData.append('prompt', prompt)
+      formData.append('document_type', 'quote')
+
+      if (history.length > 0) {
+        formData.append('history', JSON.stringify(history))
+      }
+
+      const response = await fetch(`${EXTERNAL_API_URL}/api/generate`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          prompt,
-          history: history.length > 0 ? history : undefined,
-        }),
+        body: formData,
       })
 
       if (!response.ok) {
@@ -166,21 +187,24 @@ class ExternalAIClient {
 
   /**
    * Generate an invoice specifically
-   * Calls POST /api/generate/invoice
+   * Uses /api/generate with document_type='invoice'
    */
   async generateInvoice(params: GenerateParams): Promise<AIResponse> {
     try {
       const { prompt, history = [] } = params
 
-      const response = await fetch(`${EXTERNAL_API_URL}/api/generate/invoice`, {
+      // Use new unified endpoint with document_type parameter
+      const formData = new FormData()
+      formData.append('prompt', prompt)
+      formData.append('document_type', 'invoice')
+
+      if (history.length > 0) {
+        formData.append('history', JSON.stringify(history))
+      }
+
+      const response = await fetch(`${EXTERNAL_API_URL}/api/generate`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          prompt,
-          history: history.length > 0 ? history : undefined,
-        }),
+        body: formData,
       })
 
       if (!response.ok) {
@@ -208,17 +232,18 @@ class ExternalAIClient {
 
   /**
    * Generate document from uploaded file (supports PDF, DOCX, images)
-   * Calls POST /api/generate/with-file
+   * Uses /api/generate with file upload
    */
   async generateWithFile(params: GenerateWithFileParams): Promise<AIResponse> {
     try {
       const { prompt, file } = params
 
+      // Use unified endpoint with file parameter
       const formData = new FormData()
       formData.append('prompt', prompt)
       formData.append('file', file)
 
-      const response = await fetch(`${EXTERNAL_API_URL}/api/generate/with-file`, {
+      const response = await fetch(`${EXTERNAL_API_URL}/api/generate`, {
         method: 'POST',
         body: formData,
       })
@@ -249,19 +274,20 @@ class ExternalAIClient {
 
   /**
    * Export document as PDF
-   * Calls POST /api/export/pdf
+   * Uses /api/export with format='pdf'
    */
   async exportPdf(params: ExportParams): Promise<Blob> {
-    const response = await fetch(`${EXTERNAL_API_URL}/api/export/pdf`, {
+    const formData = new FormData()
+    formData.append('prompt', params.prompt)
+    formData.append('format', 'pdf')
+    formData.append('history', JSON.stringify(params.history))
+    if (params.document_type) {
+      formData.append('document_type', params.document_type)
+    }
+
+    const response = await fetch(`${EXTERNAL_API_URL}/api/export`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        prompt: params.prompt,
-        history: params.history,
-        document_type: params.document_type,
-      }),
+      body: formData,
     })
 
     if (!response.ok) {
@@ -274,19 +300,20 @@ class ExternalAIClient {
 
   /**
    * Export document as DOCX
-   * Calls POST /api/export/docx
+   * Uses /api/export with format='docx'
    */
   async exportDocx(params: ExportParams): Promise<Blob> {
-    const response = await fetch(`${EXTERNAL_API_URL}/api/export/docx`, {
+    const formData = new FormData()
+    formData.append('prompt', params.prompt)
+    formData.append('format', 'docx')
+    formData.append('history', JSON.stringify(params.history))
+    if (params.document_type) {
+      formData.append('document_type', params.document_type)
+    }
+
+    const response = await fetch(`${EXTERNAL_API_URL}/api/export`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        prompt: params.prompt,
-        history: params.history,
-        document_type: params.document_type,
-      }),
+      body: formData,
     })
 
     if (!response.ok) {
@@ -299,19 +326,20 @@ class ExternalAIClient {
 
   /**
    * Export document as PNG image
-   * Calls POST /api/export/png
+   * Uses /api/export with format='png'
    */
   async exportPng(params: ExportParams): Promise<Blob> {
-    const response = await fetch(`${EXTERNAL_API_URL}/api/export/png`, {
+    const formData = new FormData()
+    formData.append('prompt', params.prompt)
+    formData.append('format', 'png')
+    formData.append('history', JSON.stringify(params.history))
+    if (params.document_type) {
+      formData.append('document_type', params.document_type)
+    }
+
+    const response = await fetch(`${EXTERNAL_API_URL}/api/export`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        prompt: params.prompt,
-        history: params.history,
-        document_type: params.document_type,
-      }),
+      body: formData,
     })
 
     if (!response.ok) {

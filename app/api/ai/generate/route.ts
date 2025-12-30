@@ -114,16 +114,29 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.log('[Generate Route] External API Result:', { success: result.success, hasData: !!result.data, documentType: result.document_type })
+    console.log('[Generate Route] External API Result:', { success: result.success, hasData: !!result.data, documentType: result.document_type, needsCurrency: result.needs_currency })
 
-    if (!result.success) {
+    // Handle the case where API asks for currency (needs_currency: true)
+    // This is not an error - it's asking for more information
+    if (!result.success && !result.needs_currency) {
       return NextResponse.json(
         { error: result.error || 'Failed to generate description' },
         { status: 400 }
       )
     }
 
-    const sanitized = sanitizeHtml(result.text_output)
+    const sanitized = sanitizeHtml(result.text_output || '')
+
+    // If needs_currency is true, return a helpful message
+    if (result.needs_currency) {
+      return NextResponse.json({
+        description: sanitized || 'Please specify the currency for your quote/invoice (e.g., USD, NGN, EUR, GBP)',
+        extractedData: result.data,
+        documentType: result.document_type,
+        needs_currency: true,
+        shouldCreateDocument: false,
+      })
+    }
 
     // Detect if user wants to create a document
     const lowerPrompt = prompt.toLowerCase()

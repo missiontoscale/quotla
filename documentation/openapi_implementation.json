@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Quotla AI Document Generator",
-    "description": "\n## AI-Powered Invoice & Quote Generator\n\nConvert natural language descriptions, files, or images into structured business documents using AI.\n\n### 🎯 Unified API Design\n\n**One endpoint to rule them all**: `/api/generate` accepts text prompts, file uploads, or images - no need for separate endpoints!\n\n### Key Features\n\n* **Universal Input**: Text, PDF, DOCX, TXT, or images (JPEG, PNG, etc.)\n* **Natural Language Processing**: Describe documents in plain English\n* **Multi-Provider AI**: OpenAI GPT-4, Anthropic Claude, or Google Gemini\n* **Vision AI**: Process scanned receipts and invoice photos\n* **Multiple Export Formats**: JSON, PDF, DOCX, PNG\n* **Conversation History**: Multi-turn conversations to refine documents\n* **Auto-Detection**: Automatically determines if input is an invoice or quote\n* **Smart Currency Detection**: Prompts user if currency not specified\n\n### Supported Document Types\n\n* **Invoices**: Full invoicing with tax and delivery charges\n* **Quotes**: Professional quotations with tax calculations\n\n### AI Models Used\n\n* **Text Models**: gpt-4, claude-3-5-sonnet-20241022, gemini-pro\n* **Vision Models**: gpt-4o, claude-3-5-sonnet-20241022, gemini-1.5-flash\n\nConfigure via `AI_PROVIDER` environment variable.\n\n### Quick Start\n\nUse `/api/generate` for everything:\n- Text only: `{\"prompt\": \"Invoice for John at Lagos, 100 units at 5000 NGN\"}`\n- With file: Upload file with `file` parameter\n- Export directly: Use `/api/export/pdf`, `/api/export/docx`, or `/api/export/png`\n    ",
+    "description": "\n## AI-Powered Invoice & Quote Generator\n\nConvert natural language descriptions, files, or images into structured business documents using AI.\n\n### 🎯 Unified API Design\n\n**Two unified endpoints for everything**:\n- `/api/generate` - Generate JSON data from text, files, or images\n- `/api/export` - Export documents in PDF, DOCX, or PNG format\n\n### Key Features\n\n* **Universal Input**: Text, PDF, DOCX, TXT, or images (JPEG, PNG, etc.)\n* **Natural Language Processing**: Describe documents in plain English\n* **Multi-Provider AI**: OpenAI GPT-4, Anthropic Claude, or Google Gemini\n* **Vision AI**: Process scanned receipts and invoice photos\n* **Multiple Export Formats**: JSON, PDF, DOCX, PNG\n* **Conversation History**: Multi-turn conversations to refine documents\n* **AI-Powered Detection**: Automatically determines if input is an invoice or quote\n* **Smart Currency Detection**: Prompts user if currency not specified\n\n### Supported Document Types\n\n* **Invoices**: Full invoicing with tax and delivery charges\n* **Quotes**: Professional quotations with tax calculations\n\n### AI Models Used\n\n* **Text Models**: gpt-4, claude-3-5-sonnet-20241022, gemini-2.0-flash-exp\n* **Vision Models**: gpt-4o, claude-3-5-sonnet-20241022, gemini-2.0-flash-exp\n\nConfigure via `AI_PROVIDER` environment variable.\n\n### Quick Start\n\n**Generate JSON data:**\n```\nPOST /api/generate\n{\"prompt\": \"Invoice for John at Lagos, 100 units at 5000 NGN\"}\n```\n\n**Export as PDF/DOCX/PNG:**\n```\nPOST /api/export\n{\"prompt\": \"...\", \"format\": \"pdf\"}\n```\n    ",
     "contact": {
       "name": "Quotla Support",
       "url": "https://github.com/missiontoscale/quotla"
@@ -227,13 +227,63 @@
         "deprecated": true
       }
     },
-    "/api/export/pdf": {
+    "/api/export": {
       "post": {
         "tags": [
           "Export Formats"
         ],
-        "summary": "Export as PDF",
-        "description": "Generate document from text, files, or images and download as professionally formatted PDF.\n\n**Input Methods:**\n- Text prompt only\n- File upload (PDF, DOCX, TXT, images)\n- Combination of prompt + file\n\n**Features:**\n- Professional layout with headers and branding\n- Formatted tables for line items\n- Color-coded sections (header, items, totals)\n- Automatic calculations displayed\n- Currency formatting with proper alignment\n- Letter-sized pages (8.5\" × 11\")\n\n**Use Cases:**\n- Print-ready invoices\n- Professional client delivery\n- Accounting records\n- Archive storage\n\n**Response:**\nBinary PDF file with appropriate filename (e.g., INV20241201.pdf)",
+        "summary": "Universal Export (PDF, DOCX, PNG)",
+        "description": "Generate document from text, files, or images and download in your preferred format.\n\n**One endpoint for all export formats** - Simply specify the format parameter: 'pdf', 'docx', or 'png'\n\n**Input Methods:**\n- Text prompt only\n- File upload (PDF, DOCX, TXT, images)\n- Combination of prompt + file\n\n**Export Formats:**\n\n1. **PDF (Default)** - `format=pdf`\n   - Professional layout with headers and branding\n   - Formatted tables for line items\n   - Color-coded sections (header, items, totals)\n   - Letter-sized pages (8.5\" × 11\")\n   - Use for: Print-ready invoices, professional delivery, accounting records\n\n2. **DOCX (Word)** - `format=docx`\n   - Editable Word document format\n   - Professional table styling with grid borders\n   - Standard Word compatibility\n   - Use for: Editable templates, custom branding, further modifications\n\n3. **PNG (Image)** - `format=png`\n   - 800×1000 pixel resolution\n   - Clean white background\n   - Professional typography\n   - Use for: Social media, WhatsApp, quick previews, mobile sharing\n\n**Example:**\n```bash\ncurl -X POST \"http://localhost:8000/api/export\" \\\n  -F \"prompt=Invoice for John at Lagos, 100 units at 5000 NGN\" \\\n  -F \"format=pdf\"\n```\n\n**Response:**\nBinary file in the specified format with appropriate filename (e.g., INV20241201.pdf)",
+        "operationId": "export_document_api_export_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_export_document_api_export_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully generated document in requested format",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              },
+              "application/pdf": {
+
+              },
+              "application/vnd.openxmlformats-officedocument.wordprocessingml.document": {
+
+              },
+              "image/png": {
+
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/export/pdf": {
+      "post": {
+        "tags": [
+          "Export Formats (Legacy)"
+        ],
+        "summary": "[DEPRECATED] Export as PDF",
+        "description": "**⚠️ DEPRECATED: Use `/api/export` with `format=\"pdf\"` instead.**\n\nLegacy endpoint for backward compatibility.\n\nGenerate document from text, files, or images and download as professionally formatted PDF.\n\n**Input Methods:**\n- Text prompt only\n- File upload (PDF, DOCX, TXT, images)\n- Combination of prompt + file\n\n**Features:**\n- Professional layout with headers and branding\n- Formatted tables for line items\n- Color-coded sections (header, items, totals)\n- Automatic calculations displayed\n- Currency formatting with proper alignment\n- Letter-sized pages (8.5\" × 11\")\n\n**Use Cases:**\n- Print-ready invoices\n- Professional client delivery\n- Accounting records\n- Archive storage\n\n**Response:**\nBinary PDF file with appropriate filename (e.g., INV20241201.pdf)",
         "operationId": "export_pdf_api_export_pdf_post",
         "requestBody": {
           "content": {
@@ -268,16 +318,17 @@
               }
             }
           }
-        }
+        },
+        "deprecated": true
       }
     },
     "/api/export/docx": {
       "post": {
         "tags": [
-          "Export Formats"
+          "Export Formats (Legacy)"
         ],
-        "summary": "Export as DOCX",
-        "description": "Generate document from text, files, or images and download as Microsoft Word document.\n\n**Input Methods:**\n- Text prompt only\n- File upload (PDF, DOCX, TXT, images)\n- Combination of prompt + file\n\n**Features:**\n- Editable Word document format (.docx)\n- Professional table styling with grid borders\n- Bold headers and emphasis on totals\n- Standard Word compatibility\n- Preserves formatting for easy customization\n- Ready for further editing and branding\n\n**Use Cases:**\n- Editable templates\n- Custom branding additions\n- Company letterhead integration\n- Further modifications needed\n\n**Benefits:**\n- Fully editable in Microsoft Word, Google Docs, LibreOffice\n- Add logos, signatures, notes after generation\n- Customize colors and fonts\n- Easy to adapt to company style guides\n\n**Response:**\nBinary DOCX file with appropriate filename (e.g., INV20241201.docx)",
+        "summary": "[DEPRECATED] Export as DOCX",
+        "description": "**⚠️ DEPRECATED: Use `/api/export` with `format=\"docx\"` instead.**\n\nLegacy endpoint for backward compatibility.\n\nGenerate document from text, files, or images and download as Microsoft Word document.\n\n**Input Methods:**\n- Text prompt only\n- File upload (PDF, DOCX, TXT, images)\n- Combination of prompt + file\n\n**Features:**\n- Editable Word document format (.docx)\n- Professional table styling with grid borders\n- Bold headers and emphasis on totals\n- Standard Word compatibility\n- Preserves formatting for easy customization\n- Ready for further editing and branding\n\n**Use Cases:**\n- Editable templates\n- Custom branding additions\n- Company letterhead integration\n- Further modifications needed\n\n**Benefits:**\n- Fully editable in Microsoft Word, Google Docs, LibreOffice\n- Add logos, signatures, notes after generation\n- Customize colors and fonts\n- Easy to adapt to company style guides\n\n**Response:**\nBinary DOCX file with appropriate filename (e.g., INV20241201.docx)",
         "operationId": "export_docx_api_export_docx_post",
         "requestBody": {
           "content": {
@@ -312,16 +363,17 @@
               }
             }
           }
-        }
+        },
+        "deprecated": true
       }
     },
     "/api/export/png": {
       "post": {
         "tags": [
-          "Export Formats"
+          "Export Formats (Legacy)"
         ],
-        "summary": "Export as PNG Image",
-        "description": "Generate document from text, files, or images and download as PNG image.\n\n**Input Methods:**\n- Text prompt only\n- File upload (PDF, DOCX, TXT, images)\n- Combination of prompt + file\n\n**Image Specifications:**\n- Resolution: 800×1000 pixels\n- Format: PNG (lossless)\n- Background: Clean white\n- Professional typography\n- High-quality rendering\n\n**Use Cases:**\n- Social media sharing\n- WhatsApp/messaging apps\n- Quick previews\n- Mobile-friendly format\n- Email attachments\n- Web display\n\n**Benefits:**\n- Universal compatibility\n- No special software needed to view\n- Easy to share on mobile\n- Perfect for instant messaging\n- Lightweight file size\n- Screenshot-like appearance\n\n**Response:**\nBinary PNG image file with appropriate filename (e.g., INV20241201.png)",
+        "summary": "[DEPRECATED] Export as PNG Image",
+        "description": "**⚠️ DEPRECATED: Use `/api/export` with `format=\"png\"` instead.**\n\nLegacy endpoint for backward compatibility.\n\nGenerate document from text, files, or images and download as PNG image.\n\n**Input Methods:**\n- Text prompt only\n- File upload (PDF, DOCX, TXT, images)\n- Combination of prompt + file\n\n**Image Specifications:**\n- Resolution: 800×1000 pixels\n- Format: PNG (lossless)\n- Background: Clean white\n- Professional typography\n- High-quality rendering\n\n**Use Cases:**\n- Social media sharing\n- WhatsApp/messaging apps\n- Quick previews\n- Mobile-friendly format\n- Email attachments\n- Web display\n\n**Benefits:**\n- Universal compatibility\n- No special software needed to view\n- Easy to share on mobile\n- Perfect for instant messaging\n- Lightweight file size\n- Screenshot-like appearance\n\n**Response:**\nBinary PNG image file with appropriate filename (e.g., INV20241201.png)",
         "operationId": "export_png_api_export_png_post",
         "requestBody": {
           "content": {
@@ -356,12 +408,63 @@
               }
             }
           }
-        }
+        },
+        "deprecated": true
       }
     }
   },
   "components": {
     "schemas": {
+      "Body_export_document_api_export_post": {
+        "properties": {
+          "format": {
+            "type": "string",
+            "title": "Format",
+            "description": "Export format: 'pdf', 'docx', or 'png'",
+            "default": "pdf"
+          },
+          "prompt": {
+            "type": "string",
+            "title": "Prompt"
+          },
+          "file": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "binary"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File"
+          },
+          "document_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Document Type"
+          },
+          "history": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "History"
+          }
+        },
+        "type": "object",
+        "title": "Body_export_document_api_export_post"
+      },
       "Body_export_docx_api_export_docx_post": {
         "properties": {
           "prompt": {
