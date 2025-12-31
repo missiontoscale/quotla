@@ -372,106 +372,143 @@ export default function QuotlaChat({ onClose }: { onClose?: () => void } = {}) {
   }
 
   return (
-    <div className="flex flex-col bg-white dark:bg-primary-800" style={{ minHeight: '120px', maxHeight: messages.length > 1 ? '600px' : '120px' }}>
+    <div className="flex flex-col h-full bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-primary-900 dark:via-primary-800 dark:to-primary-900">
 
-      {/* Messages */}
+      {/* Chat Header */}
+      <div className="px-6 py-4 border-b border-gray-200 dark:border-primary-700 bg-white/80 dark:bg-primary-800/80 backdrop-blur-sm">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-quotla-green to-quotla-orange flex items-center justify-center shadow-lg">
+              <span className="text-white font-bold text-lg">Q</span>
+            </div>
+            <div>
+              <h2 className="font-heading font-bold text-lg text-gray-900 dark:text-white">Quotla AI Assistant</h2>
+              <p className="text-xs text-gray-500 dark:text-primary-400">Generate quotes, invoices & get business advice</p>
+            </div>
+          </div>
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-gray-100 dark:hover:bg-primary-700 rounded-lg transition-colors"
+              aria-label="Close chat"
+            >
+              <svg className="w-5 h-5 text-gray-500 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Messages Container */}
       <div
-        className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-primary-900/30 scrollbar-thin scrollbar-thumb-transparent hover:scrollbar-thumb-gray-300 scrollbar-track-transparent"
+        className="flex-1 overflow-y-auto px-6 py-6 space-y-6 scrollbar-thin scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400 scrollbar-track-transparent dark:scrollbar-thumb-primary-600 dark:hover:scrollbar-thumb-primary-500"
         style={{
-          maxHeight: messages.length > 1 ? '400px' : '0px',
           scrollbarWidth: 'thin',
-          scrollbarColor: 'transparent transparent'
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.scrollbarColor = 'rgb(209 213 219) transparent'
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.scrollbarColor = 'transparent transparent'
+          minHeight: '400px',
+          maxHeight: '600px'
         }}
       >
         {messages.map((message, index) => (
           <div
             key={index}
-            className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+            className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} animate-fadeIn`}
           >
             <div
-              className={`max-w-[85%] rounded-2xl px-4 py-3 shadow-sm ${
+              className={`max-w-[80%] rounded-2xl shadow-md transition-all hover:shadow-lg ${
                 message.role === 'user'
-                  ? 'bg-gradient-to-br from-quotla-green to-quotla-orange text-white rounded-tr-sm'
-                  : 'bg-white dark:bg-primary-700 text-gray-800 dark:text-primary-50 border border-gray-200 dark:border-primary-600 rounded-tl-sm'
+                  ? 'bg-gradient-to-br from-quotla-green to-quotla-orange text-white rounded-tr-md px-5 py-3.5'
+                  : 'bg-white dark:bg-primary-700 text-gray-800 dark:text-primary-50 border border-gray-100 dark:border-primary-600 rounded-tl-md px-5 py-4'
               }`}
             >
               <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
+
+              {/* Action Buttons for Generated Items */}
               {message.generatedQuote && (
                 <button
                   onClick={() => handleSaveQuote(message.generatedQuote)}
-                  className="mt-3 w-full bg-quotla-green hover:bg-quotla-green/90 text-white px-4 py-2.5 rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5"
+                  className="mt-4 w-full bg-quotla-green hover:bg-quotla-green/90 text-white px-5 py-3 rounded-xl text-sm font-bold shadow-md hover:shadow-xl transition-all duration-200 hover:-translate-y-0.5 flex items-center justify-center gap-2"
                 >
-                  Create This Quote →
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <span>Create This Quote</span>
                 </button>
               )}
+
               {message.generatedInvoice && (
                 <button
                   onClick={() => handleSaveInvoice(message.generatedInvoice)}
-                  className="mt-3 w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2.5 rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5"
+                  className="mt-4 w-full bg-purple-600 hover:bg-purple-700 text-white px-5 py-3 rounded-xl text-sm font-bold shadow-md hover:shadow-xl transition-all duration-200 hover:-translate-y-0.5 flex items-center justify-center gap-2"
                 >
-                  Create This Invoice →
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                  <span>Create This Invoice</span>
                 </button>
               )}
             </div>
           </div>
         ))}
+
+        {/* Loading State */}
         {loading && (
-          <div className="flex justify-start">
-            <div className="bg-white dark:bg-primary-700 border border-gray-200 dark:border-primary-600 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
-              <div className="flex items-center gap-2">
-                <div className="flex space-x-1.5">
-                  <div className="w-2 h-2 bg-quotla-green rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-quotla-orange rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
-                  <div className="w-2 h-2 bg-quotla-green rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
+          <div className="flex justify-start animate-fadeIn">
+            <div className="bg-white dark:bg-primary-700 border border-gray-100 dark:border-primary-600 rounded-2xl rounded-tl-md px-5 py-4 shadow-md">
+              <div className="flex items-center gap-3">
+                <div className="flex space-x-2">
+                  <div className="w-2.5 h-2.5 bg-quotla-green rounded-full animate-bounce"></div>
+                  <div className="w-2.5 h-2.5 bg-quotla-orange rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
+                  <div className="w-2.5 h-2.5 bg-quotla-green rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
                 </div>
-                <span className="text-xs text-gray-600 dark:text-primary-300 font-medium">Quotla is thinking...</span>
+                <span className="text-sm text-gray-600 dark:text-primary-300 font-medium">Quotla is thinking...</span>
               </div>
             </div>
           </div>
         )}
+
+        {/* Transcribing State */}
         {transcribing && (
-          <div className="flex justify-start">
-            <div className="bg-white dark:bg-primary-700 border border-quotla-orange/30 dark:border-quotla-orange/50 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
-              <div className="flex items-center gap-2">
-                <div className="flex space-x-1.5">
-                  <div className="w-2 h-2 bg-quotla-orange rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-quotla-orange rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
-                  <div className="w-2 h-2 bg-quotla-orange rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
+          <div className="flex justify-start animate-fadeIn">
+            <div className="bg-orange-50 dark:bg-primary-700 border border-quotla-orange/40 dark:border-quotla-orange/50 rounded-2xl rounded-tl-md px-5 py-4 shadow-md">
+              <div className="flex items-center gap-3">
+                <div className="flex space-x-2">
+                  <div className="w-2.5 h-2.5 bg-quotla-orange rounded-full animate-bounce"></div>
+                  <div className="w-2.5 h-2.5 bg-quotla-orange rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
+                  <div className="w-2.5 h-2.5 bg-quotla-orange rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
                 </div>
-                <span className="text-xs text-gray-600 dark:text-primary-300 font-medium">Transcribing audio...</span>
+                <span className="text-sm text-gray-700 dark:text-primary-300 font-medium">Transcribing audio...</span>
               </div>
             </div>
           </div>
         )}
+
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
-      <div className="p-4 border-t border-gray-200 dark:border-primary-700 bg-white dark:bg-primary-800">
-        <div className="flex gap-2 items-end">
+      {/* Input Area */}
+      <div className="px-6 py-5 border-t border-gray-200 dark:border-primary-700 bg-white/80 dark:bg-primary-800/80 backdrop-blur-sm">
+        <div className="flex gap-3 items-end">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
-            placeholder="Let's seal a deal together..."
-            className="flex-1 px-4 py-2 text-sm bg-gray-100 dark:bg-primary-700 border border-gray-200 dark:border-primary-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-quotla-green dark:focus:ring-quotla-orange focus:border-transparent text-gray-900 dark:text-primary-50 placeholder-gray-500 dark:placeholder-primary-400"
+            placeholder="Ask me anything or describe what you need..."
+            className="flex-1 px-5 py-3.5 text-sm bg-gray-50 dark:bg-primary-700/50 border-2 border-gray-200 dark:border-primary-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-quotla-green/50 dark:focus:ring-quotla-orange/50 focus:border-quotla-green dark:focus:border-quotla-orange transition-all text-gray-900 dark:text-primary-50 placeholder-gray-500 dark:placeholder-primary-400"
             disabled={loading || transcribing}
           />
+
           <VoiceRecorder
             onRecordingComplete={handleVoiceRecording}
             disabled={loading || transcribing}
           />
+
           <button
             onClick={handleSend}
             disabled={!input.trim() || loading || transcribing}
-            className="px-4 py-2 bg-gradient-to-r from-quotla-green to-quotla-orange text-white rounded-xl hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none hover:-translate-y-0.5"
+            className="px-5 py-3.5 bg-gradient-to-r from-quotla-green to-quotla-orange text-white rounded-xl hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none hover:-translate-y-0.5 font-medium"
+            aria-label="Send message"
           >
             <svg
               className="w-5 h-5"
@@ -488,61 +525,81 @@ export default function QuotlaChat({ onClose }: { onClose?: () => void } = {}) {
             </svg>
           </button>
         </div>
-        <p className="text-xs text-gray-500 dark:text-primary-400 mt-2 px-1">
-          Try: "Generate a quote for website development" or "Explain the 2026 VAT changes"
-        </p>
+
+        {/* Helper Text */}
+        <div className="mt-3 px-2">
+          <p className="text-xs text-gray-500 dark:text-primary-400 leading-relaxed">
+            💡 <span className="font-medium">Try:</span> "Generate a quote for web development for Acme Corp" or "What are the 2026 VAT changes?"
+          </p>
+        </div>
       </div>
 
-      <div className="flex justify-center">
+      {/* Quick Action Button */}
+      <div className="px-6 py-4 border-t border-gray-200 dark:border-primary-700 bg-gray-50/50 dark:bg-primary-900/50">
         <button
           onClick={() => setShowSelectionModal(true)}
-          className="group flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/30 text-white rounded-lg transition-all shadow-sm hover:shadow-md"
+          className="w-full group flex items-center justify-center gap-3 px-5 py-3.5 bg-white dark:bg-primary-800 hover:bg-gray-50 dark:hover:bg-primary-700 border-2 border-gray-200 dark:border-primary-600 hover:border-quotla-green dark:hover:border-quotla-orange rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
         >
-          <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center flex-shrink-0">
-            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-quotla-green/10 to-quotla-orange/10 flex items-center justify-center flex-shrink-0 group-hover:from-quotla-green/20 group-hover:to-quotla-orange/20 transition-colors">
+            <svg className="w-5 h-5 text-quotla-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
           </div>
           <div className="text-left">
-            <div className="font-heading font-semibold text-sm">Create myself</div>
-            <div className="font-sans text-xs text-white/80">Manual creation</div>
+            <div className="font-heading font-bold text-sm text-gray-900 dark:text-white">Create Manually</div>
+            <div className="font-sans text-xs text-gray-500 dark:text-primary-400">Skip AI and create yourself</div>
           </div>
         </button>
       </div>
 
       {/* Selection Modal */}
       {showSelectionModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowSelectionModal(false)}>
-          <div className="bg-white dark:bg-primary-700 rounded-2xl shadow-2xl max-w-md w-full p-6" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-heading font-bold text-quotla-dark dark:text-primary-50">What would you like to create?</h3>
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn"
+          onClick={() => setShowSelectionModal(false)}
+        >
+          <div
+            className="bg-white dark:bg-primary-800 rounded-3xl shadow-2xl max-w-lg w-full p-8 transform transition-all animate-slideUp"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h3 className="text-2xl font-heading font-bold text-gray-900 dark:text-white">Create Document</h3>
+                <p className="text-sm text-gray-500 dark:text-primary-400 mt-1">Choose what you'd like to create</p>
+              </div>
               <button
                 onClick={() => setShowSelectionModal(false)}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                className="p-2 hover:bg-gray-100 dark:hover:bg-primary-700 rounded-lg transition-colors"
+                aria-label="Close modal"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
 
-            <div className="space-y-3 mb-4">
+            {/* Options */}
+            <div className="space-y-4 mb-6">
               <button
                 onClick={() => {
                   setShowSelectionModal(false)
                   router.push('/quotes/new')
                 }}
-                className="w-full group flex items-center gap-4 p-4 bg-quotla-green/10 hover:bg-quotla-green/20 border-2 border-quotla-green/30 hover:border-quotla-green rounded-xl transition-all"
+                className="w-full group flex items-center gap-5 p-5 bg-quotla-green/5 hover:bg-quotla-green/10 border-2 border-quotla-green/20 hover:border-quotla-green rounded-2xl transition-all duration-200 hover:shadow-lg"
               >
-                <div className="w-12 h-12 rounded-lg bg-quotla-green flex items-center justify-center flex-shrink-0">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-quotla-green to-quotla-green/80 flex items-center justify-center flex-shrink-0 shadow-md group-hover:shadow-lg transition-shadow">
+                  <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                 </div>
                 <div className="flex-1 text-left">
-                  <div className="font-heading font-bold text-base text-quotla-dark dark:text-primary-50">Quote</div>
-                  <div className="font-sans text-sm text-gray-600 dark:text-primary-300">Create a new quote</div>
+                  <div className="font-heading font-bold text-lg text-gray-900 dark:text-white">Quote</div>
+                  <div className="font-sans text-sm text-gray-600 dark:text-primary-300 mt-0.5">Create a proposal for potential clients</div>
                 </div>
+                <svg className="w-5 h-5 text-quotla-green opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
               </button>
 
               <button
@@ -550,39 +607,55 @@ export default function QuotlaChat({ onClose }: { onClose?: () => void } = {}) {
                   setShowSelectionModal(false)
                   router.push('/invoices/new')
                 }}
-                className="w-full group flex items-center gap-4 p-4 bg-purple-500/10 hover:bg-purple-500/20 border-2 border-purple-500/30 hover:border-purple-500 rounded-xl transition-all"
+                className="w-full group flex items-center gap-5 p-5 bg-purple-500/5 hover:bg-purple-500/10 border-2 border-purple-500/20 hover:border-purple-500 rounded-2xl transition-all duration-200 hover:shadow-lg"
               >
-                <div className="w-12 h-12 rounded-lg bg-purple-500 flex items-center justify-center flex-shrink-0">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-600 to-purple-500 flex items-center justify-center flex-shrink-0 shadow-md group-hover:shadow-lg transition-shadow">
+                  <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                   </svg>
                 </div>
                 <div className="flex-1 text-left">
-                  <div className="font-heading font-bold text-base text-quotla-dark dark:text-primary-50">Invoice</div>
-                  <div className="font-sans text-sm text-gray-600 dark:text-primary-300">Create a new invoice</div>
+                  <div className="font-heading font-bold text-lg text-gray-900 dark:text-white">Invoice</div>
+                  <div className="font-sans text-sm text-gray-600 dark:text-primary-300 mt-0.5">Request payment for delivered services</div>
                 </div>
+                <svg className="w-5 h-5 text-purple-600 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
               </button>
             </div>
 
+            {/* Info Toggle */}
             <button
               onClick={() => setShowDifferenceInfo(!showDifferenceInfo)}
-              className="w-full text-center text-sm text-quotla-orange hover:text-secondary-600 font-medium transition-colors flex items-center justify-center gap-1"
+              className="w-full text-center text-sm text-quotla-orange hover:text-quotla-orange/80 font-semibold transition-colors flex items-center justify-center gap-2 py-2"
             >
               <span>What's the difference?</span>
-              <svg className={`w-4 h-4 transition-transform ${showDifferenceInfo ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className={`w-4 h-4 transition-transform duration-200 ${showDifferenceInfo ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </button>
 
+            {/* Expandable Info */}
             {showDifferenceInfo && (
-              <div className="mt-4 p-4 bg-gray-50 dark:bg-primary-800 rounded-lg space-y-3 text-sm">
-                <div>
-                  <h4 className="font-heading font-bold text-quotla-green mb-1">Quote</h4>
-                  <p className="text-gray-600 dark:text-primary-300">A quote is a proposal sent to potential clients showing estimated prices for products or services. It's not a request for payment.</p>
+              <div className="mt-5 p-5 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-primary-900 dark:to-primary-800 rounded-2xl space-y-4 text-sm border border-gray-200 dark:border-primary-700 animate-fadeIn">
+                <div className="space-y-2">
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 rounded-full bg-quotla-green mt-1.5 flex-shrink-0"></div>
+                    <div>
+                      <h4 className="font-heading font-bold text-quotla-green text-base mb-1">Quote</h4>
+                      <p className="text-gray-700 dark:text-primary-300 leading-relaxed">A proposal sent to potential clients showing estimated prices for products or services. It's not a request for payment.</p>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-heading font-bold text-purple-600 mb-1">Invoice</h4>
-                  <p className="text-gray-600 dark:text-primary-300">An invoice is a payment request sent after delivering products or services. It includes payment terms and due dates.</p>
+                <div className="h-px bg-gray-300 dark:bg-primary-600"></div>
+                <div className="space-y-2">
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 rounded-full bg-purple-600 mt-1.5 flex-shrink-0"></div>
+                    <div>
+                      <h4 className="font-heading font-bold text-purple-600 text-base mb-1">Invoice</h4>
+                      <p className="text-gray-700 dark:text-primary-300 leading-relaxed">A payment request sent after delivering products or services. It includes payment terms and due dates.</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}

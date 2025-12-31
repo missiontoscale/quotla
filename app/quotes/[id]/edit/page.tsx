@@ -103,9 +103,24 @@ export default function EditQuotePage() {
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+
+    // Auto-update title when client is selected
+    if (name === 'client_id' && value) {
+      const client = clients.find((c) => c.id === value)
+      if (client) {
+        setFormData((prev) => ({
+          ...prev,
+          client_id: value,
+          title: `Quote for ${client.name}`,
+        }))
+        return
+      }
+    }
+
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]: name === 'tax_rate' ? Number(value) : value,
     }))
   }
 
@@ -234,6 +249,7 @@ export default function EditQuotePage() {
   }
 
   const { subtotal, taxAmount, total } = calculateTotals()
+  const selectedClient = clients.find((c) => c.id === formData.client_id)
 
   return (
     <div className="max-w-5xl">
@@ -268,20 +284,33 @@ export default function EditQuotePage() {
               <label htmlFor="client_id" className="label">
                 Client
               </label>
-              <select
-                id="client_id"
-                name="client_id"
-                className="input"
-                value={formData.client_id}
-                onChange={handleChange}
-              >
-                <option value="">Select a client</option>
-                {clients.map((client) => (
-                  <option key={client.id} value={client.id}>
-                    {client.name}
-                  </option>
-                ))}
-              </select>
+              {selectedClient ? (
+                <div className="input bg-primary-700 flex items-center justify-between">
+                  <span>{selectedClient.name}</span>
+                  <button
+                    type="button"
+                    onClick={() => setFormData((prev) => ({ ...prev, client_id: '' }))}
+                    className="text-sm text-accent-400 hover:text-accent-300"
+                  >
+                    Change
+                  </button>
+                </div>
+              ) : (
+                <select
+                  id="client_id"
+                  name="client_id"
+                  className="input"
+                  value={formData.client_id}
+                  onChange={handleChange}
+                >
+                  <option value="">Select a client</option>
+                  {clients.map((client) => (
+                    <option key={client.id} value={client.id}>
+                      {client.name}
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
 
             <div className="md:col-span-2">

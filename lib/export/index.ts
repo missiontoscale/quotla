@@ -1,5 +1,6 @@
 import { jsPDF } from 'jspdf'
 import autoTable from 'jspdf-autotable'
+import html2canvas from 'html2canvas'
 import {
   Document,
   Paragraph,
@@ -36,173 +37,178 @@ export async function exportToPDF(exportData: ExportData): Promise<void> {
   const doc = new jsPDF()
 
   const isQuote = type === 'quote'
-  const documentTitle = isQuote ? 'QUOTE' : 'INVOICE'
+  const documentTitle = isQuote ? 'QUOTATION' : 'INVOICE'
   const documentNumber = isQuote
     ? (data as QuoteWithItems).quote_number
     : (data as InvoiceWithItems).invoice_number
   const items = data.items
 
-  // Header
-  doc.setFontSize(24)
-  doc.setTextColor(79, 70, 229) // primary-600
-  doc.text(documentTitle, 20, 20)
+  // Add a subtle background color to the header area
+  doc.setFillColor(248, 250, 252)
+  doc.rect(0, 0, 210, 45, 'F')
 
-  // Document number
-  doc.setFontSize(12)
-  doc.setTextColor(100, 100, 100)
-  doc.text(`#${documentNumber}`, 20, 30)
+  // Main title - centered and prominent
+  doc.setFontSize(32)
+  doc.setFont('helvetica', 'bold')
+  doc.setTextColor(26, 26, 26)
+  const titleWidth = doc.getTextWidth(documentTitle)
+  doc.text(documentTitle, (210 - titleWidth) / 2, 20)
 
-  // Company info (right side)
-  doc.setFontSize(14)
-  doc.setTextColor(0, 0, 0)
-  doc.text(profile?.company_name || 'Your Company', 140, 20)
-
-  doc.setFontSize(10)
-  doc.setTextColor(100, 100, 100)
-  let yPos = 27
-  if (profile?.address) {
-    doc.text(profile.address, 140, yPos)
-    yPos += 5
-  }
-  if (profile?.city || profile?.state || profile?.postal_code) {
-    doc.text(`${profile.city || ''} ${profile.state || ''} ${profile.postal_code || ''}`.trim(), 140, yPos)
-    yPos += 5
-  }
-  if (profile?.country) {
-    doc.text(profile.country, 140, yPos)
-    yPos += 5
-  }
-  if (profile?.phone) {
-    doc.text(`Phone: ${profile.phone}`, 140, yPos)
-    yPos += 5
-  }
-  if (profile?.website) {
-    doc.text(profile.website, 140, yPos)
-  }
-
-  // Client info
-  doc.setFontSize(12)
-  doc.setTextColor(0, 0, 0)
-  doc.text('Bill To:', 20, 50)
+  // Document info section
   doc.setFontSize(11)
+  doc.setFont('helvetica', 'bold')
+  doc.setTextColor(100, 100, 100)
+  doc.text(`${documentTitle} Number:`, 20, 55)
+  doc.setFont('helvetica', 'normal')
+  doc.text(documentNumber, 70, 55)
+
+  doc.setFont('helvetica', 'bold')
+  doc.text('Date:', 20, 62)
+  doc.setFont('helvetica', 'normal')
+  const issueDate = format(new Date(isQuote
+    ? (data as QuoteWithItems).issue_date
+    : (data as InvoiceWithItems).issue_date), 'MMM dd, yyyy')
+  doc.text(issueDate, 70, 62)
+
+  // Client info - Bill To section
+  doc.setFontSize(13)
+  doc.setFont('helvetica', 'bold')
+  doc.setTextColor(0, 0, 0)
+  const billLabel = isQuote ? 'To:' : 'Bill To:'
+  doc.text(billLabel, 20, 80)
+
   if (data.client) {
-    doc.text(data.client.name, 20, 58)
-    let clientY = 64
-    if (data.client.email) {
-      doc.setFontSize(10)
-      doc.setTextColor(100, 100, 100)
-      doc.text(data.client.email, 20, clientY)
-      clientY += 5
-    }
+    doc.setFontSize(12)
+    doc.setFont('helvetica', 'bold')
+    doc.text(data.client.name, 20, 88)
+
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(10)
+    let clientY = 94
+
     if (data.client.address) {
       doc.text(data.client.address, 20, clientY)
       clientY += 5
     }
-    if (data.client.city || data.client.state || data.client.postal_code) {
-      doc.text(
-        `${data.client.city || ''} ${data.client.state || ''} ${data.client.postal_code || ''}`.trim(),
-        20,
-        clientY
-      )
+
+    const cityLine = `${data.client.city || ''}, ${data.client.country || ''}`.trim().replace(/^,\s*|,\s*$/g, '')
+    if (cityLine) {
+      doc.text(cityLine, 20, clientY)
     }
   }
 
-  // Dates
-  doc.setFontSize(10)
-  doc.setTextColor(0, 0, 0)
-  const issueDate = format(new Date(isQuote
-    ? (data as QuoteWithItems).issue_date
-    : (data as InvoiceWithItems).issue_date), 'MMM dd, yyyy')
-  doc.text(`Issue Date: ${issueDate}`, 140, 50)
-
-  if (isQuote && (data as QuoteWithItems).valid_until) {
-    const validDate = format(new Date((data as QuoteWithItems).valid_until!), 'MMM dd, yyyy')
-    doc.text(`Valid Until: ${validDate}`, 140, 58)
-  } else if (!isQuote && (data as InvoiceWithItems).due_date) {
-    const dueDate = format(new Date((data as InvoiceWithItems).due_date!), 'MMM dd, yyyy')
-    doc.text(`Due Date: ${dueDate}`, 140, 58)
-  }
-
-  // Status
-  doc.setTextColor(79, 70, 229)
-  doc.text(`Status: ${data.status.toUpperCase()}`, 140, 66)
-
-  // Title if present
-  if (data.title) {
-    doc.setFontSize(14)
-    doc.setTextColor(0, 0, 0)
-    doc.text(data.title, 20, 95)
-  }
-
-  // Items table
+  // Items table with enhanced styling
   const tableData = items.map((item) => [
     item.description,
     item.quantity.toString(),
-    formatCurrency(item.unit_price, data.currency),
-    formatCurrency(item.amount, data.currency),
+    `${getCurrencySymbol(data.currency)} ${item.unit_price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+    `${getCurrencySymbol(data.currency)} ${item.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
   ])
 
   autoTable(doc, {
-    startY: data.title ? 105 : 95,
-    head: [['Description', 'Qty', 'Unit Price', 'Amount']],
+    startY: 115,
+    head: [['Description', 'Quantity', 'Unit Price', 'Amount']],
     body: tableData,
-    theme: 'striped',
+    theme: 'grid',
     headStyles: {
-      fillColor: [79, 70, 229],
-      textColor: 255,
+      fillColor: [100, 100, 100],
+      textColor: [245, 245, 245],
       fontStyle: 'bold',
+      fontSize: 11,
+      halign: 'left',
+      cellPadding: 4,
+    },
+    bodyStyles: {
+      fontSize: 10,
+      cellPadding: 4,
     },
     columnStyles: {
-      0: { cellWidth: 90 },
-      1: { cellWidth: 25, halign: 'center' },
+      0: { cellWidth: 90, halign: 'left' },
+      1: { cellWidth: 30, halign: 'right' },
       2: { cellWidth: 35, halign: 'right' },
       3: { cellWidth: 35, halign: 'right' },
+    },
+    alternateRowStyles: {
+      fillColor: [250, 250, 250],
     },
     margin: { left: 20, right: 20 },
   })
 
-  // Totals
-  const finalY = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 10
+  // Totals section with clean alignment
+  const finalY = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 15
+
+  const totalsX = 130
+  const valuesX = 190
 
   doc.setFontSize(11)
+  doc.setFont('helvetica', 'normal')
   doc.setTextColor(0, 0, 0)
-  doc.text('Subtotal:', 130, finalY)
-  doc.text(formatCurrency(data.subtotal, data.currency), 190, finalY, { align: 'right' })
 
-  doc.text(`Tax (${data.tax_rate}%):`, 130, finalY + 8)
-  doc.text(formatCurrency(data.tax_amount, data.currency), 190, finalY + 8, { align: 'right' })
+  doc.text('Subtotal:', totalsX, finalY)
+  doc.text(
+    `${getCurrencySymbol(data.currency)} ${data.subtotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+    valuesX,
+    finalY,
+    { align: 'right' }
+  )
+
+  doc.text(`Tax (${(data.tax_rate * 100).toFixed(0)}%):`, totalsX, finalY + 7)
+  doc.text(
+    `${getCurrencySymbol(data.currency)} ${data.tax_amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+    valuesX,
+    finalY + 7,
+    { align: 'right' }
+  )
+
+  // Add line separator before total
+  doc.setLineWidth(0.5)
+  doc.setDrawColor(0, 0, 0)
+  doc.line(totalsX, finalY + 12, valuesX, finalY + 12)
 
   doc.setFontSize(14)
   doc.setFont('helvetica', 'bold')
-  doc.text('Total:', 130, finalY + 20)
-  doc.text(formatCurrency(data.total, data.currency), 190, finalY + 20, { align: 'right' })
+  doc.text('TOTAL:', totalsX, finalY + 22)
+  doc.text(
+    `${getCurrencySymbol(data.currency)} ${data.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+    valuesX,
+    finalY + 22,
+    { align: 'right' }
+  )
 
-  // Notes
+  // Notes section
+  let notesY = finalY + 35
   if (data.notes) {
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(11)
+    doc.setTextColor(100, 100, 100)
+    doc.text('Notes:', 20, notesY)
+
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(10)
-    doc.setTextColor(100, 100, 100)
-    doc.text('Notes:', 20, finalY + 35)
     doc.setTextColor(0, 0, 0)
     const splitNotes = doc.splitTextToSize(data.notes, 170)
-    doc.text(splitNotes, 20, finalY + 42)
+    doc.text(splitNotes, 20, notesY + 6)
+    notesY += 6 + (splitNotes.length * 5) + 10
   }
 
   // Terms
   const termsField = isQuote ? (data as QuoteWithItems).terms : (data as InvoiceWithItems).payment_terms
   if (termsField) {
-    const termsY = data.notes ? finalY + 60 : finalY + 35
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(11)
+    doc.setTextColor(100, 100, 100)
+    doc.text(isQuote ? 'Terms & Conditions:' : 'Payment Terms:', 20, notesY)
+
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(10)
-    doc.setTextColor(100, 100, 100)
-    doc.text(isQuote ? 'Terms & Conditions:' : 'Payment Terms:', 20, termsY)
     doc.setTextColor(0, 0, 0)
     const splitTerms = doc.splitTextToSize(termsField, 170)
-    doc.text(splitTerms, 20, termsY + 7)
+    doc.text(splitTerms, 20, notesY + 6)
   }
 
   // Footer
   doc.setFontSize(8)
+  doc.setFont('helvetica', 'normal')
   doc.setTextColor(150, 150, 150)
   doc.text('Generated with Quotla', 105, 285, { align: 'center' })
 
@@ -213,7 +219,7 @@ export async function exportToPDF(exportData: ExportData): Promise<void> {
 export async function exportToWord(exportData: ExportData): Promise<void> {
   const { type, data, profile } = exportData
   const isQuote = type === 'quote'
-  const documentTitle = isQuote ? 'QUOTE' : 'INVOICE'
+  const documentTitle = isQuote ? 'QUOTATION' : 'INVOICE'
   const documentNumber = isQuote
     ? (data as QuoteWithItems).quote_number
     : (data as InvoiceWithItems).invoice_number
@@ -224,146 +230,84 @@ export async function exportToWord(exportData: ExportData): Promise<void> {
       {
         properties: {},
         children: [
-          // Header
+          // Header - centered title
           new Paragraph({
             children: [
               new TextRun({
                 text: documentTitle,
                 bold: true,
-                size: 48,
-                color: '4F46E5',
+                size: 52,
+                color: '1a1a1a',
               }),
             ],
+            alignment: AlignmentType.CENTER,
+            spacing: { after: 200 },
           }),
-          new Paragraph({
-            children: [
-              new TextRun({
-                text: `#${documentNumber}`,
-                size: 24,
-                color: '666666',
-              }),
-            ],
-          }),
-          new Paragraph({ text: '' }),
 
-          // Company info
+          // Document info
           new Paragraph({
             children: [
               new TextRun({
-                text: profile?.company_name || 'Your Company',
+                text: `${documentTitle} Number: `,
                 bold: true,
-                size: 28,
+                size: 22,
+              }),
+              new TextRun({
+                text: documentNumber,
+                size: 22,
               }),
             ],
+            spacing: { after: 100 },
           }),
-          ...(profile?.address
-            ? [
-                new Paragraph({
-                  children: [new TextRun({ text: profile.address, size: 20, color: '666666' })],
-                }),
-              ]
-            : []),
-          ...(profile?.city || profile?.state
-            ? [
-                new Paragraph({
-                  children: [
-                    new TextRun({
-                      text: `${profile.city || ''} ${profile.state || ''} ${profile.postal_code || ''}`.trim(),
-                      size: 20,
-                      color: '666666',
-                    }),
-                  ],
-                }),
-              ]
-            : []),
-          new Paragraph({ text: '' }),
+          new Paragraph({
+            children: [
+              new TextRun({
+                text: 'Date: ',
+                bold: true,
+                size: 22,
+              }),
+              new TextRun({
+                text: format(new Date(data.issue_date), 'MMM dd, yyyy'),
+                size: 22,
+              }),
+            ],
+            spacing: { after: 200 },
+          }),
 
           // Client info
           new Paragraph({
             children: [
               new TextRun({
-                text: 'Bill To:',
+                text: isQuote ? 'To:' : 'Bill To:',
                 bold: true,
-                size: 24,
+                size: 26,
               }),
             ],
+            spacing: { after: 100 },
           }),
           ...(data.client
             ? [
                 new Paragraph({
-                  children: [new TextRun({ text: data.client.name, bold: true, size: 22 })],
+                  children: [new TextRun({ text: data.client.name, bold: true, size: 24 })],
                 }),
-                ...(data.client.email
+                ...(data.client.address
                   ? [
                       new Paragraph({
-                        children: [new TextRun({ text: data.client.email, size: 20, color: '666666' })],
+                        children: [new TextRun({ text: data.client.address, size: 22 })],
                       }),
                     ]
                   : []),
-              ]
-            : []),
-          new Paragraph({ text: '' }),
-
-          // Dates
-          new Paragraph({
-            children: [
-              new TextRun({
-                text: `Issue Date: ${format(new Date(data.issue_date), 'MMM dd, yyyy')}`,
-                size: 20,
-              }),
-            ],
-          }),
-          ...(isQuote && (data as QuoteWithItems).valid_until
-            ? [
                 new Paragraph({
                   children: [
                     new TextRun({
-                      text: `Valid Until: ${format(new Date((data as QuoteWithItems).valid_until!), 'MMM dd, yyyy')}`,
-                      size: 20,
+                      text: `${data.client.city || ''}, ${data.client.country || ''}`.trim().replace(/^,\s*|,\s*$/g, ''),
+                      size: 22,
                     }),
                   ],
+                  spacing: { after: 300 },
                 }),
               ]
-            : []),
-          ...(!isQuote && (data as InvoiceWithItems).due_date
-            ? [
-                new Paragraph({
-                  children: [
-                    new TextRun({
-                      text: `Due Date: ${format(new Date((data as InvoiceWithItems).due_date!), 'MMM dd, yyyy')}`,
-                      size: 20,
-                    }),
-                  ],
-                }),
-              ]
-            : []),
-          new Paragraph({
-            children: [
-              new TextRun({
-                text: `Status: ${data.status.toUpperCase()}`,
-                bold: true,
-                size: 20,
-                color: '4F46E5',
-              }),
-            ],
-          }),
-          new Paragraph({ text: '' }),
-
-          // Title
-          ...(data.title
-            ? [
-                new Paragraph({
-                  children: [
-                    new TextRun({
-                      text: data.title,
-                      bold: true,
-                      size: 28,
-                    }),
-                  ],
-                }),
-                new Paragraph({ text: '' }),
-              ]
-            : []),
+            : [new Paragraph({ text: '', spacing: { after: 300 } })]),
 
           // Items table
           new Table({
@@ -374,83 +318,115 @@ export async function exportToWord(exportData: ExportData): Promise<void> {
                   new TableCell({
                     children: [
                       new Paragraph({
-                        children: [new TextRun({ text: 'Description', bold: true })],
+                        children: [
+                          new TextRun({
+                            text: 'Description',
+                            bold: true,
+                            color: 'FFFFFF',
+                          }),
+                        ],
                       }),
                     ],
-                    shading: { fill: '4F46E5' },
+                    shading: { fill: '666666' },
+                    width: { size: 50, type: WidthType.PERCENTAGE },
                   }),
                   new TableCell({
                     children: [
                       new Paragraph({
-                        children: [new TextRun({ text: 'Qty', bold: true })],
-                        alignment: AlignmentType.CENTER,
-                      }),
-                    ],
-                    shading: { fill: '4F46E5' },
-                  }),
-                  new TableCell({
-                    children: [
-                      new Paragraph({
-                        children: [new TextRun({ text: 'Unit Price', bold: true })],
+                        children: [
+                          new TextRun({
+                            text: 'Quantity',
+                            bold: true,
+                            color: 'FFFFFF',
+                          }),
+                        ],
                         alignment: AlignmentType.RIGHT,
                       }),
                     ],
-                    shading: { fill: '4F46E5' },
+                    shading: { fill: '666666' },
+                    width: { size: 15, type: WidthType.PERCENTAGE },
                   }),
                   new TableCell({
                     children: [
                       new Paragraph({
-                        children: [new TextRun({ text: 'Amount', bold: true })],
+                        children: [
+                          new TextRun({
+                            text: 'Unit Price',
+                            bold: true,
+                            color: 'FFFFFF',
+                          }),
+                        ],
                         alignment: AlignmentType.RIGHT,
                       }),
                     ],
-                    shading: { fill: '4F46E5' },
+                    shading: { fill: '666666' },
+                    width: { size: 17.5, type: WidthType.PERCENTAGE },
+                  }),
+                  new TableCell({
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new TextRun({
+                            text: 'Amount',
+                            bold: true,
+                            color: 'FFFFFF',
+                          }),
+                        ],
+                        alignment: AlignmentType.RIGHT,
+                      }),
+                    ],
+                    shading: { fill: '666666' },
+                    width: { size: 17.5, type: WidthType.PERCENTAGE },
                   }),
                 ],
               }),
               ...items.map(
-                (item) =>
+                (item, index) =>
                   new TableRow({
                     children: [
                       new TableCell({
                         children: [new Paragraph({ text: item.description })],
+                        shading: index % 2 === 0 ? { fill: 'FAFAFA' } : undefined,
                       }),
                       new TableCell({
                         children: [
                           new Paragraph({
                             text: item.quantity.toString(),
-                            alignment: AlignmentType.CENTER,
+                            alignment: AlignmentType.RIGHT,
                           }),
                         ],
+                        shading: index % 2 === 0 ? { fill: 'FAFAFA' } : undefined,
                       }),
                       new TableCell({
                         children: [
                           new Paragraph({
-                            text: formatCurrency(item.unit_price, data.currency),
+                            text: `${getCurrencySymbol(data.currency)} ${item.unit_price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
                             alignment: AlignmentType.RIGHT,
                           }),
                         ],
+                        shading: index % 2 === 0 ? { fill: 'FAFAFA' } : undefined,
                       }),
                       new TableCell({
                         children: [
                           new Paragraph({
-                            text: formatCurrency(item.amount, data.currency),
+                            text: `${getCurrencySymbol(data.currency)} ${item.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
                             alignment: AlignmentType.RIGHT,
                           }),
                         ],
+                        shading: index % 2 === 0 ? { fill: 'FAFAFA' } : undefined,
                       }),
                     ],
                   })
               ),
             ],
           }),
-          new Paragraph({ text: '' }),
+          new Paragraph({ text: '', spacing: { after: 200 } }),
 
           // Totals
           new Paragraph({
             children: [
               new TextRun({
-                text: `Subtotal: ${formatCurrency(data.subtotal, data.currency)}`,
+                text: `Subtotal: ${getCurrencySymbol(data.currency)} ${data.subtotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
                 size: 22,
               }),
             ],
@@ -459,34 +435,36 @@ export async function exportToWord(exportData: ExportData): Promise<void> {
           new Paragraph({
             children: [
               new TextRun({
-                text: `Tax (${data.tax_rate}%): ${formatCurrency(data.tax_amount, data.currency)}`,
+                text: `Tax (${(data.tax_rate * 100).toFixed(0)}%): ${getCurrencySymbol(data.currency)} ${data.tax_amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
                 size: 22,
               }),
             ],
             alignment: AlignmentType.RIGHT,
           }),
+          new Paragraph({ text: '', spacing: { after: 100 } }),
           new Paragraph({
             children: [
               new TextRun({
-                text: `Total: ${formatCurrency(data.total, data.currency)}`,
+                text: `TOTAL: ${getCurrencySymbol(data.currency)} ${data.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
                 bold: true,
-                size: 28,
+                size: 32,
               }),
             ],
             alignment: AlignmentType.RIGHT,
+            spacing: { after: 300 },
           }),
-          new Paragraph({ text: '' }),
 
           // Notes
           ...(data.notes
             ? [
                 new Paragraph({
-                  children: [new TextRun({ text: 'Notes:', bold: true, size: 20, color: '666666' })],
+                  children: [new TextRun({ text: 'Notes:', bold: true, size: 22, color: '666666' })],
+                  spacing: { after: 100 },
                 }),
                 new Paragraph({
                   children: [new TextRun({ text: data.notes, size: 20 })],
+                  spacing: { after: 200 },
                 }),
-                new Paragraph({ text: '' }),
               ]
             : []),
 
@@ -495,8 +473,9 @@ export async function exportToWord(exportData: ExportData): Promise<void> {
             ? [
                 new Paragraph({
                   children: [
-                    new TextRun({ text: 'Terms & Conditions:', bold: true, size: 20, color: '666666' }),
+                    new TextRun({ text: 'Terms & Conditions:', bold: true, size: 22, color: '666666' }),
                   ],
+                  spacing: { after: 100 },
                 }),
                 new Paragraph({
                   children: [new TextRun({ text: (data as QuoteWithItems).terms!, size: 20 })],
@@ -506,7 +485,8 @@ export async function exportToWord(exportData: ExportData): Promise<void> {
           ...(!isQuote && (data as InvoiceWithItems).payment_terms
             ? [
                 new Paragraph({
-                  children: [new TextRun({ text: 'Payment Terms:', bold: true, size: 20, color: '666666' })],
+                  children: [new TextRun({ text: 'Payment Terms:', bold: true, size: 22, color: '666666' })],
+                  spacing: { after: 100 },
                 }),
                 new Paragraph({
                   children: [new TextRun({ text: (data as InvoiceWithItems).payment_terms!, size: 20 })],
@@ -533,6 +513,110 @@ export async function exportToWord(exportData: ExportData): Promise<void> {
 
   const blob = await Packer.toBlob(doc)
   saveAs(blob, `${documentTitle.toLowerCase()}-${documentNumber}.docx`)
+}
+
+export async function exportToPNG(exportData: ExportData): Promise<void> {
+  const { type, data } = exportData
+  const isQuote = type === 'quote'
+  const documentTitle = isQuote ? 'QUOTATION' : 'INVOICE'
+  const documentNumber = isQuote
+    ? (data as QuoteWithItems).quote_number
+    : (data as InvoiceWithItems).invoice_number
+
+  // Create a temporary div to render the document
+  const tempDiv = document.createElement('div')
+  tempDiv.style.width = '800px'
+  tempDiv.style.padding = '40px'
+  tempDiv.style.backgroundColor = '#ffffff'
+  tempDiv.style.fontFamily = 'Arial, sans-serif'
+  tempDiv.style.color = '#000000'
+
+  const issueDate = format(new Date(data.issue_date), 'MMM dd, yyyy')
+
+  tempDiv.innerHTML = `
+    <div style="text-align: center; margin-bottom: 40px;">
+      <h1 style="font-size: 42px; font-weight: bold; color: #1a1a1a; margin: 0;">${documentTitle}</h1>
+    </div>
+
+    <div style="margin-bottom: 30px;">
+      <p style="margin: 5px 0;"><strong>${documentTitle} Number:</strong> ${documentNumber}</p>
+      <p style="margin: 5px 0;"><strong>Date:</strong> ${issueDate}</p>
+    </div>
+
+    <div style="margin-bottom: 30px;">
+      <h3 style="font-size: 18px; margin-bottom: 10px;">${isQuote ? 'To:' : 'Bill To:'}</h3>
+      ${data.client ? `
+        <p style="margin: 5px 0; font-weight: bold;">${data.client.name}</p>
+        ${data.client.address ? `<p style="margin: 5px 0;">${data.client.address}</p>` : ''}
+        <p style="margin: 5px 0;">${data.client.city || ''}, ${data.client.country || ''}</p>
+      ` : ''}
+    </div>
+
+    <div style="margin-bottom: 30px;">
+      <h3 style="font-size: 16px; margin-bottom: 10px;">Items:</h3>
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+        <thead>
+          <tr style="background-color: #666666; color: white;">
+            <th style="padding: 10px; text-align: left; border: 1px solid #ccc;">Description</th>
+            <th style="padding: 10px; text-align: right; border: 1px solid #ccc;">Qty</th>
+            <th style="padding: 10px; text-align: right; border: 1px solid #ccc;">Unit Price</th>
+            <th style="padding: 10px; text-align: right; border: 1px solid #ccc;">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${data.items.map((item, index) => `
+            <tr style="background-color: ${index % 2 === 0 ? '#fafafa' : '#ffffff'};">
+              <td style="padding: 10px; border: 1px solid #ccc;">${item.description}</td>
+              <td style="padding: 10px; text-align: right; border: 1px solid #ccc;">${item.quantity}</td>
+              <td style="padding: 10px; text-align: right; border: 1px solid #ccc;">${getCurrencySymbol(data.currency)} ${item.unit_price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+              <td style="padding: 10px; text-align: right; border: 1px solid #ccc;">${getCurrencySymbol(data.currency)} ${item.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+
+    <div style="text-align: right; margin-bottom: 30px;">
+      <p style="margin: 5px 0; font-size: 14px;"><strong>Subtotal:</strong> ${getCurrencySymbol(data.currency)} ${data.subtotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+      <p style="margin: 5px 0; font-size: 14px;"><strong>Tax (${(data.tax_rate * 100).toFixed(0)}%):</strong> ${getCurrencySymbol(data.currency)} ${data.tax_amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+      <p style="margin: 10px 0 0 0; font-size: 18px; font-weight: bold;"><strong>TOTAL:</strong> ${getCurrencySymbol(data.currency)} ${data.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+    </div>
+
+    ${data.notes ? `
+      <div style="margin-bottom: 20px;">
+        <h4 style="color: #666666; margin-bottom: 5px;">Notes:</h4>
+        <p style="margin: 5px 0;">${data.notes}</p>
+      </div>
+    ` : ''}
+
+    ${(isQuote && (data as QuoteWithItems).terms) || (!isQuote && (data as InvoiceWithItems).payment_terms) ? `
+      <div style="margin-bottom: 20px;">
+        <h4 style="color: #666666; margin-bottom: 5px;">${isQuote ? 'Terms & Conditions:' : 'Payment Terms:'}</h4>
+        <p style="margin: 5px 0;">${isQuote ? (data as QuoteWithItems).terms : (data as InvoiceWithItems).payment_terms}</p>
+      </div>
+    ` : ''}
+
+    <div style="text-align: center; margin-top: 40px;">
+      <p style="font-size: 12px; color: #999999;">Generated with Quotla</p>
+    </div>
+  `
+
+  document.body.appendChild(tempDiv)
+
+  try {
+    const canvas = await html2canvas(tempDiv, {
+      backgroundColor: '#ffffff',
+      scale: 2,
+    })
+
+    canvas.toBlob((blob) => {
+      if (blob) {
+        saveAs(blob, `${documentTitle.toLowerCase()}-${documentNumber}.png`)
+      }
+    })
+  } finally {
+    document.body.removeChild(tempDiv)
+  }
 }
 
 export function exportToJSON(exportData: ExportData): void {
