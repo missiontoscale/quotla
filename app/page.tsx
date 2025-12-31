@@ -449,25 +449,16 @@ export default function HomePage() {
                 {/* Duplicate the logo set 3 times for seamless infinite scroll */}
                 {[0, 1, 2].map((setIndex) => (
                   <div key={setIndex} className="flex space-x-8 shrink-0">
-                    {[
-                      { name: 'Canva', description: 'Design Platform' },
-                      { name: 'Anthropic', description: 'AI Technology' },
-                      { name: 'Netlify', description: 'Hosting' },
-                      { name: 'Google', description: 'Cloud Services' },
-                      { name: 'Stripe', description: 'Payments' },
-                      { name: 'Supabase', description: 'Database' },
-                      { name: 'OpenAI', description: 'AI Models' }
-                    ].map((partner, idx) => (
+                    {[1, 2, 3, 4, 5, 6, 7].map((logoNum) => (
                       <div
-                        key={`${setIndex}-${idx}`}
-                        className="group flex flex-col items-center justify-center w-52 h-28 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 px-6 shadow-lg hover:bg-white/15 hover:border-white/30 hover:shadow-xl transition-all duration-300"
+                        key={`${setIndex}-${logoNum}`}
+                        className="group flex items-center justify-center w-52 h-28 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-6 shadow-lg hover:bg-white/15 hover:border-white/30 hover:shadow-xl transition-all duration-300"
                       >
-                        <span className="text-xl font-bold text-white/70 group-hover:text-white transition-colors mb-1">
-                          {partner.name}
-                        </span>
-                        <span className="text-xs text-white/50 group-hover:text-white/70 transition-colors">
-                          {partner.description}
-                        </span>
+                        <img
+                          src={`/images/logos of partners/${logoNum}.svg`}
+                          alt={`Partner logo ${logoNum}`}
+                          className="max-w-full max-h-full object-contain filter brightness-0 invert opacity-70 group-hover:opacity-100 transition-opacity"
+                        />
                       </div>
                     ))}
                   </div>
