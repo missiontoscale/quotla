@@ -452,7 +452,7 @@ export default function HomePage() {
                     {['Canva', 'Anthropic', 'Netlify', 'Google', 'Stripe', 'Supabase', 'Open AI'].map((partner) => (
                       <div
                         key={`${setIndex}-${partner}`}
-                        className="group flex items-center justify-center w-52 h-28 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-6 shadow-lg hover:bg-white/15 hover:border-white/30 hover:shadow-xl transition-all duration-300"
+                        className="group flex items-center justify-center w-60 h-32 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-7 shadow-lg hover:bg-white/15 hover:border-white/30 hover:shadow-xl transition-all duration-300"
                       >
                         <img
                           src={`/images/logos of partners/${partner}.svg`}
