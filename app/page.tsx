@@ -310,7 +310,7 @@ export default function HomePage() {
       <main id="main-content" className="overflow-hidden">
         {/* Hero Section with Chat */}
         <section className="relative min-h-screen flex items-center py-20 lg:py-28 bg-gradient-to-br from-quotla-light via-quotla-light/80 to-quotla-green/20 dark:from-primary-800 dark:via-quotla-dark dark:to-primary-800">
-          <div className="absolute inset-0 bg-[url('/images/patterns/spiral/Quotla%20Spiral%20light.svg')] bg-center opacity-[0.015]" style={{backgroundSize: '100%'}}></div>
+          <div className="absolute inset-0 bg-[url('/images/patterns/grid/Quotla%20grid%20pattern%20light.svg')] bg-center opacity-5 dark:opacity-[0.05]" style={{backgroundSize: '150%'}}></div>
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
             <div className="lg:grid lg:grid-cols-5 lg:gap-16 lg:items-start">
               {/* Text Section - Spans 3 columns */}
@@ -426,7 +426,7 @@ export default function HomePage() {
 
         {/* Features Section */}
         <section className="bg-gradient-to-br from-primary-800 via-quotla-dark to-primary-800 relative">
-          <div className="absolute inset-0 bg-[url('/images/patterns/spiral/Quotla%20Spiral%20light.svg')] bg-center opacity-[0.015]" style={{backgroundSize: '100%'}}></div>
+          <div className="absolute inset-0 bg-[url('/images/patterns/grid/Quotla%20grid%20pattern%20light.svg')] bg-center opacity-[0.05]" style={{backgroundSize: '150%'}}></div>
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h3 className="font-heading text-4xl md:text-5xl font-bold text-white mb-6">What's the big deal?</h3>
@@ -451,7 +451,7 @@ export default function HomePage() {
 
         {/* Clients & Partners Section */}
         <section className="py-20 bg-gradient-to-br from-quotla-dark via-quotla-dark/95 to-primary-800 relative overflow-hidden">
-          <div className="absolute inset-0 bg-[url('/images/patterns/spiral/Quotla%20Spiral%20light.svg')] bg-center opacity-[0.015]" style={{backgroundSize: '100%'}}></div>
+          <div className="absolute inset-0 bg-[url('/images/patterns/grid/Quotla%20grid%20pattern%20light.svg')] bg-center opacity-[0.03]" style={{backgroundSize: '150%'}}></div>
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-4">
               <p className="font-heading text-[34px] md:text-[43px] font-bold text-white leading-relaxed">By partnering with industry leaders we can boast of top notch delivery</p>
@@ -484,7 +484,7 @@ export default function HomePage() {
 
         {/* Use Cases Section */}
         <section className="py-24 bg-primary-700 relative">
-          <div className="absolute inset-0 bg-[url('/images/patterns/spiral/Quotla%20Spiral%20light.svg')] bg-center opacity-[0.015]" style={{backgroundSize: '100%'}}></div>
+          <div className="absolute inset-0 bg-[url('/images/patterns/grid/Quotla%20grid%20pattern%20light.svg')] bg-center opacity-[0.03]" style={{backgroundSize: '150%'}}></div>
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h3 className="font-heading text-4xl md:text-5xl font-bold text-primary-50 mb-6">Built for your business</h3>
@@ -517,7 +517,7 @@ export default function HomePage() {
 
         {/* Testimonials Section */}
         <section className="py-24 bg-gradient-to-br from-quotla-dark via-primary-800 to-quotla-dark relative overflow-hidden">
-          <div className="absolute inset-0 bg-[url('/images/patterns/grid/Quotla%20grid%20pattern%20light.svg')] bg-cover bg-center opacity-[0.03]"></div>
+          <div className="absolute inset-0 bg-[url('/images/patterns/grid/Quotla%20grid%20pattern%20light.svg')] bg-center opacity-[0.03]" style={{backgroundSize: '150%'}}></div>
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h3 className="font-heading text-[34px] md:text-[43px] font-bold text-white mb-6">Loved by professionals worldwide</h3>

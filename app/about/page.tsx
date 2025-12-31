@@ -12,7 +12,7 @@ export default function AboutPage() {
 
       {/* Hero Section */}
       <section className="relative min-h-[70vh] flex items-center py-20 lg:py-32 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/images/patterns/grid/Quotla%20grid%20pattern%20light.svg')] bg-cover bg-center opacity-10"></div>
+        <div className="absolute inset-0 bg-[url('/images/patterns/spiral/Quotla%20Spiral%20light.svg')] bg-center opacity-[0.02]" style={{backgroundSize: '100%'}}></div>
         <div className="absolute inset-0 bg-gradient-to-r from-quotla-orange/10 via-transparent to-quotla-green/10"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="inline-block mb-6 px-6 py-2 bg-quotla-orange/20 backdrop-blur-sm rounded-full border border-quotla-orange/30">
