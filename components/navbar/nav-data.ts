@@ -72,7 +72,7 @@ export const AUTH_NAV_LINKS: NavLink[] = [
 ]
 
 export const NAVBAR_BRAND = {
-  logo: '/images/logos/icons/Quotla icon off white.svg',
-  name: 'Quotla',
+  logo: '/images/logos/icons/Quotla full off white.svg',
+  //name: 'Quotla',
   homeUrl: ROUTES.HOME,
 }

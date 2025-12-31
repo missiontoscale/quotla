@@ -1,10 +1,3 @@
-/**
- * Footer Navigation Data
- *
- * Centralized footer navigation structure.
- * Eliminates hardcoded routes and duplicate sections.
- */
-
 import { ROUTES } from '@/lib/constants'
 
 export interface FooterLink {
@@ -81,8 +74,8 @@ export const FOOTER_SECTIONS: FooterSection[] = [
 ]
 
 export const FOOTER_BRAND = {
-  logo: '/images/logos/icons/Quotla icon off white.svg',
-  name: 'Quotla',
+  logo: '/images/logos/icons/Quotla full off white.svg',
+  //name: 'Quotla',
   tagline: 'Seal your deal.',
   description:
     'Bespoke product for business owners, and professionals with invoice, quote, and inventory management',

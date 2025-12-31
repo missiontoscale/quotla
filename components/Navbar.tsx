@@ -112,7 +112,7 @@ export default function Navbar() {
             <img
               src={NAVBAR_BRAND.logo}
               alt={`${NAVBAR_BRAND.name} Logo`}
-              className="h-12 w-auto transform group-hover:scale-105 transition-transform"
+              className="h-[53px] w-auto transform group-hover:scale-105 transition-transform"
             />
             <span className={`text-2xl font-bold font-heading text-${COLORS.TEXT.LIGHT}`}>
               {NAVBAR_BRAND.name}

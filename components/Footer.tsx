@@ -41,7 +41,7 @@ export default function Footer() {
               <img
                 src={FOOTER_BRAND.logo}
                 alt={`${FOOTER_BRAND.name} Logo`}
-                className="h-8 w-auto transform group-hover:scale-105 transition-transform"
+                className="h-10 md:h-11 w-auto transform group-hover:scale-105 transition-transform"
               />
               <span className={`${TYPOGRAPHY.HEADING_SM} text-${COLORS.TEXT.LIGHT} group-hover:text-${COLORS.BRAND.ORANGE} transition-colors`}>
                 {FOOTER_BRAND.name}
