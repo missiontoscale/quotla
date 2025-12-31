@@ -449,14 +449,14 @@ export default function HomePage() {
                 {/* Duplicate the logo set 3 times for seamless infinite scroll */}
                 {[0, 1, 2].map((setIndex) => (
                   <div key={setIndex} className="flex space-x-8 shrink-0">
-                    {[1, 2, 3, 4, 5, 6, 7].map((logoNum) => (
+                    {['Canva', 'Anthropic', 'Netlify', 'Google', 'Stripe', 'Supabase', 'Open AI'].map((partner) => (
                       <div
-                        key={`${setIndex}-${logoNum}`}
+                        key={`${setIndex}-${partner}`}
                         className="group flex items-center justify-center w-52 h-28 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-6 shadow-lg hover:bg-white/15 hover:border-white/30 hover:shadow-xl transition-all duration-300"
                       >
                         <img
-                          src={`/images/logos of partners/${logoNum}.svg`}
-                          alt={`Partner logo ${logoNum}`}
+                          src={`/images/logos of partners/${partner}.svg`}
+                          alt={`${partner} logo`}
                           className="max-w-full max-h-full object-contain filter brightness-0 invert opacity-70 group-hover:opacity-100 transition-opacity"
                         />
                       </div>
