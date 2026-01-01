@@ -9,6 +9,7 @@ import Navbar from '@/components/Navbar'
 
 export default function HomePage() {
   const [checkingAuth, setCheckingAuth] = useState(true)
+  const [openFaq, setOpenFaq] = useState<number | null>(0)
   const [chatMessages, setChatMessages] = useState<Array<{role: string, content: string}>>([])
   const [chatInput, setChatInput] = useState('')
   const [chatLoading, setChatLoading] = useState(false)
@@ -577,28 +578,310 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* FAQ Section */}
+        <section className="py-24 bg-gradient-to-br from-primary-700 via-quotla-dark to-primary-800 relative">
+          <div className="absolute inset-0 bg-[url('/images/patterns/grid/Quotla%20grid%20pattern%20light.svg')] bg-center opacity-[0.03]" style={{backgroundSize: '150%'}}></div>
+          <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h3 className="font-heading text-4xl md:text-5xl font-bold text-white mb-6">Frequently Asked Questions</h3>
+              <p className="font-sans text-xl text-quotla-light/80 max-w-2xl mx-auto leading-relaxed">
+                Everything you need to know about Quotla
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              {[
+                {
+                  question: "How does Quotla's AI work?",
+                  answer: "Quotla Agent uses advanced AI to understand your business needs in plain language. Simply describe what you need - like 'Create a quote for website design with 3 pages and hosting' - and our AI generates a professional, itemized quote in seconds."
+                },
+                {
+                  question: "Do I need technical skills to use Quotla?",
+                  answer: "Not at all! Quotla is designed to be intuitive. If you can describe your services in everyday language, you can use Quotla. No templates to learn, no complicated forms to fill out."
+                },
+                {
+                  question: "Can I customize the quotes and invoices?",
+                  answer: "Absolutely! While our AI creates quotes instantly, you have complete control to edit, customize, and brand every document. Add your logo, adjust pricing, modify terms - everything is fully editable."
+                },
+                {
+                  question: "What currencies does Quotla support?",
+                  answer: "Quotla supports USD, NGN, EUR, and GBP with automatic currency conversion. Perfect for working with international clients or managing multi-currency businesses."
+                },
+                {
+                  question: "Is my data secure?",
+                  answer: "Yes! We use industry-standard encryption and security measures to protect your data. Your quotes, invoices, and client information are stored securely and are only accessible to you."
+                },
+                {
+                  question: "Can I try Quotla for free?",
+                  answer: "Yes! Our free plan includes 2 AI questions, basic quote creation, and PDF export. No credit card required. Upgrade anytime for unlimited access to all features."
+                }
+              ].map((faq, idx) => (
+                <div key={idx} className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 overflow-hidden transition-all duration-300 hover:border-quotla-orange/50">
+                  <button
+                    onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+                    className="w-full flex items-center justify-between p-6 text-left hover:bg-white/5 transition-colors"
+                    aria-expanded={openFaq === idx}
+                  >
+                    <h4 className="text-lg font-semibold text-white pr-8">{faq.question}</h4>
+                    <svg
+                      className={`w-6 h-6 text-quotla-light/70 transition-transform duration-300 flex-shrink-0 ${openFaq === idx ? 'rotate-180' : ''}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  <div
+                    className={`overflow-hidden transition-all duration-300 ${openFaq === idx ? 'max-h-96' : 'max-h-0'}`}
+                  >
+                    <div className="px-6 pb-6 pt-0">
+                      <p className="text-quotla-light/80 leading-relaxed">{faq.answer}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Plans & Pricing Section */}
+        <section id="pricing" className="py-24 bg-gradient-to-br from-quotla-light via-white to-quotla-light/80 relative">
+          <div className="absolute inset-0 bg-[url('/images/patterns/grid/Quotla%20grid%20pattern%20light.svg')] bg-center opacity-5" style={{backgroundSize: '150%'}}></div>
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h3 className="font-heading text-4xl md:text-5xl font-bold text-quotla-dark mb-6">Plans & Pricing</h3>
+              <p className="font-sans text-xl text-quotla-dark/70 max-w-2xl mx-auto leading-relaxed">
+                Choose the perfect plan for your business needs
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-4 gap-6 max-w-7xl mx-auto">
+              {/* Simple Start - $1 */}
+              <div className="bg-white rounded-2xl p-6 border-2 border-quotla-dark/10 hover:border-quotla-orange/50 hover:shadow-xl transition-all duration-300">
+                <div className="mb-6">
+                  <h4 className="font-heading text-xl font-bold text-quotla-dark mb-2">Simple Start</h4>
+                  <div className="flex items-baseline mb-2">
+                    <span className="text-4xl font-bold text-quotla-dark">$1</span>
+                    <span className="text-quotla-dark/60 ml-2 text-sm">/month</span>
+                  </div>
+                  <p className="text-quotla-dark/70 text-sm">Build your financial foundation</p>
+                </div>
+                <ul className="space-y-3 mb-6 text-sm">
+                  <li className="flex items-start">
+                    <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-quotla-dark/80">1 user + accountant access</span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-quotla-dark/80">Quotla Agent - AI-powered bank feeds</span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-quotla-dark/80">Income and expenses tracking</span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-quotla-dark/80">Invoices and quotes</span>
+                  </li>
+                </ul>
+                <Link href="/signup" className="block w-full text-center px-4 py-2.5 rounded-xl text-sm font-semibold bg-quotla-dark/10 text-quotla-dark hover:bg-quotla-dark/20 transition-all">
+                  Get Started
+                </Link>
+              </div>
+
+              {/* Essentials */}
+              <div className="bg-white rounded-2xl p-6 border-2 border-quotla-dark/10 hover:border-quotla-orange/50 hover:shadow-xl transition-all duration-300">
+                <div className="mb-6">
+                  <h4 className="font-heading text-xl font-bold text-quotla-dark mb-2">Essentials</h4>
+                  <div className="flex items-baseline mb-2">
+                    <span className="text-4xl font-bold text-quotla-dark">$5</span>
+                    <span className="text-quotla-dark/60 ml-2 text-sm">/month</span>
+                  </div>
+                  <p className="text-quotla-dark/70 text-sm">Save time and focus on growth</p>
+                </div>
+                <ul className="space-y-3 mb-6 text-sm">
+                  <li className="flex items-start">
+                    <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-quotla-dark/80">3 users + accountant access</span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-quotla-dark/80">Everything in Simple Start</span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-quotla-dark/80">AI-powered collaboration</span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-quotla-dark/80">Bill management</span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-quotla-dark/80">Multi-currency support</span>
+                  </li>
+                </ul>
+                <Link href="/signup" className="block w-full text-center px-4 py-2.5 rounded-xl text-sm font-semibold bg-quotla-dark/10 text-quotla-dark hover:bg-quotla-dark/20 transition-all">
+                  Choose Plan
+                </Link>
+              </div>
+
+              {/* Plus - Most Popular */}
+              <div className="bg-gradient-to-br from-quotla-dark to-primary-800 rounded-2xl p-6 border-2 border-quotla-orange shadow-2xl transform scale-105 relative">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-quotla-orange text-white px-4 py-1 rounded-full text-xs font-semibold">
+                  Best Value
+                </div>
+                <div className="mb-6">
+                  <h4 className="font-heading text-xl font-bold text-white mb-2">Plus</h4>
+                  <div className="flex items-baseline mb-2">
+                    <span className="text-4xl font-bold text-white">$7</span>
+                    <span className="text-white/70 ml-2 text-sm">/month</span>
+                  </div>
+                  <p className="text-white/80 text-sm">Boost efficiency & profitability</p>
+                </div>
+                <ul className="space-y-3 mb-6 text-sm">
+                  <li className="flex items-start">
+                    <svg className="w-4 h-4 text-quotla-orange mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-white">5 users + accountant access</span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-4 h-4 text-quotla-orange mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-white">Everything in Essentials</span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-4 h-4 text-quotla-orange mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-white">Anomaly detection</span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-4 h-4 text-quotla-orange mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-white">Quotla Customer Agent</span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-4 h-4 text-quotla-orange mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-white">Inventory tracking</span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-4 h-4 text-quotla-orange mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-white">Budgeting & class tracking</span>
+                  </li>
+                </ul>
+                <Link href="/signup" className="block w-full text-center px-4 py-2.5 rounded-xl text-sm font-semibold bg-quotla-orange text-white hover:bg-secondary-600 transition-all shadow-lg">
+                  Choose Plan
+                </Link>
+              </div>
+
+              {/* Advanced */}
+              <div className="bg-white rounded-2xl p-6 border-2 border-quotla-dark/10 hover:border-quotla-orange/50 hover:shadow-xl transition-all duration-300">
+                <div className="mb-6">
+                  <h4 className="font-heading text-xl font-bold text-quotla-dark mb-2">Advanced</h4>
+                  <div className="flex items-baseline mb-2">
+                    <span className="text-4xl font-bold text-quotla-dark">$14</span>
+                    <span className="text-quotla-dark/60 ml-2 text-sm">/month</span>
+                  </div>
+                  <p className="text-quotla-dark/70 text-sm">Scale with customization</p>
+                </div>
+                <ul className="space-y-3 mb-6 text-sm">
+                  <li className="flex items-start">
+                    <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-quotla-dark/80">25 users + accountant access</span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-quotla-dark/80">Everything in Plus</span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-quotla-dark/80">Quotla Finance Agent</span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-quotla-dark/80">Project Management Agent</span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-quotla-dark/80">Custom report builder</span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-quotla-dark/80">Workflow automation</span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-quotla-dark/80">Unlimited classes & locations</span>
+                  </li>
+                </ul>
+                <Link href="/signup" className="block w-full text-center px-4 py-2.5 rounded-xl text-sm font-semibold bg-quotla-dark text-white hover:bg-quotla-dark/90 transition-all">
+                  Choose Plan
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* CTA Section */}
         <section className="py-24 bg-gradient-to-br from-quotla-dark via-quotla-dark/95 to-quotla-dark relative overflow-hidden">
           <div className="absolute inset-0 bg-[url('/images/patterns/spiral/Quotla%20Spiral%20orange.svg')] bg-center opacity-[0.0275]" style={{backgroundSize: '8100%'}}></div>
           <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h3 className="font-heading text-4xl md:text-5xl font-bold text-white mb-8">
-              Ready to simplify your business?
+            <h3 className="font-heading text-4xl md:text-5xl font-bold text-white mb-10">
+              Join the power move today
             </h3>
-            <p className="font-sans text-xl text-primary-300 mb-10 leading-relaxed">
-              Join professionals worldwide who use Quotla to create quotes,<br className="hidden sm:block" />
-              manage invoices, and get paid faster.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/signup" className="px-8 py-4 rounded-xl text-lg font-semibold bg-quotla-orange text-white hover:bg-secondary-600 transition-all shadow-xl shadow-quotla-orange/40 hover:shadow-2xl hover:shadow-quotla-orange/60 hover:scale-105">
-                Start creating
-              </Link>
-              <Link href="/about" className="px-8 py-4 rounded-xl text-lg font-semibold bg-transparent text-white hover:bg-white/10 transition-all border-2 border-white/20">
-                Learn More
-              </Link>
+            <div className="flex justify-center">
+              <a
+                href="#pricing"
+                onClick={(e) => {
+                  e.preventDefault()
+                  document.querySelector('#pricing')?.scrollIntoView({ behavior: 'smooth' })
+                }}
+                className="px-10 py-5 rounded-xl text-xl font-semibold bg-quotla-orange text-white hover:bg-secondary-600 transition-all shadow-xl shadow-quotla-orange/40 hover:shadow-2xl hover:shadow-quotla-orange/60 hover:scale-105"
+              >
+                See plans and pricing
+              </a>
             </div>
-            <p className="text-sm text-primary-400 mt-6">
-              Free plan includes 2 AI questions • Upgrade anytime for unlimited access
-            </p>
           </div>
         </section>
       </main>

@@ -27,6 +27,9 @@ export interface LineItem {
   unit_price: number
   amount: number
   sort_order?: number
+  inventory_item_id?: string  // Link to inventory item
+  stock_status?: 'In stock' | 'Low stock' | 'Out of stock' | 'Not tracked' | 'No inventory link'
+  available_quantity?: number // Available stock for this item
 }
 
 export interface User {

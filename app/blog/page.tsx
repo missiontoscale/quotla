@@ -18,6 +18,7 @@ export default function BlogPage() {
   const [externalConfig, setExternalConfig] = useState<BlogConfig | null>(null)
   const [loading, setLoading] = useState(true)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isDarkMode, setIsDarkMode] = useState(false)
   const [filters, setFilters] = useState<BlogFilters>({
     searchQuery: '',
     dateFrom: undefined,
@@ -202,21 +203,27 @@ export default function BlogPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6] dark:bg-primary-800 transition-colors" style={{backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px)', backgroundSize: '60px 60px'}}>
+    <div className={`min-h-screen transition-all duration-500 ${isDarkMode ? 'dark bg-gradient-to-br from-quotla-dark via-primary-800 to-quotla-dark' : 'bg-gradient-to-br from-[#FAF9F6] via-quotla-light/30 to-quotla-green/5'}`}>
+      <div className="absolute inset-0 bg-[url('/images/patterns/spiral/Quotla%20Spiral%20light.svg')] bg-center opacity-[0.02] pointer-events-none" style={{backgroundSize: '100%'}}></div>
       <Navbar />
 
       {/* Theme Toggle - Fixed Position */}
       {isDarkModeEnabled && (
         <div className="fixed top-20 right-4 z-50">
-          <ThemeToggle />
+          <ThemeToggle onThemeChange={setIsDarkMode} />
         </div>
       )}
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Blog Header */}
-        <div className="mb-8">
-          <h1 className="text-5xl font-bold text-quotla-dark dark:text-quotla-light mb-4 transition-colors">Blog</h1>
-          <p className="text-xl text-gray-700 dark:text-primary-400 transition-colors">
+      <main className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Blog Header with Enhanced Typography */}
+        <div className="mb-12 text-center relative">
+          <div className="inline-block mb-4 px-6 py-2 bg-quotla-orange/20 backdrop-blur-sm rounded-full border border-quotla-orange/30 animate-fade-in">
+            <span className="text-quotla-orange font-semibold text-sm uppercase tracking-wider">Quotla Insights</span>
+          </div>
+          <h1 className="font-heading text-6xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-quotla-dark to-quotla-orange dark:from-quotla-light dark:to-quotla-green mb-4 transition-all duration-500 animate-slide-up">
+            Blog
+          </h1>
+          <p className="text-xl md:text-2xl text-quotla-dark/80 dark:text-quotla-light/80 max-w-3xl mx-auto leading-relaxed transition-colors duration-500 animate-fade-in-delay">
             Latest insights, tips, and updates from Quotla
           </p>
         </div>

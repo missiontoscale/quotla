@@ -2,19 +2,26 @@
 
 import { FC, useEffect, useState } from 'react'
 
-const ThemeToggle: FC = () => {
+interface ThemeToggleProps {
+  onThemeChange?: (isDark: boolean) => void
+}
+
+const ThemeToggle: FC<ThemeToggleProps> = ({ onThemeChange }) => {
   const [isDark, setIsDark] = useState(false)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     setMounted(true)
-    // Check localStorage and system preference
-    const savedTheme = localStorage.getItem('blog-theme')
+    // Check localStorage for blog-specific theme
+    const savedTheme = localStorage.getItem('quotla-blog-theme')
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
 
-    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-      setIsDark(true)
-      document.documentElement.classList.add('dark')
+    const shouldBeDark = savedTheme === 'dark' || (!savedTheme && prefersDark)
+    setIsDark(shouldBeDark)
+
+    // Notify parent component of initial theme
+    if (onThemeChange) {
+      onThemeChange(shouldBeDark)
     }
   }, [])
 
@@ -22,12 +29,11 @@ const ThemeToggle: FC = () => {
     const newTheme = !isDark
 
     setIsDark(newTheme)
-    if (newTheme) {
-      document.documentElement.classList.add('dark')
-      localStorage.setItem('blog-theme', 'dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-      localStorage.setItem('blog-theme', 'light')
+    localStorage.setItem('quotla-blog-theme', newTheme ? 'dark' : 'light')
+
+    // Notify parent component of theme change
+    if (onThemeChange) {
+      onThemeChange(newTheme)
     }
   }
 
