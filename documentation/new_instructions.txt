@@ -1,27 +1,14 @@
-A. Add Authentic People Images
-Placeholder added in About page (line 38-42)
-use images Uploaded to /public/images/
+A. When I ran the profitability-tracking-schema.sql in Supabase, I got the following error:
+Error: Failed to run sql query: ERROR: 42703: column i.amount_paid does not exist LINE 48: i.amount_paid, ^
+there is no amount paid column in the invoices table in the DB actually
 
-B. Blog Page Aesthetics
-Current design is functional with dark mode toggle
-Could benefit from:
-More distinctive typography (avoiding Inter/Roboto)
-Enhanced color scheme matching brand
-Animated transitions
-Featured post cards with imagery
+B. 
+The pricing on home page ought to have the same logic that allows for the currency to be the local currency. I believe there is a component for that.
+Patch it up properly
 
-Missing QuickBooks Features to Implement(tackle the easiest 2 that can be integrated):
-Revenue recognition
-Purchase orders & sales orders
-Contract upload & e-signature
-Lead management & reputation management
-Time tracking features
-Project profitability tracking
-Custom fields (4-12 depending on plan)
-Class and location tracking (up to 40 or unlimited)
-Workflow automation
-Backup and restore
-Data sync with Excel
-The core user interface improvements have been completed. The pricing structure now directly competes with QuickBooks at 35% lower cost, and the Quotla Agent branding is consistent throughout the application.
+C.
+The pricing page ought to be same as the pricing section on the home page. 
+It should have those prices, faqs, and on other call to action section
 
-image added. shfit the aesthetic of the entire site, like 
+D.
+Consolidate all ".md" files [except PRODUCT_REQUIREMENTS.txt] into a single PROGRESS.md, delete others

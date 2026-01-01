@@ -55,14 +55,64 @@ export default function PricingPage() {
     fetchUsageStats()
   }, [user])
 
-  // Show all plans for authenticated users, filter free for public
-  const displayPlans = user
-    ? SUBSCRIPTION_PLANS
-    : SUBSCRIPTION_PLANS.filter(plan => plan.id !== 'free')
+  // Define pricing plans matching the home page
+  const pricingPlans = [
+    {
+      name: 'Simple Start',
+      priceUSD: 1,
+      description: 'Build your financial foundation',
+      features: [
+        '1 user + accountant access',
+        'Quotla Agent - AI-powered bank feeds',
+        'Income and expenses tracking',
+        'Invoices and quotes',
+      ],
+    },
+    {
+      name: 'Essentials',
+      priceUSD: 5,
+      description: 'Save time and focus on growth',
+      features: [
+        '3 users + accountant access',
+        'Everything in Simple Start',
+        'AI-powered collaboration',
+        'Bill management',
+        'Multi-currency support',
+      ],
+    },
+    {
+      name: 'Plus',
+      priceUSD: 7,
+      description: 'Boost efficiency & profitability',
+      popular: true,
+      features: [
+        '5 users + accountant access',
+        'Everything in Essentials',
+        'Anomaly detection',
+        'Quotla Customer Agent',
+        'Inventory tracking',
+        'Budgeting & class tracking',
+      ],
+    },
+    {
+      name: 'Advanced',
+      priceUSD: 14,
+      description: 'Scale with customization',
+      features: [
+        '25 users + accountant access',
+        'Everything in Plus',
+        'Quotla Finance Agent',
+        'Project Management Agent',
+        'Custom report builder',
+        'Workflow automation',
+        'Unlimited classes & locations',
+      ],
+    },
+  ]
 
   // Get current user's plan
   const currentPlanId = profile?.subscription_plan || 'free'
-  const currentPlan = displayPlans.find(p => p.id === currentPlanId)
+  const currentPlan = SUBSCRIPTION_PLANS.find(p => p.id === currentPlanId)
 
   const faqs = [
     {
@@ -227,114 +277,75 @@ export default function PricingPage() {
 
       {/* Pricing Cards */}
       <section className="pb-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            {displayPlans.map((plan) => (
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-4 gap-6">
+            {pricingPlans.map((plan, index) => (
               <div
                 key={plan.name}
-                className={`relative bg-primary-800 rounded-2xl shadow-lg transition-all duration-300 hover:shadow-2xl ${
-                  plan.popular ? 'border-2 border-quotla-orange scale-105' : 'border border-primary-700'
+                className={`relative rounded-2xl shadow-lg transition-all duration-300 hover:shadow-2xl ${
+                  plan.popular
+                    ? 'bg-gradient-to-br from-quotla-dark to-primary-800 border-2 border-quotla-orange scale-105'
+                    : 'bg-white border-2 border-quotla-dark/10 hover:border-quotla-orange/50'
                 }`}
               >
                 {plan.popular && (
-                  <div className="absolute -top-5 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-quotla-orange text-white px-6 py-2 rounded-full text-sm font-semibold shadow-lg shadow-quotla-orange/40">
-                      Most Popular
+                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                    <span className="bg-quotla-orange text-white px-4 py-1 rounded-full text-xs font-semibold shadow-lg shadow-quotla-orange/40">
+                      Best Value
                     </span>
                   </div>
                 )}
 
-                <div className="p-8">
-                  <h3 className="text-2xl font-bold text-quotla-light mb-2">{plan.name}</h3>
-                  <div className="flex items-baseline gap-1 mb-6">
-                    <span className="text-5xl font-bold text-quotla-light">
+                <div className="p-6">
+                  <h3 className={`text-xl font-bold mb-2 ${plan.popular ? 'text-white' : 'text-quotla-dark'}`}>
+                    {plan.name}
+                  </h3>
+                  <div className="flex items-baseline gap-1 mb-2">
+                    <span className={`text-4xl font-bold ${plan.popular ? 'text-white' : 'text-quotla-dark'}`}>
                       {formatPrice(plan.priceUSD, currency)}
                     </span>
-                    <span className="text-primary-300 text-lg">/month</span>
+                    <span className={`text-sm ${plan.popular ? 'text-white/70' : 'text-quotla-dark/60'}`}>
+                      /month
+                    </span>
                   </div>
+                  <p className={`text-sm mb-6 ${plan.popular ? 'text-white/80' : 'text-quotla-dark/70'}`}>
+                    {plan.description}
+                  </p>
 
-                  <ul className="space-y-4 mb-8">
-                    {plan.features.map((feature, index) => (
-                      <li key={index} className="flex items-start gap-3">
+                  <ul className="space-y-3 mb-6 text-sm">
+                    {plan.features.map((feature, featureIndex) => (
+                      <li key={featureIndex} className="flex items-start gap-2">
                         <svg
-                          className="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
+                          className={`w-4 h-4 flex-shrink-0 mt-0.5 ${plan.popular ? 'text-quotla-orange' : 'text-quotla-green'}`}
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
                         >
                           <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M5 13l4 4L19 7"
+                            fillRule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                            clipRule="evenodd"
                           />
                         </svg>
-                        <span className="text-primary-200">{feature}</span>
+                        <span className={plan.popular ? 'text-white' : 'text-quotla-dark/80'}>
+                          {feature}
+                        </span>
                       </li>
                     ))}
                   </ul>
 
-                  {(() => {
-                    const isCurrentPlan = user && currentPlanId === plan.id
-                    const ctaText = isCurrentPlan
-                      ? 'Current Plan'
-                      : user
-                        ? `Switch to ${plan.name}`
-                        : plan.cta
-
-                    if (isCurrentPlan) {
-                      return (
-                        <div
-                          className="block w-full py-4 rounded-xl font-semibold text-center cursor-not-allowed"
-                          style={{backgroundColor: '#2a2f2f', color: '#9ca3af'}}
-                        >
-                          {ctaText}
-                        </div>
-                      )
-                    }
-
-                    return (
-                      <Link
-                        href={user ? "/billing" : "/signup"}
-                        className="block w-full py-4 rounded-xl font-semibold text-center transition-all shadow-lg"
-                        style={{
-                          backgroundColor: plan.popular ? '#ce6203' : '#2a2f2f',
-                          color: '#fffad6'
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
-                        onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
-                        onMouseDown={(e) => e.currentTarget.style.opacity = '0.7'}
-                        onMouseUp={(e) => e.currentTarget.style.opacity = '0.9'}
-                      >
-                        {ctaText}
-                      </Link>
-                    )
-                  })()}
+                  <Link
+                    href="/signup"
+                    className={`block w-full py-2.5 rounded-xl font-semibold text-center transition-all shadow-lg text-sm ${
+                      plan.popular
+                        ? 'bg-quotla-orange text-white hover:bg-secondary-600'
+                        : 'bg-quotla-dark/10 text-quotla-dark hover:bg-quotla-dark/20'
+                    }`}
+                  >
+                    {user ? `Switch to ${plan.name}` : 'Get Started'}
+                  </Link>
                 </div>
               </div>
             ))}
-          </div>
-
-          {/* Enterprise Option */}
-          <div className="mt-12 text-center">
-            <p className="mb-4" style={{color: '#d1d5db'}}>
-              Need a custom solution for your enterprise?
-            </p>
-            <Link
-              href="/contact"
-              className="inline-block px-8 py-3 rounded-lg font-semibold transition-all"
-              style={{border: '2px solid #ce6203', color: '#fffad6', backgroundColor: 'transparent'}}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#ce6203'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'transparent'
-              }}
-              onMouseDown={(e) => e.currentTarget.style.opacity = '0.7'}
-              onMouseUp={(e) => e.currentTarget.style.opacity = '1'}
-            >
-              Contact Sales
-            </Link>
           </div>
         </div>
       </section>

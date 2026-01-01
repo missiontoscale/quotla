@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase/client'
 import Footer from '@/components/Footer'
 import LoadingSpinner from '@/components/LoadingSpinner'
 import Navbar from '@/components/Navbar'
+import { detectUserCurrency, formatPrice, type Currency } from '@/lib/utils/currency'
 
 export default function HomePage() {
   const [checkingAuth, setCheckingAuth] = useState(true)
@@ -21,6 +22,12 @@ export default function HomePage() {
   const [placeholderText, setPlaceholderText] = useState('')
   const [placeholderPhraseIndex, setPlaceholderPhraseIndex] = useState(0)
   const [isPlaceholderDeleting, setIsPlaceholderDeleting] = useState(false)
+  const [currency, setCurrency] = useState<Currency>({
+    code: 'USD',
+    symbol: '$',
+    rate: 1,
+  })
+  const [isLoadingCurrency, setIsLoadingCurrency] = useState(true)
 
   const phrases = [
     'Create quotes in seconds',
@@ -51,6 +58,18 @@ export default function HomePage() {
       setCheckingAuth(false)
     }
     checkAuth()
+  }, [])
+
+  // Detect user's location and set currency with live rates
+  useEffect(() => {
+    const loadCurrency = async () => {
+      setIsLoadingCurrency(true)
+      const detectedCurrency = await detectUserCurrency()
+      setCurrency(detectedCurrency)
+      setIsLoadingCurrency(false)
+    }
+
+    loadCurrency()
   }, [])
 
   useEffect(() => {
@@ -654,6 +673,12 @@ export default function HomePage() {
               <p className="font-sans text-xl text-quotla-dark/70 max-w-2xl mx-auto leading-relaxed">
                 Choose the perfect plan for your business needs
               </p>
+              <p className="text-sm text-quotla-dark/60 mt-2">
+                {isLoadingCurrency
+                  ? 'Loading prices...'
+                  : `Prices shown in ${currency.code} (live rates)`
+                }
+              </p>
             </div>
 
             <div className="grid md:grid-cols-4 gap-6 max-w-7xl mx-auto">
@@ -662,7 +687,7 @@ export default function HomePage() {
                 <div className="mb-6">
                   <h4 className="font-heading text-xl font-bold text-quotla-dark mb-2">Simple Start</h4>
                   <div className="flex items-baseline mb-2">
-                    <span className="text-4xl font-bold text-quotla-dark">$1</span>
+                    <span className="text-4xl font-bold text-quotla-dark">{formatPrice(1, currency)}</span>
                     <span className="text-quotla-dark/60 ml-2 text-sm">/month</span>
                   </div>
                   <p className="text-quotla-dark/70 text-sm">Build your financial foundation</p>
@@ -703,7 +728,7 @@ export default function HomePage() {
                 <div className="mb-6">
                   <h4 className="font-heading text-xl font-bold text-quotla-dark mb-2">Essentials</h4>
                   <div className="flex items-baseline mb-2">
-                    <span className="text-4xl font-bold text-quotla-dark">$5</span>
+                    <span className="text-4xl font-bold text-quotla-dark">{formatPrice(5, currency)}</span>
                     <span className="text-quotla-dark/60 ml-2 text-sm">/month</span>
                   </div>
                   <p className="text-quotla-dark/70 text-sm">Save time and focus on growth</p>
@@ -753,7 +778,7 @@ export default function HomePage() {
                 <div className="mb-6">
                   <h4 className="font-heading text-xl font-bold text-white mb-2">Plus</h4>
                   <div className="flex items-baseline mb-2">
-                    <span className="text-4xl font-bold text-white">$7</span>
+                    <span className="text-4xl font-bold text-white">{formatPrice(7, currency)}</span>
                     <span className="text-white/70 ml-2 text-sm">/month</span>
                   </div>
                   <p className="text-white/80 text-sm">Boost efficiency & profitability</p>
@@ -806,7 +831,7 @@ export default function HomePage() {
                 <div className="mb-6">
                   <h4 className="font-heading text-xl font-bold text-quotla-dark mb-2">Advanced</h4>
                   <div className="flex items-baseline mb-2">
-                    <span className="text-4xl font-bold text-quotla-dark">$14</span>
+                    <span className="text-4xl font-bold text-quotla-dark">{formatPrice(14, currency)}</span>
                     <span className="text-quotla-dark/60 ml-2 text-sm">/month</span>
                   </div>
                   <p className="text-quotla-dark/70 text-sm">Scale with customization</p>

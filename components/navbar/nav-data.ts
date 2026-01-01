@@ -60,6 +60,11 @@ export const AUTH_NAV_LINKS: NavLink[] = [
     authRequired: true,
   },
   {
+    label: 'Analytics',
+    href: '/analytics',
+    authRequired: true,
+  },
+  {
     label: 'Blog',
     href: ROUTES.BLOG,
     authRequired: true,

@@ -236,25 +236,29 @@ export default function BlogPage() {
           />
         </div>
 
-        {/* Stats */}
-        <div className="mb-8 flex items-center gap-4 text-sm text-gray-700 dark:text-primary-400">
-          <span className="font-medium">
+        {/* Stats with Enhanced Design */}
+        <div className="mb-8 flex items-center gap-4 text-sm backdrop-blur-sm bg-white/60 dark:bg-quotla-dark/60 px-6 py-3 rounded-full border border-quotla-orange/20 dark:border-quotla-green/20 w-fit transition-all duration-300 hover:shadow-lg hover:shadow-quotla-orange/10">
+          <span className="font-semibold text-quotla-dark dark:text-quotla-light">
             {filteredPosts.length} {filteredPosts.length === 1 ? 'post' : 'posts'} found
           </span>
           {filters.searchQuery && (
-            <span className="text-quotla-orange dark:text-primary-400">
+            <span className="text-quotla-orange dark:text-quotla-green font-medium">
               matching "{filters.searchQuery}"
             </span>
           )}
         </div>
 
         {filteredPosts.length === 0 ? (
-          <div className="card text-center py-12 dark:bg-primary-900 dark:text-quotla-light transition-colors">
-            <svg className="mx-auto h-12 w-12 text-primary-400 dark:text-primary-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <p className="text-primary-400 dark:text-primary-400 mb-2">No blog posts found</p>
-            <p className="text-sm text-primary-400 dark:text-primary-400">Try adjusting your filters or search query</p>
+          <div className="relative overflow-hidden bg-gradient-to-br from-white/80 to-quotla-light/50 dark:from-primary-900/80 dark:to-quotla-dark/50 backdrop-blur-sm rounded-3xl p-16 text-center border-2 border-quotla-orange/20 dark:border-quotla-green/20 shadow-xl transition-all duration-500 hover:shadow-2xl hover:shadow-quotla-orange/10">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-quotla-orange/5 dark:bg-quotla-green/5 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-quotla-green/5 dark:bg-quotla-orange/5 rounded-full blur-3xl"></div>
+            <div className="relative">
+              <svg className="mx-auto h-16 w-16 text-quotla-orange dark:text-quotla-green mb-6 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="text-xl font-semibold text-quotla-dark dark:text-quotla-light mb-2">No blog posts found</p>
+              <p className="text-quotla-dark/70 dark:text-quotla-light/70">Try adjusting your filters or search query</p>
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
