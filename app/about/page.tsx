@@ -39,7 +39,7 @@ export default function AboutPage() {
             {/* Left: Person Photo */}
             <div className="relative h-full min-h-[400px] md:min-h-[500px] rounded-l-3xl overflow-hidden">
               <img
-                src="/images/your-time-matters-person.jpg"
+                src="/images/about/your-time-matters-person.jpg"
                 alt="Professional smiling"
                 className="absolute inset-0 w-full h-full object-cover"
               />
@@ -70,7 +70,7 @@ export default function AboutPage() {
         <section className="mb-24">
           <div className="relative h-[500px] rounded-3xl overflow-hidden shadow-2xl">
             <img
-              src="/images/A2.jpg"
+              src="/images/about/A2.jpg"
               alt="Professional working with Quotla"
               className="w-full h-full object-cover"
             />

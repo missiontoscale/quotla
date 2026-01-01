@@ -597,82 +597,15 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* FAQ Section */}
-        <section className="py-24 bg-gradient-to-br from-primary-700 via-quotla-dark to-primary-800 relative">
-          <div className="absolute inset-0 bg-[url('/images/patterns/grid/Quotla%20grid%20pattern%20light.svg')] bg-center opacity-[0.03]" style={{backgroundSize: '150%'}}></div>
-          <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h3 className="font-heading text-4xl md:text-5xl font-bold text-white mb-6">Frequently Asked Questions</h3>
-              <p className="font-sans text-xl text-quotla-light/80 max-w-2xl mx-auto leading-relaxed">
-                Everything you need to know about Quotla
-              </p>
-            </div>
-
-            <div className="space-y-4">
-              {[
-                {
-                  question: "How does Quotla's AI work?",
-                  answer: "Quotla Agent uses advanced AI to understand your business needs in plain language. Simply describe what you need - like 'Create a quote for website design with 3 pages and hosting' - and our AI generates a professional, itemized quote in seconds."
-                },
-                {
-                  question: "Do I need technical skills to use Quotla?",
-                  answer: "Not at all! Quotla is designed to be intuitive. If you can describe your services in everyday language, you can use Quotla. No templates to learn, no complicated forms to fill out."
-                },
-                {
-                  question: "Can I customize the quotes and invoices?",
-                  answer: "Absolutely! While our AI creates quotes instantly, you have complete control to edit, customize, and brand every document. Add your logo, adjust pricing, modify terms - everything is fully editable."
-                },
-                {
-                  question: "What currencies does Quotla support?",
-                  answer: "Quotla supports USD, NGN, EUR, and GBP with automatic currency conversion. Perfect for working with international clients or managing multi-currency businesses."
-                },
-                {
-                  question: "Is my data secure?",
-                  answer: "Yes! We use industry-standard encryption and security measures to protect your data. Your quotes, invoices, and client information are stored securely and are only accessible to you."
-                },
-                {
-                  question: "Can I try Quotla for free?",
-                  answer: "Yes! Our free plan includes 2 AI questions, basic quote creation, and PDF export. No credit card required. Upgrade anytime for unlimited access to all features."
-                }
-              ].map((faq, idx) => (
-                <div key={idx} className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 overflow-hidden transition-all duration-300 hover:border-quotla-orange/50">
-                  <button
-                    onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
-                    className="w-full flex items-center justify-between p-6 text-left hover:bg-white/5 transition-colors"
-                    aria-expanded={openFaq === idx}
-                  >
-                    <h4 className="text-lg font-semibold text-white pr-8">{faq.question}</h4>
-                    <svg
-                      className={`w-6 h-6 text-quotla-light/70 transition-transform duration-300 flex-shrink-0 ${openFaq === idx ? 'rotate-180' : ''}`}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
-                  <div
-                    className={`overflow-hidden transition-all duration-300 ${openFaq === idx ? 'max-h-96' : 'max-h-0'}`}
-                  >
-                    <div className="px-6 pb-6 pt-0">
-                      <p className="text-quotla-light/80 leading-relaxed">{faq.answer}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* Plans & Pricing Section */}
         <section id="pricing" className="py-24 bg-gradient-to-br from-quotla-light via-white to-quotla-light/80 relative">
           <div className="absolute inset-0 bg-[url('/images/patterns/grid/Quotla%20grid%20pattern%20light.svg')] bg-center opacity-5" style={{backgroundSize: '150%'}}></div>
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h3 className="font-heading text-4xl md:text-5xl font-bold text-quotla-dark mb-6">Plans & Pricing</h3>
-              <p className="font-sans text-xl text-quotla-dark/70 max-w-2xl mx-auto leading-relaxed">
+              <h3 className="font-heading text-4xl md:text-5xl font-bold text-quotla-dark mb-6">Choose your perfect plan</h3>
+              {/* <p className="font-sans text-xl text-quotla-dark/70 max-w-2xl mx-auto leading-relaxed">
                 Choose the perfect plan for your business needs
-              </p>
+              </p> */}
               <p className="text-sm text-quotla-dark/60 mt-2">
                 {isLoadingCurrency
                   ? 'Loading prices...'
@@ -884,6 +817,73 @@ export default function HomePage() {
                   Choose Plan
                 </Link>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section className="py-24 bg-gradient-to-br from-primary-700 via-quotla-dark to-primary-800 relative">
+          <div className="absolute inset-0 bg-[url('/images/patterns/grid/Quotla%20grid%20pattern%20light.svg')] bg-center opacity-[0.03]" style={{backgroundSize: '150%'}}></div>
+          <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h3 className="font-heading text-4xl md:text-5xl font-bold text-white mb-6">Frequently Asked Questions</h3>
+              <p className="font-sans text-xl text-quotla-light/80 max-w-2xl mx-auto leading-relaxed">
+                Everything you need to know about Quotla
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              {[
+                {
+                  question: "How does Quotla's AI work?",
+                  answer: "Quotla Agent uses advanced AI to understand your business needs in plain language. Simply describe what you need - like 'Create a quote for website design with 3 pages and hosting' - and our AI generates a professional, itemized quote in seconds."
+                },
+                {
+                  question: "Do I need technical skills to use Quotla?",
+                  answer: "Not at all! Quotla is designed to be intuitive. If you can describe your services in everyday language, you can use Quotla. No templates to learn, no complicated forms to fill out."
+                },
+                {
+                  question: "Can I customize the quotes and invoices?",
+                  answer: "Absolutely! While our AI creates quotes instantly, you have complete control to edit, customize, and brand every document. Add your logo, adjust pricing, modify terms - everything is fully editable."
+                },
+                {
+                  question: "What currencies does Quotla support?",
+                  answer: "Quotla supports USD, NGN, EUR, and GBP with automatic currency conversion. Perfect for working with international clients or managing multi-currency businesses."
+                },
+                {
+                  question: "Is my data secure?",
+                  answer: "Yes! We use industry-standard encryption and security measures to protect your data. Your quotes, invoices, and client information are stored securely and are only accessible to you."
+                },
+                {
+                  question: "Can I try Quotla for free?",
+                  answer: "Yes! Our free plan includes 2 AI questions, basic quote creation, and PDF export. No credit card required. Upgrade anytime for unlimited access to all features."
+                }
+              ].map((faq, idx) => (
+                <div key={idx} className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 overflow-hidden transition-all duration-300 hover:border-quotla-orange/50">
+                  <button
+                    onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+                    className="w-full flex items-center justify-between p-6 text-left hover:bg-white/5 transition-colors"
+                    aria-expanded={openFaq === idx}
+                  >
+                    <h4 className="text-lg font-semibold text-white pr-8">{faq.question}</h4>
+                    <svg
+                      className={`w-6 h-6 text-quotla-light/70 transition-transform duration-300 flex-shrink-0 ${openFaq === idx ? 'rotate-180' : ''}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  <div
+                    className={`overflow-hidden transition-all duration-300 ${openFaq === idx ? 'max-h-96' : 'max-h-0'}`}
+                  >
+                    <div className="px-6 pb-6 pt-0">
+                      <p className="text-quotla-light/80 leading-relaxed">{faq.answer}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </section>
