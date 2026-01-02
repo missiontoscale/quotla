@@ -1,18 +1,14 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter, Bricolage_Grotesque } from 'next/font/google'
+import { Bricolage_Grotesque } from 'next/font/google'
 import './globals.css'
 import { Providers } from '@/components/Providers'
+import { openSauceSans } from '@/components/font/open-sauce'
 
-// Primary typeface - Inter (similar to Open Sauce)
-// Used for headings, UI labels, navigation, and core interface copy
-const inter = Inter({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-inter',
-  display: 'swap',
-})
+// Secondary typeface - Open Sauce Sans (brand's secondary font)
+// Used for body text, UI labels, navigation, and core interface copy
+// Professional, clean sans-serif that provides excellent readability
 
-// Secondary typeface - Bricolage Grotesque
+// Primary typeface - Bricolage Grotesque
 // Used selectively for marketing headers, highlights, or emphasis where personality is needed
 const bricolageGrotesque = Bricolage_Grotesque({
   subsets: ['latin'],
@@ -47,8 +43,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${bricolageGrotesque.variable}`} suppressHydrationWarning>
-      <body className={inter.className} suppressHydrationWarning>
+    <html lang="en" className={`${openSauceSans.variable} ${bricolageGrotesque.variable}`} suppressHydrationWarning>
+      <body className={openSauceSans.className} suppressHydrationWarning>
         <Providers>{children}</Providers>
       </body>
     </html>

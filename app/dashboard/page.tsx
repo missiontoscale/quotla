@@ -19,6 +19,11 @@ function DashboardContent() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [displayedGreeting, setDisplayedGreeting] = useState('')
   const [fullGreeting, setFullGreeting] = useState('')
+  const [inventoryStats, setInventoryStats] = useState({
+    total_items: 0,
+    low_stock_count: 0,
+    total_value: 0
+  })
 
   useEffect(() => {
     loadData()
@@ -47,7 +52,7 @@ function DashboardContent() {
   const loadData = async () => {
     if (!user) return
 
-    const [quotesRes, invoicesRes] = await Promise.all([
+    const [quotesRes, invoicesRes, inventoryRes] = await Promise.all([
       supabase
         .from('quotes')
         .select('*')
@@ -60,10 +65,30 @@ function DashboardContent() {
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(10),
+      supabase
+        .from('inventory_items')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('is_active', true)
     ])
 
     if (quotesRes.data) setQuotes(quotesRes.data)
     if (invoicesRes.data) setInvoices(invoicesRes.data)
+
+    // Calculate inventory stats
+    if (inventoryRes.data) {
+      const items = inventoryRes.data
+      setInventoryStats({
+        total_items: items.length,
+        low_stock_count: items.filter(item =>
+          item.track_inventory && item.quantity_on_hand <= item.low_stock_threshold
+        ).length,
+        total_value: items.reduce((sum, item) =>
+          sum + (item.quantity_on_hand * item.cost_price), 0
+        )
+      })
+    }
+
     setLoading(false)
   }
 
@@ -110,25 +135,9 @@ function DashboardContent() {
           </div>
         </section>
 
-        {/* Pane 1: Seal with Quotla Agent - Full Width */}
+        {/* Pane 1: AI Chat Interface - Full Width */}
         <section className="mb-8 sm:mb-10 w-full">
           <div className="bg-white dark:bg-primary-700 rounded-2xl sm:rounded-3xl shadow-lg border border-primary-200 dark:border-quotla-light/20 overflow-hidden transition-colors">
-            <div className="flex items-center gap-3 p-4 sm:p-5 bg-gradient-to-r from-quotla-green to-quotla-orange">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0 shadow-md">
-                <svg className="w-6 h-6 sm:w-7 sm:h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                </svg>
-              </div>
-              <div className="flex-1">
-                <h2 className="font-heading text-lg sm:text-xl font-bold text-white">
-                  Quotla AI Assistant
-                </h2>
-                <p className="text-sm text-white/90 flex items-center gap-1.5 mt-0.5">
-                  <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-                  <span className="font-medium">Online & Ready</span>
-                </p>
-              </div>
-            </div>
             <QuotlaChat />
           </div>
         </section>
@@ -280,7 +289,7 @@ function DashboardContent() {
 
         {/* Business Overview - Overview Row */}
         <section className="mb-10 sm:mb-12">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
             {/* Total Revenue Card - Most important metric first */}
             <div className="group relative bg-white dark:bg-primary-700 rounded-2xl p-5 sm:p-6 border border-primary-200 dark:border-quotla-light/20 shadow-sm hover:border-quotla-green dark:hover:border-quotla-green hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
               <div className="flex items-center justify-between mb-3 sm:mb-4">
@@ -356,6 +365,33 @@ function DashboardContent() {
                 </span>
               </div>
             </div>
+
+            {/* Inventory Card */}
+            <Link href="/inventory" className="group relative bg-white dark:bg-primary-700 rounded-2xl p-5 sm:p-6 border border-primary-200 dark:border-quotla-light/20 shadow-sm hover:border-blue-500 dark:hover:border-blue-400 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <div className="flex items-center justify-between mb-3 sm:mb-4">
+                <div className="font-sans text-xs sm:text-sm font-semibold text-gray-600 dark:text-primary-400 uppercase tracking-wide">Inventory</div>
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-blue-500 flex items-center justify-center transform group-hover:scale-110 transition-transform shadow-md">
+                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                  </svg>
+                </div>
+              </div>
+              <div className="font-heading text-2xl sm:text-3xl font-bold text-quotla-dark dark:text-quotla-light mb-1">
+                {inventoryStats.total_items}
+              </div>
+              <div className="flex items-center gap-2 text-xs sm:text-sm">
+                {inventoryStats.low_stock_count > 0 ? (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
+                    <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                    {inventoryStats.low_stock_count} low stock
+                  </span>
+                ) : (
+                  <span className="text-gray-600 dark:text-primary-400">All items stocked</span>
+                )}
+              </div>
+            </Link>
           </div>
         </section>
 

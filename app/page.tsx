@@ -444,8 +444,43 @@ export default function HomePage() {
           </div>
         </section>
 
+
+        {/* Use Cases Section - Image overlay style like About page */}
+        <section className="py-24 bg-gradient-to-br from-quotla-dark via-primary-800 to-quotla-dark">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid md:grid-cols-3 gap-6">
+              {useCases.map((useCase, idx) => (
+                <Link key={idx} href={useCase.link} className="group">
+                  <div className="relative h-[500px] rounded-3xl overflow-hidden shadow-2xl">
+                    <img
+                      src={`/images/home/${useCase.category.toLowerCase().replace(' ', '-')}.jpg`}
+                      alt={useCase.title}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        // Fallback to a placeholder or default image
+                        e.currentTarget.src = '/images/about/A2.jpg'
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-quotla-dark/90 via-quotla-dark/40 to-transparent flex items-end transition-all duration-300 group-hover:from-quotla-dark group-hover:via-quotla-dark/60">
+                      <div className="p-8 w-full">
+                        <div className="font-sans text-xs font-semibold text-quotla-orange uppercase tracking-wide mb-3">{useCase.category}</div>
+                        <h4 className="font-heading text-2xl md:text-3xl font-bold text-quotla-light mb-4">
+                          {useCase.title}
+                        </h4>
+                        <p className="text-lg text-quotla-light/90 leading-relaxed">
+                          {useCase.description}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* Features Section */}
-        <section className="bg-gradient-to-br from-primary-800 via-quotla-dark to-primary-800 relative">
+        <section className="relative py-32 bg-gradient-to-br from-quotla-dark via-primary-800 to-quotla-dark overflow-hidden">
           <div className="absolute inset-0 bg-[url('/images/patterns/grid/Quotla%20grid%20pattern%20light.svg')] bg-center opacity-[0.05]" style={{backgroundSize: '150%'}}></div>
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
@@ -469,68 +504,90 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Clients & Partners Section */}
-        <section className="py-20 bg-gradient-to-br from-quotla-dark via-quotla-dark/95 to-primary-800 relative overflow-hidden">
-          <div className="absolute inset-0 bg-[url('/images/patterns/grid/Quotla%20grid%20pattern%20light.svg')] bg-center opacity-[0.03]" style={{backgroundSize: '150%'}}></div>
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-4">
-              <p className="font-heading text-[34px] md:text-[43px] font-bold text-white leading-relaxed">By partnering with industry leaders we can boast of top notch delivery</p>
-            </div>
-
-            {/* Horizontal scrolling logos */}
-            <div className="relative overflow-hidden py-4 scale-90">
-              <div className="flex animate-scroll-left space-x-8">
-                {/* Duplicate the logo set 3 times for seamless infinite scroll */}
-                {[0, 1, 2].map((setIndex) => (
-                  <div key={setIndex} className="flex space-x-8 shrink-0">
-                    {['Canva', 'Anthropic', 'Netlify', 'Google', 'Stripe', 'Supabase', 'Open AI'].map((partner) => (
-                      <div
-                        key={`${setIndex}-${partner}`}
-                        className="group flex items-center justify-center w-52 h-28 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-5 shadow-lg hover:bg-white/15 hover:border-white/30 hover:shadow-xl transition-all duration-300"
-                      >
-                        <img
-                          src={`/images/logos of partners/${partner}.svg`}
-                          alt={`${partner} logo`}
-                          className="max-w-full max-h-full object-contain filter brightness-0 invert opacity-70 group-hover:opacity-100 transition-opacity scale-115"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                ))}
+        {/* Visual Showcase Section */}
+        <section className="py-20 bg-white dark:bg-primary-800 relative overflow-hidden">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <div className="relative">
+                <img
+                  src="/images/home/Chibuzor Nwachukwu Headshot black suit - front.png"
+                  alt="Professional business portrait"
+                  className="relative rounded-2xl shadow-2xl w-full h-auto object-cover"
+                />
               </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Use Cases Section */}
-        <section className="py-24 bg-primary-700 relative">
-          <div className="absolute inset-0 bg-[url('/images/patterns/grid/Quotla%20grid%20pattern%20light.svg')] bg-center opacity-[0.03]" style={{backgroundSize: '150%'}}></div>
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h3 className="font-heading text-4xl md:text-5xl font-bold text-primary-50 mb-6">Built for your business</h3>
-              <p className="font-sans text-xl text-primary-300 max-w-2xl mx-auto leading-relaxed">
-                Join thousands of professionals who trust Quotla to manage their business
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-8">
-              {useCases.map((useCase, idx) => (
-                <Link key={idx} href={useCase.link} className="group">
-                  <div className="bg-white rounded-2xl overflow-hidden border border-primary-600 hover:border-primary-500 hover:shadow-xl transition-all duration-300">
-                    <div className={`h-48 bg-gradient-to-br ${useCase.color} flex items-center justify-center relative`}>
-                      <div className="absolute inset-0 bg-gradient-to-br from-primary-900/5 to-primary-900/10"></div>
-                      <div className="relative text-primary-600 opacity-70 group-hover:opacity-90 transition-opacity">
-                        {useCase.icon}
-                      </div>
+              <div>
+                <h3 className="font-heading text-3xl md:text-4xl font-bold text-quotla-dark dark:text-white mb-6">
+                  Professional tools for professional results
+                </h3>
+                <p className="text-lg text-quotla-dark/70 dark:text-primary-300 mb-6 leading-relaxed">
+                  Quotla empowers you to present your business with confidence. Create polished quotes and invoices that reflect your professionalism and win more clients.
+                </p>
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-6 h-6 rounded-full bg-quotla-green flex items-center justify-center flex-shrink-0 mt-1">
+                      <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
                     </div>
-                    <div className="p-6">
-                      <div className="font-sans text-xs font-semibold text-quotla-orange uppercase tracking-wide mb-3">{useCase.category}</div>
-                      <h4 className="font-heading text-xl font-bold text-quotla-dark mb-3 group-hover:text-quotla-orange transition-colors">{useCase.title}</h4>
-                      <p className="font-sans text-base text-gray-700 leading-relaxed">{useCase.description}</p>
+                    <div>
+                      <h4 className="font-semibold text-quotla-dark dark:text-white mb-1">Look professional instantly</h4>
+                      <p className="text-quotla-dark/60 dark:text-primary-400 text-sm">Stand out with polished, branded documents</p>
                     </div>
                   </div>
-                </Link>
-              ))}
+                  <div className="flex items-start gap-3">
+                    <div className="w-6 h-6 rounded-full bg-quotla-orange flex items-center justify-center flex-shrink-0 mt-1">
+                      <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-quotla-dark dark:text-white mb-1">Save hours every week</h4>
+                      <p className="text-quotla-dark/60 dark:text-primary-400 text-sm">Focus on your work, not paperwork</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-6 h-6 rounded-full bg-quotla-dark flex items-center justify-center flex-shrink-0 mt-1">
+                      <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-quotla-dark dark:text-white mb-1">Get paid faster</h4>
+                      <p className="text-quotla-dark/60 dark:text-primary-400 text-sm">Clear invoices mean quicker payments</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Trusted Partners Section */}
+                <div className="mt-12">
+                  <p className="text-center text-quotla-dark/70 dark:text-quotla-light/70 text-sm font-medium mb-6">
+                    By partnering with industry leaders we can boast of top notch delivery
+                  </p>
+
+                  {/* Horizontal scrolling logos */}
+                  <div className="relative overflow-hidden py-2">
+                    <div className="flex animate-scroll-left space-x-6">
+                      {/* Duplicate the logo set 3 times for seamless infinite scroll */}
+                      {[0, 1, 2].map((setIndex) => (
+                        <div key={setIndex} className="flex space-x-6 shrink-0">
+                          {['Canva', 'Anthropic', 'Netlify', 'Google', 'Stripe', 'Supabase', 'Open AI'].map((partner) => (
+                            <div
+                              key={`${setIndex}-${partner}`}
+                              className="group flex items-center justify-center w-32 h-20 bg-white/5 backdrop-blur-sm rounded-lg border border-quotla-dark/10 dark:border-white/10 p-4 hover:bg-white/10 hover:border-quotla-dark/20 dark:hover:border-white/20 transition-all duration-200"
+                            >
+                              <img
+                                src={`/images/logos of partners/${partner}.svg`}
+                                alt={`${partner} logo`}
+                                className="max-w-full max-h-full object-contain filter brightness-0 invert opacity-60 group-hover:opacity-90 transition-opacity"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -592,6 +649,42 @@ export default function HomePage() {
                     ))}
                   </div>
                 ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Success Story Visual Section */}
+        <section className="py-20 bg-gradient-to-br from-white via-quotla-light/30 to-white dark:from-primary-800 dark:to-primary-700 relative overflow-hidden">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <div className="order-2 lg:order-1">
+                <h3 className="font-heading text-3xl md:text-4xl font-bold text-quotla-dark dark:text-white mb-6">
+                  Built by entrepreneurs, for entrepreneurs
+                </h3>
+                <p className="text-lg text-quotla-dark/70 dark:text-primary-300 mb-6 leading-relaxed">
+                  We understand the challenges of running a business because we've been there. Quotla was created to solve real problems faced by freelancers and small business owners every day.
+                </p>
+                <div className="bg-quotla-light dark:bg-primary-700 rounded-xl p-6 border-2 border-quotla-dark/10 dark:border-quotla-light/10">
+                  <p className="text-quotla-dark/80 dark:text-primary-200 italic leading-relaxed">
+                    "Time is your most valuable asset. Every hour spent on administrative tasks is an hour not spent growing your business. That's why we built Quotla - to give you back that time."
+                  </p>
+                  <div className="mt-4 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-quotla-orange to-quotla-green"></div>
+                    <div>
+                      <p className="font-semibold text-quotla-dark dark:text-white">Quotla Team</p>
+                      <p className="text-sm text-quotla-dark/60 dark:text-primary-400">Building better business tools</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="relative order-1 lg:order-2">
+                <div className="absolute -inset-4 bg-gradient-to-l from-quotla-green/20 to-quotla-dark/20 rounded-3xl blur-2xl"></div>
+                <img
+                  src="/images/home/Chibuzor Nwachukwu Headshot white shirt- front.jpg"
+                  alt="Business professional"
+                  className="relative rounded-2xl shadow-2xl w-full object-cover"
+                />
               </div>
             </div>
           </div>
@@ -890,7 +983,8 @@ export default function HomePage() {
 
         {/* CTA Section */}
         <section className="py-24 bg-gradient-to-br from-quotla-dark via-quotla-dark/95 to-quotla-dark relative overflow-hidden">
-          <div className="absolute inset-0 bg-[url('/images/patterns/spiral/Quotla%20Spiral%20orange.svg')] bg-center opacity-[0.0275]" style={{backgroundSize: '8100%'}}></div>
+          <div className="absolute inset-0 bg-[url('/images/patterns/spiral/Quotla%20Spiral%20orange.svg')] bg-center opacity-[0.0275]" style={{backgroundSize: '8100%'}}>
+          </div>
           <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h3 className="font-heading text-4xl md:text-5xl font-bold text-white mb-10">
               Join the power move today

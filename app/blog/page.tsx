@@ -203,8 +203,8 @@ export default function BlogPage() {
   }
 
   return (
-    <div className={`min-h-screen transition-all duration-500 ${isDarkMode ? 'dark bg-gradient-to-br from-quotla-dark via-primary-800 to-quotla-dark' : 'bg-gradient-to-br from-[#FAF9F6] via-quotla-light/30 to-quotla-green/5'}`}>
-      <div className="absolute inset-0 bg-[url('/images/patterns/spiral/Quotla%20Spiral%20light.svg')] bg-center opacity-[0.02] pointer-events-none" style={{backgroundSize: '100%'}}></div>
+    <div className={`min-h-screen transition-all duration-500 ${isDarkMode ? 'dark bg-quotla-dark' : 'bg-white'}`}>
+      <div className="fixed inset-0 bg-[url('/images/patterns/grid/Quotla%20grid%20pattern%20light.svg')] bg-center opacity-[0.03] dark:opacity-[0.04] pointer-events-none" style={{backgroundSize: '150%'}}></div>
       <Navbar />
 
       {/* Theme Toggle - Fixed Position */}
@@ -214,17 +214,15 @@ export default function BlogPage() {
         </div>
       )}
 
-      <main className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Blog Header with Enhanced Typography */}
-        <div className="mb-12 text-center relative">
-          <div className="inline-block mb-4 px-6 py-2 bg-quotla-orange/20 backdrop-blur-sm rounded-full border border-quotla-orange/30 animate-fade-in">
-            <span className="text-quotla-orange font-semibold text-sm uppercase tracking-wider">Quotla Insights</span>
-          </div>
-          <h1 className="font-heading text-6xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-quotla-dark to-quotla-orange dark:from-quotla-light dark:to-quotla-green mb-4 transition-all duration-500 animate-slide-up">
-            Blog
+      <main className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        {/* Blog Header - Minimalist with Bold Typography */}
+        <div className="mb-20 relative">
+          <div className="absolute -top-8 left-0 w-24 h-1 bg-quotla-orange"></div>
+          <h1 className="font-heading text-5xl md:text-7xl font-bold text-quotla-dark dark:text-quotla-light mb-6 leading-[0.95] tracking-tight">
+            Latest<br/>Happenings
           </h1>
-          <p className="text-xl md:text-2xl text-quotla-dark/80 dark:text-quotla-light/80 max-w-3xl mx-auto leading-relaxed transition-colors duration-500 animate-fade-in-delay">
-            Latest insights, tips, and updates from Quotla
+          <p className="text-lg md:text-xl text-quotla-dark/60 dark:text-quotla-light/60 max-w-2xl leading-relaxed font-light">
+            Insights, updates, and stories from the Quotla team and community
           </p>
         </div>
 
@@ -236,29 +234,22 @@ export default function BlogPage() {
           />
         </div>
 
-        {/* Stats with Enhanced Design */}
-        <div className="mb-8 flex items-center gap-4 text-sm backdrop-blur-sm bg-white/60 dark:bg-quotla-dark/60 px-6 py-3 rounded-full border border-quotla-orange/20 dark:border-quotla-green/20 w-fit transition-all duration-300 hover:shadow-lg hover:shadow-quotla-orange/10">
-          <span className="font-semibold text-quotla-dark dark:text-quotla-light">
-            {filteredPosts.length} {filteredPosts.length === 1 ? 'post' : 'posts'} found
+        {/* Stats - Minimal Design */}
+        <div className="mb-12 flex items-center gap-3 text-sm">
+          <div className="w-2 h-2 rounded-full bg-quotla-green"></div>
+          <span className="font-medium text-quotla-dark/80 dark:text-quotla-light/80">
+            {filteredPosts.length} {filteredPosts.length === 1 ? 'article' : 'articles'}
+            {filters.searchQuery && <span className="text-quotla-orange ml-2">· matching "{filters.searchQuery}"</span>}
           </span>
-          {filters.searchQuery && (
-            <span className="text-quotla-orange dark:text-quotla-green font-medium">
-              matching "{filters.searchQuery}"
-            </span>
-          )}
         </div>
 
         {filteredPosts.length === 0 ? (
-          <div className="relative overflow-hidden bg-gradient-to-br from-white/80 to-quotla-light/50 dark:from-primary-900/80 dark:to-quotla-dark/50 backdrop-blur-sm rounded-3xl p-16 text-center border-2 border-quotla-orange/20 dark:border-quotla-green/20 shadow-xl transition-all duration-500 hover:shadow-2xl hover:shadow-quotla-orange/10">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-quotla-orange/5 dark:bg-quotla-green/5 rounded-full blur-3xl"></div>
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-quotla-green/5 dark:bg-quotla-orange/5 rounded-full blur-3xl"></div>
-            <div className="relative">
-              <svg className="mx-auto h-16 w-16 text-quotla-orange dark:text-quotla-green mb-6 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <p className="text-xl font-semibold text-quotla-dark dark:text-quotla-light mb-2">No blog posts found</p>
-              <p className="text-quotla-dark/70 dark:text-quotla-light/70">Try adjusting your filters or search query</p>
+          <div className="py-32 text-center">
+            <div className="w-16 h-16 mx-auto mb-8 border-2 border-quotla-dark/20 dark:border-quotla-light/20 rounded-full flex items-center justify-center">
+              <span className="text-2xl">📭</span>
             </div>
+            <p className="text-2xl font-bold text-quotla-dark dark:text-quotla-light mb-3">Nothing here</p>
+            <p className="text-quotla-dark/60 dark:text-quotla-light/60">Try adjusting your search or filters</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">

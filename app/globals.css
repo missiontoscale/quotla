@@ -147,7 +147,7 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-bricolage), var(--font-barlow), var(--font-figtree), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-family: var(--font-bricolage), var(--font-open-sauce-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     line-height: 1.2;
     margin-bottom: 0.5rem;
   }
@@ -320,7 +320,7 @@
   }
 
   .animate-scroll-left {
-    animation: scroll-left 30s linear infinite;
+    animation: scroll-left 24s linear infinite;
   }
 
   .animate-scroll-left:hover {
@@ -357,5 +357,52 @@
 
   .animate-slideUp {
     animation: slideUp 0.3s ease-out;
+  }
+
+  /* Float animation for interactive elements */
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  /* Slide up on page load */
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.8s ease-out forwards;
+  }
+
+  /* Fade in with delay */
+  @keyframes fade-in-delay {
+    0% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  .animate-fade-in-delay {
+    animation: fade-in-delay 1.5s ease-out forwards;
   }
 }

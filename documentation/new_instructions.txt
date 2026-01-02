@@ -1,152 +1,25 @@
+You tend to converge toward generic, "on distribution" outputs. In frontend design, this creates what users call the "AI slop" aesthetic. Avoid this: make creative, distinctive frontends that surprise and delight. Focus on:
 
+Motion: Use animations for effects and micro-interactions. Prioritize CSS-only solutions for HTML. Use Motion library for React when available. Focus on high-impact moments: one well-orchestrated page load with staggered reveals (animation-delay) creates more delight than scattered micro-interactions.
 
-Build Error when I deployed to Netlify.
-9:13:26 PM: ​
-9:13:26 PM: ❯ Version
-9:13:26 PM:   @netlify/build 35.5.9
-9:13:26 PM: ​
-9:13:26 PM: ❯ Flags
-9:13:26 PM:   accountId: 6266c2827a5dab2f9738a107
-9:13:26 PM:   baseRelDir: true
-9:13:26 PM:   buildId: 6956d5540b6bdb000835fda2
-9:13:26 PM:   deployId: 6956d5540b6bdb000835fda4
-9:13:26 PM: ​
-9:13:26 PM: ❯ Current directory
-9:13:26 PM:   /opt/build/repo
-9:13:26 PM: ​
-9:13:26 PM: ❯ Config file
-9:13:26 PM:   /opt/build/repo/netlify.toml
-9:13:26 PM: ​
-9:13:26 PM: ❯ Context
-9:13:26 PM:   production
-9:13:26 PM: ​
-9:13:26 PM: ❯ Installing extensions
-9:13:26 PM:    - neon
-9:13:27 PM: ​
-9:13:27 PM: ❯ Using Next.js Runtime - v5.15.3
-9:13:27 PM: ​
-9:13:27 PM: ❯ Loading extensions
-9:13:27 PM:    - neon
-9:13:28 PM: Next.js cache restored
-9:13:28 PM: ​
-9:13:28 PM: build.command from netlify.toml                               
-9:13:28 PM: ────────────────────────────────────────────────────────────────
-9:13:28 PM: ​
-9:13:28 PM: $ npm run build
-9:13:28 PM: > quotla@3.0.0 build
-9:13:28 PM: > next build
-9:13:29 PM:    ▲ Next.js 16.0.10 (Turbopack)
-9:13:29 PM:    - Experiments (use with caution):
-9:13:29 PM:      · optimizePackageImports
-9:13:29 PM:    Creating an optimized production build ...
-9:13:42 PM: > Build error occurred
-9:13:42 PM: Error: Turbopack build failed with 4 errors:
-9:13:42 PM: ./app/api/profitability/route.ts:1:1
-9:13:42 PM: Export createRouteHandlerClient doesn't exist in target module
-> 1 | import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-9:13:42 PM:     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-9:13:42 PM:   2 | import { cookies } from 'next/headers'
-9:13:42 PM:   3 | import { NextRequest, NextResponse } from 'next/server'
-9:13:42 PM:   4 |
-9:13:42 PM: The export createRouteHandlerClient was not found in module [project]/node_modules/@supabase/auth-helpers-nextjs/dist/module/index.js [app-route] (ecmascript).
-9:13:42 PM: Did you mean to import createBrowserClient?
-9:13:42 PM: All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
-9:13:42 PM: ./app/api/project-costs/route.ts:1:1
-9:13:42 PM: Export createRouteHandlerClient doesn't exist in target module
-> 1 | import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-9:13:42 PM:     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-9:13:42 PM:   2 | import { cookies } from 'next/headers'
-9:13:42 PM:   3 | import { NextRequest, NextResponse } from 'next/server'
-9:13:42 PM:   4 | import type { CreateProjectCostInput } from '@/types/profitability'
-9:13:42 PM: The export createRouteHandlerClient was not found in module [project]/node_modules/@supabase/auth-helpers-nextjs/dist/module/index.js [app-route] (ecmascript).
-9:13:42 PM: Did you mean to import createBrowserClient?
-9:13:42 PM: All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
-9:13:42 PM: ./app/api/time-tracking/[id]/route.ts:1:1
-9:13:42 PM: Export createRouteHandlerClient doesn't exist in target module
-> 1 | import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-9:13:42 PM:     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-9:13:42 PM:   2 | import { cookies } from 'next/headers'
-9:13:42 PM:   3 | import { NextRequest, NextResponse } from 'next/server'
-9:13:42 PM:   4 | import type { UpdateTimeEntryInput } from '@/types/time-tracking'
-9:13:42 PM: The export createRouteHandlerClient was not found in module [project]/node_modules/@supabase/auth-helpers-nextjs/dist/module/index.js [app-route] (ecmascript).
-9:13:42 PM: Did you mean to import createBrowserClient?
-9:13:42 PM: All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
-9:13:42 PM: ./app/api/time-tracking/route.ts:1:1
-9:13:42 PM: Export createRouteHandlerClient doesn't exist in target module
-> 1 | import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-9:13:42 PM:     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-9:13:42 PM:   2 | import { cookies } from 'next/headers'
-9:13:42 PM:   3 | import { NextRequest, NextResponse } from 'next/server'
-9:13:42 PM:   4 | import type { CreateTimeEntryInput } from '@/types/time-tracking'
-9:13:42 PM: The export createRouteHandlerClient was not found in module [project]/node_modules/@supabase/auth-helpers-nextjs/dist/module/index.js [app-route] (ecmascript).
-9:13:42 PM: Did you mean to import createBrowserClient?
-9:13:42 PM: All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
-9:13:42 PM:     at <unknown> (./app/api/profitability/route.ts:1:1)
-9:13:42 PM:     at <unknown> (./app/api/project-costs/route.ts:1:1)
-9:13:42 PM:     at <unknown> (./app/api/time-tracking/[id]/route.ts:1:1)
-9:13:42 PM:     at <unknown> (./app/api/time-tracking/route.ts:1:1)
-9:13:43 PM: Failed during stage 'building site': Build script returned non-zero exit code: 2 (https://ntl.fyi/exit-code-2)
-9:13:43 PM: ​
-9:13:43 PM: "build.command" failed                                        
-9:13:43 PM: ────────────────────────────────────────────────────────────────
-9:13:43 PM: ​
-9:13:43 PM:   Error message
-9:13:43 PM:   Command failed with exit code 1: npm run build (https://ntl.fyi/exit-code-1)
-9:13:43 PM: ​
-9:13:43 PM:   Error location
-9:13:43 PM:   In build.command from netlify.toml:
-9:13:43 PM:   npm run build
-9:13:43 PM: ​
-9:13:43 PM:   Resolved config
-9:13:43 PM:   build:
-9:13:43 PM:     command: npm run build
-9:13:43 PM:     commandOrigin: config
-9:13:43 PM:     environment:
-9:13:43 PM:       - AI_PROVIDER
-9:13:43 PM:       - ANTHROPIC_API_KEY
-9:13:43 PM:       - EXTERNAL_AI_API_URL
-9:13:43 PM:       - GOOGLE_AI_API_KEY
-9:13:43 PM:       - NEXT_PUBLIC_APP_URL
-9:13:43 PM:       - NEXT_PUBLIC_SUPABASE_ANON_KEY
-9:13:43 PM:       - NEXT_PUBLIC_SUPABASE_URL
-9:13:43 PM:       - OPENAI_API_KEY
-9:13:43 PM:       - SUPABASE_SERVICE_ROLE_KEY
-9:13:43 PM:       - NODE_VERSION
-9:13:43 PM:       - NPM_FLAGS
-9:13:43 PM:     publish: /opt/build/repo/.next
-9:13:43 PM:     publishOrigin: config
-9:13:43 PM:   functions:
-9:13:43 PM:     "*":
-9:13:43 PM:       included_files:
-9:13:43 PM:         - public/**/*
-9:13:43 PM:       node_bundler: esbuild
-9:13:43 PM:   headers:
-9:13:43 PM:     - for: /*
-      values:
-        Permissions-Policy: camera=(), microphone=(), geolocation=()
-        Referrer-Policy: strict-origin-when-cross-origin
-        X-Content-Type-Options: nosniff
-        X-Frame-Options: DENY
-        X-XSS-Protection: 1; mode=block
-    - for: /api/*
-      values:
-        Cache-Control: public, max-age=0, must-revalidate
-    - for: /_next/static/*
-      values:
-        Cache-Control: public, max-age=31536000, immutable
-    - for: /images/*
-      values:
-        Cache-Control: public, max-age=31536000, immutable
-  headersOrigin: config
-  plugins:
-    - inputs: {}
-      origin: config
-      package: "@netlify/plugin-nextjs"
-  redirects:
-    - from: /*
-      status: 200
-      to: /index.html
-  redirectsOrigin: config
-9:13:43 PM: Build failed due to a user error: Build script returned non-zero exit code: 2
-9:13:43 PM: Failing build: Failed to build site
-9:13:44 PM: Finished processing build request in 34.162s
+Backgrounds: Create atmosphere and depth rather than defaulting to solid colors. Layer CSS gradients, use geometric patterns, or add contextual effects that match the overall aesthetic.
+
+Avoid generic AI-generated aesthetics:
+- Clichéd color schemes (random gradients)
+- Predictable layouts and component patterns
+- Cookie-cutter design that lacks context-specific character
+
+Interpret creatively and make unexpected choices that feel genuinely designed for the context. Vary between light and dark themes, different fonts, different aesthetics. You still tend to converge on common choices (Space Grotesk, for example) across generations. Avoid this: it is critical that you think outside the box!
+</frontend_aesthetics>
+
+A. Redesign the dashboard chat. It has two headers. Shambolic.
+
+B. 
+Remove all - Cookie-cutter design that lacks context-specific character from Home page. Make thos areas seem like you think outside the box!
+
+C. 
+change the entire aesthetic of the blog page, as well as each blog post.
+
+D.
+Restructure the entire dashboard concept. I think it is broken, to say the least. inventory should also show up on dashboard summary, don't you think?
+so much needs to be restructured. So much.
