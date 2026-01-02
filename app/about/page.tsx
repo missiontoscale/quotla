@@ -17,12 +17,15 @@ export default function AboutPage() {
       <section className="relative min-h-[70vh] flex items-center py-20 lg:py-32 overflow-hidden">
         <div className="absolute inset-0 bg-[url('/images/patterns/spiral/Quotla%20Spiral%20light.svg')] bg-center opacity-[0.02]" style={{backgroundSize: '100%'}}></div>
         <div className="absolute inset-0 bg-gradient-to-r from-quotla-orange/10 via-transparent to-quotla-green/10"></div>
+        {/* Morphing accent shapes */}
+        <div className="absolute top-10 left-20 w-72 h-72 bg-quotla-green/20 animate-morph blur-3xl"></div>
+        <div className="absolute bottom-10 right-20 w-80 h-80 bg-quotla-orange/15 animate-morph blur-3xl" style={{animationDelay: '7s'}}></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="inline-block mb-6 px-6 py-2 bg-quotla-orange/20 backdrop-blur-sm rounded-full border border-quotla-orange/30">
             <span className="text-quotla-orange font-semibold text-sm uppercase tracking-wider">About Quotla</span>
           </div>
-          <h1 className="font-heading text-6xl md:text-7xl lg:text-8xl font-bold text-quotla-light mb-8 leading-tight">
-            Professional Quotes in <span className="text-transparent bg-clip-text bg-gradient-to-r from-quotla-orange to-quotla-green">2 Minutes</span>
+          <h1 className="font-heading text-6xl md:text-7xl lg:text-8xl font-bold text-quotla-light mb-8 leading-tight tracking-tight">
+            Professional Quotes in <span className="text-transparent bg-clip-text bg-gradient-to-r from-quotla-orange via-secondary-500 to-quotla-green animate-pulse-glow">2 Minutes</span>
           </h1>
           <p className="font-sans text-2xl md:text-3xl text-quotla-light/90 max-w-3xl mx-auto leading-relaxed">
             Quotla helps you create professional quotes and invoices quickly using AI to generate clear, client-ready documents.
@@ -39,7 +42,7 @@ export default function AboutPage() {
             {/* Left: Person Photo */}
             <div className="relative h-full min-h-[400px] md:min-h-[500px] rounded-l-3xl overflow-hidden">
               <img
-                src="/images/about/your-time-matters-person.jpg"
+                src="/images/about/independent-professional.jpg"
                 alt="Professional smiling"
                 className="absolute inset-0 w-full h-full object-cover"
               />
@@ -70,7 +73,7 @@ export default function AboutPage() {
         <section className="mb-24">
           <div className="relative h-[500px] rounded-3xl overflow-hidden shadow-2xl">
             <img
-              src="/images/about/A2.jpg"
+              src="/images/about/shop.jpg"
               alt="Professional working with Quotla"
               className="w-full h-full object-cover"
             />
@@ -98,7 +101,7 @@ export default function AboutPage() {
             {[
               {
                 icon: (
-                  <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-12 h-12 hover-rotate" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
                 ),
@@ -108,7 +111,7 @@ export default function AboutPage() {
               },
               {
                 icon: (
-                  <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-12 h-12 hover-rotate" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                   </svg>
                 ),
@@ -118,7 +121,7 @@ export default function AboutPage() {
               },
               {
                 icon: (
-                  <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-12 h-12 hover-rotate" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                   </svg>
                 ),
@@ -127,7 +130,7 @@ export default function AboutPage() {
                 color: "from-purple-500 to-pink-500"
               }
             ].map((item, idx) => (
-              <div key={idx} className="group relative bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 hover:border-quotla-orange/50 hover:bg-white/10 transition-all duration-300 hover:scale-105">
+              <div key={idx} className="group relative bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 hover:border-quotla-orange/50 hover:bg-white/10 transition-all duration-300 hover:scale-105 animate-diagonal-slide" style={{animationDelay: `${idx * 0.15}s`}}>
                 <div className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br ${item.color} text-white mb-6 transform group-hover:scale-110 transition-transform shadow-lg`}>
                   {item.icon}
                 </div>

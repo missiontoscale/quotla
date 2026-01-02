@@ -405,4 +405,86 @@
   .animate-fade-in-delay {
     animation: fade-in-delay 1.5s ease-out forwards;
   }
+
+  /* Creative morphing shape background */
+  @keyframes morph {
+    0%, 100% {
+      border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+    }
+    25% {
+      border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+    }
+    50% {
+      border-radius: 50% 60% 40% 50% / 30% 50% 70% 50%;
+    }
+    75% {
+      border-radius: 70% 30% 50% 50% / 40% 70% 50% 40%;
+    }
+  }
+
+  .animate-morph {
+    animation: morph 15s ease-in-out infinite;
+  }
+
+  /* Diagonal slide-in animation */
+  @keyframes diagonal-slide {
+    from {
+      opacity: 0;
+      transform: translate(-30px, -30px);
+    }
+    to {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+  }
+
+  .animate-diagonal-slide {
+    animation: diagonal-slide 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  /* Pulse glow effect */
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 20px rgba(206, 98, 3, 0.3), 0 0 40px rgba(206, 98, 3, 0.1);
+    }
+    50% {
+      box-shadow: 0 0 30px rgba(206, 98, 3, 0.5), 0 0 60px rgba(206, 98, 3, 0.2);
+    }
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 3s ease-in-out infinite;
+  }
+
+  /* Rotate on hover for icons */
+  .hover-rotate {
+    transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  .hover-rotate:hover {
+    transform: rotate(360deg);
+  }
+
+  /* Image reveal on scroll */
+  @keyframes reveal-image {
+    from {
+      clip-path: polygon(0 0, 0 0, 0 100%, 0% 100%);
+    }
+    to {
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    }
+  }
+
+  .animate-reveal {
+    animation: reveal-image 1.2s ease-out forwards;
+  }
+
+  /* Skew on hover for cards */
+  .hover-skew {
+    transition: all 0.3s ease;
+  }
+
+  .hover-skew:hover {
+    transform: skewY(-2deg) scale(1.02);
+  }
 }

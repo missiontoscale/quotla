@@ -233,7 +233,7 @@ export default function HomePage() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
       ),
-      color: "from-purple-500 to-pink-500"
+      color: "from-quotla-dark to-quotla-green"
     },
     {
       title: "Inventory Management",
@@ -243,7 +243,7 @@ export default function HomePage() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
         </svg>
       ),
-      color: "from-blue-500 to-cyan-500"
+      color: "from-quotla-green to-quotla-orange"
     },
     {
       title: "Multi-Currency Support",
@@ -253,7 +253,7 @@ export default function HomePage() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       ),
-      color: "from-orange-500 to-red-500"
+      color: "from-quotla-dark to-quotla-green"
     },
     {
       title: "Income Summaries & Export",
@@ -263,7 +263,7 @@ export default function HomePage() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
         </svg>
       ),
-      color: "from-green-500 to-emerald-500"
+      color: "from-quotla-green to-quotla-orange"
     },
     {
       title: "Client Portal",
@@ -287,7 +287,6 @@ export default function HomePage() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
         </svg>
       ),
-      color: "from-quotla-light/50 to-quotla-green/20",
       link: "/about"
     },
     {
@@ -299,7 +298,6 @@ export default function HomePage() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
         </svg>
       ),
-      color: "from-purple-500/20 to-pink-500/20",
       link: "/about"
     },
     {
@@ -311,7 +309,6 @@ export default function HomePage() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
         </svg>
       ),
-      color: "from-orange-500/20 to-red-500/20",
       link: "/about"
     }
   ]
@@ -329,15 +326,18 @@ export default function HomePage() {
       {/* Main Content */}
       <main id="main-content" className="overflow-hidden">
         {/* Hero Section with Chat */}
-        <section className="relative min-h-screen flex items-center py-20 lg:py-28 bg-gradient-to-br from-quotla-light via-quotla-light/80 to-quotla-green/20 dark:from-primary-800 dark:via-quotla-dark dark:to-primary-800">
+        <section className="relative min-h-screen flex items-center py-20 lg:py-28 bg-gradient-to-br from-quotla-light via-quotla-light/80 to-quotla-green/20 dark:from-primary-800 dark:via-quotla-dark dark:to-primary-800 overflow-hidden">
           <div className="absolute inset-0 bg-[url('/images/patterns/grid/Quotla%20grid%20pattern%20light.svg')] bg-center opacity-5 dark:opacity-[0.05]" style={{backgroundSize: '150%'}}></div>
+          {/* Morphing background shapes */}
+          <div className="absolute top-20 right-10 w-96 h-96 bg-quotla-orange/10 animate-morph blur-3xl"></div>
+          <div className="absolute bottom-20 left-10 w-80 h-80 bg-quotla-green/15 animate-morph blur-3xl" style={{animationDelay: '5s'}}></div>
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
             <div className="lg:grid lg:grid-cols-5 lg:gap-16 lg:items-start">
               {/* Text Section - Spans 3 columns */}
               <div className="lg:col-span-3 text-left mb-12 lg:mb-0 lg:pt-12">
-                <h2 className="font-heading text-5xl md:text-6xl lg:text-7xl font-bold text-quotla-dark dark:text-primary-50 mb-6 leading-tight min-h-[1.2em] transition-colors">
+                <h2 className="font-heading text-5xl md:text-6xl lg:text-7xl font-bold text-quotla-dark dark:text-primary-50 mb-6 leading-tight min-h-[1.2em] transition-colors tracking-tight">
                   {typingText}
-                  <span className="animate-pulse">|</span>
+                  <span className="animate-pulse text-quotla-orange">|</span>
                 </h2>
                 <p className="font-sans text-xl text-quotla-dark/80 dark:text-primary-300 lg:max-w-2xl leading-relaxed mb-8 transition-colors">
                   Quotla helps you create professional quotes and invoices in seconds. Powered by AI, designed for freelancers and small businesses who want to spend less time on paperwork and more time doing what they love.
@@ -365,7 +365,7 @@ export default function HomePage() {
 
               {/* Interactive Chat Interface - Spans 2 columns, sticky */}
               <div className="lg:col-span-2 lg:sticky lg:top-24">
-                <div className="bg-quotla-light dark:bg-primary-700 rounded-3xl shadow-2xl border-2 border-quotla-dark/10 dark:border-quotla-light/20 overflow-hidden transition-colors backdrop-blur-sm">
+                <div className="bg-quotla-light dark:bg-primary-700 rounded-3xl shadow-2xl border-2 border-quotla-dark/10 dark:border-quotla-light/20 overflow-hidden transition-colors backdrop-blur-sm hover:shadow-quotla-orange/20 hover:scale-[1.02] transition-all duration-300">
                   {chatMessages.length > 0 ? (
                     <div className="p-6 max-h-[500px] overflow-y-auto space-y-4 bg-quotla-light/50 dark:bg-primary-800/50">
                       {chatMessages.map((msg, idx) => (
@@ -451,9 +451,15 @@ export default function HomePage() {
             <div className="grid md:grid-cols-3 gap-6">
               {useCases.map((useCase, idx) => (
                 <Link key={idx} href={useCase.link} className="group">
-                  <div className="relative h-[500px] rounded-3xl overflow-hidden shadow-2xl">
+                  <div className="relative h-[500px] rounded-3xl overflow-hidden shadow-2xl transition-all duration-300 hover:shadow-3xl">
                     <img
-                      src={`/images/home/${useCase.category.toLowerCase().replace(' ', '-')}.jpg`}
+                      src={
+                        useCase.category === 'Freelancers'
+                          ? '/images/home/freelancer.jpg'
+                          : useCase.category === 'Small Business'
+                          ? '/images/home/business-owner.jpg'
+                          : '/images/home/managing-multiple-cleints.jpg'
+                      }
                       alt={useCase.title}
                       className="w-full h-full object-cover"
                       onError={(e) => {
@@ -492,7 +498,7 @@ export default function HomePage() {
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {features.map((feature, idx) => (
-                <div key={idx} className="group relative bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 hover:border-quotla-orange/80 hover:bg-white/15 hover:shadow-2xl transition-all duration-300">
+                <div key={idx} className="group relative bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 hover:border-quotla-orange/80 hover:bg-white/15 hover:shadow-2xl transition-all duration-300 animate-diagonal-slide" style={{animationDelay: `${idx * 0.1}s`}}>
                   <div className={`inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br ${feature.color} text-white text-2xl mb-5 transform group-hover:scale-110 transition-transform shadow-lg`}>
                     {feature.icon}
                   </div>
@@ -507,148 +513,24 @@ export default function HomePage() {
         {/* Visual Showcase Section */}
         <section className="py-20 bg-white dark:bg-primary-800 relative overflow-hidden">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div className="relative">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div className="relative w-full">
                 <img
-                  src="/images/home/Chibuzor Nwachukwu Headshot black suit - front.png"
+                  src="/images/home/independent-professional.jpg"
                   alt="Professional business portrait"
                   className="relative rounded-2xl shadow-2xl w-full h-auto object-cover"
                 />
               </div>
-              <div>
-                <h3 className="font-heading text-3xl md:text-4xl font-bold text-quotla-dark dark:text-white mb-6">
-                  Professional tools for professional results
-                </h3>
-                <p className="text-lg text-quotla-dark/70 dark:text-primary-300 mb-6 leading-relaxed">
-                  Quotla empowers you to present your business with confidence. Create polished quotes and invoices that reflect your professionalism and win more clients.
+              <div className="flex flex-col justify-center h-full w-full space-y-6">
+                <p className="font-sans text-xs uppercase tracking-wider text-quotla-dark/60 dark:text-white/60">
+                  How Quotla Users Feel
                 </p>
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-quotla-green flex items-center justify-center flex-shrink-0 mt-1">
-                      <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-quotla-dark dark:text-white mb-1">Look professional instantly</h4>
-                      <p className="text-quotla-dark/60 dark:text-primary-400 text-sm">Stand out with polished, branded documents</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-quotla-orange flex items-center justify-center flex-shrink-0 mt-1">
-                      <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-quotla-dark dark:text-white mb-1">Save hours every week</h4>
-                      <p className="text-quotla-dark/60 dark:text-primary-400 text-sm">Focus on your work, not paperwork</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-quotla-dark flex items-center justify-center flex-shrink-0 mt-1">
-                      <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-quotla-dark dark:text-white mb-1">Get paid faster</h4>
-                      <p className="text-quotla-dark/60 dark:text-primary-400 text-sm">Clear invoices mean quicker payments</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Trusted Partners Section */}
-                <div className="mt-12">
-                  <p className="text-center text-quotla-dark/70 dark:text-quotla-light/70 text-sm font-medium mb-6">
-                    By partnering with industry leaders we can boast of top notch delivery
-                  </p>
-
-                  {/* Horizontal scrolling logos */}
-                  <div className="relative overflow-hidden py-2">
-                    <div className="flex animate-scroll-left space-x-6">
-                      {/* Duplicate the logo set 3 times for seamless infinite scroll */}
-                      {[0, 1, 2].map((setIndex) => (
-                        <div key={setIndex} className="flex space-x-6 shrink-0">
-                          {['Canva', 'Anthropic', 'Netlify', 'Google', 'Stripe', 'Supabase', 'Open AI'].map((partner) => (
-                            <div
-                              key={`${setIndex}-${partner}`}
-                              className="group flex items-center justify-center w-32 h-20 bg-white/5 backdrop-blur-sm rounded-lg border border-quotla-dark/10 dark:border-white/10 p-4 hover:bg-white/10 hover:border-quotla-dark/20 dark:hover:border-white/20 transition-all duration-200"
-                            >
-                              <img
-                                src={`/images/logos of partners/${partner}.svg`}
-                                alt={`${partner} logo`}
-                                className="max-w-full max-h-full object-contain filter brightness-0 invert opacity-60 group-hover:opacity-90 transition-opacity"
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Testimonials Section */}
-        <section className="py-24 bg-gradient-to-br from-quotla-dark via-primary-800 to-quotla-dark relative overflow-hidden">
-          <div className="absolute inset-0 bg-[url('/images/patterns/grid/Quotla%20grid%20pattern%20light.svg')] bg-center opacity-[0.03]" style={{backgroundSize: '150%'}}></div>
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h3 className="font-heading text-[34px] md:text-[43px] font-bold text-white mb-6">Loved by professionals worldwide</h3>
-              <p className="font-sans text-xl text-quotla-light/80 max-w-2xl mx-auto leading-relaxed">
-                Here's what Quotla users have to tell you . . .
-              </p>
-            </div>
-
-            {/* Horizontal scrolling testimonials */}
-            <div className="relative overflow-hidden py-4">
-              <div className="flex animate-scroll-left space-x-8">
-                {/* Duplicate the testimonials 3 times for seamless infinite scroll */}
-                {[0, 1, 2].map((setIndex) => (
-                  <div key={setIndex} className="flex space-x-8 shrink-0">
-                    {[
-                      {
-                        name: "Sarah Johnson",
-                        role: "Freelance Designer",
-                        avatar: "SJ",
-                        testimonial: "Quotla has transformed how I handle my freelance business. Creating professional quotes used to take me hours, now it takes minutes. The AI assistance is incredible!",
-                        rating: 5
-                      },
-                      {
-                        name: "Michael Chen",
-                        role: "Marketing Agency Owner",
-                        avatar: "MC",
-                        testimonial: "Managing multiple clients was a nightmare before Quotla. The ability to track quotes, invoices, and payments in one place has saved our agency countless hours.",
-                        rating: 5
-                      },
-                      {
-                        name: "Amara Okafor",
-                        role: "Food Chain Owner",
-                        avatar: "AO",
-                        testimonial: "The multi-currency support is a game-changer for my business. I work with clients across different countries, and Quotla makes it seamless to handle different currencies.",
-                        rating: 5
-                      },
-                    ].map((testimonial, idx) => (
-                      <div key={`${setIndex}-${idx}`} className="w-96 bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 hover:bg-white/15 hover:border-quotla-orange/60 transition-all duration-300 shadow-xl shrink-0">
-                        <div className="flex items-center mb-6">
-                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-quotla-orange to-quotla-green flex items-center justify-center text-white font-bold text-lg mr-4">
-                            {testimonial.avatar}
-                          </div>
-                          <div>
-                            <h4 className="font-heading text-lg font-semibold text-white">{testimonial.name}</h4>
-                            <p className="font-sans text-sm text-quotla-light/70">{testimonial.role}</p>
-                          </div>
-                        </div>
-                        <p className="font-sans text-base text-quotla-light/90 leading-relaxed">
-                          &ldquo;{testimonial.testimonial}&rdquo;
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                ))}
+                <blockquote className="text-3xl md:text-4xl lg:text-5xl font-bold text-quotla-dark dark:text-white leading-tight">
+                  "With Quotla, I feel I can close more deals, in less time, thanks to their automation."
+                </blockquote>
+                <p className="font-sans text-sm text-quotla-dark/70 dark:text-white/70">
+                  Owen H. Director
+                </p>
               </div>
             </div>
           </div>
@@ -681,7 +563,7 @@ export default function HomePage() {
               <div className="relative order-1 lg:order-2">
                 <div className="absolute -inset-4 bg-gradient-to-l from-quotla-green/20 to-quotla-dark/20 rounded-3xl blur-2xl"></div>
                 <img
-                  src="/images/home/Chibuzor Nwachukwu Headshot white shirt- front.jpg"
+                  src="/images/home/business-owner2.jpg"
                   alt="Business professional"
                   className="relative rounded-2xl shadow-2xl w-full object-cover"
                 />

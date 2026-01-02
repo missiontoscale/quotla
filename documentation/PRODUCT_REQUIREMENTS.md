@@ -76,16 +76,29 @@ Quotla is an intelligent business management platform designed to help small bus
 
 ### 3. Business Operations
 
-#### 3.1 Dashboard & Analytics
+#### 3.1 Inventory Management
+- **Status**: Live
+- **Description**: Track products and services, manage stock levels
+- **Key Features**:
+  - Product catalog management
+  - Stock level tracking and updates
+  - Seamless integration with quotes and invoices
+  - Product/service details with descriptions and pricing
+  - Inventory history and tracking
+  - Quick product selection during document creation
+  - Support for both physical products and services
+
+#### 3.2 Dashboard & Analytics
 - **Status**: Live
 - **Description**: Central hub for business overview
 - **Key Features**:
   - Recent quotes and invoices overview
   - Quick action buttons
   - Status summaries
+  - Income summaries by month/year
   - Navigation to all features
 
-#### 3.2 Business Profile Management
+#### 3.3 Business Profile Management
 - **Status**: Live
 - **Description**: Customize business information
 - **Key Features**:
@@ -94,7 +107,7 @@ Quotla is an intelligent business management platform designed to help small bus
   - Tax information setup
   - Branding customization
 
-#### 3.3 Export & Sharing
+#### 3.4 Export & Sharing
 - **Status**: Live
 - **Description**: Professional document export
 - **Key Features**:
@@ -335,25 +348,133 @@ Quotla is an intelligent business management platform designed to help small bus
 ## Competitive Advantages
 
 1. **AI-First Approach**: Natural language document generation sets us apart from traditional accounting software
+   - Conversational interface for creating quotes and invoices
+   - Voice input support for hands-free document creation
+   - Intent detection and automatic data extraction
+   - Vision AI for extracting data from uploaded files
+
 2. **All-in-One Platform**: From quotes to inventory to payments—everything in one place
+   - Quote and invoice management
+   - Inventory tracking and integration
+   - Client relationship management
+   - Income summaries and analytics
+   - Multi-currency support for global business
+
 3. **User Experience**: Conversational interface removes friction from business operations
+   - Create professional documents in seconds vs. hours
+   - No complex templates or forms to learn
+   - Intuitive design focused on user efficiency
+   - **User Feedback**: *"With Quotla, I feel I can close more deals, in less time, thanks to their automation."* — Owen H., Director
+
 4. **Scalability**: Grow from freelancer to enterprise without changing platforms
+   - Suitable for solo freelancers to 25+ person teams
+   - Feature sets designed for each business stage
+   - Affordable pricing that scales with business needs
+   - Professional tools at small business prices
+
 5. **Modern Technology**: Built on latest tech stack ensures speed and reliability
+   - Next.js 15 and React 19 for blazing-fast performance
+   - Edge deployment for global low-latency access
+   - Enterprise-grade security and data protection
+   - Regular updates and new feature releases
+
+6. **Customer-Centric Design**: Built by entrepreneurs who understand business pain points
+   - Solving real problems faced by freelancers and small businesses
+   - Continuous feedback integration from actual users
+   - Features designed for practical, everyday business needs
+   - Testimonials demonstrate real impact on business efficiency
 
 ---
 
 ## Target Users
 
-### Primary
-- Freelancers and solopreneurs
-- Small business owners (1-10 employees)
-- Service providers (consultants, agencies)
+### Primary User Segments
+
+#### 1. Freelancers & Independent Professionals
+**Profile**: Solo professionals offering specialized services
+**Business Challenges**:
+- Limited time for administrative tasks
+- Need to maintain professional image
+- Managing multiple clients simultaneously
+- Inconsistent cash flow from project-based work
+
+**How Quotla Helps**:
+- **Streamlined Workflow**: From quote creation to payment tracking in one platform
+- **Professional Presentation**: AI-generated quotes that look polished and branded
+- **Time Savings**: Create quotes in seconds vs. hours with manual methods
+- **Client Management**: Complete history and communication tracking for all clients
+- **Multi-Currency**: Work with international clients seamlessly
+
+**Key Features for Freelancers**:
+- AI quote generation from natural language
+- Voice input for hands-free creation
+- Professional PDF export
+- Client portal for quote approvals
+- Payment tracking
+
+**User Testimonial**: *"With Quotla, I feel I can close more deals, in less time, thanks to their automation."* — Owen H., Director
+
+---
+
+#### 2. Small Business Owners
+**Profile**: Businesses with 1-10 employees selling products or services
+**Business Challenges**:
+- Scaling operations while controlling costs
+- Managing inventory alongside quotes and invoices
+- Need for business intelligence and reporting
+- Balancing growth with operational efficiency
+
+**How Quotla Helps**:
+- **Automation at Scale**: Reduce administrative burden so teams can focus on growth
+- **Inventory Integration**: Track products, manage stock levels, seamlessly integrate with quotes
+- **Revenue Insights**: Income summaries and analytics to make data-driven decisions
+- **Multi-User Support**: Team access with role-based permissions (coming Q1 2026)
+- **Professional Operations**: Enterprise-grade tools at small business prices
+
+**Key Features for Small Businesses**:
+- Inventory management and tracking
+- Income summaries by month/year
+- Multi-currency support for global clients
+- Bill management
+- AI-powered collaboration
+- Professional branding customization
+
+**Value Proposition**: *"Grow Your Business Faster — Automate quotes and invoices so you can focus on what matters: serving clients and scaling revenue."*
+
+---
+
+#### 3. Agencies & Consultancies
+**Profile**: Service-based businesses managing multiple client projects
+**Business Challenges**:
+- Juggling multiple client projects simultaneously
+- Maintaining organized client communications
+- Tracking project profitability
+- Professional proposal and quote creation at scale
+
+**How Quotla Helps**:
+- **Client Organization**: Complete client history, project tracking, and communication logs
+- **Professional Proposals**: Create branded quotes that win business
+- **Project Management**: Track budgets, milestones, and deliverables (expanding Q4 2026)
+- **Team Collaboration**: Multi-user access for distributed teams
+- **Time-to-Invoice**: Convert quotes to invoices, track time, and bill clients efficiently
+
+**Key Features for Agencies**:
+- Multi-client management dashboard
+- Project-based quoting and invoicing
+- Team collaboration tools
+- Time tracking integration (roadmap Q4 2026)
+- Custom reporting and analytics
+- Client portal for transparency
+
+**Value Proposition**: *"Manage Multiple Clients with Ease — Keep projects organized with professional quotes, invoices, and complete client history in one dashboard."*
+
+---
 
 ### Secondary (Future)
-- Growing businesses (11-50 employees)
-- E-commerce businesses
-- Subscription-based businesses
-- Retail businesses with inventory needs
+- **Growing businesses** (11-50 employees) — Advanced team features, custom workflows
+- **E-commerce businesses** — Inventory sync, order management integrations
+- **Subscription-based businesses** — Recurring billing, subscription management
+- **Retail businesses** — POS integration, multi-location inventory needs
 
 ---
 
@@ -374,6 +495,31 @@ Quotla is an intelligent business management platform designed to help small bus
 
 ---
 
-**Document Version**: 1.0
-**Last Updated**: December 24, 2025
+**Document Version**: 1.1
+**Last Updated**: January 2, 2026
 **Owner**: Product Team, Mission To Scale
+
+## Changelog
+
+### Version 1.1 (January 2, 2026)
+- Added Inventory Management to Current Features (Section 3.1)
+- Expanded Target Users section with detailed user segments:
+  - Freelancers & Independent Professionals
+  - Small Business Owners
+  - Agencies & Consultancies
+- Enhanced each user segment with:
+  - Business profiles and challenges
+  - How Quotla addresses their specific needs
+  - Key features tailored for each segment
+  - User testimonials and value propositions
+- Updated Competitive Advantages section:
+  - Added detailed sub-points for each advantage
+  - Integrated user testimonial
+  - Added new "Customer-Centric Design" advantage
+- Updated Success Metrics with income summaries KPI
+
+### Version 1.0 (December 24, 2025)
+- Initial PRD document
+- Core feature documentation
+- Technology stack specification
+- Future roadmap outlined

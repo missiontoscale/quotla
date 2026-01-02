@@ -1,25 +1,10 @@
-You tend to converge toward generic, "on distribution" outputs. In frontend design, this creates what users call the "AI slop" aesthetic. Avoid this: make creative, distinctive frontends that surprise and delight. Focus on:
+A.
 
-Motion: Use animations for effects and micro-interactions. Prioritize CSS-only solutions for HTML. Use Motion library for React when available. Focus on high-impact moments: one well-orchestrated page load with staggered reveals (animation-delay) creates more delight than scattered micro-interactions.
+Change the right section fo the visual showcase section.
+1. Make both divs left and right to be equal in width
 
-Backgrounds: Create atmosphere and depth rather than defaulting to solid colors. Layer CSS gradients, use geometric patterns, or add contextual effects that match the overall aesthetic.
+2. Effect changs to the right portion:
+HOW QUOTLA USERS FEEL[SMALL, UPPERCASE, BUT SECONDARY FONT]
+"With Quotla, I feel I can close more deals, in less time, thanks to their automation."
+Owen H. Director[SMALL, SECONDARY FONT]
 
-Avoid generic AI-generated aesthetics:
-- Clichéd color schemes (random gradients)
-- Predictable layouts and component patterns
-- Cookie-cutter design that lacks context-specific character
-
-Interpret creatively and make unexpected choices that feel genuinely designed for the context. Vary between light and dark themes, different fonts, different aesthetics. You still tend to converge on common choices (Space Grotesk, for example) across generations. Avoid this: it is critical that you think outside the box!
-</frontend_aesthetics>
-
-A. Redesign the dashboard chat. It has two headers. Shambolic.
-
-B. 
-Remove all - Cookie-cutter design that lacks context-specific character from Home page. Make thos areas seem like you think outside the box!
-
-C. 
-change the entire aesthetic of the blog page, as well as each blog post.
-
-D.
-Restructure the entire dashboard concept. I think it is broken, to say the least. inventory should also show up on dashboard summary, don't you think?
-so much needs to be restructured. So much.
