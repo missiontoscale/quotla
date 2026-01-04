@@ -1,0 +1,1117 @@
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                    QUOTLA EDIT/VIEW/SLUG PAGE DESIGN THEME
+                     Detailed Pages with Brutalist Elegance
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+This document extends the main design-theme.txt with specific guidelines for
+edit, view, and dynamic route ([id], [slug]) pages.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                              PAGE STRUCTURE PHILOSOPHY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+VIEW PAGES: Document-like, professional presentation
+  - White/parchment backgrounds for printability
+  - Clean, spacious layouts
+  - Emphasis on data presentation over interaction
+  - Export-friendly designs
+
+EDIT PAGES: Form-focused, efficient data entry
+  - Dark brutalist theme consistent with dashboard
+  - Clear visual hierarchy for form fields
+  - Inline validation and feedback
+  - Save/cancel actions prominently placed
+
+SLUG PAGES: Content-rich, readable
+  - Optimized for long-form content (blog posts, articles)
+  - Typography-first approach
+  - Generous line-height and spacing
+  - Complementary image treatment
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                           VIEW PAGES (Invoice, Quote, etc.)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+LAYOUT STRUCTURE:
+
+Container:
+  - min-height: 100vh
+  - bg: #0e1616 (dark base for outer page)
+  - padding: 32px 0 (vertical padding only)
+  - max-width: 1200px centered
+
+Action Bar (Top):
+  ┌────────────────────────────────────────────────────────────────┐
+  │  ← Back to Invoices              [Export ▾] [Edit Invoice]     │
+  └────────────────────────────────────────────────────────────────┘
+  - bg: transparent
+  - margin-bottom: 24px
+  - padding: 0 16px
+  - Back link: #ce6203, hover underline, 14px
+  - Action buttons: right-aligned, 12px gap
+  - Export dropdown: secondary button style with chevron
+  - Edit button: primary button style
+
+Document Container:
+  ┌────────────────────────────────────────────────────────────────┐
+  │                                                                │
+  │                    [DOCUMENT CONTENT]                          │
+  │                                                                │
+  └────────────────────────────────────────────────────────────────┘
+  - bg: #ffffff (pure white for print/export)
+  - border: 1px solid #e8e8cc (bone - subtle frame)
+  - border-radius: 12px
+  - padding: 64px (generous print margins)
+  - box-shadow: 0 20px 40px rgba(0,0,0,0.5) (elevated from dark bg)
+  - On mobile: padding reduces to 32px
+
+DOCUMENT HEADER:
+
+Layout:
+  - display: flex, justify-between
+  - margin-bottom: 64px
+  - border-bottom: 2px solid #445642 (ledger green separator)
+  - padding-bottom: 32px
+
+Left Section (Logo + Title):
+  - Logo: max-height 64px, margin-bottom 16px
+  - Title: "INVOICE" / "QUOTE"
+    - font-size: 36px
+    - font-weight: 700
+    - color: #0e1616 (midnight ink)
+    - letter-spacing: 0.1em
+    - text-transform: uppercase
+  - Document number:
+    - font-size: 14px
+    - color: #6b7280 (smoke)
+    - margin-top: 8px
+
+Right Section (Company Info):
+  - text-align: right
+  - Company name:
+    - font-size: 18px
+    - font-weight: 700
+    - color: #0e1616
+    - margin-bottom: 8px
+  - Address/contact:
+    - font-size: 13px
+    - color: #6b7280
+    - line-height: 1.6
+
+BILL TO / DETAILS SECTION:
+
+Grid Layout:
+  - display: grid
+  - grid-template-columns: 1fr 1fr
+  - gap: 64px
+  - margin-bottom: 48px
+  - padding-bottom: 48px
+  - border-bottom: 1px solid #e8e8cc
+
+Column Headers:
+  - "BILL TO:" / "INVOICE DETAILS:"
+  - font-size: 11px
+  - font-weight: 700
+  - text-transform: uppercase
+  - letter-spacing: 0.1em
+  - color: #445642 (ledger green)
+  - margin-bottom: 16px
+  - border-left: 3px solid #ce6203 (accent bar)
+  - padding-left: 12px
+
+Client Info:
+  - Client name: 14px, 600 weight, #0e1616
+  - Other details: 13px, #6b7280
+  - line-height: 1.7
+
+Details Info:
+  - Label-value pairs:
+    - Label: 13px, #6b7280, right-aligned
+    - Value: 13px, 600 weight, #0e1616
+    - Display: flex, justify-between
+    - gap: 12px between pairs
+  - Status badge: use semantic color (see main theme)
+
+ITEMS TABLE:
+
+Table Structure:
+  - width: 100%
+  - margin-bottom: 48px
+  - border-collapse: separate
+  - border-spacing: 0
+
+Header Row:
+  - bg: rgba(68,86,66,0.08) (very subtle green tint)
+  - border-bottom: 3px solid #445642 (thick separation)
+  - padding: 16px 12px
+  - font-size: 10px
+  - font-weight: 700
+  - text-transform: uppercase
+  - letter-spacing: 0.1em
+  - color: #445642
+  - text-align: left (except numeric columns - right)
+
+Body Rows:
+  - padding: 18px 12px
+  - border-bottom: 1px solid #e8e8cc
+  - font-size: 13px
+  - color: #0e1616
+  - Description: left-aligned, line-height 1.6
+  - Numeric columns: right-aligned, tabular-nums, 600 weight
+  - Last row: no border-bottom
+
+Column Widths:
+  - Description: flexible (auto)
+  - Quantity: 100px
+  - Unit Price: 140px
+  - Amount: 140px
+
+TOTALS SECTION:
+
+Layout:
+  - display: flex, justify-content: flex-end
+  - margin-bottom: 48px
+
+Totals Box:
+  - width: 320px
+  - border: 2px solid #445642
+  - border-radius: 8px
+  - padding: 24px
+  - bg: rgba(68,86,66,0.03) (subtle tint)
+
+Rows:
+  - Subtotal / Tax rows:
+    - display: flex, justify-between
+    - font-size: 14px
+    - color: #6b7280
+    - margin-bottom: 12px
+    - Values: 600 weight, #0e1616, tabular-nums
+
+  - Total row:
+    - border-top: 2px solid #445642
+    - padding-top: 16px
+    - margin-top: 8px
+    - font-size: 24px
+    - font-weight: 700
+    - color: #0e1616
+    - Values: tabular-nums
+
+NOTES / TERMS SECTION:
+
+Container:
+  - margin-bottom: 32px (last section reduces to 0)
+  - padding: 20px
+  - bg: rgba(255,250,214,0.3) (warm parchment tint)
+  - border-left: 4px solid #ce6203
+  - border-radius: 6px
+
+Header:
+  - font-size: 12px
+  - font-weight: 700
+  - text-transform: uppercase
+  - letter-spacing: 0.08em
+  - color: #445642
+  - margin-bottom: 12px
+
+Content:
+  - font-size: 13px
+  - color: #0e1616
+  - line-height: 1.7
+  - white-space: pre-wrap (preserve formatting)
+
+PRINT STYLES:
+
+@media print {
+  - Remove outer dark background
+  - Remove action buttons
+  - Remove box-shadow
+  - Ensure white background
+  - Page breaks: avoid breaking tables/sections
+  - Margins: 0.5in all sides
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                        EDIT PAGES (Forms - Invoice, Client, etc.)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+LAYOUT STRUCTURE:
+
+Container:
+  - max-width: 1400px (wider for complex forms)
+  - bg: #0e1616 (dark base)
+  - padding: 32px 16px
+
+Page Header:
+  ┌────────────────────────────────────────────────────────────────┐
+  │  Edit Invoice                                                  │
+  └────────────────────────────────────────────────────────────────┘
+  - h1: 36px, 700 weight, #fffad6
+  - margin-bottom: 32px
+  - Optional breadcrumb above (see main theme)
+
+Form Card:
+  - bg: #1a1f1f (elevated surface)
+  - border: 1px solid #2a2f2f
+  - border-left: 4px solid #ce6203 (accent)
+  - border-radius: 12px
+  - padding: 40px
+  - On mobile: padding 24px
+
+ERROR/SUCCESS ALERTS:
+
+Layout:
+  - margin-bottom: 32px
+  - Use inline alert pattern from main theme
+  - Error: red, Warning: amber, Success: green
+
+FORM FIELD GROUPS:
+
+Section Headers:
+  ┌────────────────────────────────────────────────────────────────┐
+  │  ━━ CLIENT INFORMATION                                         │
+  └────────────────────────────────────────────────────────────────┘
+  - font-size: 12px
+  - font-weight: 700
+  - text-transform: uppercase
+  - letter-spacing: 0.1em
+  - color: #9ca3af
+  - margin: 32px 0 20px 0
+  - padding-bottom: 12px
+  - border-bottom: 1px solid #374151
+  - First section: margin-top 0
+
+Grid Layouts:
+  - Standard 2-column: grid grid-cols-1 md:grid-cols-2 gap-6
+  - 3-column for compact fields: md:grid-cols-3
+  - Full-width fields: md:col-span-2 or md:col-span-3
+
+FORM FIELDS (Refer to main theme for base styles):
+
+Enhanced Label Pattern:
+  <label className="relative flex items-center gap-3 mb-2">
+    <div className="w-0.5 h-4 bg-[#445642]" />
+    <span className="text-[11px] font-bold uppercase tracking-wider text-[#d1d5db]">
+      Invoice Number
+      <span className="text-[#dc2626] ml-1">*</span> {/* Required indicator */}
+    </span>
+  </label>
+
+Input States:
+  - Default: as per main theme
+  - Focus: 3px bottom border, #ce6203
+  - Error: border-bottom color #dc2626, add red glow
+  - Disabled: opacity 0.5, cursor not-allowed
+  - Success (after validation): subtle green left border
+
+Field Hints:
+  - Below input, 11px, #6b7280
+  - "e.g., INV-2026-001"
+  - margin-top: 6px
+
+Inline Validation Messages:
+  ┌────────────────────────────────────────────────────────────────┐
+  │  ⚠ Please enter a valid email address                         │
+  └────────────────────────────────────────────────────────────────┘
+  - font-size: 12px
+  - color: #dc2626 (error) or #84cc16 (success)
+  - display: flex, items-center, gap: 6px
+  - Icon: 14×14px
+  - margin-top: 8px
+  - Animated entrance: slide down + fade
+
+SPECIAL FORM COMPONENTS:
+
+Currency Selector:
+  - Enhanced select with flag icons (if available)
+  - Prominent placement for invoices/quotes
+  - Live conversion indicator (see currency section below)
+  - Default: NGN (Nigerian Naira)
+  - Popular currencies: USD, EUR, GBP, NGN
+
+Date Picker:
+  - Custom styled with calendar icon
+  - Format: MMM d, yyyy
+  - Color: #fffad6 on #1a1f1f
+  - Calendar popup: dark theme, #ce6203 accents
+
+Item/Line Entry (Dynamic Lists):
+  ┌────────────────────────────────────────────────────────────────┐
+  │  [Description] [Qty] [Price] [Total] [🗑️]                     │
+  │  ────────────────────────────────────────────────────────────  │
+  │  [Description] [Qty] [Price] [Total] [🗑️]                     │
+  │  ────────────────────────────────────────────────────────────  │
+  │  + Add Item                                                    │
+  └────────────────────────────────────────────────────────────────┘
+
+  Row Container:
+    - bg: rgba(26,31,31,0.5)
+    - border: 1px solid #374151
+    - border-radius: 8px
+    - padding: 16px
+    - margin-bottom: 12px
+    - hover: border-color #445642
+
+  Fields:
+    - Inline layout with flex/grid
+    - Compact spacing
+    - Delete icon: right side, 32×32px, hover: #dc2626
+
+  Add Button:
+    - Secondary button style
+    - Icon: Plus, 16×16px
+    - Full-width on mobile
+    - Dashed border variant
+
+Textarea (Notes, Terms):
+  - min-height: 140px
+  - resize: vertical only
+  - Character counter: bottom-right corner
+    - "247 / 500" in 10px, #6b7280
+    - Turns #dc2626 when over limit
+
+Toggle Switches:
+  For options like "Apply tax", "Send notification":
+
+  ┌──────────────────────┐
+  │  Apply Tax    ●──○   │
+  └──────────────────────┘
+
+  - Width: 48px, Height: 24px
+  - bg: #374151 (off), #ce6203 (on)
+  - Circle: 18×18px, white
+  - Smooth transition: 200ms
+  - Label: left side, 14px, #d1d5db
+
+FORM ACTIONS (Bottom):
+
+Action Bar:
+  - position: sticky, bottom: 0
+  - bg: #0e1616 with backdrop-filter blur
+  - border-top: 1px solid #374151
+  - padding: 24px 40px
+  - margin: 32px -40px -40px (extend to card edges)
+  - border-radius: 0 0 12px 12px (match card)
+  - box-shadow: 0 -4px 12px rgba(0,0,0,0.3) (lift above content)
+
+Button Layout:
+  - display: flex, justify-content: flex-end, gap: 12px
+  - On mobile: flex-direction: column-reverse, buttons full-width
+
+Buttons:
+  - Cancel: ghost button (see main theme)
+  - Save as Draft: secondary button
+  - Save / Update: primary button (larger, more prominent)
+  - Delete: danger button (only on edit, not create)
+
+Loading State:
+  - Button disabled
+  - Text changes: "Saving..." / "Updating..."
+  - Spinner icon inside button (16×16px)
+
+AUTOSAVE INDICATOR:
+
+Floating Status (Top-right of form):
+  ┌──────────────────┐
+  │  ● Saved 2m ago  │
+  └──────────────────┘
+  - position: fixed, top: 80px, right: 24px
+  - bg: rgba(26,31,31,0.95)
+  - border: 1px solid #445642
+  - border-radius: 20px (pill)
+  - padding: 8px 16px
+  - font-size: 12px
+  - color: #9ca3af
+  - Dot color: #84cc16 (saved), #f59e0b (saving), #dc2626 (error)
+  - Animated appearance/disappearance
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                           SLUG PAGES (Blog Posts, Articles)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+LAYOUT STRUCTURE:
+
+Container:
+  - max-width: 840px (optimized for reading)
+  - margin: 0 auto
+  - padding: 64px 24px
+  - bg: #0e1616
+
+ARTICLE HEADER:
+
+Breadcrumbs:
+  - margin-bottom: 32px
+  - Blog > Category > Article Title
+  - See breadcrumb pattern in main theme
+
+Title:
+  - font-size: 48px (desktop), 36px (mobile)
+  - font-weight: 700
+  - font-family: Bricolage Grotesque (display font)
+  - color: #fffad6
+  - line-height: 1.2
+  - margin-bottom: 20px
+  - letter-spacing: -0.02em (tight for impact)
+
+Meta Info:
+  ┌────────────────────────────────────────────────────────────────┐
+  │  By Author Name • Jan 4, 2026 • 8 min read                    │
+  └────────────────────────────────────────────────────────────────┘
+  - font-size: 14px
+  - color: #9ca3af
+  - display: flex, items-center, gap: 12px
+  - Separator: "•" or "|"
+  - margin-bottom: 32px
+
+Tags:
+  - display: flex, gap: 8px
+  - Tag badge style from main theme
+  - margin-bottom: 40px
+
+Featured Image (if present):
+  - width: 100%
+  - border-radius: 12px
+  - margin-bottom: 48px
+  - aspect-ratio: 21/9 (cinematic)
+  - object-fit: cover
+  - border: 1px solid #2a2f2f
+  - Optional caption: 12px, italic, #6b7280, margin-top 12px
+
+ARTICLE CONTENT:
+
+Content Container:
+  - bg: transparent (blend with page)
+  - No border/card (let content breathe)
+
+Typography Hierarchy:
+
+  Headings (H2):
+    - font-size: 32px
+    - font-weight: 700
+    - color: #fffad6
+    - margin-top: 56px
+    - margin-bottom: 20px
+    - line-height: 1.3
+    - border-left: 4px solid #ce6203
+    - padding-left: 20px
+
+  Headings (H3):
+    - font-size: 24px
+    - font-weight: 600
+    - color: #e8e8cc (bone - slightly muted)
+    - margin-top: 40px
+    - margin-bottom: 16px
+    - line-height: 1.4
+
+  Headings (H4):
+    - font-size: 18px
+    - font-weight: 600
+    - color: #d1d5db
+    - margin-top: 32px
+    - margin-bottom: 12px
+    - text-transform: uppercase
+    - letter-spacing: 0.05em
+    - font-size: 14px
+
+  Paragraphs:
+    - font-size: 17px (generous for readability)
+    - line-height: 1.8 (generous for long-form)
+    - color: #d1d5db
+    - margin-bottom: 24px
+    - font-weight: 400
+
+  Lead Paragraph (first paragraph):
+    - font-size: 20px
+    - font-weight: 500
+    - color: #fffad6
+    - line-height: 1.7
+
+  Links:
+    - color: #ce6203
+    - text-decoration: none
+    - border-bottom: 1px solid rgba(206,98,3,0.3)
+    - hover: border-bottom: 2px solid #ce6203
+    - transition: 150ms
+
+  Strong/Bold:
+    - font-weight: 600
+    - color: #fffad6 (brighter than body)
+
+  Emphasis/Italic:
+    - font-style: italic
+    - color: #e8e8cc
+
+  Lists (ul, ol):
+    - margin: 24px 0
+    - padding-left: 28px
+    - font-size: 17px
+    - line-height: 1.8
+    - color: #d1d5db
+
+    li:
+      - margin-bottom: 12px
+      - Bullet color: #ce6203 (custom marker)
+
+    Nested lists:
+      - margin: 12px 0
+      - Different bullet style (circle/square)
+
+  Blockquote:
+    ┌────────────────────────────────────────────────────────────┐
+    │  ┃  "Business tools don't have to be boring."              │
+    └────────────────────────────────────────────────────────────┘
+    - border-left: 4px solid #ce6203
+    - padding: 24px 32px
+    - margin: 40px 0
+    - bg: rgba(26,31,31,0.6)
+    - border-radius: 0 8px 8px 0
+    - font-size: 20px
+    - font-style: italic
+    - color: #fffad6
+    - Quote marks optional (can use ::before)
+
+  Code (inline):
+    - bg: rgba(68,86,66,0.2)
+    - color: #84cc16
+    - padding: 3px 8px
+    - border-radius: 4px
+    - font-family: 'Courier New', monospace
+    - font-size: 15px
+
+  Code Block:
+    ┌────────────────────────────────────────────────────────────┐
+    │  const revenue = calculateTotal(items)                     │
+    │  console.log(revenue)                                      │
+    └────────────────────────────────────────────────────────────┘
+    - bg: #080b0b (deep moss - darker than page)
+    - border: 1px solid #2a2f2f
+    - border-radius: 8px
+    - padding: 24px
+    - margin: 32px 0
+    - overflow-x: auto
+    - font-family: 'Courier New', monospace
+    - font-size: 14px
+    - line-height: 1.6
+    - Syntax highlighting: use theme colors
+      - Keywords: #ce6203
+      - Strings: #84cc16
+      - Functions: #fffad6
+      - Comments: #6b7280
+
+  Horizontal Rule:
+    - border: none
+    - height: 1px
+    - bg: linear-gradient(90deg, transparent, #445642, transparent)
+    - margin: 56px 0
+    - Alternative: decorative centered "• • •"
+
+  Tables:
+    - Use data table pattern from main theme
+    - Smaller font: 14px
+    - More compact padding
+    - Full-width
+    - Responsive: scroll on mobile
+
+CONTENT EMBEDS:
+
+Image (in-content):
+  - max-width: 100%
+  - border-radius: 8px
+  - margin: 40px 0
+  - border: 1px solid #2a2f2f
+  - figcaption: 13px, italic, #9ca3af, text-center, margin-top 12px
+  - hover: subtle shadow increase
+
+Wide Image (breakout):
+  - For emphasis, break out of max-width
+  - width: calc(100% + 160px)
+  - margin-left: -80px (on desktop only)
+  - Creates visual interest
+
+Video Embed:
+  - aspect-ratio: 16/9
+  - border-radius: 12px
+  - margin: 40px 0
+  - border: 1px solid #2a2f2f
+
+Callout/Note Box:
+  ┌────────────────────────────────────────────────────────────┐
+  │  💡 TIP                                                    │
+  │  Consider using automation to save time on repetitive     │
+  │  tasks.                                                    │
+  └────────────────────────────────────────────────────────────┘
+  - bg: rgba(68,86,66,0.1)
+  - border: 1px solid #445642
+  - border-left: 4px solid #84cc16 (tip/success)
+  - border-left: 4px solid #f59e0b (warning)
+  - border-left: 4px solid #6b7280 (note)
+  - padding: 20px 24px
+  - border-radius: 8px
+  - margin: 32px 0
+  - Icon + Label: 12px, uppercase, 700 weight, margin-bottom 8px
+  - Content: 15px, line-height 1.7
+
+ARTICLE FOOTER:
+
+Tags (repeat):
+  - Same as header tags
+  - margin-top: 64px
+  - padding-top: 32px
+  - border-top: 1px solid #374151
+
+Share Buttons:
+  ┌────────────────────────────────────────────────────────────┐
+  │  Share: [Twitter] [LinkedIn] [Copy Link]                  │
+  └────────────────────────────────────────────────────────────┘
+  - margin-top: 24px
+  - Icon buttons: 40×40px
+  - Hover: lift + color
+  - Copy link: shows toast on click
+
+Author Bio (if present):
+  ┌────────────────────────────────────────────────────────────┐
+  │  [Avatar]  About Author Name                              │
+  │            Bio text here...                                │
+  └────────────────────────────────────────────────────────────┘
+  - bg: #1a1f1f
+  - border: 1px solid #2a2f2f
+  - border-radius: 12px
+  - padding: 24px
+  - margin-top: 48px
+  - display: flex, gap: 20px
+  - Avatar: 64×64px, rounded-full
+  - Name: 16px, 600 weight, #fffad6
+  - Bio: 14px, #9ca3af
+
+Related Articles:
+  - Grid: 2-3 columns
+  - Card style from main theme
+  - Thumbnail + title + excerpt
+  - margin-top: 64px
+  - Section header: "RELATED ARTICLES"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                    CURRENCY SELECTION & LIVE CONVERSION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CURRENCY SELECTOR (Enhanced):
+
+Default Currency: NGN (Nigerian Naira)
+
+Dropdown Design:
+  ┌────────────────────────────┐
+  │  🇳🇬 NGN - Nigerian Naira ▾│
+  └────────────────────────────┘
+
+  Button:
+    - bg: #1a1f1f
+    - border: 2px solid #445642
+    - border-radius: 8px
+    - padding: 12px 16px
+    - display: flex, items-center, gap: 12px
+    - font-size: 14px, 600 weight
+    - color: #fffad6
+    - hover: border-color #ce6203
+    - Icon/Flag: 20×20px
+    - Chevron: right side, 16×16px, #9ca3af
+
+  Dropdown Panel:
+    - bg: #1a1f1f
+    - border: 2px solid #445642
+    - border-radius: 8px
+    - padding: 8px
+    - margin-top: 8px
+    - box-shadow: 0 12px 24px rgba(0,0,0,0.4)
+    - max-height: 320px
+    - overflow-y: auto
+    - width: 280px
+
+  Search Input (in dropdown):
+    - Sticky top
+    - padding: 8px 12px
+    - border-bottom: 1px solid #374151
+    - margin-bottom: 8px
+    - placeholder: "Search currencies..."
+
+  Currency Option:
+    ┌──────────────────────────┐
+    │  🇳🇬 NGN - Nigerian Naira│
+    │      ₦ • Naira          │
+    └──────────────────────────┘
+    - padding: 10px 12px
+    - border-radius: 6px
+    - hover: bg rgba(206,98,3,0.1)
+    - selected: bg rgba(206,98,3,0.15), border-left 3px solid #ce6203
+    - Code: 14px, 600 weight, #fffad6
+    - Name: 12px, #9ca3af
+    - Symbol: 11px, #6b7280
+    - cursor: pointer
+
+Popular Currencies (top of list):
+  - USD - US Dollar
+  - EUR - Euro
+  - GBP - British Pound
+  - NGN - Nigerian Naira ← DEFAULT
+  - Separator line before full list
+
+LIVE CONVERSION INDICATOR:
+
+When user changes currency, show conversion:
+
+  ┌────────────────────────────────────────────────┐
+  │  Currency changed to USD                       │
+  │  ₦50,000.00 → $32.26 (at rate 1,550.00)       │
+  └────────────────────────────────────────────────┘
+
+  Toast notification:
+    - Appears bottom-right
+    - 6s duration
+    - Success style (green border)
+    - Shows: old amount → new amount (conversion rate)
+
+  Real-time Field Updates:
+    - All currency fields update simultaneously
+    - Smooth number animation (300ms)
+    - flash effect: brief highlight (#ce6203 bg, fade to normal)
+
+Conversion Rate Display:
+
+  Below currency selector:
+  ┌────────────────────────────┐
+  │  1 USD = 1,550.00 NGN      │
+  │  Updated 5 mins ago        │
+  └────────────────────────────┘
+  - font-size: 11px
+  - color: #6b7280
+  - margin-top: 8px
+  - Update indicator: live dot if < 1min, time ago otherwise
+  - Refresh icon: clickable to manually update rates
+
+API Integration Notes:
+  - Use exchange rate API (e.g., exchangerate-api.com, openexchangerates.org)
+  - Cache rates (15-30 min)
+  - Fallback to last known rates if API fails
+  - Show warning if rates are stale (> 24hrs)
+
+Form Behavior:
+  - Store original currency + amount
+  - Display in user-selected currency
+  - Convert on save/submit
+  - History: track currency changes in audit log
+
+Number Formatting:
+  - Use locale-aware formatting
+  - NGN: ₦50,000.00 (comma thousands, 2 decimals)
+  - USD: $50,000.00
+  - EUR: €50.000,00 (period thousands, comma decimal)
+  - Respect currency decimal places (e.g., JPY has 0)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                        RESPONSIVE PATTERNS (Edit/View/Slug)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+MOBILE ADAPTATIONS (<640px):
+
+View Pages:
+  - Document padding: 32px → 24px
+  - Two-column grids: 2 cols → 1 col (stack)
+  - Action buttons: full-width, stacked
+  - Tables: transform to card list
+    - Each row = card with label-value pairs
+    - Vertical layout
+  - Hide less critical info (compress contact details)
+
+Edit Pages:
+  - All grids: collapse to 1 column
+  - Sticky action bar: remains at bottom
+  - Item rows: stack fields vertically
+  - Currency selector: full-width
+  - Reduce padding: 40px → 24px
+
+Slug Pages:
+  - Title: 48px → 32px
+  - Content font: 17px → 16px
+  - Remove side padding on breakout images
+  - Code blocks: horizontal scroll
+  - Related articles: 1 column
+
+TABLET (640px - 1024px):
+
+View Pages:
+  - Document padding: 48px
+  - Maintain two-column layouts
+  - Tables: full display with smaller fonts
+
+Edit Pages:
+  - 2-column grids maintained
+  - 3-column → 2-column
+  - Padding: 32px
+
+Slug Pages:
+  - Max-width: 720px
+  - Breakout images: reduce extent
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                          LOADING & EMPTY STATES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+LOADING STATE (View/Edit Pages):
+
+Full Page Loader:
+  - Center screen
+  - Spinner: 48×48px, #ce6203, rotating
+  - Text below: "Loading invoice..." (14px, #9ca3af)
+  - bg: #0e1616
+  - min-height: 60vh
+
+Skeleton Loaders (Progressive):
+  - Use for individual sections
+  - Skeleton pulse animation (see main theme)
+  - Match approximate layout:
+    - Header: thick bar for title, thin bars for meta
+    - Table: header row + 3-5 body rows
+    - Form: label bars + input boxes
+  - Color: #1a1f1f base, #2a2f2f highlight
+
+EMPTY STATES:
+
+No Data Found:
+  ┌────────────────────────────────────────────────┐
+  │              [Large Icon 64×64]                │
+  │         No invoices found                      │
+  │    Create your first invoice to get started    │
+  │         [Create Invoice Button]                │
+  └────────────────────────────────────────────────┘
+  - Center aligned
+  - Icon: #445642, 64×64px (relevant to context)
+  - Title: 24px, 600 weight, #fffad6
+  - Description: 14px, #9ca3af, max-width 400px
+  - CTA button: primary style
+  - padding: 80px 24px
+
+Error State (404, etc.):
+  - Similar to empty state
+  - Icon: warning/error themed
+  - Title: "Invoice not found" / "Page not found"
+  - Description: brief explanation
+  - CTA: "Go to Dashboard" or "Back to Invoices"
+  - Optional: secondary link "Contact Support"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                          ACCESSIBILITY CONSIDERATIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Form Labels:
+  - Always associated with inputs (for/id or aria-labelledby)
+  - Required fields: aria-required="true" + visual indicator
+
+Error Announcements:
+  - Use aria-live regions for validation messages
+  - Screen readers announce errors immediately
+
+Currency Selector:
+  - Proper combobox ARIA roles
+  - Keyboard navigation (arrow keys through options)
+  - Escape to close
+  - Type-to-search functionality
+
+Tables:
+  - Proper thead/tbody/th scope
+  - Caption or aria-label for context
+  - Mobile card view maintains semantic HTML
+
+Focus Management:
+  - Modal opens: focus moves to modal
+  - Modal closes: focus returns to trigger
+  - Form submit: focus on error or success message
+
+Contrast:
+  - View pages (white bg): ensure all text meets WCAG AA
+  - Edit pages (dark bg): verified in main theme
+  - Currency converted values: maintain readable contrast
+
+Keyboard Shortcuts (optional enhancement):
+  - Ctrl+S: Save form
+  - Ctrl+E: Edit mode (from view)
+  - Esc: Cancel/close
+  - Show shortcut hints on hover/focus
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                              IMPLEMENTATION EXAMPLES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// VIEW PAGE - DOCUMENT HEADER
+<div className="flex justify-between items-start mb-16 pb-8 border-b-2 border-[#445642]">
+  <div>
+    {logo && (
+      <img src={logo} alt="Company Logo" className="h-16 mb-4" />
+    )}
+    <h1 className="text-4xl font-bold uppercase tracking-[0.1em] text-[#0e1616]">
+      INVOICE
+    </h1>
+    <p className="text-sm text-[#6b7280] mt-2">{invoiceNumber}</p>
+  </div>
+  <div className="text-right text-sm">
+    <div className="font-bold text-lg text-[#0e1616] mb-2">
+      {companyName}
+    </div>
+    <div className="text-[#6b7280] space-y-1">
+      <div>{address}</div>
+      <div>{city}, {state} {postalCode}</div>
+    </div>
+  </div>
+</div>
+
+// EDIT PAGE - FORM FIELD WITH VALIDATION
+<div className="space-y-2">
+  <label htmlFor="email" className="relative flex items-center gap-3">
+    <div className="w-0.5 h-4 bg-[#445642]" />
+    <span className="text-[11px] font-bold uppercase tracking-wider text-[#d1d5db]">
+      Email Address
+      <span className="text-[#dc2626] ml-1">*</span>
+    </span>
+  </label>
+  <input
+    type="email"
+    id="email"
+    className={`w-full bg-[#1a1f1f]/60 text-[#fffad6]
+               border-0 border-b-2 ${error ? 'border-[#dc2626]' : 'border-[#374151]'}
+               px-1 py-3.5
+               focus:outline-none focus:border-b-3 focus:border-[#ce6203]
+               transition-all duration-150`}
+    aria-required="true"
+    aria-invalid={error ? "true" : "false"}
+  />
+  {error && (
+    <div className="flex items-center gap-2 text-[#dc2626] text-xs mt-2"
+         role="alert">
+      <AlertCircle className="w-3.5 h-3.5" />
+      {error}
+    </div>
+  )}
+  <div className="text-[11px] text-[#6b7280] mt-1.5">
+    e.g., client@company.com
+  </div>
+</div>
+
+// CURRENCY SELECTOR WITH CONVERSION
+<div className="space-y-2">
+  <label className="relative flex items-center gap-3">
+    <div className="w-0.5 h-4 bg-[#445642]" />
+    <span className="text-[11px] font-bold uppercase tracking-wider text-[#d1d5db]">
+      Currency
+    </span>
+  </label>
+
+  <button
+    onClick={() => setDropdownOpen(!dropdownOpen)}
+    className="w-full bg-[#1a1f1f] border-2 border-[#445642]
+               rounded-lg px-4 py-3 flex items-center justify-between
+               hover:border-[#ce6203] transition-colors">
+    <div className="flex items-center gap-3">
+      <span className="text-xl">{selectedCurrency.flag}</span>
+      <span className="font-semibold text-[#fffad6]">
+        {selectedCurrency.code} - {selectedCurrency.name}
+      </span>
+    </div>
+    <ChevronDown className="w-4 h-4 text-[#9ca3af]" />
+  </button>
+
+  <div className="text-[11px] text-[#6b7280] mt-2">
+    1 {selectedCurrency.code} = {conversionRate.toFixed(2)} NGN
+    <span className="ml-2">• Updated {lastUpdated}</span>
+  </div>
+</div>
+
+// BLOG POST - HEADING WITH ACCENT
+<h2 className="text-3xl font-bold text-[#fffad6]
+               border-l-4 border-[#ce6203] pl-5
+               mt-14 mb-5 leading-tight">
+  How to Create Professional Invoices
+</h2>
+
+// BLOG POST - CALLOUT BOX
+<div className="bg-[#445642]/10 border border-[#445642]
+                border-l-4 border-l-[#84cc16]
+                rounded-lg p-6 my-8">
+  <div className="flex items-center gap-2 mb-2">
+    <Lightbulb className="w-4 h-4 text-[#84cc16]" />
+    <span className="text-xs font-bold uppercase tracking-wider text-[#84cc16]">
+      TIP
+    </span>
+  </div>
+  <p className="text-[15px] leading-relaxed text-[#d1d5db]">
+    Consider automating recurring invoices to save time and ensure consistency.
+  </p>
+</div>
+
+// STICKY ACTION BAR (Edit Form)
+<div className="sticky bottom-0 -mx-10 -mb-10
+                bg-[#0e1616]/95 backdrop-blur-md
+                border-t border-[#374151]
+                px-10 py-6 rounded-b-xl
+                shadow-[0_-4px_12px_rgba(0,0,0,0.3)]">
+  <div className="flex justify-end gap-3">
+    <button
+      type="button"
+      onClick={() => router.back()}
+      className="px-6 py-3 text-[#9ca3af] hover:text-[#fffad6]
+                 transition-colors">
+      Cancel
+    </button>
+    <button
+      type="submit"
+      disabled={loading}
+      className="px-8 py-4 bg-[#ce6203] text-white font-semibold
+                 rounded-lg border-2 border-white/10
+                 shadow-[0_4px_12px_rgba(206,98,3,0.4)]
+                 hover:shadow-[0_6px_16px_rgba(206,98,3,0.5)]
+                 hover:-translate-y-0.5 active:translate-y-0
+                 transition-all duration-150
+                 disabled:opacity-50 disabled:cursor-not-allowed">
+      {loading ? 'Saving...' : 'Save Changes'}
+    </button>
+  </div>
+</div>
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                                  SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+VIEW PAGES: Professional, printable, document-focused
+  - White backgrounds for export/print
+  - Generous spacing, clear hierarchy
+  - Accent bars and borders for structure
+  - Export and edit actions prominent
+
+EDIT PAGES: Dark, efficient, form-optimized
+  - Consistent with dashboard dark theme
+  - Clear field labels with accent bars
+  - Inline validation and feedback
+  - Sticky action bar for easy access
+  - Autosave indicators
+
+SLUG PAGES: Content-rich, readable, engaging
+  - Optimized typography for long-form reading
+  - Generous line-height and spacing
+  - Accent elements for visual interest
+  - Code syntax highlighting
+  - Related content suggestions
+
+CURRENCY: NGN default, live conversions
+  - Enhanced dropdown with search
+  - Real-time rate display
+  - Smooth animations on change
+  - Toast notifications for conversions
+  - Respects locale formatting
+
+This design system ensures:
+✓ Consistency across all page types
+✓ Professional appearance for client-facing views
+✓ Efficient data entry for edit forms
+✓ Engaging reading experience for content
+✓ Accessible and responsive across devices
+✓ True to the Quotla brutalist aesthetic
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Version 1.0 | January 2026 | Mission To Scale Design Team

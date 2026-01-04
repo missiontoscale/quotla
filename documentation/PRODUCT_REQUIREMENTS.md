@@ -90,15 +90,37 @@ Quotla is an intelligent business management platform designed to help small bus
 
 #### 3.2 Dashboard & Analytics
 - **Status**: Live
-- **Description**: Central hub for business overview
+- **Description**: Central hub for business overview and insights
 - **Key Features**:
   - Recent quotes and invoices overview
   - Quick action buttons
   - Status summaries
   - Income summaries by month/year
+  - **NEW**: Month-to-date (MTD) expense tracking
+  - **NEW**: Tax-deductible expense highlights
+  - **NEW**: 5-card business overview (Revenue, Outstanding, Activity, Inventory, Expenses)
+  - Real-time business intelligence
   - Navigation to all features
 
-#### 3.3 Business Profile Management
+#### 3.3 Expense Tracking
+- **Status**: Live ✨ NEW
+- **Description**: Comprehensive expense management for business owners
+- **Key Features**:
+  - Expense entry and categorization
+  - 10 pre-configured expense categories (Office Supplies, Software, Marketing, etc.)
+  - Tax-deductible expense tracking
+  - Recurring expense support (monthly, quarterly, yearly)
+  - Payment method recording (cash, card, bank transfer, check)
+  - Vendor/supplier tracking
+  - Receipt URL storage for documentation
+  - Custom tags for advanced categorization
+  - Monthly expense summaries and analytics
+  - Budget tracking per category with utilization metrics
+  - Profit & Loss view (revenue vs expenses)
+  - Month-to-date expense dashboard card
+  - Beautiful expense tracker interface in Analytics tab
+
+#### 3.4 Business Profile Management
 - **Status**: Live
 - **Description**: Customize business information
 - **Key Features**:
@@ -107,7 +129,7 @@ Quotla is an intelligent business management platform designed to help small bus
   - Tax information setup
   - Branding customization
 
-#### 3.4 Export & Sharing
+#### 3.5 Export & Sharing
 - **Status**: Live
 - **Description**: Professional document export
 - **Key Features**:
@@ -136,6 +158,23 @@ Quotla is an intelligent business management platform designed to help small bus
   - Subscription forms
   - Subscriber database
   - Admin dashboard for subscriber management
+
+#### 4.3 Business Owner Features Showcase
+- **Status**: Live ✨ NEW
+- **Description**: Dedicated homepage section highlighting business owner capabilities
+- **Key Features**:
+  - Showcase of 6 core business owner features
+  - Track Every Expense feature card
+  - Inventory Management feature card
+  - Profitability Analysis feature card
+  - Time Tracking feature card
+  - Supplier Management feature card
+  - Income Summaries feature card
+  - Beautiful gradient design with brand colors
+  - Interactive hover effects and animations
+  - Direct navigation to feature pages
+  - Clear value propositions for business owners
+  - Call-to-action for sign up
 
 ### 5. Security & Compliance
 
@@ -176,20 +215,23 @@ Quotla is an intelligent business management platform designed to help small bus
 
 ### Phase 1: Enhanced Business Operations (Q1 2026)
 
-#### 1.1 Inventory Management
+#### 1.1 Inventory Management ✅ COMPLETED
 - **Priority**: High
 - **Target**: Small businesses with physical or digital products
-- **Key Features**:
-  - Product catalog management
-  - Stock level tracking
-  - Low stock alerts
-  - Inventory history and analytics
-  - Barcode/SKU support
+- **Status**: ✅ Live in Production
+- **Completed Features**:
+  - ✅ Product catalog management
+  - ✅ Stock level tracking
+  - ✅ Low stock alerts
+  - ✅ Inventory history and analytics
+  - ✅ Barcode/SKU support
+  - ✅ Automatic stock deduction on invoice creation
+  - ✅ Reorder point notifications
+  - ✅ Supplier management
+  - ✅ Cost tracking and profit margin calculation
+- **Future Enhancements**:
   - Multi-location inventory
-  - Automatic stock deduction on invoice creation
-  - Reorder point notifications
-  - Supplier management
-  - Cost tracking and profit margin calculation
+  - Barcode scanning via mobile
 
 #### 1.2 Payment Processing Integration
 - **Priority**: High
@@ -202,29 +244,48 @@ Quotla is an intelligent business management platform designed to help small bus
   - Payment reminders
   - Recurring billing support
 
-#### 1.3 Expense Tracking
+#### 1.3 Expense Tracking ✅ COMPLETED
 - **Priority**: Medium
 - **Target**: Complete financial overview
-- **Key Features**:
-  - Expense entry and categorization
-  - Receipt photo upload
-  - Expense reports
-  - Profit & loss calculations
-  - Tax-deductible expense tracking
-  - Vendor/supplier expense linking
+- **Status**: ✅ Live in Production (January 3, 2026)
+- **Completed Features**:
+  - ✅ Expense entry and categorization
+  - ✅ 10 default expense categories
+  - ✅ Profit & loss calculations
+  - ✅ Tax-deductible expense tracking
+  - ✅ Vendor/supplier expense linking
+  - ✅ Monthly expense summaries
+  - ✅ Budget tracking per category
+  - ✅ Receipt URL storage
+  - ✅ Recurring expense support
+  - ✅ Custom tags for categorization
+  - ✅ Analytics dashboard integration
+- **Future Enhancements**:
+  - Receipt photo upload with OCR
+  - Email receipts processing
+  - Automated expense categorization
+  - Mileage tracking
+  - Bank transaction imports
 
 ### Phase 2: Advanced Analytics & Insights (Q2 2026)
 
-#### 2.1 Business Intelligence Dashboard
+#### 2.1 Business Intelligence Dashboard (Partially Implemented)
 - **Priority**: High
-- **Key Features**:
-  - Revenue analytics and trends
+- **Status**: 🟡 In Progress
+- **Completed Features**:
+  - ✅ Revenue analytics (Total Revenue card)
+  - ✅ Outstanding invoice tracking
+  - ✅ Profit margin analysis (via Profitability Dashboard)
+  - ✅ Expense tracking and P&L
+  - ✅ Month-to-date expense summaries
+  - ✅ Real-time business overview cards
+- **Remaining Features**:
   - Client lifetime value (CLV)
   - Payment collection metrics
-  - Outstanding invoice tracking
   - Sales forecasting
-  - Profit margin analysis
   - Custom date range reporting
+  - Advanced trend analysis
+  - Predictive analytics
 
 #### 2.2 Automated Reporting
 - **Priority**: Medium
@@ -480,26 +541,53 @@ Quotla is an intelligent business management platform designed to help small bus
 
 ## Appendix: Feature Priority Matrix
 
-| Feature | Impact | Effort | Priority |
-|---------|--------|--------|----------|
-| Inventory Management | High | High | High |
-| Payment Processing | High | Medium | High |
-| Business Analytics | High | Medium | High |
-| Recurring Invoices | High | Low | High |
-| Multi-User Support | Medium | High | Medium |
-| Time Tracking | Medium | Medium | Medium |
-| Client Portal | Medium | High | Medium |
-| Mobile Apps | High | Very High | Medium |
-| Expense Tracking | Medium | Low | Medium |
-| Project Management | Low | High | Low |
+| Feature | Impact | Effort | Priority | Status |
+|---------|--------|--------|----------|--------|
+| Inventory Management | High | High | High | ✅ Completed |
+| Expense Tracking | Medium | Low | Medium | ✅ Completed |
+| Payment Processing | High | Medium | High | 🔜 Planned |
+| Business Analytics | High | Medium | High | 🟡 Partial |
+| Recurring Invoices | High | Low | High | 📋 Planned |
+| Multi-User Support | Medium | High | Medium | 📋 Planned |
+| Time Tracking | Medium | Medium | Medium | ✅ Completed |
+| Client Portal | Medium | High | Medium | 📋 Planned |
+| Mobile Apps | High | Very High | Medium | 📋 Future |
+| Project Management | Low | High | Low | 📋 Future |
 
 ---
 
-**Document Version**: 1.1
-**Last Updated**: January 2, 2026
+**Document Version**: 1.2
+**Last Updated**: January 3, 2026
 **Owner**: Product Team, Mission To Scale
 
 ## Changelog
+
+### Version 1.2 (January 3, 2026)
+- ✅ **Added Expense Tracking to Current Features (Section 3.3)**
+  - Complete expense management system with 10 default categories
+  - Tax-deductible expense tracking
+  - Budget tracking per category
+  - Profit & Loss calculations
+  - Monthly expense summaries
+  - Integrated into Analytics dashboard
+- ✅ **Enhanced Dashboard & Analytics (Section 3.2)**
+  - Added MTD expense tracking card
+  - Expanded to 5-card business overview
+  - Tax-deductible expense highlights
+  - Real-time business intelligence
+- ✅ **Updated Homepage with Business Owner Features Section**
+  - Dedicated showcase for 6 key business owner features
+  - Beautiful gradient design with brand colors
+  - Direct links to feature pages
+- ✅ **Updated Feature Priority Matrix**
+  - Marked Inventory Management as Completed
+  - Marked Expense Tracking as Completed
+  - Marked Time Tracking as Completed
+  - Updated Business Analytics to Partial status
+- ✅ **Updated Roadmap Status**
+  - Phase 1: Inventory Management - Completed
+  - Phase 1: Expense Tracking - Completed
+  - Phase 2: Business Intelligence Dashboard - Partially Implemented
 
 ### Version 1.1 (January 2, 2026)
 - Added Inventory Management to Current Features (Section 3.1)

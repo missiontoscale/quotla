@@ -24,6 +24,11 @@ function DashboardContent() {
     low_stock_count: 0,
     total_value: 0
   })
+  const [expenseStats, setExpenseStats] = useState({
+    month_total: 0,
+    tax_deductible: 0,
+    expense_count: 0
+  })
 
   useEffect(() => {
     loadData()
@@ -52,7 +57,12 @@ function DashboardContent() {
   const loadData = async () => {
     if (!user) return
 
-    const [quotesRes, invoicesRes, inventoryRes] = await Promise.all([
+    // Get current month dates
+    const now = new Date()
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString()
+
+    const [quotesRes, invoicesRes, inventoryRes, expensesRes] = await Promise.all([
       supabase
         .from('quotes')
         .select('*')
@@ -69,7 +79,13 @@ function DashboardContent() {
         .from('inventory_items')
         .select('*')
         .eq('user_id', user.id)
-        .eq('is_active', true)
+        .eq('is_active', true),
+      supabase
+        .from('expenses')
+        .select('*')
+        .eq('user_id', user.id)
+        .gte('expense_date', startOfMonth)
+        .lte('expense_date', endOfMonth)
     ])
 
     if (quotesRes.data) setQuotes(quotesRes.data)
@@ -86,6 +102,16 @@ function DashboardContent() {
         total_value: items.reduce((sum, item) =>
           sum + (item.quantity_on_hand * item.cost_price), 0
         )
+      })
+    }
+
+    // Calculate expense stats
+    if (expensesRes.data) {
+      const expenses = expensesRes.data
+      setExpenseStats({
+        month_total: expenses.reduce((sum, exp) => sum + exp.amount, 0),
+        tax_deductible: expenses.filter(exp => exp.is_tax_deductible).reduce((sum, exp) => sum + exp.amount, 0),
+        expense_count: expenses.length
       })
     }
 
@@ -289,7 +315,8 @@ function DashboardContent() {
 
         {/* Business Overview - Overview Row */}
         <section className="mb-10 sm:mb-12">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+          <h2 className="font-heading text-2xl font-bold text-quotla-dark dark:text-quotla-light mb-6">Business Overview</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-5">
             {/* Total Revenue Card - Most important metric first */}
             <div className="group relative bg-white dark:bg-primary-700 rounded-2xl p-5 sm:p-6 border border-primary-200 dark:border-quotla-light/20 shadow-sm hover:border-quotla-green dark:hover:border-quotla-green hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
               <div className="flex items-center justify-between mb-3 sm:mb-4">
@@ -389,6 +416,35 @@ function DashboardContent() {
                   </span>
                 ) : (
                   <span className="text-gray-600 dark:text-primary-400">All items stocked</span>
+                )}
+              </div>
+            </Link>
+
+            {/* Monthly Expenses Card */}
+            <Link href="/dashboard/analytics" className="group relative bg-white dark:bg-primary-700 rounded-2xl p-5 sm:p-6 border border-primary-200 dark:border-quotla-light/20 shadow-sm hover:border-red-500 dark:hover:border-red-400 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <div className="flex items-center justify-between mb-3 sm:mb-4">
+                <div className="font-sans text-xs sm:text-sm font-semibold text-gray-600 dark:text-primary-400 uppercase tracking-wide">Expenses (MTD)</div>
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-red-500 flex items-center justify-center transform group-hover:scale-110 transition-transform shadow-md">
+                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z" />
+                  </svg>
+                </div>
+              </div>
+              <div className="font-heading text-2xl sm:text-3xl font-bold text-quotla-dark dark:text-quotla-light mb-1">
+                {formatCurrency(expenseStats.month_total, invoices[0]?.currency || 'USD')}
+              </div>
+              <div className="flex items-center gap-2 text-xs sm:text-sm">
+                {expenseStats.expense_count > 0 ? (
+                  <>
+                    <span className="text-gray-600 dark:text-primary-400">{expenseStats.expense_count} this month</span>
+                    {expenseStats.tax_deductible > 0 && (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-quotla-green/10 text-quotla-green dark:bg-quotla-green/20">
+                        {formatCurrency(expenseStats.tax_deductible, invoices[0]?.currency || 'USD')} deductible
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  <span className="text-gray-600 dark:text-primary-400">No expenses yet</span>
                 )}
               </div>
             </Link>

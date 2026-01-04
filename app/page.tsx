@@ -6,6 +6,9 @@ import { supabase } from '@/lib/supabase/client'
 import Footer from '@/components/Footer'
 import LoadingSpinner from '@/components/LoadingSpinner'
 import Navbar from '@/components/Navbar'
+import HeroCarousel from '@/components/home/HeroCarousel'
+import PricingSection from '@/components/home/PricingSection'
+import BusinessOwnerFeatures from '@/components/home/BusinessOwnerFeatures'
 import { detectUserCurrency, formatPrice, type Currency } from '@/lib/utils/currency'
 
 export default function HomePage() {
@@ -16,9 +19,6 @@ export default function HomePage() {
   const [chatLoading, setChatLoading] = useState(false)
   const [promptCount, setPromptCount] = useState(0)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [typingText, setTypingText] = useState('')
-  const [phraseIndex, setPhraseIndex] = useState(0)
-  const [isDeleting, setIsDeleting] = useState(false)
   const [placeholderText, setPlaceholderText] = useState('')
   const [placeholderPhraseIndex, setPlaceholderPhraseIndex] = useState(0)
   const [isPlaceholderDeleting, setIsPlaceholderDeleting] = useState(false)
@@ -28,13 +28,6 @@ export default function HomePage() {
     rate: 1,
   })
   const [isLoadingCurrency, setIsLoadingCurrency] = useState(true)
-
-  const phrases = [
-    'Create quotes in seconds',
-    'Track invoices effortlessly',
-    'Get paid faster',
-    'Simplify your workflow'
-  ]
 
   const placeholderPhrases = [
     'Create a professional quote...',
@@ -71,37 +64,6 @@ export default function HomePage() {
 
     loadCurrency()
   }, [])
-
-  useEffect(() => {
-    // Start typing immediately on mount
-    if (typingText === '' && !isDeleting && phraseIndex === 0) {
-      setTypingText(phrases[0].charAt(0))
-      return
-    }
-
-    const currentPhrase = phrases[phraseIndex]
-    const typingSpeed = isDeleting ? 50 : 100
-    const pauseBeforeDelete = 2000
-
-    const timeout = setTimeout(() => {
-      if (!isDeleting && typingText === currentPhrase) {
-        // Finished typing, pause then start deleting
-        setTimeout(() => setIsDeleting(true), pauseBeforeDelete)
-      } else if (isDeleting && typingText === '') {
-        // Finished deleting, move to next phrase
-        setIsDeleting(false)
-        setPhraseIndex((prev) => (prev + 1) % phrases.length)
-      } else if (isDeleting) {
-        // Continue deleting
-        setTypingText(currentPhrase.substring(0, typingText.length - 1))
-      } else {
-        // Continue typing
-        setTypingText(currentPhrase.substring(0, typingText.length + 1))
-      }
-    }, typingSpeed)
-
-    return () => clearTimeout(timeout)
-  }, [typingText, isDeleting, phraseIndex, phrases])
 
   // Typing animation for chat input placeholder
   useEffect(() => {
@@ -325,133 +287,93 @@ export default function HomePage() {
 
       {/* Main Content */}
       <main id="main-content" className="overflow-hidden">
-        {/* Hero Section with Chat */}
-        <section className="relative min-h-screen flex items-center py-20 lg:py-28 bg-gradient-to-br from-quotla-light via-quotla-light/80 to-quotla-green/20 dark:from-primary-800 dark:via-quotla-dark dark:to-primary-800 overflow-hidden">
-          <div className="absolute inset-0 bg-[url('/images/patterns/grid/Quotla%20grid%20pattern%20light.svg')] bg-center opacity-5 dark:opacity-[0.05]" style={{backgroundSize: '150%'}}></div>
-          {/* Morphing background shapes */}
-          <div className="absolute top-20 right-10 w-96 h-96 bg-quotla-orange/10 animate-morph blur-3xl"></div>
-          <div className="absolute bottom-20 left-10 w-80 h-80 bg-quotla-green/15 animate-morph blur-3xl" style={{animationDelay: '5s'}}></div>
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-            <div className="lg:grid lg:grid-cols-5 lg:gap-16 lg:items-start">
-              {/* Text Section - Spans 3 columns */}
-              <div className="lg:col-span-3 text-left mb-12 lg:mb-0 lg:pt-12">
-                <h2 className="font-heading text-5xl md:text-6xl lg:text-7xl font-bold text-quotla-dark dark:text-primary-50 mb-6 leading-tight min-h-[1.2em] transition-colors tracking-tight">
-                  {typingText}
-                  <span className="animate-pulse text-quotla-orange">|</span>
-                </h2>
-                <p className="font-sans text-xl text-quotla-dark/80 dark:text-primary-300 lg:max-w-2xl leading-relaxed mb-8 transition-colors">
-                  Quotla helps you create professional quotes and invoices in seconds. Powered by AI, designed for freelancers and small businesses who want to spend less time on paperwork and more time doing what they love.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 mb-6">
-                  <Link
-                    href="/signup"
-                    className="inline-flex items-center justify-center px-8 py-4 rounded-xl text-lg font-semibold bg-quotla-dark text-quotla-light hover:bg-quotla-dark/90 transition-all shadow-lg hover:shadow-xl hover:scale-105"
-                  >
-                    Get started free
-                  </Link>
-                  <Link
-                    href="/about"
-                    className="inline-flex items-center justify-center px-8 py-4 rounded-xl text-lg font-semibold bg-transparent text-quotla-dark hover:bg-quotla-dark/5 transition-all border-2 border-quotla-dark/20"
-                  >
-                    Learn more
-                  </Link>
-                </div>
-                {!isAuthenticated && (
-                  <p className="text-sm text-quotla-dark/60 dark:text-primary-400">
-                    Start with 2 free AI questions • No credit card required
-                  </p>
-                )}
-              </div>
+        {/* Hero Carousel Section */}
+        <HeroCarousel typingText="" />
 
-              {/* Interactive Chat Interface - Spans 2 columns, sticky */}
-              <div className="lg:col-span-2 lg:sticky lg:top-24">
-                <div className="bg-quotla-light dark:bg-primary-700 rounded-3xl shadow-2xl border-2 border-quotla-dark/10 dark:border-quotla-light/20 overflow-hidden transition-colors backdrop-blur-sm hover:shadow-quotla-orange/20 hover:scale-[1.02] transition-all duration-300">
-                  {chatMessages.length > 0 ? (
-                    <div className="p-6 max-h-[500px] overflow-y-auto space-y-4 bg-quotla-light/50 dark:bg-primary-800/50">
-                      {chatMessages.map((msg, idx) => (
-                        <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                          <div className={`max-w-[85%] rounded-2xl px-5 py-3 shadow-sm ${
-                            msg.role === 'user'
-                              ? 'bg-quotla-dark text-quotla-light'
-                              : 'bg-quotla-light/90 text-quotla-dark border border-quotla-dark/10'
-                          }`}>
-                            <p className="text-base leading-relaxed whitespace-pre-wrap">{msg.content}</p>
-                          </div>
-                        </div>
-                      ))}
-                      {chatLoading && (
-                        <div className="flex justify-start">
-                          <div className="bg-quotla-light/90 border border-quotla-dark/10 rounded-2xl px-5 py-3">
-                            <div className="flex space-x-2">
-                              <div className="w-2 h-2 bg-quotla-dark/40 rounded-full animate-bounce"></div>
-                              <div className="w-2 h-2 bg-quotla-dark/40 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
-                              <div className="w-2 h-2 bg-quotla-dark/40 rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
+
+        {/* Story Section 1: The Problem - Simplified with dark background */}
+        <section className="relative py-32 bg-quotla-dark overflow-hidden">
+          {/* Diagonal edge transition from previous dark section */}
+          <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-br from-quotla-dark via-[#162020] to-quotla-green" style={{clipPath: 'polygon(0 0, 100% 0, 100% 60%, 0 100%)'}}></div>
+
+          {/* Subtle background effects */}
+          <div className="absolute inset-0">
+            <div className="absolute top-1/3 right-1/4 w-[500px] h-[500px] bg-quotla-orange/5 rounded-full blur-[120px]"></div>
+            <div className="absolute bottom-1/3 left-1/4 w-[500px] h-[500px] bg-quotla-green/10 rounded-full blur-[100px]"></div>
+          </div>
+
+          <div className="relative w-full px-4 sm:px-6 lg:px-20 pt-20">
+            {/* Section intro */}
+            <div className="text-center mb-20">
+              <div className="inline-block px-6 py-2 bg-quotla-orange/15 backdrop-blur-sm rounded-full mb-6 border border-quotla-orange/30">
+                <span className="font-heading text-sm font-bold text-quotla-orange tracking-widest">THE REALITY</span>
+              </div>
+              <h2 className="font-sans text-4xl md:text-5xl lg:text-6xl font-bold text-quotla-light mb-6 leading-tight">
+                You didn't start your business<br/>to spend hours on quotes
+              </h2>
+              <p className="text-xl text-quotla-light/70 max-w-3xl mx-auto">
+                Every hour formatting documents is an hour not serving clients, building relationships, or doing the work you actually love.
+              </p>
+            </div>
+
+            {/* Problem illustration - simplified */}
+            <div className="relative max-w-6xl mx-auto">
+              <div className="grid lg:grid-cols-2 gap-12 items-center">
+                <div className="relative order-2 lg:order-1">
+                  {/* Simplified image presentation */}
+                  <div className="relative group">
+                    <div className="absolute -inset-4 bg-gradient-to-br from-quotla-orange/20 to-quotla-green/20 blur-2xl"></div>
+                    <div className="relative overflow-hidden rounded-2xl" style={{clipPath: 'polygon(0 0, 100% 0, 100% 85%, 0 100%)'}}>
+                      <img
+                        src="/images/home/independent-professional.jpg"
+                        alt="Professional working"
+                        className="w-full h-auto shadow-2xl transform group-hover:scale-105 transition-transform duration-500"
+                      />
                     </div>
-                  ) : (
-                    <div className="p-16 text-center bg-quotla-light/50 dark:bg-primary-800/50">
-                      <div className="mb-6">
-                        <img
-                          src="/images/logos/icons/Quotla icon off white.svg"
-                          alt="Quotla icon"
-                          className="w-16 h-16 mx-auto opacity-30 dark:opacity-40 mb-4 transition-opacity"
-                        />
-                        <p className="text-quotla-dark/70 dark:text-primary-300 text-lg font-semibold transition-colors">Ask me anything</p>
-                        <p className="text-quotla-dark/50 dark:text-primary-400 text-sm mt-2">Try "Create a quote for website design"</p>
+                  </div>
+                </div>
+                <div className="order-1 lg:order-2 space-y-6">
+                  {[
+                    { stat: "3-5 hours/week", text: "wasted on manual quote creation" },
+                    { stat: "47%", text: "of freelancers delay quotes due to complexity" },
+                    { stat: "$2,400/year", text: "lost to inefficient invoicing workflows" }
+                  ].map((item, idx) => (
+                    <div key={idx} className="flex items-start gap-4">
+                      <div className="flex-shrink-0 w-2 h-2 bg-quotla-orange rounded-full mt-3"></div>
+                      <div>
+                        <div className="font-heading text-2xl md:text-3xl font-bold text-quotla-light mb-1">{item.stat}</div>
+                        <div className="text-base md:text-lg text-quotla-light/70">{item.text}</div>
                       </div>
                     </div>
-                  )}
-
-                  {/* Chat Input */}
-                  <div className="p-4 bg-quotla-light/70 dark:bg-primary-700 border-t-2 border-quotla-dark/10 dark:border-primary-600 transition-colors">
-                    <div className="flex gap-3">
-                      <input
-                        type="text"
-                        value={chatInput}
-                        onChange={(e) => setChatInput(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleChatSend()}
-                        placeholder={
-                          promptCount >= 2 && !isAuthenticated
-                            ? "Sign up to continue..."
-                            : placeholderText || "What can I help with?..."
-                        }
-                        className="flex-1 px-5 py-4 rounded-xl bg-quotla-light dark:bg-quotla-light border-2 border-quotla-dark/20 dark:border-quotla-dark/30 text-quotla-dark placeholder-quotla-dark/40 dark:placeholder-quotla-dark/50 focus:outline-none focus:ring-2 focus:ring-quotla-orange dark:focus:ring-quotla-orange focus:border-transparent disabled:opacity-50 text-base transition-all caret-quotla-dark"
-                        disabled={chatLoading || (!isAuthenticated && promptCount >= 2)}
-                      />
-                      <button
-                        onClick={handleChatSend}
-                        disabled={!chatInput.trim() || chatLoading || (!isAuthenticated && promptCount >= 2)}
-                        aria-label="Send message"
-                        className="px-6 py-4 rounded-xl bg-quotla-dark text-quotla-light font-semibold hover:bg-quotla-dark/90 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center"
-                      >
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                        </svg>
-                      </button>
-                    </div>
-                    {!isAuthenticated && promptCount > 0 && (
-                      <p className="text-xs text-quotla-dark/50 dark:text-primary-400 mt-2 text-center">
-                        {promptCount}/2 free questions used • <Link href="/signup" className="text-quotla-dark dark:text-primary-600 hover:underline font-semibold">Sign up</Link> for unlimited
-                      </p>
-                    )}
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-
-        {/* Use Cases Section - Image overlay style like About page */}
-        <section className="py-24 bg-gradient-to-br from-quotla-dark via-primary-800 to-quotla-dark">
+        {/* Story Section 2: The Solution - Smooth color transition - CENTERED */}
+        <section className="relative py-32 bg-gradient-to-b from-quotla-light via-quotla-green/10 to-quotla-dark overflow-hidden">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="text-center mb-20">
+              <div className="inline-block px-6 py-2 bg-quotla-orange/20 backdrop-blur-sm rounded-full mb-6 border border-quotla-orange/30">
+                <span className="font-heading text-sm font-bold text-quotla-orange tracking-widest">THE SOLUTION</span>
+              </div>
+              <h2 className="font-sans text-5xl md:text-6xl font-bold text-quotla-dark mb-6 leading-tight">
+                What if creating quotes<br/>
+                <span className="text-quotla-orange">was actually enjoyable?</span>
+              </h2>
+            </div>
+
+            {/* Use Cases Grid */}
+            <div className="grid md:grid-cols-3 gap-8">
               {useCases.map((useCase, idx) => (
                 <Link key={idx} href={useCase.link} className="group">
-                  <div className="relative h-[500px] rounded-3xl overflow-hidden shadow-2xl transition-all duration-300 hover:shadow-3xl">
+                  <div className={`relative h-[550px] overflow-hidden shadow-2xl transition-all duration-500 hover:shadow-quotla-orange/30 hover:scale-[1.02] ${
+                    idx === 0 ? 'rounded-tl-[80px] rounded-br-[80px] rounded-tr-2xl rounded-bl-2xl' :
+                    idx === 1 ? 'rounded-3xl' :
+                    'rounded-tr-[80px] rounded-bl-[80px] rounded-tl-2xl rounded-br-2xl'
+                  }`}>
                     <img
                       src={
                         useCase.category === 'Freelancers'
@@ -461,21 +383,28 @@ export default function HomePage() {
                           : '/images/home/managing-multiple-cleints.jpg'
                       }
                       alt={useCase.title}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       onError={(e) => {
-                        // Fallback to a placeholder or default image
                         e.currentTarget.src = '/images/about/A2.jpg'
                       }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-quotla-dark/90 via-quotla-dark/40 to-transparent flex items-end transition-all duration-300 group-hover:from-quotla-dark group-hover:via-quotla-dark/60">
-                      <div className="p-8 w-full">
-                        <div className="font-sans text-xs font-semibold text-quotla-orange uppercase tracking-wide mb-3">{useCase.category}</div>
-                        <h4 className="font-heading text-2xl md:text-3xl font-bold text-quotla-light mb-4">
+                    {/* Gradient overlay with slide-up effect on hover */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-quotla-dark via-quotla-dark/60 to-transparent group-hover:from-quotla-dark/95 group-hover:via-quotla-dark/80 flex items-end transition-all duration-500">
+                      <div className="p-10 w-full transform transition-transform duration-500 group-hover:-translate-y-2">
+                        <div className="font-heading text-xs font-bold text-quotla-orange uppercase tracking-widest mb-4">{useCase.category}</div>
+                        <h4 className="font-sans text-3xl font-bold text-quotla-light mb-4 leading-tight">
                           {useCase.title}
                         </h4>
                         <p className="text-lg text-quotla-light/90 leading-relaxed">
                           {useCase.description}
                         </p>
+                        {/* Arrow indicator */}
+                        <div className="mt-6 flex items-center gap-2 text-quotla-orange font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                          <span>Learn more</span>
+                          <svg className="w-5 h-5 transform group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                          </svg>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -485,325 +414,190 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Features Section */}
-        <section className="relative py-32 bg-gradient-to-br from-quotla-dark via-primary-800 to-quotla-dark overflow-hidden">
-          <div className="absolute inset-0 bg-[url('/images/patterns/grid/Quotla%20grid%20pattern%20light.svg')] bg-center opacity-[0.05]" style={{backgroundSize: '150%'}}></div>
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h3 className="font-heading text-4xl md:text-5xl font-bold text-white mb-6">What's the big deal?</h3>
-              <p className="font-sans text-xl text-quotla-light/90 max-w-2xl mx-auto leading-relaxed">
-                Quotla is helping professionals, business owners, & entrepreneurs manage quotes, invoices, and inventory with ease.
+        {/* Story Section 3: Features - Bold showcase - FULL WIDTH */}
+        <section className="relative py-32 bg-quotla-dark overflow-hidden">
+          {/* Animated background elements */}
+          <div className="absolute inset-0">
+            <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-quotla-orange/10 rounded-full blur-[150px] animate-morph"></div>
+            <div className="absolute bottom-0 left-0 w-[700px] h-[700px] bg-quotla-green/15 rounded-full blur-[130px] animate-morph" style={{animationDelay: '10s'}}></div>
+            <div className="absolute inset-0 bg-[url('/images/patterns/grid/Quotla%20grid%20pattern%20light.svg')] bg-center opacity-[0.02]" style={{backgroundSize: '150%'}}></div>
+          </div>
+
+          <div className="relative w-full px-4 sm:px-6 lg:px-20">
+            <div className="text-center mb-20">
+              <div className="inline-block px-6 py-2 bg-quotla-light/10 backdrop-blur-sm rounded-full mb-6 border border-quotla-light/20">
+                <span className="font-heading text-sm font-bold text-quotla-light tracking-widest">FEATURES THAT WORK</span>
+              </div>
+              <h2 className="font-sans text-5xl md:text-6xl font-bold text-quotla-light mb-6 leading-tight">
+                Everything you need.<br/>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-quotla-orange via-secondary-400 to-quotla-light">Nothing you don't.</span>
+              </h2>
+              <p className="text-xl text-quotla-light/70 max-w-3xl mx-auto">
+                Built for real businesses, not feature bloat. Every tool serves a purpose.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Features grid with creative card design */}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {features.map((feature, idx) => (
-                <div key={idx} className="group relative bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 hover:border-quotla-orange/80 hover:bg-white/15 hover:shadow-2xl transition-all duration-300 animate-diagonal-slide" style={{animationDelay: `${idx * 0.1}s`}}>
-                  <div className={`inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br ${feature.color} text-white text-2xl mb-5 transform group-hover:scale-110 transition-transform shadow-lg`}>
-                    {feature.icon}
+                <div
+                  key={idx}
+                  className="group relative bg-quotla-light/5 backdrop-blur-sm rounded-3xl p-8 border-2 border-quotla-light/10 hover:border-quotla-orange hover:bg-quotla-light/10 transition-all duration-500 hover:scale-[1.03] animate-diagonal-slide overflow-hidden"
+                  style={{animationDelay: `${idx * 0.08}s`}}
+                >
+                  {/* Hover gradient effect */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-quotla-orange/0 via-transparent to-quotla-green/0 group-hover:from-quotla-orange/10 group-hover:to-quotla-green/10 transition-all duration-500 rounded-3xl"></div>
+
+                  <div className="relative z-10">
+                    {/* Icon with unique positioning */}
+                    <div className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.color} text-white mb-6 transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-xl`}>
+                      {feature.icon}
+                    </div>
+
+                    <h4 className="font-sans text-2xl font-bold text-quotla-light mb-4 group-hover:text-quotla-orange transition-colors">{feature.title}</h4>
+                    <p className="font-sans text-base text-quotla-light/70 leading-relaxed">{feature.description}</p>
+
+                    {/* Decorative element */}
+                    <div className="absolute top-6 right-6 w-20 h-20 border-2 border-quotla-light/5 rounded-full group-hover:border-quotla-orange/30 transition-all duration-500"></div>
                   </div>
-                  <h4 className="font-heading text-xl font-semibold text-white mb-4">{feature.title}</h4>
-                  <p className="font-sans text-base text-quotla-light/80 leading-relaxed">{feature.description}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Visual Showcase Section */}
-        <section className="py-20 bg-white dark:bg-primary-800 relative overflow-hidden">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <div className="relative w-full">
-                <img
-                  src="/images/home/independent-professional.jpg"
-                  alt="Professional business portrait"
-                  className="relative rounded-2xl shadow-2xl w-full h-auto object-cover"
-                />
+        {/* Story Section 4: Social Proof - Testimonial with visual impact - CENTERED */}
+        <section className="relative py-32 bg-gradient-to-br from-quotla-light via-white to-quotla-green/20 overflow-hidden">
+          {/* Decorative elements */}
+          <div className="absolute top-20 left-10 w-96 h-96 bg-quotla-green/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-quotla-orange/10 rounded-full blur-3xl"></div>
+
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid lg:grid-cols-2 gap-16 items-center">
+              {/* Image side with creative framing */}
+              <div className="relative order-2 lg:order-1">
+                <div className="absolute -inset-4 bg-gradient-to-br from-quotla-orange/30 to-quotla-green/30 blur-2xl"></div>
+                {/* Hexagon-style clipped image */}
+                <div className="relative overflow-hidden" style={{clipPath: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)'}}>
+                  <img
+                    src="/images/home/independent-professional.jpg"
+                    alt="Professional business portrait"
+                    className="relative shadow-2xl w-full h-auto object-cover transform hover:scale-110 transition-transform duration-700"
+                  />
+                </div>
+                {/* Floating badge */}
+                <div className="absolute -bottom-8 -right-8 bg-quotla-dark text-quotla-light px-8 py-6 rounded-2xl shadow-2xl border-4 border-quotla-light">
+                  <div className="font-heading text-4xl font-bold mb-1">2 min</div>
+                  <div className="text-sm text-quotla-light/80">avg. quote time</div>
+                </div>
               </div>
-              <div className="flex flex-col justify-center h-full w-full space-y-6">
-                <p className="font-sans text-xs uppercase tracking-wider text-quotla-dark/60 dark:text-white/60">
-                  How Quotla Users Feel
-                </p>
-                <blockquote className="text-3xl md:text-4xl lg:text-5xl font-bold text-quotla-dark dark:text-white leading-tight">
-                  "With Quotla, I feel I can close more deals, in less time, thanks to their automation."
+
+              {/* Testimonial side */}
+              <div className="order-1 lg:order-2 space-y-8">
+                <div className="inline-block px-6 py-2 bg-quotla-dark/10 rounded-full mb-4">
+                  <span className="font-heading text-sm font-bold text-quotla-dark">A QUOTLA STORY </span>
+                </div>
+
+                {/* Large quote mark */}
+                <svg className="w-16 h-16 text-quotla-orange/30" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+                </svg>
+
+                <blockquote className="font-sans text-4xl md:text-5xl font-bold text-quotla-dark leading-tight">
+                  With Quotla, I close more deals in less time thanks to their automation.
                 </blockquote>
-                <p className="font-sans text-sm text-quotla-dark/70 dark:text-white/70">
-                  Owen H. Director
-                </p>
+
+                <div className="flex items-center gap-4 pt-4">
+                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-quotla-orange to-quotla-green"></div>
+                  <div>
+                    <div className="font-heading font-bold text-quotla-dark text-lg">Owen H.</div>
+                    <div className="text-quotla-dark/60">Creative Director</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Success Story Visual Section */}
-        <section className="py-20 bg-gradient-to-br from-white via-quotla-light/30 to-white dark:from-primary-800 dark:to-primary-700 relative overflow-hidden">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div className="order-2 lg:order-1">
-                <h3 className="font-heading text-3xl md:text-4xl font-bold text-quotla-dark dark:text-white mb-6">
-                  Built by entrepreneurs, for entrepreneurs
-                </h3>
-                <p className="text-lg text-quotla-dark/70 dark:text-primary-300 mb-6 leading-relaxed">
-                  We understand the challenges of running a business because we've been there. Quotla was created to solve real problems faced by freelancers and small business owners every day.
+        {/* Story Section 5: Mission Statement - Reversed layout - FULL WIDTH */}
+        <section className="relative py-32 bg-gradient-to-br from-quotla-dark via-[#1a2820] to-quotla-green overflow-hidden">
+        
+          <div className="relative w-full px-4 sm:px-6 lg:px-20">
+            <div className="grid lg:grid-cols-2 gap-16 items-center">
+              {/* Text side */}
+              <div className="space-y-8">
+                <div className="inline-block px-6 py-2 bg-quotla-light/10 backdrop-blur-sm rounded-full border border-quotla-light/20">
+                  <span className="font-heading text-sm font-bold text-quotla-light tracking-widest">OUR MISSION</span>
+                </div>
+
+                <h2 className="font-sans text-4xl md:text-5xl font-bold text-quotla-light leading-tight">
+                  Built by entrepreneurs,<br/>
+                  <span className="text-quotla-orange">for entrepreneurs</span>
+                </h2>
+
+                <p className="text-xl text-quotla-light/80 leading-relaxed">
+                  We've walked in your shoes. The late nights, the client calls, the never-ending admin work. Quotla was born from that struggle—a tool to give you back your most precious resource: time.
                 </p>
-                <div className="bg-quotla-light dark:bg-primary-700 rounded-xl p-6 border-2 border-quotla-dark/10 dark:border-quotla-light/10">
-                  <p className="text-quotla-dark/80 dark:text-primary-200 italic leading-relaxed">
-                    "Time is your most valuable asset. Every hour spent on administrative tasks is an hour not spent growing your business. That's why we built Quotla - to give you back that time."
+
+                {/* Quote card */}
+                <div className="bg-quotla-light/10 backdrop-blur-md rounded-2xl p-8 border border-quotla-light/20">
+                  <svg className="w-12 h-12 text-quotla-orange/40 mb-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+                  </svg>
+                  <p className="text-quotla-light/90 text-lg italic leading-relaxed mb-6">
+                    Time is your most valuable asset. Every hour on admin is an hour not growing your business. That's why we built Quotla.
                   </p>
-                  <div className="mt-4 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-quotla-orange to-quotla-green"></div>
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-quotla-orange to-quotla-green"></div>
                     <div>
-                      <p className="font-semibold text-quotla-dark dark:text-white">Quotla Team</p>
-                      <p className="text-sm text-quotla-dark/60 dark:text-primary-400">Building better business tools</p>
+                      <div className="font-heading font-bold text-quotla-light">The Quotla Team</div>
+                      <div className="text-quotla-light/60 text-sm">Building better business tools</div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="relative order-1 lg:order-2">
-                <div className="absolute -inset-4 bg-gradient-to-l from-quotla-green/20 to-quotla-dark/20 rounded-3xl blur-2xl"></div>
-                <img
-                  src="/images/home/business-owner2.jpg"
-                  alt="Business professional"
-                  className="relative rounded-2xl shadow-2xl w-full object-cover"
-                />
+
+              {/* Image side */}
+              <div className="relative">
+                <div className="absolute -inset-4 bg-gradient-to-br from-quotla-orange/20 to-quotla-green/20 blur-3xl"></div>
+                {/* Asymmetric rounded corners */}
+                <div className="relative overflow-hidden rounded-tl-[100px] rounded-br-[100px] rounded-tr-3xl rounded-bl-3xl shadow-2xl">
+                  <img
+                    src="/images/home/business-owner2.jpg"
+                    alt="Business professional"
+                    className="w-full object-cover transform hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Plans & Pricing Section */}
-        <section id="pricing" className="py-24 bg-gradient-to-br from-quotla-light via-white to-quotla-light/80 relative">
-          <div className="absolute inset-0 bg-[url('/images/patterns/grid/Quotla%20grid%20pattern%20light.svg')] bg-center opacity-5" style={{backgroundSize: '150%'}}></div>
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h3 className="font-heading text-4xl md:text-5xl font-bold text-quotla-dark mb-6">Choose your perfect plan</h3>
-              {/* <p className="font-sans text-xl text-quotla-dark/70 max-w-2xl mx-auto leading-relaxed">
-                Choose the perfect plan for your business needs
-              </p> */}
-              <p className="text-sm text-quotla-dark/60 mt-2">
-                {isLoadingCurrency
-                  ? 'Loading prices...'
-                  : `Prices shown in ${currency.code} (live rates)`
-                }
-              </p>
-            </div>
+        {/* Business Owner Features Section */}
+        <BusinessOwnerFeatures />
 
-            <div className="grid md:grid-cols-4 gap-6 max-w-7xl mx-auto">
-              {/* Simple Start - $1 */}
-              <div className="bg-white rounded-2xl p-6 border-2 border-quotla-dark/10 hover:border-quotla-orange/50 hover:shadow-xl transition-all duration-300">
-                <div className="mb-6">
-                  <h4 className="font-heading text-xl font-bold text-quotla-dark mb-2">Simple Start</h4>
-                  <div className="flex items-baseline mb-2">
-                    <span className="text-4xl font-bold text-quotla-dark">{formatPrice(1, currency)}</span>
-                    <span className="text-quotla-dark/60 ml-2 text-sm">/month</span>
-                  </div>
-                  <p className="text-quotla-dark/70 text-sm">Build your financial foundation</p>
-                </div>
-                <ul className="space-y-3 mb-6 text-sm">
-                  <li className="flex items-start">
-                    <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-quotla-dark/80">1 user + accountant access</span>
-                  </li>
-                  <li className="flex items-start">
-                    <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-quotla-dark/80">Quotla Agent - AI-powered bank feeds</span>
-                  </li>
-                  <li className="flex items-start">
-                    <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-quotla-dark/80">Income and expenses tracking</span>
-                  </li>
-                  <li className="flex items-start">
-                    <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-quotla-dark/80">Invoices and quotes</span>
-                  </li>
-                </ul>
-                <Link href="/signup" className="block w-full text-center px-4 py-2.5 rounded-xl text-sm font-semibold bg-quotla-dark/10 text-quotla-dark hover:bg-quotla-dark/20 transition-all">
-                  Get Started
-                </Link>
-              </div>
+        {/* Story Section 6: Pricing - Wave transition - CENTERED */}
+        <PricingSection currency={currency} isLoadingCurrency={isLoadingCurrency} />
 
-              {/* Essentials */}
-              <div className="bg-white rounded-2xl p-6 border-2 border-quotla-dark/10 hover:border-quotla-orange/50 hover:shadow-xl transition-all duration-300">
-                <div className="mb-6">
-                  <h4 className="font-heading text-xl font-bold text-quotla-dark mb-2">Essentials</h4>
-                  <div className="flex items-baseline mb-2">
-                    <span className="text-4xl font-bold text-quotla-dark">{formatPrice(5, currency)}</span>
-                    <span className="text-quotla-dark/60 ml-2 text-sm">/month</span>
-                  </div>
-                  <p className="text-quotla-dark/70 text-sm">Save time and focus on growth</p>
-                </div>
-                <ul className="space-y-3 mb-6 text-sm">
-                  <li className="flex items-start">
-                    <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-quotla-dark/80">3 users + accountant access</span>
-                  </li>
-                  <li className="flex items-start">
-                    <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-quotla-dark/80">Everything in Simple Start</span>
-                  </li>
-                  <li className="flex items-start">
-                    <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-quotla-dark/80">AI-powered collaboration</span>
-                  </li>
-                  <li className="flex items-start">
-                    <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-quotla-dark/80">Bill management</span>
-                  </li>
-                  <li className="flex items-start">
-                    <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-quotla-dark/80">Multi-currency support</span>
-                  </li>
-                </ul>
-                <Link href="/signup" className="block w-full text-center px-4 py-2.5 rounded-xl text-sm font-semibold bg-quotla-dark/10 text-quotla-dark hover:bg-quotla-dark/20 transition-all">
-                  Choose Plan
-                </Link>
-              </div>
-
-              {/* Plus - Most Popular */}
-              <div className="bg-gradient-to-br from-quotla-dark to-primary-800 rounded-2xl p-6 border-2 border-quotla-orange shadow-2xl transform scale-105 relative">
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-quotla-orange text-white px-4 py-1 rounded-full text-xs font-semibold">
-                  Best Value
-                </div>
-                <div className="mb-6">
-                  <h4 className="font-heading text-xl font-bold text-white mb-2">Plus</h4>
-                  <div className="flex items-baseline mb-2">
-                    <span className="text-4xl font-bold text-white">{formatPrice(7, currency)}</span>
-                    <span className="text-white/70 ml-2 text-sm">/month</span>
-                  </div>
-                  <p className="text-white/80 text-sm">Boost efficiency & profitability</p>
-                </div>
-                <ul className="space-y-3 mb-6 text-sm">
-                  <li className="flex items-start">
-                    <svg className="w-4 h-4 text-quotla-orange mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-white">5 users + accountant access</span>
-                  </li>
-                  <li className="flex items-start">
-                    <svg className="w-4 h-4 text-quotla-orange mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-white">Everything in Essentials</span>
-                  </li>
-                  <li className="flex items-start">
-                    <svg className="w-4 h-4 text-quotla-orange mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-white">Anomaly detection</span>
-                  </li>
-                  <li className="flex items-start">
-                    <svg className="w-4 h-4 text-quotla-orange mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-white">Quotla Customer Agent</span>
-                  </li>
-                  <li className="flex items-start">
-                    <svg className="w-4 h-4 text-quotla-orange mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-white">Inventory tracking</span>
-                  </li>
-                  <li className="flex items-start">
-                    <svg className="w-4 h-4 text-quotla-orange mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-white">Budgeting & class tracking</span>
-                  </li>
-                </ul>
-                <Link href="/signup" className="block w-full text-center px-4 py-2.5 rounded-xl text-sm font-semibold bg-quotla-orange text-white hover:bg-secondary-600 transition-all shadow-lg">
-                  Choose Plan
-                </Link>
-              </div>
-
-              {/* Advanced */}
-              <div className="bg-white rounded-2xl p-6 border-2 border-quotla-dark/10 hover:border-quotla-orange/50 hover:shadow-xl transition-all duration-300">
-                <div className="mb-6">
-                  <h4 className="font-heading text-xl font-bold text-quotla-dark mb-2">Advanced</h4>
-                  <div className="flex items-baseline mb-2">
-                    <span className="text-4xl font-bold text-quotla-dark">{formatPrice(14, currency)}</span>
-                    <span className="text-quotla-dark/60 ml-2 text-sm">/month</span>
-                  </div>
-                  <p className="text-quotla-dark/70 text-sm">Scale with customization</p>
-                </div>
-                <ul className="space-y-3 mb-6 text-sm">
-                  <li className="flex items-start">
-                    <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-quotla-dark/80">25 users + accountant access</span>
-                  </li>
-                  <li className="flex items-start">
-                    <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-quotla-dark/80">Everything in Plus</span>
-                  </li>
-                  <li className="flex items-start">
-                    <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-quotla-dark/80">Quotla Finance Agent</span>
-                  </li>
-                  <li className="flex items-start">
-                    <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-quotla-dark/80">Project Management Agent</span>
-                  </li>
-                  <li className="flex items-start">
-                    <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-quotla-dark/80">Custom report builder</span>
-                  </li>
-                  <li className="flex items-start">
-                    <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-quotla-dark/80">Workflow automation</span>
-                  </li>
-                  <li className="flex items-start">
-                    <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-quotla-dark/80">Unlimited classes & locations</span>
-                  </li>
-                </ul>
-                <Link href="/signup" className="block w-full text-center px-4 py-2.5 rounded-xl text-sm font-semibold bg-quotla-dark text-white hover:bg-quotla-dark/90 transition-all">
-                  Choose Plan
-                </Link>
-              </div>
-            </div>
+        {/* Story Section 7: FAQ - Asymmetric background */}
+        <section className="relative py-32 bg-gradient-to-br from-quotla-dark via-[#1a2820] to-quotla-dark overflow-hidden">
+          {/* Creative background elements */}
+          <div className="absolute inset-0">
+            <div className="absolute top-0 left-0 w-1/2 h-full bg-quotla-orange/5 transform -skew-x-12"></div>
+            <div className="absolute inset-0 bg-[url('/images/patterns/grid/Quotla%20grid%20pattern%20light.svg')] bg-center opacity-[0.02]" style={{backgroundSize: '150%'}}></div>
           </div>
-        </section>
 
-        {/* FAQ Section */}
-        <section className="py-24 bg-gradient-to-br from-primary-700 via-quotla-dark to-primary-800 relative">
-          <div className="absolute inset-0 bg-[url('/images/patterns/grid/Quotla%20grid%20pattern%20light.svg')] bg-center opacity-[0.03]" style={{backgroundSize: '150%'}}></div>
           <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h3 className="font-heading text-4xl md:text-5xl font-bold text-white mb-6">Frequently Asked Questions</h3>
-              <p className="font-sans text-xl text-quotla-light/80 max-w-2xl mx-auto leading-relaxed">
-                Everything you need to know about Quotla
+            <div className="text-center mb-20">
+              <div className="inline-block px-6 py-2 bg-quotla-light/10 backdrop-blur-sm rounded-full mb-6 border border-quotla-light/20">
+                <span className="font-heading text-sm font-bold text-quotla-light tracking-widest">GOT QUESTIONS?</span>
+              </div>
+              <h2 className="font-sans text-5xl md:text-6xl font-bold text-quotla-light mb-6 leading-tight">
+                We've got<br/>
+                <span className="text-quotla-orange">answers</span>
+              </h2>
+              <p className="text-xl text-quotla-light/70 max-w-2xl mx-auto">
+                Everything you need to know before you get started
               </p>
             </div>
 
@@ -834,27 +628,29 @@ export default function HomePage() {
                   answer: "Yes! Our free plan includes 2 AI questions, basic quote creation, and PDF export. No credit card required. Upgrade anytime for unlimited access to all features."
                 }
               ].map((faq, idx) => (
-                <div key={idx} className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 overflow-hidden transition-all duration-300 hover:border-quotla-orange/50">
+                <div key={idx} className="group bg-quotla-light/5 backdrop-blur-sm rounded-2xl border-2 border-quotla-light/10 overflow-hidden transition-all duration-500 hover:border-quotla-orange hover:bg-quotla-light/10">
                   <button
                     onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
-                    className="w-full flex items-center justify-between p-6 text-left hover:bg-white/5 transition-colors"
+                    className="w-full flex items-center justify-between p-8 text-left hover:bg-quotla-light/5 transition-colors"
                     aria-expanded={openFaq === idx}
                   >
-                    <h4 className="text-lg font-semibold text-white pr-8">{faq.question}</h4>
-                    <svg
-                      className={`w-6 h-6 text-quotla-light/70 transition-transform duration-300 flex-shrink-0 ${openFaq === idx ? 'rotate-180' : ''}`}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
+                    <h4 className="font-sans text-xl font-bold text-quotla-light pr-8 group-hover:text-quotla-orange transition-colors">{faq.question}</h4>
+                    <div className={`flex-shrink-0 w-10 h-10 rounded-full bg-quotla-light/10 flex items-center justify-center transition-all duration-500 ${openFaq === idx ? 'bg-quotla-orange rotate-180' : 'group-hover:bg-quotla-light/20'}`}>
+                      <svg
+                        className="w-5 h-5 text-quotla-light transition-transform duration-500"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
                   </button>
                   <div
-                    className={`overflow-hidden transition-all duration-300 ${openFaq === idx ? 'max-h-96' : 'max-h-0'}`}
+                    className={`overflow-hidden transition-all duration-500 ${openFaq === idx ? 'max-h-96' : 'max-h-0'}`}
                   >
-                    <div className="px-6 pb-6 pt-0">
-                      <p className="text-quotla-light/80 leading-relaxed">{faq.answer}</p>
+                    <div className="px-8 pb-8 pt-0">
+                      <p className="text-quotla-light/80 text-lg leading-relaxed">{faq.answer}</p>
                     </div>
                   </div>
                 </div>
@@ -863,26 +659,54 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="py-24 bg-gradient-to-br from-quotla-dark via-quotla-dark/95 to-quotla-dark relative overflow-hidden">
-          <div className="absolute inset-0 bg-[url('/images/patterns/spiral/Quotla%20Spiral%20orange.svg')] bg-center opacity-[0.0275]" style={{backgroundSize: '8100%'}}>
-          </div>
-          <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h3 className="font-heading text-4xl md:text-5xl font-bold text-white mb-10">
-              Join the power move today
-            </h3>
-            <div className="flex justify-center">
+        {/* Final CTA - Bold finish with creative split design */}
+        <section className="relative py-40 overflow-hidden">
+          {/* Split background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-quotla-orange via-secondary-500 to-quotla-dark"></div>
+          <div className="absolute inset-0 bg-[url('/images/patterns/spiral/Quotla%20Spiral%20orange.svg')] bg-center opacity-[0.05]" style={{backgroundSize: '100%'}}></div>
+
+          {/* Animated orbs */}
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-quotla-light/10 rounded-full blur-3xl animate-morph"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-quotla-dark/20 rounded-full blur-3xl animate-morph" style={{animationDelay: '5s'}}></div>
+
+          <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div className="inline-block px-6 py-2 bg-white/20 backdrop-blur-sm rounded-full mb-8 border border-white/30">
+              <span className="font-heading text-sm font-bold text-white tracking-widest">READY TO START?</span>
+            </div>
+
+            <h2 className="font-sans text-5xl md:text-7xl font-bold text-white mb-8 leading-tight">
+              Stop wasting time.<br/>
+              <span className="text-quotla-dark">Start building.</span>
+            </h2>
+
+            <p className="text-2xl text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed">
+              Join thousands who've transformed their workflow with Quotla
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
               <a
                 href="#pricing"
                 onClick={(e) => {
                   e.preventDefault()
                   document.querySelector('#pricing')?.scrollIntoView({ behavior: 'smooth' })
                 }}
-                className="px-10 py-5 rounded-xl text-xl font-semibold bg-quotla-orange text-white hover:bg-secondary-600 transition-all shadow-xl shadow-quotla-orange/40 hover:shadow-2xl hover:shadow-quotla-orange/60 hover:scale-105"
+                className="group relative px-12 py-6 rounded-2xl text-xl font-bold bg-quotla-dark text-quotla-light hover:bg-quotla-dark/90 transition-all shadow-2xl hover:shadow-quotla-dark/80 hover:scale-105 overflow-hidden"
               >
-                See plans and pricing
+                <span className="relative z-10">See plans & pricing</span>
+                <div className="absolute inset-0 bg-quotla-light/10 transform -skew-x-12 translate-x-full group-hover:translate-x-0 transition-transform duration-500"></div>
               </a>
+
+              <Link
+                href="/about"
+                className="px-12 py-6 rounded-2xl text-xl font-bold bg-white/10 backdrop-blur-sm text-white border-2 border-white/30 hover:bg-white/20 hover:border-white/50 transition-all"
+              >
+                Learn more
+              </Link>
             </div>
+
+            <p className="text-white/70 mt-8">
+              Free to start • No credit card • 2-minute setup
+            </p>
           </div>
         </section>
       </main>

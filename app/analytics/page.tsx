@@ -5,9 +5,10 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import TimeTracker from '@/components/TimeTracker'
 import ProfitabilityDashboard from '@/components/ProfitabilityDashboard'
+import ExpenseTracker from '@/components/ExpenseTracker'
 
 export default function AnalyticsPage() {
-  const [activeTab, setActiveTab] = useState<'profitability' | 'time-tracking'>('profitability')
+  const [activeTab, setActiveTab] = useState<'profitability' | 'time-tracking' | 'expenses'>('profitability')
 
   return (
     <div className="min-h-screen bg-quotla-light relative overflow-hidden">
@@ -100,6 +101,27 @@ export default function AnalyticsPage() {
             </button>
 
             <button
+              onClick={() => setActiveTab('expenses')}
+              className={`w-full text-left p-6 transition-all duration-300 border-l-4 ${
+                activeTab === 'expenses'
+                  ? 'border-red-500 bg-red-500/5 translate-x-2'
+                  : 'border-quotla-dark/10 hover:border-quotla-dark/30 hover:translate-x-1'
+              }`}
+            >
+              <div className="flex items-center gap-3 mb-1">
+                <div className={`w-2 h-2 rounded-full ${activeTab === 'expenses' ? 'bg-red-500' : 'bg-quotla-dark/30'}`}></div>
+                <span className={`font-bold text-sm uppercase tracking-wider ${
+                  activeTab === 'expenses' ? 'text-red-500' : 'text-quotla-dark/60'
+                }`}>
+                  Expenses
+                </span>
+              </div>
+              <div className={`text-xs ml-5 ${activeTab === 'expenses' ? 'text-quotla-dark/80' : 'text-quotla-dark/50'}`}>
+                Track · Categorize · Deduct
+              </div>
+            </button>
+
+            <button
               onClick={() => setActiveTab('time-tracking')}
               className={`w-full text-left p-6 transition-all duration-300 border-l-4 ${
                 activeTab === 'time-tracking'
@@ -139,7 +161,9 @@ export default function AnalyticsPage() {
             <div className="absolute -left-6 top-0 w-1 h-full bg-quotla-dark/5">
               <div
                 className={`w-full transition-all duration-500 ${
-                  activeTab === 'profitability' ? 'bg-quotla-orange h-1/2' : 'bg-quotla-green h-1/2 translate-y-full'
+                  activeTab === 'profitability' ? 'bg-quotla-orange h-1/3' :
+                  activeTab === 'expenses' ? 'bg-red-500 h-1/3 translate-y-full' :
+                  'bg-quotla-green h-1/3 translate-y-[200%]'
                 }`}
               ></div>
             </div>
@@ -148,6 +172,12 @@ export default function AnalyticsPage() {
               {activeTab === 'profitability' && (
                 <div>
                   <ProfitabilityDashboard />
+                </div>
+              )}
+
+              {activeTab === 'expenses' && (
+                <div>
+                  <ExpenseTracker />
                 </div>
               )}
 

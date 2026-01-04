@@ -7,6 +7,8 @@ import { supabase } from '@/lib/supabase/client'
 import { InventoryItem, InventoryStats, InventoryFilters } from '@/types/inventory'
 import Navbar from '@/components/Navbar'
 import LoadingSpinner from '@/components/LoadingSpinner'
+import CurrencySelector from '@/components/CurrencySelector'
+import { formatCurrency, DEFAULT_CURRENCY, getUserCurrency, setUserCurrency } from '@/lib/utils/currency'
 
 export default function InventoryPage() {
   const router = useRouter()
@@ -24,10 +26,19 @@ export default function InventoryPage() {
     search: '',
     is_active: true
   })
+  const [displayCurrency, setDisplayCurrency] = useState<string>(DEFAULT_CURRENCY)
 
   useEffect(() => {
     checkAuthAndLoad()
+    // Load user's preferred currency
+    const savedCurrency = getUserCurrency()
+    setDisplayCurrency(savedCurrency)
   }, [])
+
+  const handleCurrencyChange = (newCurrency: string) => {
+    setDisplayCurrency(newCurrency)
+    setUserCurrency(newCurrency)
+  }
 
   const checkAuthAndLoad = async () => {
     const { data: { session } } = await supabase.auth.getSession()
@@ -125,118 +136,123 @@ export default function InventoryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-quotla-light relative">
-      {/* Subtle background pattern */}
-      <div className="absolute inset-0 bg-[url('/images/patterns/grid/Quotla%20grid%20pattern%20light.svg')] bg-center opacity-[0.02] pointer-events-none" style={{backgroundSize: '150%'}}></div>
+    <div className="min-h-screen bg-[#0e1616] relative">
+      {/* Subtle noise texture */}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIj48ZmVUdXJidWxlbmNlIGJhc2VGcmVxdWVuY3k9Ii43NSIgc3RpdGNoVGlsZXM9InN0aXRjaCIgdHlwZT0iZnJhY3RhbE5vaXNlIi8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIzMDAiIGZpbHRlcj0idXJsKCNhKSIgb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg==')]"></div>
 
       <Navbar />
 
-      <main className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Inventory Management</h1>
-              <p className="text-gray-600 mt-1">Track products, manage stock, and monitor inventory value</p>
+        <div className="mb-16">
+          <div className="flex justify-between items-center mb-12">
+            <div className="relative">
+              <div className="absolute -left-4 top-0 w-1 h-full bg-[#ce6203]"></div>
+              <div className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#9ca3af] mb-3">
+                Inventory Control
+              </div>
+              <h1 className="text-5xl font-bold text-[#fffad6] mb-2 tracking-tight">Stock Management</h1>
+              <p className="text-[#9ca3af] mt-2">Track products, manage stock, and monitor inventory value</p>
             </div>
             <Link
               href="/inventory/new"
-              className="px-4 py-2 bg-quotla-orange text-white rounded-lg hover:bg-secondary-600 transition-colors shadow-sm"
+              className="group px-8 py-4 bg-[#ce6203] text-white font-semibold rounded-lg border-2 border-white/10 shadow-[0_4px_12px_rgba(206,98,3,0.4)] hover:shadow-[0_6px_16px_rgba(206,98,3,0.5)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-150"
             >
-              + Add Item
+              <span className="flex items-center gap-2">
+                Add Item
+                <span className="group-hover:translate-x-1 transition-transform">→</span>
+              </span>
             </Link>
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <div className="bg-white rounded-lg shadow-sm p-5 border border-gray-200">
-              <div className="flex items-center justify-between">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-12">
+            {/* Total Items Card */}
+            <div className="relative bg-gradient-to-br from-[#1a1f1f] to-[#0e1616] border-l-4 border-[#ce6203] rounded-lg p-7 shadow-[0_8px_24px_rgba(0,0,0,0.4)]">
+              <div className="flex items-start justify-between mb-3">
                 <div>
-                  <p className="text-sm text-gray-600">Total Items</p>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{stats.total_items}</p>
-                </div>
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                  </svg>
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-[#9ca3af] mb-2">
+                    Total Items
+                  </p>
+                  <p className="text-5xl font-bold tabular-nums tracking-tight text-[#fffad6]" style={{fontVariantNumeric: 'tabular-nums'}}>
+                    {stats.total_items}
+                  </p>
                 </div>
               </div>
-              <div className="mt-3 text-xs text-gray-500">
-                {stats.total_products} products • {stats.total_services} services
+              <div className="text-xs text-[#6b7280] mt-4">
+                {stats.total_products} products · {stats.total_services} services
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm p-5 border border-gray-200">
-              <div className="flex items-center justify-between">
+            {/* Total Value Card */}
+            <div className="relative bg-gradient-to-br from-[#1a1f1f] to-[#0e1616] border-l-4 border-[#84cc16] rounded-lg p-7 shadow-[0_8px_24px_rgba(0,0,0,0.4)]">
+              <div className="flex items-start justify-between mb-3">
                 <div>
-                  <p className="text-sm text-gray-600">Total Value</p>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">
-                    ${stats.total_value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-[#9ca3af] mb-2">
+                    Total Value
+                  </p>
+                  <p className="text-4xl font-bold tabular-nums tracking-tight text-[#fffad6]" style={{fontVariantNumeric: 'tabular-nums'}}>
+                    {formatCurrency(stats.total_value, displayCurrency)}
                   </p>
                 </div>
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                  <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
               </div>
-              <div className="mt-3 text-xs text-gray-500">
+              <div className="text-xs text-[#6b7280] mt-4">
                 At cost value
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm p-5 border border-gray-200">
-              <div className="flex items-center justify-between">
+            {/* Low Stock Card */}
+            <div className="relative bg-gradient-to-br from-[#1a1f1f] to-[#0e1616] border-l-4 border-[#f97316] rounded-lg p-7 shadow-[0_8px_24px_rgba(0,0,0,0.4)]">
+              <div className="flex items-start justify-between mb-3">
                 <div>
-                  <p className="text-sm text-gray-600">Low Stock</p>
-                  <p className="text-2xl font-bold text-orange-600 mt-1">{stats.low_stock_count}</p>
-                </div>
-                <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                  <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                  </svg>
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-[#9ca3af] mb-2">
+                    Low Stock
+                  </p>
+                  <p className="text-5xl font-bold tabular-nums tracking-tight text-[#f97316]" style={{fontVariantNumeric: 'tabular-nums'}}>
+                    {stats.low_stock_count}
+                  </p>
                 </div>
               </div>
-              <div className="mt-3 text-xs text-gray-500">
+              <div className="text-xs text-[#6b7280] mt-4">
                 Need reordering
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm p-5 border border-gray-200">
-              <div className="flex items-center justify-between">
+            {/* Out of Stock Card */}
+            <div className="relative bg-gradient-to-br from-[#1a1f1f] to-[#0e1616] border-l-4 border-[#dc2626] rounded-lg p-7 shadow-[0_8px_24px_rgba(0,0,0,0.4)]">
+              <div className="flex items-start justify-between mb-3">
                 <div>
-                  <p className="text-sm text-gray-600">Out of Stock</p>
-                  <p className="text-2xl font-bold text-red-600 mt-1">{stats.out_of_stock_count}</p>
-                </div>
-                <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                  <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-[#9ca3af] mb-2">
+                    Out of Stock
+                  </p>
+                  <p className="text-5xl font-bold tabular-nums tracking-tight text-[#dc2626]" style={{fontVariantNumeric: 'tabular-nums'}}>
+                    {stats.out_of_stock_count}
+                  </p>
                 </div>
               </div>
-              <div className="mt-3 text-xs text-gray-500">
-                Urgent attention needed
+              <div className="text-xs text-[#6b7280] mt-4">
+                Urgent attention
               </div>
             </div>
           </div>
 
           {/* Filters */}
-          <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="bg-[#1a1f1f] rounded-xl border border-[#2a2f2f] p-6 shadow-[0_4px_8px_rgba(0,0,0,0.3)]">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
               <div>
                 <input
                   type="text"
                   placeholder="Search items..."
                   value={filters.search}
                   onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-quotla-orange focus:border-transparent"
+                  className="w-full bg-[#1a1f1f]/60 text-[#fffad6] border-0 border-b-2 border-[#374151] px-1 py-3.5 focus:outline-none focus:border-b-3 focus:border-[#ce6203] transition-all duration-150 placeholder:text-[#6b7280]"
                 />
               </div>
               <div>
                 <select
                   value={filters.item_type || ''}
                   onChange={(e) => setFilters({ ...filters, item_type: e.target.value as any })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-quotla-orange focus:border-transparent"
+                  className="w-full bg-[#1a1f1f]/60 text-[#fffad6] border-0 border-b-2 border-[#374151] px-1 py-3.5 focus:outline-none focus:border-b-3 focus:border-[#ce6203] transition-all duration-150"
                 >
                   <option value="">All Types</option>
                   <option value="product">Products</option>
@@ -244,21 +260,28 @@ export default function InventoryPage() {
                 </select>
               </div>
               <div>
+                <CurrencySelector
+                  value={displayCurrency}
+                  onChange={handleCurrencyChange}
+                  showLabel={false}
+                />
+              </div>
+              <div>
                 <button
                   onClick={() => setFilters({ ...filters, is_low_stock: !filters.is_low_stock })}
-                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${
+                  className={`w-full px-4 py-3.5 rounded-lg border-2 transition-all font-semibold text-sm ${
                     filters.is_low_stock
-                      ? 'bg-orange-50 border-orange-300 text-orange-700'
-                      : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                      ? 'bg-[#f97316]/15 border-[#f97316]/30 text-[#f97316]'
+                      : 'bg-transparent border-[#445642] text-[#fffad6] hover:bg-[#445642]/15'
                   }`}
                 >
-                  {filters.is_low_stock ? '✓ ' : ''}Low Stock Only
+                  Low Stock Only
                 </button>
               </div>
               <div>
                 <Link
                   href="/inventory/suppliers"
-                  className="block w-full px-4 py-2 text-center border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="block w-full px-4 py-3.5 text-center border-2 border-[#445642] rounded-lg text-[#fffad6] hover:bg-[#445642]/15 transition-all font-semibold text-sm"
                 >
                   Manage Suppliers
                 </Link>
@@ -268,96 +291,101 @@ export default function InventoryPage() {
         </div>
 
         {/* Items Table */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-[#1a1f1f] rounded-xl border border-[#2a2f2f] overflow-hidden shadow-[0_12px_24px_rgba(0,0,0,0.4)]">
           {filteredItems.length === 0 ? (
-            <div className="text-center py-12">
-              <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-              </svg>
-              <h3 className="mt-2 text-sm font-medium text-gray-900">No inventory items</h3>
-              <p className="mt-1 text-sm text-gray-500">Get started by adding your first item.</p>
-              <div className="mt-6">
-                <Link
-                  href="/inventory/new"
-                  className="inline-flex items-center px-4 py-2 bg-quotla-orange text-white rounded-lg hover:bg-secondary-600"
-                >
-                  + Add Item
-                </Link>
+            <div className="text-center py-16">
+              <div className="w-16 h-16 mx-auto mb-6 rounded-xl bg-[#ce6203]/10 flex items-center justify-center">
+                <svg className="w-8 h-8 text-[#ce6203]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
               </div>
+              <h3 className="text-lg font-bold text-[#fffad6] mb-2">No inventory items</h3>
+              <p className="text-sm text-[#9ca3af] mb-8">Get started by adding your first item.</p>
+              <Link
+                href="/inventory/new"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-[#ce6203] text-white font-semibold rounded-lg border-2 border-white/10 shadow-[0_4px_12px_rgba(206,98,3,0.4)] hover:shadow-[0_6px_16px_rgba(206,98,3,0.5)] hover:-translate-y-0.5 transition-all duration-150"
+              >
+                Add Item →
+              </Link>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SKU</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit Price</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Value</th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              <table className="min-w-full divide-y divide-[#2a2f2f]">
+                <thead className="bg-[#445642]/10">
+                  <tr className="border-b-2 border-[#445642]">
+                    <th className="px-5 py-4 text-left text-[10px] font-bold text-[#9ca3af] uppercase tracking-[0.1em]">Item</th>
+                    <th className="px-5 py-4 text-left text-[10px] font-bold text-[#9ca3af] uppercase tracking-[0.1em]">SKU</th>
+                    <th className="px-5 py-4 text-left text-[10px] font-bold text-[#9ca3af] uppercase tracking-[0.1em]">Type</th>
+                    <th className="px-5 py-4 text-left text-[10px] font-bold text-[#9ca3af] uppercase tracking-[0.1em]">Stock</th>
+                    <th className="px-5 py-4 text-right text-[10px] font-bold text-[#9ca3af] uppercase tracking-[0.1em]">Unit Price</th>
+                    <th className="px-5 py-4 text-right text-[10px] font-bold text-[#9ca3af] uppercase tracking-[0.1em]">Value</th>
+                    <th className="px-5 py-4 text-right text-[10px] font-bold text-[#9ca3af] uppercase tracking-[0.1em]">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-[#1a1f1f] divide-y divide-[#fffad6]/4">
                   {filteredItems.map((item) => {
                     const isLowStock = item.track_inventory && item.quantity_on_hand <= item.low_stock_threshold
                     const isOutOfStock = item.track_inventory && item.quantity_on_hand === 0
 
                     return (
-                      <tr key={item.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap">
+                      <tr key={item.id} className="group relative border-b border-[#fffad6]/4 hover:bg-[#ce6203]/6 transition-colors cursor-pointer">
+                        <td className="absolute left-0 w-0 h-full bg-[#ce6203] group-hover:w-0.5 transition-all"></td>
+                        <td className="px-5 py-3.5">
                           <div>
-                            <div className="text-sm font-medium text-gray-900">{item.name}</div>
+                            <div className="text-sm font-medium text-[#fffad6]">{item.name}</div>
                             {item.description && (
-                              <div className="text-sm text-gray-500 truncate max-w-xs">{item.description}</div>
+                              <div className="text-xs text-[#9ca3af] truncate max-w-xs mt-1">{item.description}</div>
                             )}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-5 py-3.5 text-sm text-[#9ca3af]">
                           {item.sku || '-'}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                        <td className="px-5 py-3.5">
+                          <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide rounded border ${
                             item.item_type === 'product'
-                              ? 'bg-blue-100 text-blue-800'
-                              : 'bg-purple-100 text-purple-800'
+                              ? 'bg-[#84cc16]/15 text-[#84cc16] border-[#84cc16]/30'
+                              : 'bg-[#ce6203]/15 text-[#ce6203] border-[#ce6203]/30'
                           }`}>
+                            <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
                             {item.item_type}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-5 py-3.5">
                           {item.track_inventory ? (
-                            <div>
-                              <span className={`text-sm font-medium ${
-                                isOutOfStock ? 'text-red-600' : isLowStock ? 'text-orange-600' : 'text-gray-900'
-                              }`}>
+                            <div className="flex items-center gap-2">
+                              <span className={`text-sm font-semibold tabular-nums ${
+                                isOutOfStock ? 'text-[#dc2626]' : isLowStock ? 'text-[#f97316]' : 'text-[#fffad6]'
+                              }`} style={{fontVariantNumeric: 'tabular-nums'}}>
                                 {item.quantity_on_hand}
                               </span>
-                              {isLowStock && (
-                                <span className="ml-2 text-xs text-orange-600">⚠️ Low</span>
+                              {isLowStock && !isOutOfStock && (
+                                <span className="text-xs font-bold text-[#f97316] uppercase">Low</span>
+                              )}
+                              {isOutOfStock && (
+                                <span className="text-xs font-bold text-[#dc2626] uppercase">Out</span>
                               )}
                             </div>
                           ) : (
-                            <span className="text-sm text-gray-400">-</span>
+                            <span className="text-sm text-[#6b7280]">-</span>
                           )}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          ${item.unit_price.toFixed(2)}
+                        <td className="px-5 py-3.5 text-right text-sm font-semibold text-[#fffad6] tabular-nums" style={{fontVariantNumeric: 'tabular-nums'}}>
+                          {formatCurrency(item.unit_price, displayCurrency)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          ${(item.quantity_on_hand * item.cost_price).toFixed(2)}
+                        <td className="px-5 py-3.5 text-right text-sm font-semibold text-[#fffad6] tabular-nums" style={{fontVariantNumeric: 'tabular-nums'}}>
+                          {formatCurrency(item.quantity_on_hand * item.cost_price, displayCurrency)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <td className="px-5 py-3.5 text-right">
                           <Link
                             href={`/inventory/${item.id}/edit`}
-                            className="text-quotla-orange hover:text-secondary-600 mr-4"
+                            className="text-[#ce6203] hover:text-[#f97316] font-medium text-sm mr-4 transition-colors"
                           >
                             Edit
                           </Link>
                           <button
                             onClick={() => handleDelete(item.id)}
-                            className="text-red-600 hover:text-red-900"
+                            className="text-[#dc2626] hover:text-[#ef4444] font-medium text-sm transition-colors"
                           >
                             Delete
                           </button>

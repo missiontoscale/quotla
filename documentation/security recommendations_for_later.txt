@@ -1,0 +1,3 @@
+Consider adding Content-Security-Policy header to further prevent XSS attacks
+Consider implementing CSRF tokens for state-changing operations (though Supabase handles this for auth operations)
+The ignoreBuildErrors: true in TypeScript config should be removed once type issues are resolved
