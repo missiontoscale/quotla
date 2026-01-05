@@ -22,6 +22,7 @@ export interface InvoiceWithItems extends Invoice {
 
 export interface LineItem {
   id?: string
+  name?: string // Product/Service name
   description: string
   quantity: number
   unit_price: number
@@ -64,3 +65,30 @@ export const CURRENCIES = [
 
 export const QUOTE_STATUSES = ['draft', 'sent', 'approved', 'rejected', 'expired'] as const
 export const INVOICE_STATUSES = ['draft', 'sent', 'paid', 'overdue', 'cancelled'] as const
+
+// Shopping List Types
+export interface ShoppingListItem {
+  id: string
+  user_id: string
+  inventory_item_id: string
+  quantity_needed: number
+  notes?: string | null
+  is_purchased: boolean
+  priority: 'low' | 'medium' | 'high' | 'urgent'
+  created_at: string
+  updated_at: string
+  purchased_at?: string | null
+  inventory_items?: {
+    id: string
+    name: string
+    sku?: string | null
+    unit_price: number
+    cost_price: number
+    quantity_on_hand: number
+    item_type: 'product' | 'service'
+    low_stock_threshold: number
+    track_inventory: boolean
+  }
+}
+
+export const SHOPPING_LIST_PRIORITIES = ['low', 'medium', 'high', 'urgent'] as const

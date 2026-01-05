@@ -8,6 +8,7 @@ import LoadingSpinner from '@/components/LoadingSpinner'
 import Navbar from '@/components/Navbar'
 import HeroCarousel from '@/components/home/HeroCarousel'
 import PricingSection from '@/components/home/PricingSection'
+import { detectUserCurrency, formatPrice, type Currency } from '@/lib/utils/currency'
 import BusinessOwnerFeatures from '@/components/home/BusinessOwnerFeatures'
 
 export default function HomePage() {
@@ -21,6 +22,12 @@ export default function HomePage() {
   const [placeholderText, setPlaceholderText] = useState('')
   const [placeholderPhraseIndex, setPlaceholderPhraseIndex] = useState(0)
   const [isPlaceholderDeleting, setIsPlaceholderDeleting] = useState(false)
+  const [currency, setCurrency] = useState<Currency>({
+    code: 'USD',
+    symbol: '$',
+    rate: 1,
+  })
+  const [isLoadingCurrency, setIsLoadingCurrency] = useState(true)
 
   const placeholderPhrases = [
     'Create a professional quote...',
@@ -44,6 +51,18 @@ export default function HomePage() {
       setCheckingAuth(false)
     }
     checkAuth()
+  }, [])
+
+  // Detect user's location and set currency with live rates
+  useEffect(() => {
+    const loadCurrency = async () => {
+      setIsLoadingCurrency(true)
+      const detectedCurrency = await detectUserCurrency()
+      setCurrency(detectedCurrency)
+      setIsLoadingCurrency(false)
+    }
+
+    loadCurrency()
   }, [])
 
   // Typing animation for chat input placeholder
@@ -476,7 +495,7 @@ export default function HomePage() {
               {/* Testimonial side */}
               <div className="order-1 lg:order-2 space-y-8">
                 <div className="inline-block px-6 py-2 bg-quotla-dark/10 rounded-full mb-4">
-                  <span className="font-heading text-sm font-bold text-quotla-dark">A QUOTLA STORY </span>
+                  <span className="font-heading text-sm font-bold text-quotla-dark tracking-widest">A QUOTLA STORY </span>
                 </div>
 
                 {/* Large quote mark */}
@@ -558,7 +577,7 @@ export default function HomePage() {
         <BusinessOwnerFeatures />
 
         {/* Story Section 6: Pricing - Wave transition - CENTERED */}
-        <PricingSection />
+        <PricingSection currency={currency} isLoadingCurrency={isLoadingCurrency} />
 
         {/* Story Section 7: FAQ - Asymmetric background */}
         <section className="relative py-32 bg-gradient-to-br from-quotla-dark via-[#1a2820] to-quotla-dark overflow-hidden">

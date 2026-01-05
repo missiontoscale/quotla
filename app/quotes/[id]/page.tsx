@@ -10,6 +10,7 @@ import { format } from 'date-fns'
 import { formatCurrency } from '@/lib/utils/validation'
 import ExportButtons from '@/components/ExportButtons'
 import LoadingSpinner from '@/components/LoadingSpinner'
+import { ScheduleMeetingModal } from '@/components/ScheduleMeetingModal'
 
 export default function ViewQuotePage() {
   const router = useRouter()
@@ -17,6 +18,7 @@ export default function ViewQuotePage() {
   const { user, profile } = useAuth()
   const [quote, setQuote] = useState<QuoteWithItems | null>(null)
   const [loading, setLoading] = useState(true)
+  const [showScheduleModal, setShowScheduleModal] = useState(false)
 
   useEffect(() => {
     if (user && params.id) {
@@ -240,6 +242,28 @@ export default function ViewQuotePage() {
           Back to Quotes
         </Link>
         <div className="flex gap-2">
+          {quote.client?.email && (
+            <button
+              onClick={() => setShowScheduleModal(true)}
+              className="btn btn-secondary flex items-center gap-2"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
+              </svg>
+              Schedule Follow-up
+            </button>
+          )}
           <Link href={`/quotes/${quote.id}/edit`} className="btn btn-secondary">
             Edit Quote
           </Link>
@@ -248,6 +272,16 @@ export default function ViewQuotePage() {
           </button>
         </div>
       </div>
+
+      {/* Schedule Meeting Modal */}
+      <ScheduleMeetingModal
+        isOpen={showScheduleModal}
+        onClose={() => setShowScheduleModal(false)}
+        clientId={quote.client?.id}
+        clientEmail={quote.client?.email || ''}
+        clientName={quote.client?.name || ''}
+        quoteId={quote.id}
+      />
     </div>
   )
 }

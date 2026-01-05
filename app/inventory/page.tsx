@@ -131,6 +131,51 @@ export default function InventoryPage() {
     }
   }
 
+  const handleAddToShoppingList = async (itemId: string, itemName: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        alert('Please log in to add items to your shopping list')
+        return
+      }
+
+      // Check if item already exists in shopping list
+      const { data: existing } = await supabase
+        .from('shopping_list')
+        .select('id, quantity_needed')
+        .eq('user_id', user.id)
+        .eq('inventory_item_id', itemId)
+        .single()
+
+      if (existing) {
+        // Update quantity if already exists
+        const { error } = await supabase
+          .from('shopping_list')
+          .update({ quantity_needed: existing.quantity_needed + 1 })
+          .eq('id', existing.id)
+
+        if (error) throw error
+        alert(`Updated quantity for "${itemName}" in shopping list`)
+      } else {
+        // Add new item
+        const { error } = await supabase
+          .from('shopping_list')
+          .insert({
+            user_id: user.id,
+            inventory_item_id: itemId,
+            quantity_needed: 1,
+            priority: 'medium'
+          })
+
+        if (error) throw error
+        alert(`"${itemName}" added to shopping list!`)
+      }
+    } catch (error) {
+      console.error('Error adding to shopping list:', error)
+      alert('Failed to add item to shopping list')
+    }
+  }
+
   if (loading) {
     return <LoadingSpinner />
   }
@@ -377,6 +422,13 @@ export default function InventoryPage() {
                           {formatCurrency(item.quantity_on_hand * item.cost_price, displayCurrency)}
                         </td>
                         <td className="px-5 py-3.5 text-right">
+                          <button
+                            onClick={() => handleAddToShoppingList(item.id, item.name)}
+                            className="text-[#84cc16] hover:text-[#a3e635] font-medium text-sm mr-4 transition-colors"
+                            title="Add to shopping list"
+                          >
+                            + List
+                          </button>
                           <Link
                             href={`/inventory/${item.id}/edit`}
                             className="text-[#ce6203] hover:text-[#f97316] font-medium text-sm mr-4 transition-colors"

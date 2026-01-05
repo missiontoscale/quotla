@@ -2,29 +2,92 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { getUserCurrency, formatCurrency, getCurrency, type Currency } from '@/lib/utils/currency'
+import { formatCurrency } from '@/lib/utils/currency'
 import { SUBSCRIPTION_PLANS, getRemainingQuota, formatQuota, type UsageStats } from '@/lib/constants/plans'
 import { useAuth } from '@/contexts/AuthContext'
-import LoadingSpinner from '@/components/LoadingSpinner'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 
 export default function PricingPage() {
-  const { user, profile, loading: authLoading } = useAuth()
+  const { user, profile } = useAuth()
   const [currencyCode, setCurrencyCode] = useState<string>('USD')
-  const currency = getCurrency(currencyCode)
   const [activeFaq, setActiveFaq] = useState<number | null>(null)
-  const [isLoadingCurrency, setIsLoadingCurrency] = useState(true)
   const [usageStats, setUsageStats] = useState<UsageStats | null>(null)
-  const [showInUSD, setShowInUSD] = useState(true)
+  const [convertedPrices, setConvertedPrices] = useState<Record<number, number>>({})
+  const [isLoadingCurrency, setIsLoadingCurrency] = useState(true)
+  const [exchangeRate, setExchangeRate] = useState<number>(1)
 
-  // Initialize with USD (pricing is in USD)
+  // Detect user's location and currency
   useEffect(() => {
-    setIsLoadingCurrency(true)
-    // Pricing is always shown in USD by default
-    setCurrencyCode('USD')
-    setShowInUSD(true)
-    setIsLoadingCurrency(false)
+    const detectCurrency = async () => {
+      setIsLoadingCurrency(true)
+      try {
+        // Check if user has a cached location (24-hour cache)
+        const cached = localStorage.getItem('userLocation')
+        let detectedCurrency = 'USD'
+
+        if (cached) {
+          const data = JSON.parse(cached)
+          const cacheAge = Date.now() - (data.timestamp || 0)
+          const CACHE_DURATION = 24 * 60 * 60 * 1000 // 24 hours
+
+          if (cacheAge < CACHE_DURATION && data.currency) {
+            detectedCurrency = data.currency
+          } else {
+            // Cache expired, fetch new location
+            const response = await fetch('/api/geolocation')
+            if (response.ok) {
+              const locationData = await response.json()
+              detectedCurrency = locationData.currency || 'USD'
+              // Cache the new location
+              localStorage.setItem('userLocation', JSON.stringify({
+                ...locationData,
+                timestamp: Date.now(),
+              }))
+            }
+          }
+        } else {
+          // No cache, fetch location
+          const response = await fetch('/api/geolocation')
+          if (response.ok) {
+            const locationData = await response.json()
+            detectedCurrency = locationData.currency || 'USD'
+            // Cache the location
+            localStorage.setItem('userLocation', JSON.stringify({
+              ...locationData,
+              timestamp: Date.now(),
+            }))
+          }
+        }
+
+        setCurrencyCode(detectedCurrency)
+
+        // If not USD, fetch exchange rates and convert prices
+        if (detectedCurrency !== 'USD') {
+          const ratesResponse = await fetch(`/api/currency/convert?base=USD`)
+          if (ratesResponse.ok) {
+            const ratesData = await ratesResponse.json()
+            const rate = ratesData.rates[detectedCurrency]
+            if (rate) {
+              setExchangeRate(rate)
+              // Convert all plan prices
+              const converted: Record<number, number> = {}
+              pricingPlans.forEach(plan => {
+                converted[plan.priceUSD] = Number((plan.priceUSD * rate).toFixed(2))
+              })
+              setConvertedPrices(converted)
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Failed to detect currency:', error)
+        setCurrencyCode('USD')
+      } finally {
+        setIsLoadingCurrency(false)
+      }
+    }
+
+    detectCurrency()
   }, [])
 
   // Fetch usage stats for authenticated users
@@ -124,10 +187,6 @@ export default function PricingPage() {
       answer: 'We accept all major credit cards (Visa, MasterCard, American Express), debit cards, and PayPal. All payments are processed securely through Stripe.',
     },
     {
-      question: 'Is there a free trial available?',
-      answer: 'Yes! All new users get a 14-day free trial with full access to all features. No credit card required to start your trial.',
-    },
-    {
       question: 'What happens to my data if I cancel?',
       answer: 'Your data remains accessible for 30 days after cancellation. You can export all your quotes, invoices, and client data at any time. After 30 days, data is permanently deleted as per our privacy policy.',
     },
@@ -161,9 +220,19 @@ export default function PricingPage() {
           <p className="font-sans text-xl text-primary-300 mb-4 leading-relaxed">
             Choose the plan that's right for your business
           </p>
-          <p className="text-sm text-primary-400">
-            All prices in USD. Plans include a 14-day free trial.
-          </p>
+          {isLoadingCurrency ? (
+            <p className="text-sm text-primary-400">
+              Detecting your location...
+            </p>
+          ) : currencyCode !== 'USD' ? (
+            <p className="text-sm text-primary-400">
+              Prices shown in {currencyCode} (converted from USD at rate: {exchangeRate.toFixed(4)})
+            </p>
+          ) : (
+            <p className="text-sm text-primary-400">
+              All prices in USD. Subscription billing in USD.
+            </p>
+          )}
         </div>
       </section>
 
@@ -295,12 +364,19 @@ export default function PricingPage() {
                   </h3>
                   <div className="flex items-baseline gap-1 mb-2">
                     <span className={`text-4xl font-bold ${plan.popular ? 'text-white' : 'text-quotla-dark'}`}>
-                      {formatCurrency(plan.priceUSD, 'USD')}
+                      {currencyCode !== 'USD' && convertedPrices[plan.priceUSD]
+                        ? formatCurrency(convertedPrices[plan.priceUSD], currencyCode)
+                        : formatCurrency(plan.priceUSD, 'USD')}
                     </span>
                     <span className={`text-sm ${plan.popular ? 'text-white/70' : 'text-quotla-dark/60'}`}>
                       /month
                     </span>
                   </div>
+                  {currencyCode !== 'USD' && convertedPrices[plan.priceUSD] && (
+                    <div className={`text-xs mb-2 ${plan.popular ? 'text-white/60' : 'text-quotla-dark/50'}`}>
+                      ({formatCurrency(plan.priceUSD, 'USD')} USD)
+                    </div>
+                  )}
                   <p className={`text-sm mb-6 ${plan.popular ? 'text-white/80' : 'text-quotla-dark/70'}`}>
                     {plan.description}
                   </p>
@@ -453,7 +529,7 @@ export default function PricingPage() {
               onMouseDown={(e) => e.currentTarget.style.opacity = '0.7'}
               onMouseUp={(e) => e.currentTarget.style.opacity = '0.9'}
             >
-              Start Free Trial
+              Get Started
             </Link>
             <Link
               href="/demo"

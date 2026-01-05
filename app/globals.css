@@ -166,6 +166,30 @@
 @layer components {
   .btn {
     @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn:active {
+    transform: scale(0.97);
+  }
+
+  .btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.4s ease-out, height 0.4s ease-out;
+  }
+
+  .btn:active::after {
+    width: 300px;
+    height: 300px;
   }
 
   .btn-primary {
@@ -176,6 +200,8 @@
 
   .btn-primary:hover {
     background-color: var(--color-primary-light);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
 
   .btn-secondary {
@@ -186,6 +212,8 @@
 
   .btn-secondary:hover {
     background-color: var(--color-border-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
 
   .btn-danger {
@@ -196,28 +224,88 @@
 
   .btn-danger:hover {
     background-color: var(--color-error-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
   }
 
   .input {
     @apply w-full px-3 py-2 rounded-lg transition-all duration-200;
     border: 1px solid var(--color-border);
-    background-color: var(--color-bg-primary);
-    color: var(--color-text-primary);
+    background-color: var(--color-bg-tertiary);
+    color: #ffffff;
+    font-weight: 500;
   }
 
   .input:focus {
     outline: none;
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(206, 98, 3, 0.1);
+    border-color: var(--color-quotla-orange);
+    background-color: var(--color-bg-secondary);
+    box-shadow: 0 0 0 3px rgba(206, 98, 3, 0.15);
+    transform: translateY(-1px);
   }
 
   .input::placeholder {
-    color: var(--color-text-tertiary);
+    color: #b0b5ba;
+    font-weight: 400;
+    opacity: 0.9;
   }
 
   .label {
     @apply block text-sm font-medium mb-1;
-    color: var(--color-text-secondary);
+    color: #d1d5db;
+    font-weight: 600;
+  }
+
+  textarea.input,
+  textarea {
+    @apply w-full px-3 py-2 rounded-lg transition-all duration-200;
+    border: 1px solid var(--color-border);
+    background-color: var(--color-bg-tertiary);
+    color: #ffffff;
+    font-weight: 500;
+    min-height: 100px;
+    resize: vertical;
+  }
+
+  textarea.input:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--color-quotla-orange);
+    background-color: var(--color-bg-secondary);
+    box-shadow: 0 0 0 3px rgba(206, 98, 3, 0.15);
+  }
+
+  textarea.input::placeholder,
+  textarea::placeholder {
+    color: #9ca3af;
+    font-weight: 400;
+  }
+
+  select.input,
+  select {
+    @apply w-full px-3 py-2 rounded-lg transition-all duration-200;
+    border: 1px solid var(--color-border);
+    background-color: var(--color-bg-tertiary);
+    color: #ffffff;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  select.input:focus,
+  select:focus {
+    outline: none;
+    border-color: var(--color-quotla-orange);
+    background-color: var(--color-bg-secondary);
+    box-shadow: 0 0 0 3px rgba(206, 98, 3, 0.15);
+    transform: translateY(-1px);
+  }
+
+  select.input option,
+  select option {
+    background-color: #2a2f2f;
+    color: #ffffff;
+    padding: 8px;
+    font-weight: 500;
   }
 
   .card {
@@ -525,6 +613,18 @@
 
   .animate-section-entrance {
     animation: section-entrance 0.8s ease-out forwards;
+  }
+
+  /* Slide in animation for dropdown items */
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
   }
 
   /* Stagger children animation */

@@ -471,7 +471,7 @@ VALUES (
     <p>The key to maximizing these benefits is preparation. Start now to ensure your business is structured optimally and your systems are ready for the new requirements.</p>
 
     <div class="mt-12 p-6 bg-blue-50 rounded-lg">
-      <p class="text-sm text-gray-700 mb-0"><strong>Running a small business in Nigeria?</strong> Quotla helps you create professional quotes and invoices that automatically account for the new 2026 tax regulations. Track your VAT, manage multiple currencies, and stay compliant effortlessly. <a href="/signup" class="text-primary-600 font-medium hover:underline">Start your free trial today</a>.</p>
+      <p class="text-sm text-gray-700 mb-0"><strong>Running a small business in Nigeria?</strong> Quotla helps you create professional quotes and invoices that automatically account for the new 2026 tax regulations. Track your VAT, manage multiple currencies, and stay compliant effortlessly. <a href="/signup" class="text-primary-600 font-medium hover:underline">Get started today</a>.</p>
     </div>
   </article>',
   admin_user_id,

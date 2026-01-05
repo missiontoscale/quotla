@@ -8,6 +8,8 @@ import { Client, LineItem, CURRENCIES, QUOTE_STATUSES } from '@/types'
 import { calculateTax, calculateTotal } from '@/lib/utils/validation'
 import AIDescriptionGenerator from '@/components/AIDescriptionGenerator'
 import CurrencyConverter from '@/components/CurrencyConverter'
+import InlineClientCreator from '@/components/InlineClientCreator'
+import InventoryItemSelector from '@/components/InventoryItemSelector'
 import { v4 as uuidv4 } from 'uuid'
 import { retrieveTransferData, getLegacyAIData, cleanupExpiredTransfers } from '@/lib/utils/secure-transfer'
 
@@ -18,6 +20,7 @@ export default function NewQuotePage() {
   const [error, setError] = useState('')
   const [aiLoaded, setAiLoaded] = useState(false)
   const [clients, setClients] = useState<Client[]>([])
+  const [showClientCreator, setShowClientCreator] = useState(false)
 
   const [formData, setFormData] = useState({
     client_id: '',
@@ -33,7 +36,7 @@ export default function NewQuotePage() {
   })
 
   const [items, setItems] = useState<LineItem[]>([
-    { description: '', quantity: 1, unit_price: 0, amount: 0, sort_order: 0 },
+    { name: '', description: '', quantity: 1, unit_price: 0, amount: 0, sort_order: 0 },
   ])
 
   useEffect(() => {
@@ -133,6 +136,62 @@ export default function NewQuotePage() {
     if (data) setClients(data)
   }
 
+  const handleClientCreated = (newClient: Client) => {
+    setClients([...clients, newClient])
+    setFormData((prev) => ({ ...prev, client_id: newClient.id }))
+  }
+
+  const handleInventoryItemSelected = (index: number) => (item: any) => {
+    const newItems = [...items]
+    const currentItem = newItems[index]
+
+    // Check if this is a blank item (no name filled yet)
+    const isBlankItem = !currentItem.name || currentItem.name.trim() === ''
+
+    if (isBlankItem) {
+      // Fill the current blank item
+      newItems[index] = {
+        ...newItems[index],
+        name: item.name,
+        description: item.description || '',
+        unit_price: item.unit_price,
+        quantity: 1,
+        amount: item.unit_price * 1,
+        inventory_item_id: item.id
+      }
+      setItems(newItems)
+    } else {
+      // Check if this product is already in the list
+      const existingIndex = newItems.findIndex(
+        lineItem => lineItem.inventory_item_id === item.id
+      )
+
+      if (existingIndex >= 0) {
+        // Product already exists, increment its quantity
+        const existingItem = newItems[existingIndex]
+        const newQty = existingItem.quantity + 1
+        newItems[existingIndex] = {
+          ...existingItem,
+          quantity: newQty,
+          amount: Number((newQty * existingItem.unit_price).toFixed(2))
+        }
+        setItems(newItems)
+      } else {
+        // Add as a new line item
+        const newItem: LineItem = {
+          name: item.name,
+          description: item.description || '',
+          unit_price: item.unit_price,
+          quantity: 1,
+          amount: item.unit_price * 1,
+          sort_order: items.length,
+          inventory_item_id: item.id
+        }
+        setItems([...newItems, newItem])
+      }
+    }
+  }
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData((prev) => ({
       ...prev,
@@ -156,8 +215,24 @@ export default function NewQuotePage() {
   const addItem = () => {
     setItems([
       ...items,
-      { description: '', quantity: 1, unit_price: 0, amount: 0, sort_order: items.length },
+      { name: '', description: '', quantity: 1, unit_price: 0, amount: 0, sort_order: items.length },
     ])
+  }
+
+  const incrementQuantity = (index: number) => {
+    const newItems = [...items]
+    const newQty = newItems[index].quantity + 1
+    newItems[index].quantity = newQty
+    newItems[index].amount = Number((newQty * newItems[index].unit_price).toFixed(2))
+    setItems(newItems)
+  }
+
+  const decrementQuantity = (index: number) => {
+    const newItems = [...items]
+    const newQty = Math.max(1, newItems[index].quantity - 1)
+    newItems[index].quantity = newQty
+    newItems[index].amount = Number((newQty * newItems[index].unit_price).toFixed(2))
+    setItems(newItems)
   }
 
   const removeItem = (index: number) => {
@@ -203,8 +278,8 @@ export default function NewQuotePage() {
       return
     }
 
-    if (items.some((item) => !item.description.trim())) {
-      setError('All line items must have a description')
+    if (items.some((item) => !item.name || !item.name.trim())) {
+      setError('All line items must have a product/service name')
       setLoading(false)
       return
     }
@@ -302,20 +377,29 @@ export default function NewQuotePage() {
               <label htmlFor="client_id" className="label">
                 Client
               </label>
-              <select
-                id="client_id"
-                name="client_id"
-                className="input"
-                value={formData.client_id}
-                onChange={handleChange}
-              >
-                <option value="">Select a client</option>
-                {clients.map((client) => (
-                  <option key={client.id} value={client.id}>
-                    {client.name}
-                  </option>
-                ))}
-              </select>
+              <div className="flex gap-2">
+                <select
+                  id="client_id"
+                  name="client_id"
+                  className="input flex-1"
+                  value={formData.client_id}
+                  onChange={handleChange}
+                >
+                  <option value="">Select a client</option>
+                  {clients.map((client) => (
+                    <option key={client.id} value={client.id}>
+                      {client.name}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => setShowClientCreator(true)}
+                  className="px-3 py-2 rounded-lg bg-quotla-orange text-white text-sm font-semibold hover:bg-secondary-600 transition-all shadow-sm whitespace-nowrap"
+                >
+                  + Add Client
+                </button>
+              </div>
             </div>
 
             <div className="md:col-span-2">
@@ -411,69 +495,145 @@ export default function NewQuotePage() {
 
           <div className="space-y-4">
             {items.map((item, index) => (
-              <div key={index} className="border rounded p-4">
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-                  <div className="md:col-span-6">
-                    <label className="label">Description</label>
-                    <div className="flex gap-2">
-                      <textarea
-                        className="input resize-none flex-1"
-                        rows={2}
-                        value={item.description}
-                        onChange={(e) => handleItemChange(index, 'description', e.target.value)}
-                        required
-                      />
-                      <AIDescriptionGenerator onGenerate={handleAIGenerate(index)} />
-                    </div>
-                  </div>
+              <div key={index} className="border border-primary-600 rounded-lg p-5 bg-primary-800/30 hover:bg-primary-800/50 transition-colors">
+                {/* Inventory Item Selector */}
+                <div className="mb-4">
+                  <label className="label">Select from Inventory (Optional)</label>
+                  <InventoryItemSelector
+                    onSelect={handleInventoryItemSelected(index)}
+                    currency={formData.currency}
+                  />
+                </div>
 
-                  <div className="md:col-span-2">
-                    <label className="label">Quantity</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      className="input"
-                      value={item.quantity}
-                      onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
-                      required
-                    />
-                  </div>
+                {/* Product Name */}
+                <div className="mb-4">
+                  <label htmlFor={`name-${index}`} className="label">
+                    Product/Service Name {!item.inventory_item_id && <span className="text-red-500">*</span>}
+                    {item.inventory_item_id && <span className="text-xs text-quotla-orange ml-2">📦 From Inventory</span>}
+                  </label>
+                  <input
+                    type="text"
+                    id={`name-${index}`}
+                    className={`input ${item.inventory_item_id ? 'cursor-not-allowed opacity-75' : ''}`}
+                    value={item.name || ''}
+                    onChange={(e) => handleItemChange(index, 'name', e.target.value)}
+                    placeholder="e.g., Premium Widget, Consulting Service"
+                    required={!item.inventory_item_id}
+                    readOnly={!!item.inventory_item_id}
+                    disabled={!!item.inventory_item_id}
+                  />
+                </div>
 
-                  <div className="md:col-span-2">
-                    <label className="label">Unit Price</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      className="input"
-                      value={item.unit_price}
-                      onChange={(e) => handleItemChange(index, 'unit_price', e.target.value)}
-                      required
+                {/* Description */}
+                <div className="mb-4">
+                  <label htmlFor={`description-${index}`} className="label">
+                    {item.inventory_item_id ? 'Description (From Inventory)' : 'Description (Optional)'}
+                  </label>
+                  <div className="flex gap-2">
+                    <textarea
+                      id={`description-${index}`}
+                      className={`input resize-none flex-1 ${item.inventory_item_id ? 'cursor-not-allowed opacity-75' : ''}`}
+                      rows={2}
+                      value={item.description}
+                      onChange={(e) => handleItemChange(index, 'description', e.target.value)}
+                      placeholder="Additional details about this item..."
+                      readOnly={!!item.inventory_item_id}
+                      disabled={!!item.inventory_item_id}
                     />
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <label className="label">Amount</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      className="input bg-primary-700"
-                      value={item.amount}
-                      readOnly
-                    />
+                    {!item.inventory_item_id && <AIDescriptionGenerator onGenerate={handleAIGenerate(index)} />}
                   </div>
                 </div>
 
-                {items.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => removeItem(index)}
-                    className="text-red-600 hover:text-red-700 text-sm font-medium mt-2"
-                  >
-                    Remove Item
-                  </button>
-                )}
+                {/* Quantity, Price, Amount Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                  {/* Quantity with +/- buttons */}
+                  <div className="md:col-span-3">
+                    <label className="label">Quantity</label>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => decrementQuantity(index)}
+                        className="w-10 h-10 flex items-center justify-center rounded-lg bg-primary-600 hover:bg-primary-500 text-quotla-light font-bold text-xl transition-all active:scale-95"
+                        title="Decrease quantity"
+                      >
+                        −
+                      </button>
+                      <input
+                        type="number"
+                        step="0.01"
+                        min="1"
+                        className="input text-center font-semibold"
+                        value={item.quantity}
+                        onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => incrementQuantity(index)}
+                        className="w-10 h-10 flex items-center justify-center rounded-lg bg-quotla-green hover:opacity-90 text-white font-bold text-xl transition-all active:scale-95"
+                        title="Increase quantity"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Unit Price */}
+                  <div className="md:col-span-3">
+                    <label htmlFor={`unit-price-${index}`} className="label">
+                      Unit Price
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-300 font-medium">
+                        {formData.currency}
+                      </span>
+                      <input
+                        type="number"
+                        id={`unit-price-${index}`}
+                        step="0.01"
+                        min="0"
+                        className="input pl-16"
+                        value={item.unit_price}
+                        onChange={(e) => handleItemChange(index, 'unit_price', e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Amount (calculated) */}
+                  <div className="md:col-span-4">
+                    <label className="label">Amount</label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-quotla-orange font-semibold">
+                        {formData.currency}
+                      </span>
+                      <input
+                        type="number"
+                        step="0.01"
+                        className="input bg-primary-700 pl-16 font-bold text-quotla-orange"
+                        value={item.amount}
+                        readOnly
+                      />
+                    </div>
+                  </div>
+
+                  {/* Remove Button */}
+                  {items.length > 1 && (
+                    <div className="md:col-span-2 flex items-end">
+                      <button
+                        type="button"
+                        onClick={() => removeItem(index)}
+                        className="w-full h-10 flex items-center justify-center gap-2 rounded-lg bg-red-600/20 hover:bg-red-600/30 text-red-400 hover:text-red-300 font-medium transition-all active:scale-95"
+                        title="Remove item"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        Remove
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
           </div>
@@ -567,6 +727,13 @@ export default function NewQuotePage() {
           </button>
         </div>
       </form>
+
+      {/* Inline Client Creator Modal */}
+      <InlineClientCreator
+        isOpen={showClientCreator}
+        onClose={() => setShowClientCreator(false)}
+        onClientCreated={handleClientCreated}
+      />
     </div>
   )
 }

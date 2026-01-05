@@ -153,26 +153,42 @@ export default function Navbar() {
 
           {openDropdown === link.label && (
             <div
-              className="absolute top-full left-0 mt-2 w-64 bg-[#1a1f1f] border border-[#2a2f2f] rounded-xl shadow-[0_12px_24px_rgba(0,0,0,0.4)] overflow-hidden z-50"
+              className="absolute top-full left-0 mt-2 w-80 bg-[#1a1f1f]/98 backdrop-blur-xl border border-[#445642]/40 rounded-xl shadow-[0_12px_32px_rgba(0,0,0,0.5)] overflow-hidden z-50 animate-fadeIn"
               onMouseLeave={() => setOpenDropdown(null)}
             >
-              <div className="py-2">
-                {link.dropdownItems.map((item) => (
+              <div className="py-3 px-2">
+                {link.dropdownItems.map((item, index) => (
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="relative flex items-start gap-3 px-5 py-3 hover:bg-[#ce6203]/6 transition-colors group border-l-2 border-transparent hover:border-[#ce6203]"
+                    onClick={() => setOpenDropdown(null)}
+                    className="relative flex items-start gap-4 px-4 py-3.5 rounded-lg hover:bg-[#445642]/20 transition-all duration-200 group"
+                    style={{
+                      animationDelay: `${index * 30}ms`,
+                      animation: 'slideIn 0.3s ease-out forwards'
+                    }}
                   >
-                    <div className="flex-1">
-                      <div className="font-semibold text-[#fffad6] group-hover:text-[#ce6203] transition-colors text-sm">
+                    {/* Icon */}
+                    {item.icon && (
+                      <div className="flex-shrink-0 text-2xl mt-0.5 group-hover:scale-110 transition-transform duration-200">
+                        {item.icon}
+                      </div>
+                    )}
+
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold text-[#fffad6] group-hover:text-[#ce6203] transition-colors text-sm leading-tight mb-1">
                         {item.label}
                       </div>
                       {item.description && (
-                        <div className="text-xs text-[#9ca3af] mt-0.5 leading-relaxed">
+                        <div className="text-xs text-[#d1d5db]/80 leading-relaxed">
                           {item.description}
                         </div>
                       )}
                     </div>
+
+                    {/* Hover indicator */}
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-0 bg-[#ce6203] rounded-r-full group-hover:h-12 transition-all duration-200"></div>
                   </Link>
                 ))}
               </div>

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { InventoryItem } from '@/types/inventory'
+import InlineInventoryCreator from './InlineInventoryCreator'
 
 interface InventoryItemSelectorProps {
   onSelect: (item: InventoryItem) => void
@@ -15,6 +16,7 @@ export default function InventoryItemSelector({ onSelect, currency, disabled }: 
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [showDropdown, setShowDropdown] = useState(false)
+  const [showCreator, setShowCreator] = useState(false)
 
   useEffect(() => {
     loadInventoryItems()
@@ -54,6 +56,11 @@ export default function InventoryItemSelector({ onSelect, currency, disabled }: 
     setShowDropdown(false)
   }
 
+  const handleItemCreated = (newItem: InventoryItem) => {
+    setItems([...items, newItem])
+    onSelect(newItem)
+  }
+
   const getStockStatus = (item: InventoryItem) => {
     if (!item.track_inventory) return { text: 'Service', color: 'text-purple-600', bg: 'bg-purple-50' }
     if (item.quantity_on_hand === 0) return { text: 'Out of stock', color: 'text-red-600', bg: 'bg-red-50' }
@@ -62,24 +69,38 @@ export default function InventoryItemSelector({ onSelect, currency, disabled }: 
   }
 
   return (
-    <div className="relative">
-      <div className="flex items-center gap-2 mb-2">
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => {
-            setSearchQuery(e.target.value)
-            setShowDropdown(true)
-          }}
-          onFocus={() => setShowDropdown(true)}
-          placeholder="Search inventory items..."
-          disabled={disabled || loading}
-          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-quotla-orange focus:border-transparent text-sm"
+    <>
+      <div className="relative">
+        <div className="flex items-center gap-2 mb-2">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value)
+              setShowDropdown(true)
+            }}
+            onFocus={() => setShowDropdown(true)}
+            placeholder="Search inventory items..."
+            disabled={disabled || loading}
+            className="flex-1 px-3 py-2 border border-gray-300 dark:border-primary-600 rounded-lg focus:ring-2 focus:ring-quotla-orange focus:border-transparent text-sm bg-white dark:bg-primary-700 text-gray-900 dark:text-primary-50"
+          />
+          <button
+            type="button"
+            onClick={() => setShowCreator(true)}
+            disabled={disabled || loading}
+            className="px-3 py-2 rounded-lg bg-quotla-green text-white text-sm font-semibold hover:opacity-90 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+          >
+            + New Item
+          </button>
+        </div>
+
+      {/* Click outside to close */}
+      {showDropdown && (
+        <div
+          className="fixed inset-0 z-40"
+          onClick={() => setShowDropdown(false)}
         />
-        {loading && (
-          <span className="text-sm text-gray-500">Loading...</span>
-        )}
-      </div>
+      )}
 
       {/* Dropdown */}
       {showDropdown && filteredItems.length > 0 && (
@@ -92,7 +113,10 @@ export default function InventoryItemSelector({ onSelect, currency, disabled }: 
               <button
                 key={item.id}
                 type="button"
-                onClick={() => handleSelectItem(item)}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleSelectItem(item)
+                }}
                 className="w-full text-left px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0 transition-colors"
               >
                 <div className="flex items-start justify-between gap-3">
@@ -145,14 +169,15 @@ export default function InventoryItemSelector({ onSelect, currency, disabled }: 
           <p className="text-sm text-gray-500">No items found matching "{searchQuery}"</p>
         </div>
       )}
+      </div>
 
-      {/* Click outside to close */}
-      {showDropdown && (
-        <div
-          className="fixed inset-0 z-40"
-          onClick={() => setShowDropdown(false)}
-        />
-      )}
-    </div>
+      {/* Inline Creator Modal */}
+      <InlineInventoryCreator
+        isOpen={showCreator}
+        onClose={() => setShowCreator(false)}
+        onItemCreated={handleItemCreated}
+        defaultCurrency={currency}
+      />
+    </>
   )
 }

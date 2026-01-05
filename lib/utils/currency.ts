@@ -189,7 +189,7 @@ export function getTimeSinceUpdate(timestamp: number): string {
 }
 
 // Preload exchange rates for common conversions
-export async function preloadExchangeRates(baseCurrency: string = DEFAULT_CURRENCY) {
+export async function preloadExchangeRates(baseCurrency: string = DEFAULT_BUSINESS_CURRENCY) {
   const commonCurrencies = ['USD', 'EUR', 'GBP', 'NGN']
 
   const promises = commonCurrencies
