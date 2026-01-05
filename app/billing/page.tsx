@@ -4,18 +4,15 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import DashboardLayout from '@/components/DashboardLayout'
 import Link from 'next/link'
-import { detectUserCurrency, formatPrice, type Currency } from '@/lib/utils/currency'
+import { getUserCurrency, formatCurrency, getCurrency, type Currency } from '@/lib/utils/currency'
 import { SUBSCRIPTION_PLANS, getRemainingQuota, formatQuota, type UsageStats } from '@/lib/constants/plans'
 
 export const dynamic = 'force-dynamic'
 
 export default function BillingPage() {
   const { user } = useAuth()
-  const [currency, setCurrency] = useState<Currency>({
-    code: 'USD',
-    symbol: '$',
-    rate: 1,
-  })
+  const [currencyCode, setCurrencyCode] = useState<string>('USD')
+  const currency = getCurrency(currencyCode)
   const [isLoadingCurrency, setIsLoadingCurrency] = useState(true)
 
   // TODO: Fetch actual usage stats from database
@@ -30,16 +27,12 @@ export default function BillingPage() {
   const currentPlanId = 'free'
   const quotaInfo = getRemainingQuota(currentPlanId, usageStats)
 
-  // Detect user's location and set currency with live rates
+  // Get user's preferred currency
   useEffect(() => {
-    const loadCurrency = async () => {
-      setIsLoadingCurrency(true)
-      const detectedCurrency = await detectUserCurrency()
-      setCurrency(detectedCurrency)
-      setIsLoadingCurrency(false)
-    }
-
-    loadCurrency()
+    setIsLoadingCurrency(true)
+    const userCurrency = getUserCurrency()
+    setCurrencyCode(userCurrency)
+    setIsLoadingCurrency(false)
   }, [])
 
   // Filter plans to show only paid plans (exclude free)
@@ -80,7 +73,7 @@ export default function BillingPage() {
         <h1 className="text-3xl font-bold text-primary-50">Credits & Billing</h1>
         <p className="mt-2 text-primary-300">Manage your subscription, billing information, and payment history</p>
         <p className="mt-1 text-sm text-primary-400">
-          {isLoadingCurrency ? 'Loading prices...' : `Prices shown in ${currency.code} (live rates)`}
+          {isLoadingCurrency ? 'Loading prices...' : `Prices shown in ${currency?.code || 'USD'}`}
         </p>
       </div>
 
@@ -138,7 +131,7 @@ export default function BillingPage() {
                 <h3 className="text-2xl font-bold text-primary-50 mb-2">{plan.name}</h3>
                 <div className="flex items-baseline justify-center gap-1">
                   <span className="text-4xl font-bold text-primary-50">
-                    {formatPrice(plan.priceUSD, currency)}
+                    {formatCurrency(plan.priceUSD, currencyCode)}
                   </span>
                   <span className="text-primary-300">/month</span>
                 </div>
@@ -222,7 +215,7 @@ export default function BillingPage() {
                   </td>
                   <td className="px-4 py-4 text-sm text-primary-50">{item.description}</td>
                   <td className="px-4 py-4 text-sm text-primary-50">
-                    {formatPrice(item.amount, currency)}
+                    {formatCurrency(item.amount, currencyCode)}
                   </td>
                   <td className="px-4 py-4 text-sm">
                     <span className={`inline-block px-2 py-1 text-xs rounded ${

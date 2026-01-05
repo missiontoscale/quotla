@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { detectUserCurrency, formatPrice, type Currency } from '@/lib/utils/currency'
+import { getUserCurrency, formatCurrency, getCurrency, type Currency } from '@/lib/utils/currency'
 import { SUBSCRIPTION_PLANS, getRemainingQuota, formatQuota, type UsageStats } from '@/lib/constants/plans'
 import { useAuth } from '@/contexts/AuthContext'
 import LoadingSpinner from '@/components/LoadingSpinner'
@@ -11,25 +11,18 @@ import Footer from '@/components/Footer'
 
 export default function PricingPage() {
   const { user, profile, loading: authLoading } = useAuth()
-  const [currency, setCurrency] = useState<Currency>({
-    code: 'USD',
-    symbol: '$',
-    rate: 1,
-  })
+  const [currencyCode, setCurrencyCode] = useState<string>('USD')
+  const currency = getCurrency(currencyCode)
   const [activeFaq, setActiveFaq] = useState<number | null>(null)
   const [isLoadingCurrency, setIsLoadingCurrency] = useState(true)
   const [usageStats, setUsageStats] = useState<UsageStats | null>(null)
 
-  // Detect user's location and set currency with live rates
+  // Get user's preferred currency
   useEffect(() => {
-    const loadCurrency = async () => {
-      setIsLoadingCurrency(true)
-      const detectedCurrency = await detectUserCurrency()
-      setCurrency(detectedCurrency)
-      setIsLoadingCurrency(false)
-    }
-
-    loadCurrency()
+    setIsLoadingCurrency(true)
+    const userCurrency = getUserCurrency()
+    setCurrencyCode(userCurrency)
+    setIsLoadingCurrency(false)
   }, [])
 
   // Fetch usage stats for authenticated users
@@ -168,7 +161,7 @@ export default function PricingPage() {
           <p className="text-sm text-primary-400">
             {isLoadingCurrency
               ? 'Loading prices...'
-              : `Prices shown in ${currency.code} (live rates). All plans include a 14-day free trial.`
+              : `Prices shown in ${currency?.code || 'USD'} (live rates). All plans include a 14-day free trial.`
             }
           </p>
         </div>
@@ -189,7 +182,7 @@ export default function PricingPage() {
                   <p className="text-primary-200">
                     {currentPlan.id === 'free'
                       ? "You're currently on the Free plan"
-                      : `Active subscription - ${formatPrice(currentPlan.priceUSD, currency)}/month`}
+                      : `Active subscription - ${formatCurrency(currentPlan.priceUSD, currencyCode)}/month`}
                   </p>
                 </div>
                 <Link
@@ -302,7 +295,7 @@ export default function PricingPage() {
                   </h3>
                   <div className="flex items-baseline gap-1 mb-2">
                     <span className={`text-4xl font-bold ${plan.popular ? 'text-white' : 'text-quotla-dark'}`}>
-                      {formatPrice(plan.priceUSD, currency)}
+                      {formatCurrency(plan.priceUSD, currencyCode)}
                     </span>
                     <span className={`text-sm ${plan.popular ? 'text-white/70' : 'text-quotla-dark/60'}`}>
                       /month

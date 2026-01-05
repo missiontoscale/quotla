@@ -9,7 +9,7 @@ import Navbar from '@/components/Navbar'
 import HeroCarousel from '@/components/home/HeroCarousel'
 import PricingSection from '@/components/home/PricingSection'
 import BusinessOwnerFeatures from '@/components/home/BusinessOwnerFeatures'
-import { detectUserCurrency, formatPrice, type Currency } from '@/lib/utils/currency'
+import { getUserCurrency, getCurrency, type Currency } from '@/lib/utils/currency'
 
 export default function HomePage() {
   const [checkingAuth, setCheckingAuth] = useState(true)
@@ -22,11 +22,8 @@ export default function HomePage() {
   const [placeholderText, setPlaceholderText] = useState('')
   const [placeholderPhraseIndex, setPlaceholderPhraseIndex] = useState(0)
   const [isPlaceholderDeleting, setIsPlaceholderDeleting] = useState(false)
-  const [currency, setCurrency] = useState<Currency>({
-    code: 'USD',
-    symbol: '$',
-    rate: 1,
-  })
+  const [currencyCode, setCurrencyCode] = useState<string>('USD')
+  const currency = getCurrency(currencyCode)
   const [isLoadingCurrency, setIsLoadingCurrency] = useState(true)
 
   const placeholderPhrases = [
@@ -53,16 +50,12 @@ export default function HomePage() {
     checkAuth()
   }, [])
 
-  // Detect user's location and set currency with live rates
+  // Get user's preferred currency
   useEffect(() => {
-    const loadCurrency = async () => {
-      setIsLoadingCurrency(true)
-      const detectedCurrency = await detectUserCurrency()
-      setCurrency(detectedCurrency)
-      setIsLoadingCurrency(false)
-    }
-
-    loadCurrency()
+    setIsLoadingCurrency(true)
+    const userCurrency = getUserCurrency()
+    setCurrencyCode(userCurrency)
+    setIsLoadingCurrency(false)
   }, [])
 
   // Typing animation for chat input placeholder

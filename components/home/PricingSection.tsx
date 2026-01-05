@@ -1,10 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { formatPrice, type Currency } from '@/lib/utils/currency'
+import { formatCurrency, type Currency } from '@/lib/utils/currency'
 
 interface PricingSectionProps {
-  currency: Currency
+  currency: Currency | undefined
   isLoadingCurrency: boolean
 }
 
@@ -49,7 +49,7 @@ export default function PricingSection({ currency, isLoadingCurrency }: PricingS
           <p className="text-sm text-quotla-dark/50 mb-2">
             {isLoadingCurrency
               ? 'Loading prices...'
-              : `All prices shown in ${currency.code} • Live currency conversion`
+              : `All prices shown in ${currency?.code || 'USD'} • Live currency conversion`
             }
           </p>
           <p className="text-xs text-quotla-green font-semibold">30-day money-back guarantee on all paid plans</p>
@@ -74,7 +74,7 @@ export default function PricingSection({ currency, isLoadingCurrency }: PricingS
               <div className="mb-6">
               <h4 className="font-heading text-xl font-bold text-quotla-dark mb-3">Simple Start</h4>
               <div className="flex items-baseline mb-2">
-                <span className="text-5xl font-bold text-quotla-dark">{formatPrice(1, currency)}</span>
+                <span className="text-5xl font-bold text-quotla-dark">{formatCurrency(1, currency?.code || 'USD')}</span>
                 <span className="text-quotla-dark/60 ml-2 text-sm">/month</span>
               </div>
               <p className="text-quotla-dark/70 text-sm leading-relaxed">Perfect for solo entrepreneurs starting their journey</p>
@@ -132,7 +132,7 @@ export default function PricingSection({ currency, isLoadingCurrency }: PricingS
               <div className="mb-6">
               <h4 className="font-heading text-xl font-bold text-quotla-dark mb-3">Essentials</h4>
               <div className="flex items-baseline mb-2">
-                <span className="text-5xl font-bold text-quotla-dark">{formatPrice(5, currency)}</span>
+                <span className="text-5xl font-bold text-quotla-dark">{formatCurrency(5, currency?.code || 'USD')}</span>
                 <span className="text-quotla-dark/60 ml-2 text-sm">/month</span>
               </div>
               <p className="text-quotla-dark/70 text-sm leading-relaxed">For small teams ready to streamline workflows</p>
@@ -202,7 +202,7 @@ export default function PricingSection({ currency, isLoadingCurrency }: PricingS
               <div className="mb-6">
               <h4 className="font-heading text-xl font-bold text-white mb-3">Plus</h4>
               <div className="flex items-baseline mb-2">
-                <span className="text-5xl font-bold text-white">{formatPrice(7, currency)}</span>
+                <span className="text-5xl font-bold text-white">{formatCurrency(7, currency?.code || 'USD')}</span>
                 <span className="text-white/70 ml-2 text-sm">/month</span>
               </div>
               <p className="text-white/80 text-sm leading-relaxed">Most popular for growing businesses</p>
@@ -272,7 +272,7 @@ export default function PricingSection({ currency, isLoadingCurrency }: PricingS
               <div className="mb-6">
               <h4 className="font-heading text-xl font-bold text-quotla-dark mb-3">Advanced</h4>
               <div className="flex items-baseline mb-2">
-                <span className="text-5xl font-bold text-quotla-dark">{formatPrice(14, currency)}</span>
+                <span className="text-5xl font-bold text-quotla-dark">{formatCurrency(14, currency?.code || 'USD')}</span>
                 <span className="text-quotla-dark/60 ml-2 text-sm">/month</span>
               </div>
               <p className="text-quotla-dark/70 text-sm leading-relaxed">Enterprise features for scaling teams</p>
