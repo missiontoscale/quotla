@@ -267,3 +267,62 @@ export function togglePricingDisplayCurrency() {
     console.warn('Failed to toggle pricing currency:', error)
   }
 }
+
+// Alias for formatCurrency (for backward compatibility)
+export const formatPrice = formatCurrency
+
+// Detect user's currency based on their locale/timezone
+// This is a client-side only function that attempts to detect currency
+export function detectUserCurrency(): string {
+  if (typeof window === 'undefined') return DEFAULT_BUSINESS_CURRENCY
+
+  try {
+    // Check if we already have a stored preference
+    const storedCurrency = getUserCurrency()
+    if (storedCurrency && storedCurrency !== DEFAULT_BUSINESS_CURRENCY) {
+      return storedCurrency
+    }
+
+    // Try to detect from browser locale
+    const locale = navigator.language || 'en-US'
+
+    // Map common locales to currencies
+    const localeMap: Record<string, string> = {
+      'en-US': 'USD',
+      'en-GB': 'GBP',
+      'en-NG': 'NGN',
+      'en-CA': 'CAD',
+      'en-AU': 'AUD',
+      'en-NZ': 'NZD',
+      'en-IN': 'INR',
+      'en-ZA': 'ZAR',
+      'en-KE': 'KES',
+      'en-GH': 'GHS',
+      'de-DE': 'EUR',
+      'de-CH': 'CHF',
+      'fr-FR': 'EUR',
+      'es-ES': 'EUR',
+      'it-IT': 'EUR',
+      'es-MX': 'MXN',
+      'pt-BR': 'BRL',
+      'ja-JP': 'JPY',
+      'zh-CN': 'CNY',
+      'sv-SE': 'SEK',
+      'nb-NO': 'NOK',
+      'da-DK': 'DKK',
+      'en-SG': 'SGD',
+    }
+
+    const detectedCurrency = localeMap[locale] || DEFAULT_BUSINESS_CURRENCY
+
+    // Only auto-set if we found a match
+    if (detectedCurrency !== DEFAULT_BUSINESS_CURRENCY) {
+      setUserCurrency(detectedCurrency)
+    }
+
+    return detectedCurrency
+  } catch (error) {
+    console.warn('Failed to detect user currency:', error)
+    return DEFAULT_BUSINESS_CURRENCY
+  }
+}

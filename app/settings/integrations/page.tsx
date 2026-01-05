@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { createClient } from '@/lib/supabase/client';
+import { supabase } from '@/lib/supabase/client';
 import type { CalendlyConnection, CalendlyEventType } from '@/types/calendly';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
