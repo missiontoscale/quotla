@@ -8,7 +8,7 @@ import { InventoryItem, InventoryStats, InventoryFilters } from '@/types/invento
 import Navbar from '@/components/Navbar'
 import LoadingSpinner from '@/components/LoadingSpinner'
 import CurrencySelector from '@/components/CurrencySelector'
-import { formatCurrency, DEFAULT_CURRENCY, getUserCurrency, setUserCurrency } from '@/lib/utils/currency'
+import { formatCurrency, DEFAULT_BUSINESS_CURRENCY, getUserCurrency, setUserCurrency } from '@/lib/utils/currency'
 
 export default function InventoryPage() {
   const router = useRouter()
@@ -26,7 +26,7 @@ export default function InventoryPage() {
     search: '',
     is_active: true
   })
-  const [displayCurrency, setDisplayCurrency] = useState<string>(DEFAULT_CURRENCY)
+  const [displayCurrency, setDisplayCurrency] = useState<string>(DEFAULT_BUSINESS_CURRENCY)
 
   useEffect(() => {
     checkAuthAndLoad()

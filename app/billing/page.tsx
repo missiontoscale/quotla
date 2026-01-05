@@ -4,16 +4,14 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import DashboardLayout from '@/components/DashboardLayout'
 import Link from 'next/link'
-import { getUserCurrency, formatCurrency, getCurrency, type Currency } from '@/lib/utils/currency'
+import { formatCurrency } from '@/lib/utils/currency'
 import { SUBSCRIPTION_PLANS, getRemainingQuota, formatQuota, type UsageStats } from '@/lib/constants/plans'
 
 export const dynamic = 'force-dynamic'
 
 export default function BillingPage() {
-  const { user } = useAuth()
-  const [currencyCode, setCurrencyCode] = useState<string>('USD')
-  const currency = getCurrency(currencyCode)
-  const [isLoadingCurrency, setIsLoadingCurrency] = useState(true)
+  // Billing is always in USD (subscription currency)
+  const currencyCode = 'USD'
 
   // TODO: Fetch actual usage stats from database
   const [usageStats] = useState<UsageStats>({
@@ -26,14 +24,6 @@ export default function BillingPage() {
   // Get current plan (TODO: fetch from user profile)
   const currentPlanId = 'free'
   const quotaInfo = getRemainingQuota(currentPlanId, usageStats)
-
-  // Get user's preferred currency
-  useEffect(() => {
-    setIsLoadingCurrency(true)
-    const userCurrency = getUserCurrency()
-    setCurrencyCode(userCurrency)
-    setIsLoadingCurrency(false)
-  }, [])
 
   // Filter plans to show only paid plans (exclude free)
   const upgradePlans = SUBSCRIPTION_PLANS.filter(plan => plan.id !== 'free')
@@ -73,7 +63,7 @@ export default function BillingPage() {
         <h1 className="text-3xl font-bold text-primary-50">Credits & Billing</h1>
         <p className="mt-2 text-primary-300">Manage your subscription, billing information, and payment history</p>
         <p className="mt-1 text-sm text-primary-400">
-          {isLoadingCurrency ? 'Loading prices...' : `Prices shown in ${currency?.code || 'USD'}`}
+          All billing in USD
         </p>
       </div>
 

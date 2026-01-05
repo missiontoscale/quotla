@@ -16,12 +16,14 @@ export default function PricingPage() {
   const [activeFaq, setActiveFaq] = useState<number | null>(null)
   const [isLoadingCurrency, setIsLoadingCurrency] = useState(true)
   const [usageStats, setUsageStats] = useState<UsageStats | null>(null)
+  const [showInUSD, setShowInUSD] = useState(true)
 
-  // Get user's preferred currency
+  // Initialize with USD (pricing is in USD)
   useEffect(() => {
     setIsLoadingCurrency(true)
-    const userCurrency = getUserCurrency()
-    setCurrencyCode(userCurrency)
+    // Pricing is always shown in USD by default
+    setCurrencyCode('USD')
+    setShowInUSD(true)
     setIsLoadingCurrency(false)
   }, [])
 
@@ -104,7 +106,8 @@ export default function PricingPage() {
   ]
 
   // Get current user's plan
-  const currentPlanId = profile?.subscription_plan || 'free'
+  // TODO: Add subscription_plan field to profile type
+  const currentPlanId = 'free' // Default to free for now
   const currentPlan = SUBSCRIPTION_PLANS.find(p => p.id === currentPlanId)
 
   const faqs = [
@@ -159,10 +162,7 @@ export default function PricingPage() {
             Choose the plan that's right for your business
           </p>
           <p className="text-sm text-primary-400">
-            {isLoadingCurrency
-              ? 'Loading prices...'
-              : `Prices shown in ${currency?.code || 'USD'} (live rates). All plans include a 14-day free trial.`
-            }
+            All prices in USD. Plans include a 14-day free trial.
           </p>
         </div>
       </section>
@@ -182,7 +182,7 @@ export default function PricingPage() {
                   <p className="text-primary-200">
                     {currentPlan.id === 'free'
                       ? "You're currently on the Free plan"
-                      : `Active subscription - ${formatCurrency(currentPlan.priceUSD, currencyCode)}/month`}
+                      : `Active subscription - ${formatCurrency(currentPlan.priceUSD, 'USD')}/month`}
                   </p>
                 </div>
                 <Link
@@ -295,7 +295,7 @@ export default function PricingPage() {
                   </h3>
                   <div className="flex items-baseline gap-1 mb-2">
                     <span className={`text-4xl font-bold ${plan.popular ? 'text-white' : 'text-quotla-dark'}`}>
-                      {formatCurrency(plan.priceUSD, currencyCode)}
+                      {formatCurrency(plan.priceUSD, 'USD')}
                     </span>
                     <span className={`text-sm ${plan.popular ? 'text-white/70' : 'text-quotla-dark/60'}`}>
                       /month

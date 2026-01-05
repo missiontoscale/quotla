@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase/client'
 import { useAuth } from '@/contexts/AuthContext'
 import { Expense, ExpenseCategory, CreateExpenseInput, DEFAULT_EXPENSE_CATEGORIES } from '@/types/expenses'
 import { formatCurrency } from '@/lib/utils/validation'
+import { getUserCurrency, setUserCurrency, CURRENCIES } from '@/lib/utils/currency'
 import { format } from 'date-fns'
 
 export default function ExpenseTracker() {
@@ -14,17 +15,36 @@ export default function ExpenseTracker() {
   const [loading, setLoading] = useState(true)
   const [isAddingExpense, setIsAddingExpense] = useState(false)
   const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7)) // YYYY-MM
+  const [userCurrency, setUserCurrencyState] = useState<string>('USD')
+
+  // Initialize user's preferred currency
+  useEffect(() => {
+    const savedCurrency = getUserCurrency()
+    setUserCurrencyState(savedCurrency)
+  }, [])
 
   // Form state
   const [newExpense, setNewExpense] = useState<CreateExpenseInput>({
     description: '',
     amount: 0,
-    currency: 'USD',
+    currency: userCurrency,
     category: '',
     expense_date: new Date().toISOString().split('T')[0],
     is_tax_deductible: false,
     is_recurring: false,
   })
+
+  // Update form currency when user currency changes
+  useEffect(() => {
+    setNewExpense(prev => ({ ...prev, currency: userCurrency }))
+  }, [userCurrency])
+
+  // Handle currency change
+  const handleCurrencyChange = (newCurrency: string) => {
+    setUserCurrencyState(newCurrency)
+    setUserCurrency(newCurrency)
+    setNewExpense(prev => ({ ...prev, currency: newCurrency }))
+  }
 
   useEffect(() => {
     if (user) {
@@ -155,17 +175,30 @@ export default function ExpenseTracker() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <h2 className="font-heading text-2xl font-bold text-quotla-dark">Expense Tracker</h2>
           <p className="text-quotla-dark/60 text-sm">Track business expenses and calculate profit/loss</p>
         </div>
-        <button
-          onClick={() => setIsAddingExpense(true)}
-          className="px-4 py-2 bg-quotla-orange text-white rounded-xl font-semibold hover:bg-secondary-600 transition-all shadow-lg hover:shadow-xl"
-        >
-          + Add Expense
-        </button>
+        <div className="flex items-center gap-3">
+          <select
+            value={userCurrency}
+            onChange={(e) => handleCurrencyChange(e.target.value)}
+            className="px-3 py-2 border border-quotla-dark/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-quotla-orange text-sm"
+          >
+            {CURRENCIES.map(curr => (
+              <option key={curr.code} value={curr.code}>
+                {curr.flag} {curr.code}
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={() => setIsAddingExpense(true)}
+            className="px-4 py-2 bg-quotla-orange text-white rounded-xl font-semibold hover:bg-secondary-600 transition-all shadow-lg hover:shadow-xl"
+          >
+            + Add Expense
+          </button>
+        </div>
       </div>
 
       {/* Month Selector */}
@@ -184,7 +217,7 @@ export default function ExpenseTracker() {
         <div className="bg-white rounded-2xl p-6 border border-quotla-dark/10 shadow-sm">
           <div className="text-quotla-dark/60 text-sm font-semibold mb-2">Total Expenses</div>
           <div className="font-heading text-3xl font-bold text-quotla-dark">
-            {formatCurrency(totalExpenses, newExpense.currency)}
+            {formatCurrency(totalExpenses, userCurrency)}
           </div>
           <div className="text-quotla-dark/60 text-xs mt-1">{expenses.length} transactions</div>
         </div>
@@ -192,7 +225,7 @@ export default function ExpenseTracker() {
         <div className="bg-white rounded-2xl p-6 border border-quotla-dark/10 shadow-sm">
           <div className="text-quotla-dark/60 text-sm font-semibold mb-2">Tax Deductible</div>
           <div className="font-heading text-3xl font-bold text-quotla-green">
-            {formatCurrency(taxDeductible, newExpense.currency)}
+            {formatCurrency(taxDeductible, userCurrency)}
           </div>
           <div className="text-quotla-dark/60 text-xs mt-1">
             {expenses.filter(e => e.is_tax_deductible).length} deductible
@@ -208,7 +241,7 @@ export default function ExpenseTracker() {
           </div>
           <div className="text-quotla-dark/60 text-xs mt-1">
             {Object.keys(byCategory).length > 0
-              ? formatCurrency(Object.entries(byCategory).sort((a, b) => b[1] - a[1])[0][1], newExpense.currency)
+              ? formatCurrency(Object.entries(byCategory).sort((a, b) => b[1] - a[1])[0][1], userCurrency)
               : ''}
           </div>
         </div>

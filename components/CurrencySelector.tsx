@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { CURRENCIES, Currency, DEFAULT_CURRENCY, getCurrency, getCurrencySymbol } from '@/lib/utils/currency'
+import { CURRENCIES, Currency, DEFAULT_BUSINESS_CURRENCY, getCurrency, getCurrencySymbol } from '@/lib/utils/currency'
 
 interface CurrencySelectorProps {
   value: string
@@ -21,7 +21,7 @@ export default function CurrencySelector({
   const dropdownRef = useRef<HTMLDivElement>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
 
-  const selectedCurrency = getCurrency(value) || getCurrency(DEFAULT_CURRENCY)!
+  const selectedCurrency = getCurrency(value) || getCurrency(DEFAULT_BUSINESS_CURRENCY)!
 
   // Close dropdown when clicking outside
   useEffect(() => {

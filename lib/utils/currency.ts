@@ -34,8 +34,11 @@ export const CURRENCIES: Currency[] = [
   { code: 'GHS', name: 'Ghanaian Cedi', symbol: 'GH₵', flag: '🇬🇭', decimals: 2, locale: 'en-GH' },
 ]
 
-// Default currency
-export const DEFAULT_CURRENCY = 'NGN'
+// Default currency for business operations (can be changed by user)
+export const DEFAULT_BUSINESS_CURRENCY = 'USD'
+
+// Pricing is always in USD (subscription plans)
+export const PRICING_CURRENCY = 'USD'
 
 // Get currency by code
 export function getCurrency(code: string): Currency | undefined {
@@ -49,7 +52,7 @@ export function getCurrencySymbol(code: string): string {
 }
 
 // Format amount with currency
-export function formatCurrency(amount: number, currencyCode: string = DEFAULT_CURRENCY): string {
+export function formatCurrency(amount: number, currencyCode: string = DEFAULT_BUSINESS_CURRENCY): string {
   const currency = getCurrency(currencyCode)
 
   if (!currency) {
@@ -71,7 +74,7 @@ export function formatCurrency(amount: number, currencyCode: string = DEFAULT_CU
 }
 
 // Format amount with custom symbol (for display flexibility)
-export function formatAmount(amount: number, currencyCode: string = DEFAULT_CURRENCY): string {
+export function formatAmount(amount: number, currencyCode: string = DEFAULT_BUSINESS_CURRENCY): string {
   const currency = getCurrency(currencyCode)
   const decimals = currency?.decimals || 2
 
@@ -211,13 +214,14 @@ export function clearExchangeRatesCache() {
 }
 
 // Get user's preferred currency from localStorage
+// This is for business operations (expenses, invoices, quotes)
 export function getUserCurrency(): string {
-  if (typeof window === 'undefined') return DEFAULT_CURRENCY
+  if (typeof window === 'undefined') return DEFAULT_BUSINESS_CURRENCY
 
   try {
-    return localStorage.getItem('preferredCurrency') || DEFAULT_CURRENCY
+    return localStorage.getItem('preferredCurrency') || DEFAULT_BUSINESS_CURRENCY
   } catch {
-    return DEFAULT_CURRENCY
+    return DEFAULT_BUSINESS_CURRENCY
   }
 }
 
@@ -227,7 +231,39 @@ export function setUserCurrency(currencyCode: string) {
 
   try {
     localStorage.setItem('preferredCurrency', currencyCode)
+    // Trigger a custom event to notify components of currency change
+    window.dispatchEvent(new CustomEvent('currencyChanged', { detail: { currency: currencyCode } }))
   } catch (error) {
     console.warn('Failed to save currency preference:', error)
+  }
+}
+
+// Get pricing display currency (for showing plan prices)
+// Pricing plans are in USD but can be displayed in user's preferred currency for reference
+export function getPricingDisplayCurrency(): string {
+  if (typeof window === 'undefined') return PRICING_CURRENCY
+
+  try {
+    // Check if user wants to see pricing in their local currency
+    const displayInLocal = localStorage.getItem('displayPricingInLocalCurrency')
+    if (displayInLocal === 'true') {
+      return getUserCurrency()
+    }
+    return PRICING_CURRENCY
+  } catch {
+    return PRICING_CURRENCY
+  }
+}
+
+// Toggle pricing display between USD and user's currency
+export function togglePricingDisplayCurrency() {
+  if (typeof window === 'undefined') return
+
+  try {
+    const current = localStorage.getItem('displayPricingInLocalCurrency') === 'true'
+    localStorage.setItem('displayPricingInLocalCurrency', String(!current))
+    window.dispatchEvent(new Event('pricingCurrencyChanged'))
+  } catch (error) {
+    console.warn('Failed to toggle pricing currency:', error)
   }
 }
