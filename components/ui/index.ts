@@ -7,7 +7,7 @@
  * import { Button, LoadingSpinner, ChatMessageBubble, ChatInput, EmptyState } from '@/components/ui'
  */
 
-export { Button, type ButtonProps } from './Button'
+export { Button, type ButtonProps } from './button'
 export { ChatMessageBubble, type ChatMessage, type ChatMessageBubbleProps } from './ChatMessageBubble'
 export { ChatInput, type ChatInputProps } from './ChatInput'
 export { EmptyState, EmptyStates, type EmptyStateProps, type EmptyStateAction } from './EmptyState'
