@@ -78,7 +78,8 @@
       "Bash(git config:*)",
       "Bash(set PORT=3001)",
       "Bash(ping:*)",
-      "Bash(if not exist \"components\\\\ui\" mkdir componentsui)"
+      "Bash(if not exist \"components\\\\ui\" mkdir componentsui)",
+      "Bash(move:*)"
     ],
     "deny": [],
     "ask": []

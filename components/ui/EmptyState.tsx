@@ -20,7 +20,7 @@
 
 import React from 'react'
 import { COLORS, TYPOGRAPHY, SPACING } from '@/lib/constants'
-import { Button } from './Button'
+import { Button } from './button'
 
 export interface EmptyStateAction {
   label: string

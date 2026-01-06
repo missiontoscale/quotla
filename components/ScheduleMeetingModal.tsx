@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import {

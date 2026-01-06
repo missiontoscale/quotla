@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase/client';
 import type { CalendlyConnection, CalendlyEventType } from '@/types/calendly';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
@@ -70,7 +70,6 @@ export default function IntegrationsPage() {
   const loadConnection = async () => {
     try {
       setLoading(true);
-      const supabase = createClient();
 
       const {
         data: { user },
@@ -82,14 +81,16 @@ export default function IntegrationsPage() {
       }
 
       // Fetch Calendly connection
-      const { data: connectionData } = await supabase
-        .from('calendly_connections')
+      const { data: connectionData, error: connectionError } = await supabase
+        .from('calendly_connections' as any)
         .select('*')
         .eq('user_id', user.id)
         .eq('is_active', true)
-        .single();
+        .maybeSingle();
 
-      setConnection(connectionData);
+      if (!connectionError && connectionData) {
+        setConnection(connectionData as CalendlyConnection);
+      }
 
       // If connected, fetch event types
       if (connectionData) {
