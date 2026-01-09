@@ -82,7 +82,9 @@
       "Bash(move:*)",
       "Bash(git mv:*)",
       "Bash(test:*)",
-      "Bash(Get-Content \"C:\\\\Users\\\\ASUS\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-ASUS-Documents-Projects-Projects-completed---Mission-To-Scale-quotla\\\\tasks\\\\bfa78ca.output\" -Tail 100)"
+      "Bash(Get-Content \"C:\\\\Users\\\\ASUS\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-ASUS-Documents-Projects-Projects-completed---Mission-To-Scale-quotla\\\\tasks\\\\bfa78ca.output\" -Tail 100)",
+      "Bash(git rm:*)",
+      "Bash(git log:*)"
     ],
     "deny": [],
     "ask": []
