@@ -88,7 +88,7 @@ export default function InvoicesSlideOver({ isOpen, onClose }: InvoicesSlideOver
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <Link
-            href="/invoices/new"
+            href="/business/invoices"
             className="btn btn-primary"
             onClick={onClose}
           >
@@ -159,7 +159,7 @@ export default function InvoicesSlideOver({ isOpen, onClose }: InvoicesSlideOver
           <div className="card text-center py-12">
             <p className="text-primary-400 mb-4">No invoices found</p>
             <Link
-              href="/invoices/new"
+              href="/business/invoices"
               className="btn btn-primary inline-block"
               onClick={onClose}
             >

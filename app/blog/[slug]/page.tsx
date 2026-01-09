@@ -209,7 +209,7 @@ export default function BlogPostPage() {
                 Blog
               </Link>
               {isAuthenticated ? (
-                <Link href="/dashboard" className="btn btn-primary">
+                <Link href="/business/dashboard" className="btn btn-primary">
                   Dashboard
                 </Link>
               ) : (

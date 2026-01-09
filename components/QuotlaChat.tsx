@@ -265,7 +265,7 @@ export default function QuotlaChat({ onClose }: { onClose?: () => void } = {}) {
     try {
       // ✅ SECURE: Store data in sessionStorage, pass only ID via URL
       const transferId = storeTransferData('quote', quote)
-      router.push(`/quotes/new?transfer=${transferId}`)
+      router.push(`/create?transfer=${transferId}`)
       if (onClose) onClose()
     } catch (error) {
       setMessages((prev) => [
@@ -282,7 +282,7 @@ export default function QuotlaChat({ onClose }: { onClose?: () => void } = {}) {
     try {
       // ✅ SECURE: Store data in sessionStorage, pass only ID via URL
       const transferId = storeTransferData('invoice', invoice)
-      router.push(`/invoices/new?transfer=${transferId}`)
+      router.push(`/business/invoices?transfer=${transferId}`)
       if (onClose) onClose()
     } catch (error) {
       setMessages((prev) => [
@@ -584,7 +584,7 @@ export default function QuotlaChat({ onClose }: { onClose?: () => void } = {}) {
               <button
                 onClick={() => {
                   setShowSelectionModal(false)
-                  router.push('/quotes/new')
+                  router.push('/create')
                 }}
                 className="w-full group flex items-center gap-5 p-5 bg-quotla-green/5 hover:bg-quotla-green/10 border-2 border-quotla-green/20 hover:border-quotla-green rounded-2xl transition-all duration-200 hover:shadow-lg"
               >
@@ -605,7 +605,7 @@ export default function QuotlaChat({ onClose }: { onClose?: () => void } = {}) {
               <button
                 onClick={() => {
                   setShowSelectionModal(false)
-                  router.push('/invoices/new')
+                  router.push('/business/invoices')
                 }}
                 className="w-full group flex items-center gap-5 p-5 bg-purple-500/5 hover:bg-purple-500/10 border-2 border-purple-500/20 hover:border-purple-500 rounded-2xl transition-all duration-200 hover:shadow-lg"
               >

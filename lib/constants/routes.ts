@@ -22,17 +22,17 @@ export const ROUTES = {
   SIGNUP: '/signup',
 
   // Protected pages
-  DASHBOARD: '/dashboard',
+  DASHBOARD: '/business/dashboard',
   SETTINGS: '/settings',
   ADMIN: '/admin',
   ADVISOR: '/advisor',
 
   // Deals
   DEALS: {
-    LIST: '/dashboard/deals',
-    NEW: '/dashboard/deals/new',
-    VIEW: (id: string) => `/dashboard/deals/${id}`,
-    EDIT: (id: string) => `/dashboard/deals/${id}/edit`,
+    LIST: '/business/dashboard/deals',
+    NEW: '/business/dashboard/deals/new',
+    VIEW: (id: string) => `/business/dashboard/deals/${id}`,
+    EDIT: (id: string) => `/business/dashboard/deals/${id}/edit`,
   },
 
   // Quotes
@@ -45,18 +45,32 @@ export const ROUTES = {
 
   // Invoices
   INVOICES: {
-    LIST: '/invoices',
-    NEW: '/invoices/new',
-    VIEW: (id: string) => `/invoices/${id}`,
-    EDIT: (id: string) => `/invoices/${id}/edit`,
+    LIST: '/business/invoices',
+    NEW: '/business/invoices/new',
+    VIEW: (id: string) => `/business/invoices/${id}`,
+    EDIT: (id: string) => `/business/invoices/${id}/edit`,
   },
 
-  // Clients
+  // Clients/Customers
   CLIENTS: {
-    LIST: '/clients',
-    NEW: '/clients/new',
-    VIEW: (id: string) => `/clients/${id}`,
-    EDIT: (id: string) => `/clients/${id}/edit`,
+    LIST: '/business/customers',
+    NEW: '/business/customers/new',
+    VIEW: (id: string) => `/business/customers/${id}`,
+    EDIT: (id: string) => `/business/customers/${id}/edit`,
+  },
+
+  // Business routes
+  BUSINESS: {
+    DASHBOARD: '/business/dashboard',
+    CUSTOMERS: '/business/customers',
+    SUPPLIERS: '/business/suppliers',
+    PRODUCTS: '/business/products',
+    STOCK_MOVEMENTS: '/business/stock-movements',
+    INVOICES: '/business/invoices',
+    PURCHASE_ORDERS: '/business/purchase-orders',
+    PAYMENTS: '/business/payments',
+    ACCOUNTS: '/business/accounts',
+    AUDIT: '/business/audit',
   },
 
   // Legal & Info

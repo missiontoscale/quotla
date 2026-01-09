@@ -278,7 +278,7 @@ export default function CreateModal({ isOpen, onClose }: CreateModalProps) {
         }
 
         if (parsedData && parsedData.items && parsedData.items.length > 0) {
-          // Convert parsedData to the format expected by /quotes/new and /invoices/new
+          // Convert parsedData to the format expected by /create and /invoices
           const aiDataForForm = {
             client_name: parsedData.client.name || 'Customer',
             currency: parsedData.currency || 'USD',

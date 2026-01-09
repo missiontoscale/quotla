@@ -94,7 +94,7 @@ export default function SuppliersPage() {
                 ← Back to Inventory
               </Link>
               <Link
-                href="/inventory/suppliers/new"
+                href="/inventory/suppliers"
                 className="px-4 py-2 bg-quotla-orange text-white rounded-lg hover:bg-secondary-600 transition-colors shadow-sm"
               >
                 + Add Supplier
@@ -148,7 +148,7 @@ export default function SuppliersPage() {
               {!searchQuery && (
                 <div className="mt-6">
                   <Link
-                    href="/inventory/suppliers/new"
+                    href="/inventory/suppliers"
                     className="inline-flex items-center px-4 py-2 bg-quotla-orange text-white rounded-lg hover:bg-secondary-600"
                   >
                     + Add Supplier

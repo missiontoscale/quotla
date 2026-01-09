@@ -139,7 +139,7 @@ export const GUEST_NAV_LINKS: NavLink[] = [
 export const AUTH_NAV_LINKS: NavLink[] = [
   {
     label: 'Dashboard',
-    href: ROUTES.DASHBOARD,
+    href: '/business/dashboard',
     authRequired: true,
   },
   {
@@ -150,45 +150,58 @@ export const AUTH_NAV_LINKS: NavLink[] = [
     dropdownItems: [
       {
         label: 'Invoices',
-        href: '/invoices',
-        description: 'Send and track invoices',
-        icon: '📄'
+        href: '/business/invoices',
+        description: 'Send and track invoices'
       },
       {
         label: 'Quotes',
         href: '/quotes',
-        description: 'Create professional quotes',
-        icon: '💼'
+        description: 'Create professional quotes'
       },
       {
         label: 'Clients',
-        href: '/clients',
-        description: 'Manage client relationships',
-        icon: '👥'
+        href: '/business/customers',
+        description: 'Manage client relationships'
       },
       {
-        label: 'Inventory',
-        href: '/inventory',
-        description: 'Track products & stock',
-        icon: '📦'
+        label: 'Products',
+        href: '/business/products',
+        description: 'Track products & stock'
       },
       {
-        label: 'Shopping List',
-        href: '/shopping-list',
-        description: 'Items to purchase',
-        icon: '🛒'
+        label: 'Suppliers',
+        href: '/business/suppliers',
+        description: 'Manage your suppliers'
+      },
+      {
+        label: 'Purchase Orders',
+        href: '/business/purchase-orders',
+        description: 'Create and track purchase orders'
+      },
+      {
+        label: 'Payments',
+        href: '/business/payments',
+        description: 'Track payments'
+      },
+      {
+        label: 'Accounts',
+        href: '/business/accounts',
+        description: 'Manage accounts'
+      },
+      {
+        label: 'Audit Logs',
+        href: '/business/audit',
+        description: 'View audit trail'
       },
       {
         label: 'Analytics',
         href: '/analytics',
-        description: 'Business insights & reports',
-        icon: '📊'
+        description: 'Business insights & reports'
       },
       {
         label: 'Integrations',
         href: '/settings/integrations',
-        description: 'Connect your tools',
-        icon: '🔗'
+        description: 'Connect your tools'
       },
     ]
   },
@@ -201,38 +214,32 @@ export const AUTH_NAV_LINKS: NavLink[] = [
       {
         label: 'Time Tracking',
         href: '/time-tracking',
-        description: 'Track billable hours',
-        icon: '⏱️'
+        description: 'Track billable hours'
       },
       {
         label: 'Project Management',
         href: '/projects',
-        description: 'Organize your work',
-        icon: '🎯'
+        description: 'Organize your work'
       },
       {
         label: 'Expense Tracking',
         href: '/expenses',
-        description: 'Monitor spending',
-        icon: '💰'
+        description: 'Monitor spending'
       },
       {
         label: 'Schedule Meeting',
         href: '/schedule',
-        description: 'Book consultations',
-        icon: '📅'
+        description: 'Book consultations'
       },
       {
         label: 'Portfolio',
         href: '/portfolio',
-        description: 'Showcase your work',
-        icon: '🎨'
+        description: 'Showcase your work'
       },
       {
         label: 'Proposals',
         href: '/proposals',
-        description: 'Win more projects',
-        icon: '📋'
+        description: 'Win more projects'
       },
     ]
   },
@@ -245,20 +252,17 @@ export const AUTH_NAV_LINKS: NavLink[] = [
       {
         label: 'Blog',
         href: ROUTES.BLOG,
-        description: 'Tips & best practices',
-        icon: '📰'
+        description: 'Tips & best practices'
       },
       {
         label: 'Community',
         href: ROUTES.COMMUNITY,
-        description: 'Connect with peers',
-        icon: '🌐'
+        description: 'Connect with peers'
       },
       {
         label: 'Help Center',
         href: '/help',
-        description: 'Get support',
-        icon: '❓'
+        description: 'Get support'
       },
     ]
   },

@@ -80,7 +80,9 @@
       "Bash(ping:*)",
       "Bash(if not exist \"components\\\\ui\" mkdir componentsui)",
       "Bash(move:*)",
-      "Bash(git mv:*)"
+      "Bash(git mv:*)",
+      "Bash(test:*)",
+      "Bash(Get-Content \"C:\\\\Users\\\\ASUS\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-ASUS-Documents-Projects-Projects-completed---Mission-To-Scale-quotla\\\\tasks\\\\bfa78ca.output\" -Tail 100)"
     ],
     "deny": [],
     "ask": []

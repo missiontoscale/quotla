@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase/client'
 import { useAuth } from '@/contexts/AuthContext'
 import { Quote } from '@/types'
@@ -10,6 +11,7 @@ import { formatCurrency } from '@/lib/utils/validation'
 import LoadingSpinner from '@/components/LoadingSpinner'
 
 export default function QuotesPage() {
+  const router = useRouter()
   const { user } = useAuth()
   const [quotes, setQuotes] = useState<Quote[]>([])
   const [loading, setLoading] = useState(true)
@@ -82,12 +84,12 @@ export default function QuotesPage() {
               Manage all your quotes in one place
             </p>
           </div>
-          <Link
-            href="/quotes/new"
+          <button
+            onClick={() => router.push('/create')}
             className="px-5 py-2.5 rounded-xl bg-quotla-orange text-white text-sm font-semibold hover:bg-secondary-600 transition-all shadow-lg shadow-quotla-orange/30 hover:shadow-xl hover:-translate-y-0.5"
           >
             + New Quote
-          </Link>
+          </button>
         </div>
 
         {/* Stats Cards */}
@@ -216,12 +218,12 @@ export default function QuotesPage() {
               }
             </p>
             {!searchTerm && (
-              <Link
-                href="/quotes/new"
+              <button
+                onClick={() => router.push('/create')}
                 className="inline-block px-5 py-2.5 rounded-xl bg-quotla-orange text-white text-sm font-semibold hover:bg-secondary-600 transition-all shadow-lg shadow-quotla-orange/30 hover:shadow-xl hover:-translate-y-0.5"
               >
                 Create Your First Quote
-              </Link>
+              </button>
             )}
           </div>
         )}

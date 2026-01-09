@@ -5,6 +5,17 @@ import { cookies } from 'next/headers'
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
+  const next = requestUrl.searchParams.get('next') || '/dashboard'
+  const error = requestUrl.searchParams.get('error')
+  const errorDescription = requestUrl.searchParams.get('error_description')
+
+  // Handle OAuth errors
+  if (error) {
+    console.error('OAuth error:', error, errorDescription)
+    return NextResponse.redirect(
+      new URL(`/login?error=${encodeURIComponent(errorDescription || error)}`, request.url)
+    )
+  }
 
   if (code) {
     const cookieStore = await cookies()
@@ -25,9 +36,28 @@ export async function GET(request: Request) {
         },
       }
     )
-    await supabase.auth.exchangeCodeForSession(code)
+
+    try {
+      const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
+
+      if (exchangeError) {
+        console.error('Error exchanging code for session:', exchangeError)
+        return NextResponse.redirect(
+          new URL(`/login?error=${encodeURIComponent(exchangeError.message)}`, request.url)
+        )
+      }
+
+      // Successful authentication
+      // Redirect to the next URL or dashboard
+      return NextResponse.redirect(new URL(next, request.url))
+    } catch (err) {
+      console.error('Unexpected error during auth callback:', err)
+      return NextResponse.redirect(
+        new URL('/login?error=Authentication failed', request.url)
+      )
+    }
   }
 
-  // Redirect to dashboard after successful OAuth
-  return NextResponse.redirect(new URL('/dashboard', request.url))
+  // No code or error, redirect to login
+  return NextResponse.redirect(new URL('/login', request.url))
 }

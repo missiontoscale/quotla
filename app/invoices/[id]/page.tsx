@@ -37,7 +37,7 @@ export default function ViewInvoicePage() {
       .single()
 
     if (invoiceError || !invoiceData) {
-      router.push('/invoices')
+      router.push('/business/invoices')
       return
     }
 
@@ -76,7 +76,7 @@ export default function ViewInvoicePage() {
     <div className="min-h-screen bg-primary-700 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-6 flex justify-between items-center">
-          <Link href="/invoices" className="text-primary-600 hover:text-primary-700">
+          <Link href="/business/invoices" className="text-primary-600 hover:text-primary-700">
             ← Back to Invoices
           </Link>
           <div className="flex gap-2">

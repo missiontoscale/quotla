@@ -60,7 +60,7 @@ export default function AdminBlogPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-primary-50">Blog Posts</h1>
-        <Link href="/admin/blog/new" className="btn btn-primary">
+        <Link href="/admin/blog" className="btn btn-primary">
           Create Post
         </Link>
       </div>
@@ -68,7 +68,7 @@ export default function AdminBlogPage() {
       {posts.length === 0 ? (
         <div className="card text-center py-12">
           <p className="text-primary-400 mb-4">No blog posts yet</p>
-          <Link href="/admin/blog/new" className="btn btn-primary inline-block">
+          <Link href="/admin/blog" className="btn btn-primary inline-block">
             Create Your First Post
           </Link>
         </div>

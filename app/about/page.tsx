@@ -178,21 +178,18 @@ export default function AboutPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
             {[
               {
-                icon: '👤',
                 title: 'Freelancers',
                 description: 'Send professional quotes in minutes. Focus on your craft, not paperwork.',
                 color: 'from-quotla-orange to-secondary-600',
                 image: '/images/home/freelancer.jpg'
               },
               {
-                icon: '🏢',
                 title: 'Small Businesses',
                 description: 'Scale operations with automated billing and payment tracking.',
                 color: 'from-quotla-green to-green-600',
                 image: '/images/home/business-owner.jpg'
               },
               {
-                icon: '👥',
                 title: 'Agencies',
                 description: 'Manage multiple clients with organized project workflows.',
                 color: 'from-purple-500 to-pink-500',
@@ -216,9 +213,6 @@ export default function AboutPage() {
 
                 {/* Content */}
                 <div className="absolute inset-0 p-8 flex flex-col justify-end">
-                  <div className={`text-6xl mb-4 transform group-hover:scale-125 group-hover:-translate-y-2 transition-all duration-500`}>
-                    {item.icon}
-                  </div>
                   <h3 className="font-heading text-3xl font-black text-quotla-light mb-3 group-hover:text-quotla-orange transition-colors">
                     {item.title}
                   </h3>
@@ -259,25 +253,21 @@ export default function AboutPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
             {[
               {
-                icon: '⚡',
                 title: 'Speed',
                 description: 'Your time is precious. We make everything instant.',
                 color: 'bg-gradient-to-br from-quotla-orange/10 to-quotla-orange/5 border-quotla-orange'
               },
               {
-                icon: '🎯',
                 title: 'Simplicity',
                 description: 'Powerful tools don\'t have to be complicated.',
                 color: 'bg-gradient-to-br from-quotla-green/10 to-quotla-green/5 border-quotla-green'
               },
               {
-                icon: '🔒',
                 title: 'Security',
                 description: 'Your data is encrypted and always protected.',
                 color: 'bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-blue-500'
               },
               {
-                icon: '❤️',
                 title: 'Empathy',
                 description: 'Built by entrepreneurs, for entrepreneurs.',
                 color: 'bg-gradient-to-br from-pink-500/10 to-pink-500/5 border-pink-500'
@@ -288,9 +278,6 @@ export default function AboutPage() {
                 className={`${value.color} border-2 rounded-3xl p-8 hover:scale-105 transition-all duration-500 group cursor-pointer animate-slide-up`}
                 style={{animationDelay: `${idx * 0.1}s`}}
               >
-                <div className="text-5xl mb-4 group-hover:scale-125 transition-transform">
-                  {value.icon}
-                </div>
                 <h3 className="font-heading text-2xl font-black text-quotla-dark mb-3">
                   {value.title}
                 </h3>

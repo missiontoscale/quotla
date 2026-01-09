@@ -200,7 +200,7 @@ export default function CreatePage() {
         console.log('Final parsed data:', parsedData)
 
         if (parsedData) {
-          // Convert parsedData to the format expected by /quotes/new and /invoices/new
+          // Convert parsedData to the format expected by /create and /invoices
           const aiDataForForm = {
             client_name: parsedData.client.name,
             currency: parsedData.currency,
@@ -211,7 +211,7 @@ export default function CreatePage() {
           }
 
           // Navigate to the appropriate form with pre-filled data
-          const targetPath = parsedData.type === 'invoice' ? '/invoices/new' : '/quotes/new'
+          const targetPath = parsedData.type === 'invoice' ? '/invoices' : '/create'
           const total = parsedData.items.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0) + (parsedData.additional_charges?.reduce((sum, c) => sum + c.amount, 0) || 0)
 
           const enhancedResponse = `✓ I've prepared the ${parsedData.type} for you!\n\nClient: ${parsedData.client.name}\nTotal: ${parsedData.currency} ${total.toFixed(2)}\n\nClick the button below to review and save it.`
@@ -463,7 +463,7 @@ export default function CreatePage() {
       {/* Manual Creation Options */}
       <div className="grid md:grid-cols-2 gap-6">
         <button
-          onClick={() => router.push('/quotes/new')}
+          onClick={() => router.push('/create')}
           className="card hover:shadow-lg transition-all cursor-pointer text-left group"
         >
           <div className="flex items-start gap-4">
@@ -483,7 +483,7 @@ export default function CreatePage() {
         </button>
 
         <button
-          onClick={() => router.push('/invoices/new')}
+          onClick={() => router.push('/business/invoices')}
           className="card hover:shadow-lg transition-all cursor-pointer text-left group"
         >
           <div className="flex items-start gap-4">

@@ -71,7 +71,7 @@ export default function InventoryItemSelector({ onSelect, currency, disabled }: 
   return (
     <>
       <div className="relative">
-        <div className="flex items-center gap-2 mb-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <input
             type="text"
             value={searchQuery}
@@ -80,17 +80,20 @@ export default function InventoryItemSelector({ onSelect, currency, disabled }: 
               setShowDropdown(true)
             }}
             onFocus={() => setShowDropdown(true)}
-            placeholder="Search inventory items..."
+            placeholder="Search items..."
             disabled={disabled || loading}
-            className="flex-1 px-3 py-2 border border-gray-300 dark:border-primary-600 rounded-lg focus:ring-2 focus:ring-quotla-orange focus:border-transparent text-sm bg-white dark:bg-primary-700 text-gray-900 dark:text-primary-50"
+            className="flex-1 px-2.5 sm:px-3 py-2 border border-slate-600 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm bg-slate-800 dark:bg-slate-800 text-slate-100 dark:text-slate-100 placeholder-slate-400"
           />
           <button
             type="button"
             onClick={() => setShowCreator(true)}
             disabled={disabled || loading}
-            className="px-3 py-2 rounded-lg bg-quotla-green text-white text-sm font-semibold hover:opacity-90 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+            className="px-2.5 sm:px-3 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-600 text-white text-xs sm:text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap h-[38px] flex items-center gap-1"
           >
-            + New Item
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            <span className="hidden sm:inline">New</span>
           </button>
         </div>
 
@@ -104,7 +107,7 @@ export default function InventoryItemSelector({ onSelect, currency, disabled }: 
 
       {/* Dropdown */}
       {showDropdown && filteredItems.length > 0 && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-96 overflow-y-auto">
+        <div className="absolute z-50 w-full mt-1 bg-slate-800 border border-slate-700 rounded-lg shadow-xl max-h-72 sm:max-h-96 overflow-y-auto">
           {filteredItems.map((item) => {
             const status = getStockStatus(item)
             const showPriceWarning = item.currency !== currency
@@ -117,43 +120,43 @@ export default function InventoryItemSelector({ onSelect, currency, disabled }: 
                   e.stopPropagation()
                   handleSelectItem(item)
                 }}
-                className="w-full text-left px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0 transition-colors"
+                className="w-full text-left px-3 sm:px-4 py-2.5 sm:py-3 hover:bg-slate-700 border-b border-slate-700 last:border-b-0 transition-colors"
               >
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start justify-between gap-2 sm:gap-3">
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <p className="font-medium text-gray-900 truncate">{item.name}</p>
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
+                      <p className="font-medium text-slate-100 truncate text-sm">{item.name}</p>
                       {item.sku && (
-                        <span className="text-xs text-gray-500 px-2 py-0.5 bg-gray-100 rounded">
+                        <span className="text-[10px] sm:text-xs text-slate-400 px-1.5 py-0.5 bg-slate-700 rounded">
                           {item.sku}
                         </span>
                       )}
                     </div>
                     {item.description && (
-                      <p className="text-sm text-gray-600 truncate mb-1">{item.description}</p>
+                      <p className="text-xs sm:text-sm text-slate-400 truncate mb-1">{item.description}</p>
                     )}
-                    <div className="flex items-center gap-3 text-xs">
-                      <span className={`px-2 py-0.5 rounded-full ${status.bg} ${status.color} font-medium`}>
+                    <div className="flex items-center gap-2 sm:gap-3 text-[10px] sm:text-xs flex-wrap">
+                      <span className={`px-1.5 py-0.5 rounded-full ${status.bg.replace('bg-', 'bg-').replace('-50', '-900/30')} ${status.color.replace('text-', 'text-').replace('-600', '-400')} font-medium`}>
                         {status.text}
                       </span>
                       {item.track_inventory && (
-                        <span className="text-gray-500">
-                          {item.quantity_on_hand} available
+                        <span className="text-slate-400">
+                          {item.quantity_on_hand} avail
                         </span>
                       )}
                       {showPriceWarning && (
-                        <span className="text-orange-600 font-medium">
-                          ⚠️ Different currency ({item.currency})
+                        <span className="text-orange-400 font-medium text-[10px]">
+                          ⚠️ {item.currency}
                         </span>
                       )}
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm font-semibold text-gray-900">
+                  <div className="text-right flex-shrink-0">
+                    <p className="text-xs sm:text-sm font-semibold text-cyan-400">
                       {item.currency} {item.unit_price.toFixed(2)}
                     </p>
-                    <p className="text-xs text-gray-500">
-                      Cost: {item.currency} {item.cost_price.toFixed(2)}
+                    <p className="text-[10px] sm:text-xs text-slate-500">
+                      Cost: {item.cost_price.toFixed(2)}
                     </p>
                   </div>
                 </div>
@@ -165,8 +168,8 @@ export default function InventoryItemSelector({ onSelect, currency, disabled }: 
 
       {/* No results */}
       {showDropdown && searchQuery && filteredItems.length === 0 && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-4 text-center">
-          <p className="text-sm text-gray-500">No items found matching "{searchQuery}"</p>
+        <div className="absolute z-50 w-full mt-1 bg-slate-800 border border-slate-700 rounded-lg shadow-xl p-3 sm:p-4 text-center">
+          <p className="text-xs sm:text-sm text-slate-400">No items found matching "{searchQuery}"</p>
         </div>
       )}
       </div>

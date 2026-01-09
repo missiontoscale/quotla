@@ -61,7 +61,7 @@ export default function ClientsSlideOver({ isOpen, onClose }: ClientsSlideOverPr
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <Link
-            href="/clients/new"
+            href="/clients"
             className="btn btn-primary"
             onClick={onClose}
           >
@@ -87,7 +87,7 @@ export default function ClientsSlideOver({ isOpen, onClose }: ClientsSlideOverPr
           <div className="card text-center py-12">
             <p className="text-primary-400 mb-4">No clients found</p>
             <Link
-              href="/clients/new"
+              href="/clients"
               className="btn btn-primary inline-block"
               onClick={onClose}
             >

@@ -28,8 +28,8 @@ export default function InlineClientCreator({ isOpen, onClose, onClientCreated }
     notes: '',
   })
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = async (e?: React.MouseEvent | React.FormEvent) => {
+    e?.preventDefault()
     if (!user) return
 
     if (!formData.name.trim()) {
@@ -116,7 +116,7 @@ export default function InlineClientCreator({ isOpen, onClose, onClientCreated }
 
               {/* Form */}
               <div className="flex-1 overflow-y-auto px-4 py-6">
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-4">
                   {error && (
                     <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-4 py-3 rounded-lg">
                       {error}
@@ -291,7 +291,7 @@ export default function InlineClientCreator({ isOpen, onClose, onClientCreated }
                       placeholder="Any additional information about this client..."
                     />
                   </div>
-                </form>
+                </div>
               </div>
 
               {/* Footer */}
@@ -305,7 +305,7 @@ export default function InlineClientCreator({ isOpen, onClose, onClientCreated }
                   Cancel
                 </button>
                 <button
-                  type="submit"
+                  type="button"
                   onClick={handleSubmit}
                   disabled={loading}
                   className="px-5 py-2 rounded-lg bg-quotla-orange text-white font-semibold hover:bg-secondary-600 transition-all shadow-lg shadow-quotla-orange/30 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"

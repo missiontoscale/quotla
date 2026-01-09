@@ -61,7 +61,7 @@ export default function EditInvoicePage() {
     if (clientsRes.data) setClients(clientsRes.data)
 
     if (invoiceRes.error || !invoiceRes.data) {
-      router.push('/invoices')
+      router.push('/business/invoices')
       return
     }
 
@@ -217,7 +217,7 @@ export default function EditInvoicePage() {
 
       if (itemsError) throw itemsError
 
-      router.push('/invoices')
+      router.push('/business/invoices')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update invoice')
     } finally {

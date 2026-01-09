@@ -88,7 +88,7 @@ export default function QuotesSlideOver({ isOpen, onClose }: QuotesSlideOverProp
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <Link
-            href="/quotes/new"
+            href="/create"
             className="btn btn-primary"
             onClick={onClose}
           >
@@ -149,7 +149,7 @@ export default function QuotesSlideOver({ isOpen, onClose }: QuotesSlideOverProp
           <div className="card text-center py-12">
             <p className="text-primary-400 mb-4">No quotes found</p>
             <Link
-              href="/quotes/new"
+              href="/create"
               className="btn btn-primary inline-block"
               onClick={onClose}
             >

@@ -13,8 +13,7 @@ export default function ForContractorsPage() {
       title: 'Quote Builder',
       tagline: 'Win more projects',
       description: 'Create detailed, itemized quotes that impress clients and close deals faster.',
-      link: '/quotes/new',
-      icon: '💎',
+      link: '/create',
       stats: '2 min avg',
       bgGradient: 'from-quotla-green via-[#5a6e58] to-quotla-orange'
     },
@@ -23,7 +22,6 @@ export default function ForContractorsPage() {
       tagline: 'Get paid on time',
       description: 'Professional invoices with payment tracking and automated reminders.',
       link: '/invoices',
-      icon: '💰',
       stats: '99% accuracy',
       bgGradient: 'from-quotla-orange via-secondary-500 to-quotla-dark'
     },
@@ -32,7 +30,6 @@ export default function ForContractorsPage() {
       tagline: 'Build relationships',
       description: 'Keep all client info, project history, and communications in one place.',
       link: '/clients',
-      icon: '🤝',
       stats: 'Unlimited clients',
       bgGradient: 'from-quotla-dark via-[#1a2820] to-quotla-green'
     },
@@ -41,7 +38,6 @@ export default function ForContractorsPage() {
       tagline: 'Stay organized',
       description: 'Schedule consultations and manage deadlines with integrated calendar.',
       link: '/settings/integrations',
-      icon: '📆',
       stats: 'Sync anywhere',
       bgGradient: 'from-quotla-light via-quotla-green/30 to-quotla-orange/30'
     },
@@ -50,7 +46,6 @@ export default function ForContractorsPage() {
       tagline: 'Track earnings',
       description: 'Simple summaries of monthly and yearly income for easy tax prep.',
       link: '/analytics',
-      icon: '📈',
       stats: 'Real-time data',
       bgGradient: 'from-secondary-600 via-quotla-orange to-quotla-green'
     },
@@ -59,7 +54,6 @@ export default function ForContractorsPage() {
       tagline: 'Showcase your work',
       description: 'Store project photos and examples to share with potential clients.',
       link: '/inventory',
-      icon: '🎨',
       stats: 'Unlimited storage',
       bgGradient: 'from-quotla-green via-quotla-dark to-secondary-700'
     },
@@ -70,7 +64,6 @@ export default function ForContractorsPage() {
       name: 'Sarah Chen',
       role: 'Graphic Designer',
       quote: 'Quotla cut my admin time in half. Now I can focus on actual design work.',
-      avatar: '👩‍💻',
       metric: '10hrs/week saved',
       bgColor: 'bg-quotla-orange/10'
     },
@@ -78,7 +71,6 @@ export default function ForContractorsPage() {
       name: 'Marcus Johnson',
       role: 'Web Developer',
       quote: 'Clients love how fast I can turn around quotes. My close rate went up 35%.',
-      avatar: '👨‍💼',
       metric: '35% more deals',
       bgColor: 'bg-quotla-green/10'
     },
@@ -86,7 +78,6 @@ export default function ForContractorsPage() {
       name: 'Elena Rodriguez',
       role: 'Content Writer',
       quote: 'The invoice tracking is a game-changer. No more chasing payments.',
-      avatar: '✍️',
       metric: '100% on-time payment',
       bgColor: 'bg-secondary-500/10'
     },
@@ -284,11 +275,8 @@ export default function ForContractorsPage() {
 
                 {/* Content overlay */}
                 <div className="relative h-full p-8 flex flex-col justify-between">
-                  {/* Icon & stat badge */}
-                  <div className="flex items-start justify-between">
-                    <div className="text-7xl transform group-hover:scale-125 group-hover:rotate-12 transition-all duration-500">
-                      {tool.icon}
-                    </div>
+                  {/* Stat badge */}
+                  <div className="flex items-start justify-end">
                     <div className={`px-4 py-2 rounded-full text-sm font-bold backdrop-blur-md ${
                       idx === 3 ? 'bg-quotla-dark/30 text-quotla-dark' : 'bg-white/20 text-white'
                     }`}>
@@ -354,9 +342,6 @@ export default function ForContractorsPage() {
                   minHeight: idx === 1 ? '420px' : '380px'
                 }}
               >
-                {/* Avatar */}
-                <div className="text-6xl mb-6">{story.avatar}</div>
-
                 {/* Quote */}
                 <blockquote className="text-xl text-quotla-light/90 leading-relaxed mb-6 italic">
                   "{story.quote}"

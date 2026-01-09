@@ -11,42 +11,36 @@ export default function ForBusinessPage() {
   const businessTools = [
     {
       title: 'AI Quote Generation',
-      icon: '⚡',
       description: 'Create professional quotes in seconds',
-      link: '/quotes/new',
+      link: '/create',
       color: 'from-quotla-orange to-secondary-600'
     },
     {
       title: 'Invoice Management',
-      icon: '📄',
       description: 'Track payments and billing',
       link: '/invoices',
       color: 'from-quotla-green to-quotla-dark'
     },
     {
       title: 'Inventory Tracking',
-      icon: '📦',
       description: 'Manage products and stock',
       link: '/inventory',
       color: 'from-secondary-500 to-quotla-orange'
     },
     {
       title: 'Client Portal',
-      icon: '👥',
       description: 'Centralized client management',
       link: '/clients',
       color: 'from-quotla-dark to-quotla-green'
     },
     {
       title: 'Analytics Dashboard',
-      icon: '📊',
       description: 'Business insights & reporting',
       link: '/analytics',
       color: 'from-quotla-orange to-quotla-green'
     },
     {
       title: 'Meeting Scheduler',
-      icon: '📅',
       description: 'Book meetings with clients',
       link: '/settings/integrations',
       color: 'from-quotla-green to-secondary-600'
@@ -234,11 +228,6 @@ export default function ForBusinessPage() {
                 <div className={`absolute inset-0 bg-gradient-to-br ${tool.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
 
                 <div className="relative h-full p-10 flex flex-col justify-between">
-                  {/* Icon */}
-                  <div className="text-8xl mb-6 transform group-hover:scale-125 group-hover:rotate-12 transition-all duration-500">
-                    {tool.icon}
-                  </div>
-
                   {/* Text content */}
                   <div className="space-y-3">
                     <h3 className="font-heading text-3xl font-bold text-quotla-dark group-hover:text-white transition-colors">

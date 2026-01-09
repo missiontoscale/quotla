@@ -47,8 +47,8 @@ export default function PricingSection() {
           <p className="text-xs text-quotla-green font-semibold">30-day money-back guarantee on all paid plans</p>
         </div>
 
-        <div className="grid md:grid-cols-4 gap-6 max-w-7xl mx-auto">
-          {/* Simple Start - $1 */}
+        <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          {/* Simple Start - $1.99 */}
           <div className="group relative bg-white rounded-3xl p-8 border-2 border-quotla-dark/10 hover:border-quotla-green hover:shadow-2xl hover:shadow-quotla-green/10 transition-all duration-500 hover:-translate-y-2 overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-quotla-green/0 to-quotla-orange/0 group-hover:from-quotla-green/5 group-hover:to-quotla-orange/5 transition-all duration-500 rounded-3xl"></div>
 
@@ -66,7 +66,7 @@ export default function PricingSection() {
               <div className="mb-6">
               <h4 className="font-heading text-xl font-bold text-quotla-dark mb-3">Simple Start</h4>
               <div className="flex items-baseline mb-2">
-                <span className="text-5xl font-bold text-quotla-dark">{formatCurrency(1, 'USD')}</span>
+                <span className="text-5xl font-bold text-quotla-dark">{formatCurrency(1.99, 'USD')}</span>
                 <span className="text-quotla-dark/60 ml-2 text-sm">/month</span>
               </div>
               <p className="text-quotla-dark/70 text-sm leading-relaxed">Perfect for solo entrepreneurs starting their journey</p>
@@ -106,7 +106,7 @@ export default function PricingSection() {
             </div>
           </div>
 
-          {/* Essentials */}
+          {/* Essentials - $4.99 */}
           <div className="group relative bg-white rounded-3xl p-8 border-2 border-quotla-dark/10 hover:border-quotla-orange hover:shadow-2xl hover:shadow-quotla-orange/10 transition-all duration-500 hover:-translate-y-2 overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-quotla-orange/0 to-quotla-green/0 group-hover:from-quotla-orange/5 group-hover:to-quotla-green/5 transition-all duration-500 rounded-3xl"></div>
 
@@ -124,7 +124,7 @@ export default function PricingSection() {
               <div className="mb-6">
               <h4 className="font-heading text-xl font-bold text-quotla-dark mb-3">Essentials</h4>
               <div className="flex items-baseline mb-2">
-                <span className="text-5xl font-bold text-quotla-dark">{formatCurrency(5, 'USD')}</span>
+                <span className="text-5xl font-bold text-quotla-dark">{formatCurrency(4.99, 'USD')}</span>
                 <span className="text-quotla-dark/60 ml-2 text-sm">/month</span>
               </div>
               <p className="text-quotla-dark/70 text-sm leading-relaxed">For small teams ready to streamline workflows</p>
@@ -170,7 +170,7 @@ export default function PricingSection() {
             </div>
           </div>
 
-          {/* Plus - Most Popular */}
+          {/* Advanced - Most Popular - $13.99 */}
           <div className="group relative bg-gradient-to-br from-quotla-dark via-[#1a2820] to-quotla-green rounded-3xl p-8 border-2 border-quotla-orange shadow-2xl transform scale-105 hover:scale-110 transition-all duration-500 overflow-hidden">
             {/* Animated glow effect */}
             <div className="absolute inset-0 bg-gradient-to-br from-quotla-orange/20 to-quotla-green/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl"></div>
@@ -187,24 +187,24 @@ export default function PricingSection() {
               {/* Icon */}
               <div className="w-12 h-12 rounded-xl bg-quotla-orange/20 flex items-center justify-center mb-6 group-hover:bg-quotla-orange/30 transition-colors">
                 <svg className="w-6 h-6 text-quotla-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
               </div>
 
               <div className="mb-6">
-              <h4 className="font-heading text-xl font-bold text-white mb-3">Plus</h4>
+              <h4 className="font-heading text-xl font-bold text-white mb-3">Advanced</h4>
               <div className="flex items-baseline mb-2">
-                <span className="text-5xl font-bold text-white">{formatCurrency(7, 'USD')}</span>
+                <span className="text-5xl font-bold text-white">{formatCurrency(13.99, 'USD')}</span>
                 <span className="text-white/70 ml-2 text-sm">/month</span>
               </div>
-              <p className="text-white/80 text-sm leading-relaxed">Most popular for growing businesses</p>
+              <p className="text-white/80 text-sm leading-relaxed">Enterprise features for scaling teams</p>
             </div>
             <ul className="space-y-3 mb-6 text-sm">
               <li className="flex items-start">
                 <svg className="w-4 h-4 text-quotla-orange mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
-                <span className="text-white">5 users + accountant access</span>
+                <span className="text-white">25 users + accountant access</span>
               </li>
               <li className="flex items-start">
                 <svg className="w-4 h-4 text-quotla-orange mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -236,84 +236,38 @@ export default function PricingSection() {
                 </svg>
                 <span className="text-white">Budgeting & class tracking</span>
               </li>
+              <li className="flex items-start">
+                <svg className="w-4 h-4 text-quotla-orange mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+                <span className="text-white">Quotla Finance Agent</span>
+              </li>
+              <li className="flex items-start">
+                <svg className="w-4 h-4 text-quotla-orange mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+                <span className="text-white">Project Management Agent</span>
+              </li>
+              <li className="flex items-start">
+                <svg className="w-4 h-4 text-quotla-orange mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+                <span className="text-white">Custom report builder</span>
+              </li>
+              <li className="flex items-start">
+                <svg className="w-4 h-4 text-quotla-orange mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+                <span className="text-white">Workflow automation</span>
+              </li>
+              <li className="flex items-start">
+                <svg className="w-4 h-4 text-quotla-orange mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+                <span className="text-white">Unlimited classes & locations</span>
+              </li>
             </ul>
               <Link href="/signup" className="group/btn flex items-center justify-center gap-2 w-full text-center px-4 py-3 rounded-xl text-sm font-bold bg-quotla-orange text-white hover:bg-secondary-600 transition-all shadow-lg hover:shadow-xl">
-                Choose Plan
-                <svg className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </Link>
-            </div>
-          </div>
-
-          {/* Advanced */}
-          <div className="group relative bg-white rounded-3xl p-8 border-2 border-quotla-dark/10 hover:border-quotla-dark hover:shadow-2xl hover:shadow-quotla-dark/10 transition-all duration-500 hover:-translate-y-2 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-quotla-dark/0 to-quotla-green/0 group-hover:from-quotla-dark/5 group-hover:to-quotla-green/5 transition-all duration-500 rounded-3xl"></div>
-
-            {/* Top accent */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-quotla-dark to-quotla-green transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
-
-            <div className="relative z-10">
-              {/* Icon */}
-              <div className="w-12 h-12 rounded-xl bg-quotla-dark/10 flex items-center justify-center mb-6 group-hover:bg-quotla-dark/20 transition-colors">
-                <svg className="w-6 h-6 text-quotla-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-              </div>
-
-              <div className="mb-6">
-              <h4 className="font-heading text-xl font-bold text-quotla-dark mb-3">Advanced</h4>
-              <div className="flex items-baseline mb-2">
-                <span className="text-5xl font-bold text-quotla-dark">{formatCurrency(14, 'USD')}</span>
-                <span className="text-quotla-dark/60 ml-2 text-sm">/month</span>
-              </div>
-              <p className="text-quotla-dark/70 text-sm leading-relaxed">Enterprise features for scaling teams</p>
-            </div>
-            <ul className="space-y-3 mb-6 text-sm">
-              <li className="flex items-start">
-                <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-                <span className="text-quotla-dark/80">25 users + accountant access</span>
-              </li>
-              <li className="flex items-start">
-                <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-                <span className="text-quotla-dark/80">Everything in Plus</span>
-              </li>
-              <li className="flex items-start">
-                <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-                <span className="text-quotla-dark/80">Quotla Finance Agent</span>
-              </li>
-              <li className="flex items-start">
-                <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-                <span className="text-quotla-dark/80">Project Management Agent</span>
-              </li>
-              <li className="flex items-start">
-                <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-                <span className="text-quotla-dark/80">Custom report builder</span>
-              </li>
-              <li className="flex items-start">
-                <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-                <span className="text-quotla-dark/80">Workflow automation</span>
-              </li>
-              <li className="flex items-start">
-                <svg className="w-4 h-4 text-quotla-green mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-                <span className="text-quotla-dark/80">Unlimited classes & locations</span>
-              </li>
-            </ul>
-              <Link href="/signup" className="group/btn flex items-center justify-center gap-2 w-full text-center px-4 py-3 rounded-xl text-sm font-bold bg-quotla-dark text-white hover:bg-quotla-dark/90 transition-all hover:shadow-lg">
                 Choose Plan
                 <svg className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
