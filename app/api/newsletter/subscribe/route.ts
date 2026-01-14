@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/server'
 import { validateEmail } from '@/lib/utils/validation'
+import { enforceRateLimit, createRateLimitResponse, getClientIp } from '@/lib/utils/security'
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,6 +19,14 @@ export async function POST(request: NextRequest) {
         { error: 'Invalid email address' },
         { status: 400 }
       )
+    }
+
+    // Apply rate limiting
+    const ip = getClientIp(request)
+    const rateLimitResult = await enforceRateLimit(ip, 'newsletter_subscribe')
+
+    if (!rateLimitResult.allowed) {
+      return createRateLimitResponse(rateLimitResult)
     }
 
     const { data: existing } = await supabaseAdmin

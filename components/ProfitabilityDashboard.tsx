@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from 'react'
 import type { ProjectProfitability, ProfitabilitySummary } from '@/types/profitability'
+import { formatCurrency, getUserCurrency } from '@/lib/utils/currency'
 
 export default function ProfitabilityDashboard() {
   const [profitability, setProfitability] = useState<ProjectProfitability[]>([])
   const [summary, setSummary] = useState<ProfitabilitySummary | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [selectedClient, setSelectedClient] = useState<string>('')
+  const [currency, setCurrency] = useState<string>('USD')
 
   // Load profitability data
   const loadProfitability = async () => {
@@ -30,15 +32,18 @@ export default function ProfitabilityDashboard() {
   }
 
   useEffect(() => {
+    // Get user's preferred currency
+    const userCurrency = getUserCurrency()
+    setCurrency(userCurrency)
+  }, [])
+
+  useEffect(() => {
     loadProfitability()
   }, [selectedClient])
 
-  // Format currency
-  const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount)
+  // Format currency with user's preferred currency
+  const formatAmount = (amount: number): string => {
+    return formatCurrency(amount, currency)
   }
 
   // Get profit color based on value
@@ -69,7 +74,7 @@ export default function ProfitabilityDashboard() {
               </svg>
             </div>
             <p className="text-3xl font-bold text-quotla-dark dark:text-quotla-light">
-              {formatCurrency(summary.total_revenue)}
+              {formatAmount(summary.total_revenue)}
             </p>
           </div>
 
@@ -81,7 +86,7 @@ export default function ProfitabilityDashboard() {
               </svg>
             </div>
             <p className="text-3xl font-bold text-quotla-dark dark:text-quotla-light">
-              {formatCurrency(summary.total_costs)}
+              {formatAmount(summary.total_costs)}
             </p>
           </div>
 
@@ -93,7 +98,7 @@ export default function ProfitabilityDashboard() {
               </svg>
             </div>
             <p className={`text-3xl font-bold ${getProfitColor(summary.total_profit)}`}>
-              {formatCurrency(summary.total_profit)}
+              {formatAmount(summary.total_profit)}
             </p>
           </div>
 
@@ -164,17 +169,17 @@ export default function ProfitabilityDashboard() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right">
                     <div className="text-sm font-medium text-quotla-dark dark:text-quotla-light">
-                      {formatCurrency(project.amount_paid || 0)}
+                      {formatAmount(project.amount_paid || 0)}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right">
                     <div className="text-sm text-quotla-dark dark:text-quotla-light">
-                      {formatCurrency(project.total_costs)}
+                      {formatAmount(project.total_costs)}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right">
                     <div className={`text-sm font-semibold ${getProfitColor(project.profit)}`}>
-                      {formatCurrency(project.profit)}
+                      {formatAmount(project.profit)}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right">

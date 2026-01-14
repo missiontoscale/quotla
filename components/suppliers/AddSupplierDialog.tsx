@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { supabase } from '@/lib/supabase/client'
 import {
   Dialog,
   DialogContent,
@@ -24,6 +25,8 @@ interface AddSupplierDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onSuccess: () => void
+  supplierId?: string // If provided, this is view/edit mode
+  mode?: 'create' | 'view' | 'edit' // Operation mode
 }
 
 interface SupplierFormData {
@@ -38,8 +41,15 @@ interface SupplierFormData {
   status: 'active' | 'inactive'
 }
 
-export function AddSupplierDialog({ open, onOpenChange, onSuccess }: AddSupplierDialogProps) {
+export function AddSupplierDialog({
+  open,
+  onOpenChange,
+  onSuccess,
+  supplierId,
+  mode = 'create'
+}: AddSupplierDialogProps) {
   const [loading, setLoading] = useState(false)
+  const [currentMode, setCurrentMode] = useState(mode)
   const [formData, setFormData] = useState<SupplierFormData>({
     name: '',
     contact_person: '',
@@ -52,18 +62,107 @@ export function AddSupplierDialog({ open, onOpenChange, onSuccess }: AddSupplier
     status: 'active',
   })
 
+  useEffect(() => {
+    if (open && supplierId) {
+      loadSupplier()
+    } else if (open && !supplierId) {
+      // Reset form for create mode
+      setFormData({
+        name: '',
+        contact_person: '',
+        email: '',
+        phone: '',
+        category: '',
+        address: '',
+        city: '',
+        country: '',
+        status: 'active',
+      })
+      setCurrentMode('create')
+    }
+  }, [open, supplierId])
+
+  const loadSupplier = async () => {
+    if (!supplierId) return
+
+    setLoading(true)
+    try {
+      const { data, error } = await supabase
+        .from('suppliers')
+        .select('*')
+        .eq('id', supplierId)
+        .single()
+
+      if (error) throw error
+
+      if (data) {
+        setFormData({
+          name: data.name || '',
+          contact_person: data.contact_person || '',
+          email: data.email || '',
+          phone: data.phone || '',
+          category: data.notes?.replace('Category: ', '') || '',
+          address: data.address || '',
+          city: data.city || '',
+          country: data.country || '',
+          status: data.is_active ? 'active' : 'inactive',
+        })
+      }
+    } catch (error) {
+      console.error('Error loading supplier:', error)
+      alert('Failed to load supplier')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const isViewMode = currentMode === 'view'
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
 
     try {
-      // TODO: Implement actual API call when backend is ready
-      console.log('Creating supplier:', formData)
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      if (supplierId) {
+        // Update existing supplier
+        const { error } = await supabase
+          .from('suppliers')
+          .update({
+            name: formData.name,
+            contact_person: formData.contact_person,
+            email: formData.email,
+            phone: formData.phone,
+            address: formData.address || null,
+            city: formData.city || null,
+            country: formData.country || null,
+            is_active: formData.status === 'active',
+            notes: formData.category ? `Category: ${formData.category}` : null,
+          })
+          .eq('id', supplierId)
+          .eq('user_id', user.id)
 
-      // Reset form
+        if (error) throw error
+      } else {
+        // Create new supplier
+        const { error } = await supabase.from('suppliers').insert({
+          user_id: user.id,
+          name: formData.name,
+          contact_person: formData.contact_person,
+          email: formData.email,
+          phone: formData.phone,
+          address: formData.address || null,
+          city: formData.city || null,
+          country: formData.country || null,
+          is_active: formData.status === 'active',
+          notes: formData.category ? `Category: ${formData.category}` : null,
+        })
+
+        if (error) throw error
+      }
+
       setFormData({
         name: '',
         contact_person: '',
@@ -79,8 +178,8 @@ export function AddSupplierDialog({ open, onOpenChange, onSuccess }: AddSupplier
       onSuccess()
       onOpenChange(false)
     } catch (error) {
-      console.error('Error creating supplier:', error)
-      alert('Failed to create supplier')
+      console.error(`Error ${supplierId ? 'updating' : 'creating'} supplier:`, error)
+      alert(`Failed to ${supplierId ? 'update' : 'create'} supplier`)
     } finally {
       setLoading(false)
     }
@@ -90,7 +189,21 @@ export function AddSupplierDialog({ open, onOpenChange, onSuccess }: AddSupplier
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-slate-900 border-slate-800 text-slate-100 max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl">Add New Supplier</DialogTitle>
+          <div className="flex justify-between items-center">
+            <DialogTitle className="text-xl">
+              {currentMode === 'view' ? 'View Supplier' : currentMode === 'edit' ? 'Edit Supplier' : 'Add New Supplier'}
+            </DialogTitle>
+            {supplierId && currentMode === 'view' && (
+              <Button
+                onClick={() => setCurrentMode('edit')}
+                variant="outline"
+                size="sm"
+                className="border-slate-700 text-slate-300 hover:bg-slate-800"
+              >
+                Edit
+              </Button>
+            )}
+          </div>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 py-4">
           <div className="space-y-2">
@@ -101,6 +214,7 @@ export function AddSupplierDialog({ open, onOpenChange, onSuccess }: AddSupplier
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               required
+              disabled={isViewMode}
               className="bg-slate-800 border-slate-700 h-8 text-sm"
             />
           </div>
@@ -114,6 +228,7 @@ export function AddSupplierDialog({ open, onOpenChange, onSuccess }: AddSupplier
                 value={formData.contact_person}
                 onChange={(e) => setFormData({ ...formData, contact_person: e.target.value })}
                 required
+                disabled={isViewMode}
                 className="bg-slate-800 border-slate-700 h-8 text-sm"
               />
             </div>
@@ -125,6 +240,7 @@ export function AddSupplierDialog({ open, onOpenChange, onSuccess }: AddSupplier
                 placeholder="e.g., Electronics, Textiles"
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                disabled={isViewMode}
                 className="bg-slate-800 border-slate-700 h-8 text-sm"
               />
             </div>
@@ -140,6 +256,7 @@ export function AddSupplierDialog({ open, onOpenChange, onSuccess }: AddSupplier
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 required
+                disabled={isViewMode}
                 className="bg-slate-800 border-slate-700 h-8 text-sm"
               />
             </div>
@@ -153,6 +270,7 @@ export function AddSupplierDialog({ open, onOpenChange, onSuccess }: AddSupplier
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 required
+                disabled={isViewMode}
                 className="bg-slate-800 border-slate-700 h-8 text-sm"
               />
             </div>
@@ -165,6 +283,7 @@ export function AddSupplierDialog({ open, onOpenChange, onSuccess }: AddSupplier
               placeholder="Street address"
               value={formData.address}
               onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+              disabled={isViewMode}
               className="bg-slate-800 border-slate-700 min-h-20 text-sm"
               rows={2}
             />
@@ -178,6 +297,7 @@ export function AddSupplierDialog({ open, onOpenChange, onSuccess }: AddSupplier
                 placeholder="City"
                 value={formData.city}
                 onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                disabled={isViewMode}
                 className="bg-slate-800 border-slate-700 h-8 text-sm"
               />
             </div>
@@ -189,6 +309,7 @@ export function AddSupplierDialog({ open, onOpenChange, onSuccess }: AddSupplier
                 placeholder="Country"
                 value={formData.country}
                 onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                disabled={isViewMode}
                 className="bg-slate-800 border-slate-700 h-8 text-sm"
               />
             </div>
@@ -199,6 +320,7 @@ export function AddSupplierDialog({ open, onOpenChange, onSuccess }: AddSupplier
             <Select
               value={formData.status}
               onValueChange={(value) => setFormData({ ...formData, status: value as 'active' | 'inactive' })}
+              disabled={isViewMode}
             >
               <SelectTrigger id="status" className="bg-slate-800 border-slate-700 h-8 text-sm">
                 <SelectValue />
@@ -217,15 +339,20 @@ export function AddSupplierDialog({ open, onOpenChange, onSuccess }: AddSupplier
               onClick={() => onOpenChange(false)}
               className="border-slate-700 text-slate-300 hover:bg-slate-800 text-sm h-9"
             >
-              Cancel
+              {isViewMode ? 'Close' : 'Cancel'}
             </Button>
-            <Button
-              type="submit"
-              disabled={loading}
-              className="bg-cyan-500 hover:bg-cyan-600 text-white text-sm h-9"
-            >
-              {loading ? 'Adding...' : 'Add Supplier'}
-            </Button>
+            {!isViewMode && (
+              <Button
+                type="submit"
+                disabled={loading}
+                className="bg-cyan-500 hover:bg-cyan-600 text-white text-sm h-9"
+              >
+                {loading
+                  ? (supplierId ? 'Updating...' : 'Adding...')
+                  : (supplierId ? 'Update Supplier' : 'Add Supplier')
+                }
+              </Button>
+            )}
           </DialogFooter>
         </form>
       </DialogContent>

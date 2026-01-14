@@ -13,6 +13,9 @@ import { useAuth } from '@/contexts/AuthContext';
 export default function ProductsPage() {
   const { user } = useAuth();
   const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [selectedProductId, setSelectedProductId] = useState<string | undefined>(undefined);
+  const [dialogMode, setDialogMode] = useState<'create' | 'view' | 'edit'>('create');
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
@@ -31,14 +34,28 @@ export default function ProductsPage() {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      // TODO: Replace with actual products data fetch from Supabase
-      // const { data, error } = await supabase.from('products').select('*').eq('user_id', user?.id);
-      // if (error) throw error;
-      // setProducts(data || []);
+      const { data, error } = await supabase
+        .from('inventory_items')
+        .select('*')
+        .eq('user_id', user?.id)
+        .eq('item_type', 'product')
+        .order('created_at', { ascending: false });
 
-      // For now, set empty data
-      setProducts([]);
-      calculateStats([]);
+      if (error) throw error;
+
+      const formattedProducts = (data || []).map((item: any) => ({
+        id: item.id,
+        sku: item.sku,
+        name: item.name,
+        category: item.category,
+        price: item.unit_price,
+        stock: item.quantity_on_hand,
+        status: item.quantity_on_hand <= 0 ? 'out-of-stock' :
+                item.quantity_on_hand <= (item.low_stock_threshold || 10) ? 'low-stock' : 'in-stock'
+      }));
+
+      setProducts(formattedProducts);
+      calculateStats(formattedProducts);
     } catch (error) {
       console.error('Error fetching products:', error);
     } finally {
@@ -57,6 +74,37 @@ export default function ProductsPage() {
 
   const handleProductAdded = () => {
     fetchProducts();
+  };
+
+  const handleView = (row: any) => {
+    setSelectedProductId(row.id);
+    setDialogMode('view');
+    setEditDialogOpen(true);
+  };
+
+  const handleEdit = (row: any) => {
+    setSelectedProductId(row.id);
+    setDialogMode('edit');
+    setEditDialogOpen(true);
+  };
+
+  const handleDelete = async (row: any) => {
+    if (!confirm('Are you sure you want to delete this product?')) return;
+
+    try {
+      const { error } = await supabase
+        .from('inventory_items')
+        .delete()
+        .eq('id', row.id)
+        .eq('user_id', user?.id);
+
+      if (error) throw error;
+
+      fetchProducts();
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      alert('Failed to delete product');
+    }
   };
 
   const columns = [
@@ -109,6 +157,14 @@ export default function ProductsPage() {
         onSuccess={handleProductAdded}
       />
 
+      <AddProductDialog
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        onSuccess={handleProductAdded}
+        productId={selectedProductId}
+        mode={dialogMode}
+      />
+
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card className="bg-slate-900 border-slate-800 p-6">
           <p className="text-slate-400 text-sm">Total Products</p>
@@ -132,9 +188,9 @@ export default function ProductsPage() {
         columns={columns}
         data={products}
         searchPlaceholder="Search products..."
-        onView={(row) => console.log('View', row)}
-        onEdit={(row) => console.log('Edit', row)}
-        onDelete={(row) => console.log('Delete', row)}
+        onView={handleView}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
       />
     </div>
   );

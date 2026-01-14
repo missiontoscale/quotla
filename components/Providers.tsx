@@ -2,6 +2,8 @@
 
 import { useEffect } from 'react'
 import { AuthProvider } from '@/contexts/AuthContext'
+import { ModalProvider } from '@/contexts/ModalContext'
+import { GlobalModalManager } from '@/components/modals/GlobalModalManager'
 import { STORAGE_KEYS } from '@/lib/constants'
 
 function ThemeInitializer() {
@@ -20,8 +22,11 @@ function ThemeInitializer() {
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <AuthProvider>
-      <ThemeInitializer />
-      {children}
+      <ModalProvider>
+        <ThemeInitializer />
+        {children}
+        <GlobalModalManager />
+      </ModalProvider>
     </AuthProvider>
   )
 }

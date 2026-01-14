@@ -42,11 +42,21 @@ export default function InlineClientCreator({ isOpen, onClose, onClientCreated }
 
     try {
       const { data, error: insertError } = await supabase
-        .from('clients')
+        .from('customers')
         .insert([
           {
             user_id: user.id,
-            ...formData,
+            full_name: formData.name,
+            email: formData.email || null,
+            phone: formData.phone || null,
+            company_name: formData.company_name || null,
+            address: formData.address || null,
+            city: formData.city || null,
+            state: formData.state || null,
+            postal_code: formData.postal_code || null,
+            country: formData.country || null,
+            notes: formData.notes || null,
+            is_active: true,
           },
         ])
         .select()
@@ -55,7 +65,12 @@ export default function InlineClientCreator({ isOpen, onClose, onClientCreated }
       if (insertError) throw insertError
 
       if (data) {
-        onClientCreated(data)
+        // Map customer data to Client format
+        const clientData = {
+          ...data,
+          name: data.company_name || data.full_name,
+        }
+        onClientCreated(clientData as Client)
         setFormData({
           name: '',
           email: '',

@@ -13,6 +13,9 @@ import { useAuth } from '@/contexts/AuthContext';
 export default function CustomersPage() {
   const { user } = useAuth();
   const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [selectedCustomerId, setSelectedCustomerId] = useState<string | undefined>(undefined);
+  const [dialogMode, setDialogMode] = useState<'create' | 'view' | 'edit'>('create');
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
@@ -31,14 +34,26 @@ export default function CustomersPage() {
   const fetchCustomers = async () => {
     try {
       setLoading(true);
-      // TODO: Replace with actual customer data fetch from Supabase
-      // const { data, error } = await supabase.from('customers').select('*').eq('user_id', user?.id);
-      // if (error) throw error;
-      // setCustomers(data || []);
+      const { data, error } = await supabase
+        .from('customers')
+        .select('*')
+        .eq('user_id', user?.id)
+        .order('created_at', { ascending: false });
 
-      // For now, set empty data
-      setCustomers([]);
-      calculateStats([]);
+      if (error) throw error;
+
+      const formattedCustomers = (data || []).map((customer: any) => ({
+        id: customer.id,
+        name: customer.company_name || customer.full_name,
+        contact: customer.contact_person,
+        email: customer.email,
+        phone: customer.phone,
+        status: customer.is_active ? 'active' : 'inactive',
+        balance: customer.outstanding_balance || 0
+      }));
+
+      setCustomers(formattedCustomers);
+      calculateStats(formattedCustomers);
     } catch (error) {
       console.error('Error fetching customers:', error);
     } finally {
@@ -47,16 +62,51 @@ export default function CustomersPage() {
   };
 
   const calculateStats = (data: any[]) => {
+    const totalOutstanding = data.reduce((sum, c) => sum + (c.balance || 0), 0);
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
     setStats({
       total: data.length,
       active: data.filter(c => c.status === 'active').length,
-      totalOutstanding: 0, // TODO: Calculate from actual data
-      thisMonth: 0 // TODO: Calculate from actual data
+      totalOutstanding: totalOutstanding,
+      thisMonth: 0
     });
   };
 
   const handleCustomerAdded = () => {
     fetchCustomers();
+  };
+
+  const handleView = (row: any) => {
+    setSelectedCustomerId(row.id);
+    setDialogMode('view');
+    setEditDialogOpen(true);
+  };
+
+  const handleEdit = (row: any) => {
+    setSelectedCustomerId(row.id);
+    setDialogMode('edit');
+    setEditDialogOpen(true);
+  };
+
+  const handleDelete = async (row: any) => {
+    if (!confirm('Are you sure you want to delete this customer?')) return;
+
+    try {
+      const { error } = await supabase
+        .from('customers')
+        .delete()
+        .eq('id', row.id)
+        .eq('user_id', user?.id);
+
+      if (error) throw error;
+
+      fetchCustomers();
+    } catch (error) {
+      console.error('Error deleting customer:', error);
+      alert('Failed to delete customer');
+    }
   };
 
   const columns = [
@@ -108,6 +158,14 @@ export default function CustomersPage() {
         onSuccess={handleCustomerAdded}
       />
 
+      <AddCustomerDialog
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        onSuccess={handleCustomerAdded}
+        customerId={selectedCustomerId}
+        mode={dialogMode}
+      />
+
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card className="bg-slate-900 border-slate-800 p-6">
           <p className="text-slate-400 text-sm">Total Customers</p>
@@ -131,9 +189,9 @@ export default function CustomersPage() {
         columns={columns}
         data={customers}
         searchPlaceholder="Search customers..."
-        onView={(row) => console.log('View', row)}
-        onEdit={(row) => console.log('Edit', row)}
-        onDelete={(row) => console.log('Delete', row)}
+        onView={handleView}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
       />
     </div>
   );

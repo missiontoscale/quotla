@@ -90,20 +90,30 @@ export function DataTable({
                   </TableHead>
                 ))}
                 {(onEdit || onDelete || onView) && (
-                  <TableHead className="text-slate-400 text-right text-[0.72rem] py-3">Actions</TableHead>
+                  <TableHead className="text-slate-400 text-right text-[0.72rem] py-3 max-md:hidden">Actions</TableHead>
                 )}
               </TableRow>
             </TableHeader>
             <TableBody>
               {paginatedData.map((row, index) => (
-                <TableRow key={index} className="border-slate-800 hover:bg-slate-800/50">
+                <TableRow
+                  key={index}
+                  className="border-slate-800 hover:bg-slate-800/50 md:cursor-default cursor-pointer"
+                  onClick={() => {
+                    // On mobile, clicking row opens view/edit. On desktop, use action menu.
+                    if (window.innerWidth < 768) {
+                      if (onView) onView(row);
+                      else if (onEdit) onEdit(row);
+                    }
+                  }}
+                >
                   {columns.map((column) => (
                     <TableCell key={column.key} className="text-slate-300 text-[0.81rem] py-3">
                       {column.render ? column.render(row[column.key], row) : row[column.key]}
                     </TableCell>
                   ))}
                   {(onEdit || onDelete || onView) && (
-                    <TableCell className="text-right py-3">
+                    <TableCell className="text-right py-3 max-md:hidden">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="icon" className="text-slate-400 hover:text-slate-100 h-8 w-8">

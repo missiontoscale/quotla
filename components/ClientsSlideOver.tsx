@@ -28,13 +28,19 @@ export default function ClientsSlideOver({ isOpen, onClose }: ClientsSlideOverPr
     if (!user) return
 
     const { data, error } = await supabase
-      .from('clients')
+      .from('customers')
       .select('*')
       .eq('user_id', user.id)
-      .order('name', { ascending: true })
+      .eq('is_active', true)
+      .order('full_name', { ascending: true })
 
     if (!error && data) {
-      setClients(data)
+      // Map customers to Client format
+      const mappedClients = data.map(customer => ({
+        ...customer,
+        name: customer.company_name || customer.full_name,
+      }))
+      setClients(mappedClients as Client[])
     }
     setLoading(false)
   }
@@ -42,7 +48,7 @@ export default function ClientsSlideOver({ isOpen, onClose }: ClientsSlideOverPr
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this client?')) return
 
-    const { error } = await supabase.from('clients').delete().eq('id', id)
+    const { error } = await supabase.from('customers').delete().eq('id', id)
 
     if (!error) {
       setClients(clients.filter((c) => c.id !== id))

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { getExternalAIClient } from '@/lib/api/external-ai-client'
-import { sanitizeHtml } from '@/lib/utils/security'
+import { sanitizeHtml, enforceRateLimit, createRateLimitResponse, getClientIp } from '@/lib/utils/security'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -28,6 +28,14 @@ export async function POST(request: NextRequest) {
     // Allow unauthenticated users for the homepage demo (with rate limiting handled elsewhere)
     // But authenticated users get full access
     const isAuthenticated = !!session
+
+    // Apply rate limiting
+    const identifier = session?.user?.id || getClientIp(request)
+    const rateLimitResult = await enforceRateLimit(identifier, 'ai_generate')
+
+    if (!rateLimitResult.allowed) {
+      return createRateLimitResponse(rateLimitResult)
+    }
 
     const contentType = request.headers.get('content-type')
     let prompt = ''

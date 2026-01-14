@@ -49,7 +49,7 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
         {!collapsed && (
           <Link href="/business/dashboard" className="flex items-center gap-2">
             <div className="w-7 h-7 bg-gradient-to-br from-violet-400 to-purple-500 rounded-lg flex items-center justify-center">
-              <Package className="w-4.5 h-4.5 text-white" />
+              <Package className="w-4.5 h-4.5 max-md:w-5 max-md:h-5 text-white" />
             </div>
             <span className="text-[0.97rem]">Quotla</span>
           </Link>
@@ -79,7 +79,7 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
               }`}
               title={collapsed ? item.label : undefined}
             >
-              <Icon className="w-4.5 h-4.5 flex-shrink-0" />
+              <Icon className="w-4.5 h-4.5 max-md:w-5 max-md:h-5 flex-shrink-0" />
               {!collapsed && <span className="text-[0.81rem]">{item.label}</span>}
             </Link>
           );
