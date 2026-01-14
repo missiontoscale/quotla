@@ -1,4 +1,5 @@
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
+import { createServerClient } from '@supabase/ssr'
 import { Database } from '@/types/database'
 import { cookies } from 'next/headers'
 
@@ -18,7 +19,7 @@ export const supabaseAdmin = createSupabaseClient<Database>(supabaseUrl, supabas
 export async function createClient() {
   const cookieStore = await cookies()
 
-  return createSupabaseClient<Database>(
+  return createServerClient<Database>(
     supabaseUrl,
     supabaseAnonKey,
     {

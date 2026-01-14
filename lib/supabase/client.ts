@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js'
+import { createBrowserClient } from '@supabase/ssr'
 import { Database } from '@/types/database'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -12,16 +12,7 @@ if (!supabaseAnonKey) {
   throw new Error('Missing NEXT_PUBLIC_SUPABASE_ANON_KEY environment variable')
 }
 
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true,
-    flowType: 'pkce',
-    // Add retry configuration for auth operations
-    retryAttempts: 3,
-    retryDelay: 1,
-  },
+export const supabase = createBrowserClient<Database>(supabaseUrl, supabaseAnonKey, {
   global: {
     headers: {
       'x-application-name': 'quotla',

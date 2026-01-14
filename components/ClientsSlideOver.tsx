@@ -67,7 +67,7 @@ export default function ClientsSlideOver({ isOpen, onClose }: ClientsSlideOverPr
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <Link
-            href="/clients"
+            href="/business/customers"
             className="btn btn-primary"
             onClick={onClose}
           >
@@ -93,7 +93,7 @@ export default function ClientsSlideOver({ isOpen, onClose }: ClientsSlideOverPr
           <div className="card text-center py-12">
             <p className="text-primary-400 mb-4">No clients found</p>
             <Link
-              href="/clients"
+              href="/business/customers"
               className="btn btn-primary inline-block"
               onClick={onClose}
             >
@@ -126,11 +126,11 @@ export default function ClientsSlideOver({ isOpen, onClose }: ClientsSlideOverPr
                       </td>
                       <td className="py-3 px-4 text-right">
                         <Link
-                          href={`/clients/${client.id}`}
+                          href="/business/customers"
                           className="text-primary-600 hover:text-primary-700 text-sm font-medium mr-4"
                           onClick={onClose}
                         >
-                          Edit
+                          View
                         </Link>
                         <button
                           onClick={() => handleDelete(client.id)}
