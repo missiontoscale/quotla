@@ -59,13 +59,13 @@ async function getUserIdFromCalendlyUri(calendlyUserUri: string): Promise<string
 }
 
 /**
- * Match invitee email to existing client
+ * Match invitee email to existing customer
  */
 async function matchClientByEmail(userId: string, email: string): Promise<string | null> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
-    .from('clients')
+    .from('customers')
     .select('id')
     .eq('user_id', userId)
     .eq('email', email)

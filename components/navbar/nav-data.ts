@@ -67,11 +67,6 @@ export const GUEST_NAV_LINKS: NavLink[] = [
         description: 'Create quotes in seconds'
       },
       {
-        label: 'Invoice Management',
-        href: '/features/invoices',
-        description: 'Track payments effortlessly'
-      },
-      {
         label: 'Inventory Tracking',
         href: '/features/inventory',
         description: 'Manage stock and products'
@@ -149,19 +144,14 @@ export const AUTH_NAV_LINKS: NavLink[] = [
     hasDropdown: true,
     dropdownItems: [
       {
-        label: 'Invoices',
-        href: '/business/invoices',
-        description: 'Send and track invoices'
-      },
-      {
         label: 'Quotes',
         href: '/quotes',
         description: 'Create professional quotes'
       },
       {
-        label: 'Clients',
-        href: '/business/customers',
-        description: 'Manage client relationships'
+        label: 'Sales',
+        href: '/business/sales',
+        description: 'Customers & quotes'
       },
       {
         label: 'Products',
@@ -169,14 +159,9 @@ export const AUTH_NAV_LINKS: NavLink[] = [
         description: 'Track products & stock'
       },
       {
-        label: 'Suppliers',
-        href: '/business/suppliers',
-        description: 'Manage your suppliers'
-      },
-      {
-        label: 'Purchase Orders',
-        href: '/business/purchase-orders',
-        description: 'Create and track purchase orders'
+        label: 'Expenses',
+        href: '/business/expenses',
+        description: 'Track expenses & vendors'
       },
       {
         label: 'Payments',

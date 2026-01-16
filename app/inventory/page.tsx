@@ -4,14 +4,23 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase/client'
 import { InventoryItem, InventoryStats } from '@/types/inventory'
-import { formatCurrency, DEFAULT_BUSINESS_CURRENCY, getUserCurrency } from '@/lib/utils/currency'
-import { Plus, Package } from 'lucide-react'
+import { formatCurrency } from '@/lib/utils/currency'
+import { useDisplayCurrency } from '@/hooks/useUserCurrency'
+import { CURRENCIES } from '@/types'
+import { Plus, Package, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { DataTable } from '@/components/dashboard/DataTable'
 import { Badge } from '@/components/ui/badge'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { TopBar } from '@/components/dashboard/TopBar'
 import { AddInventoryItemDialog } from '@/components/inventory/AddInventoryItemDialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 export default function InventoryPage() {
   const router = useRouter()
@@ -25,14 +34,12 @@ export default function InventoryPage() {
     total_products: 0,
     total_services: 0
   })
-  const [displayCurrency, setDisplayCurrency] = useState<string>(DEFAULT_BUSINESS_CURRENCY)
+  const { userCurrency, displayCurrency, setDisplayCurrency, isConverted } = useDisplayCurrency()
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [addDialogOpen, setAddDialogOpen] = useState(false)
 
   useEffect(() => {
     checkAuthAndLoad()
-    const savedCurrency = getUserCurrency()
-    setDisplayCurrency(savedCurrency)
   }, [])
 
   const checkAuthAndLoad = async () => {
@@ -201,13 +208,35 @@ export default function InventoryPage() {
                 <h1 className="text-[1.62rem] sm:text-[1.8rem] text-slate-100 leading-tight">Products & Inventory</h1>
                 <p className="text-slate-400 mt-1 text-[0.81rem]">Manage your product catalog and stock levels</p>
               </div>
-              <Button
-                onClick={() => setAddDialogOpen(true)}
-                className="bg-violet-500 hover:bg-violet-600 text-white text-[0.81rem] h-9 w-full sm:w-auto"
-              >
-                <Plus className="w-3.5 h-3.5 mr-2" />
-                Add Product
-              </Button>
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <div className="flex items-center gap-2">
+                  <Select value={displayCurrency} onValueChange={setDisplayCurrency}>
+                    <SelectTrigger className="w-[120px] bg-slate-800 border-slate-700 text-slate-100 h-9 text-[0.81rem]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-slate-900 border-slate-800">
+                      {CURRENCIES.map((curr) => (
+                        <SelectItem key={curr.code} value={curr.code}>
+                          {curr.symbol} {curr.code}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {isConverted && (
+                    <div className="flex items-center gap-1 text-xs text-amber-400">
+                      <RefreshCw className="w-3 h-3" />
+                      <span>Converted</span>
+                    </div>
+                  )}
+                </div>
+                <Button
+                  onClick={() => setAddDialogOpen(true)}
+                  className="bg-violet-500 hover:bg-violet-600 text-white text-[0.81rem] h-9 flex-1 sm:flex-none"
+                >
+                  <Plus className="w-3.5 h-3.5 mr-2" />
+                  Add Product
+                </Button>
+              </div>
             </div>
 
             <AddInventoryItemDialog

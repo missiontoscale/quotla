@@ -71,11 +71,12 @@ export interface Database {
           updated_at?: string
         }
       }
-      clients: {
+      customers: {
         Row: {
           id: string
           user_id: string
-          name: string
+          full_name: string
+          contact_person: string | null
           email: string | null
           phone: string | null
           company_name: string | null
@@ -84,13 +85,18 @@ export interface Database {
           state: string | null
           postal_code: string | null
           country: string | null
+          is_active: boolean
+          outstanding_balance: number
+          preferred_currency: string
+          notes: string | null
           created_at: string
           updated_at: string
         }
         Insert: {
           id?: string
           user_id: string
-          name: string
+          full_name: string
+          contact_person?: string | null
           email?: string | null
           phone?: string | null
           company_name?: string | null
@@ -99,13 +105,18 @@ export interface Database {
           state?: string | null
           postal_code?: string | null
           country?: string | null
+          is_active?: boolean
+          outstanding_balance?: number
+          preferred_currency?: string
+          notes?: string | null
           created_at?: string
           updated_at?: string
         }
         Update: {
           id?: string
           user_id?: string
-          name?: string
+          full_name?: string
+          contact_person?: string | null
           email?: string | null
           phone?: string | null
           company_name?: string | null
@@ -114,6 +125,10 @@ export interface Database {
           state?: string | null
           postal_code?: string | null
           country?: string | null
+          is_active?: boolean
+          outstanding_balance?: number
+          preferred_currency?: string
+          notes?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -201,100 +216,6 @@ export interface Database {
         Update: {
           id?: string
           quote_id?: string
-          description?: string
-          quantity?: number
-          unit_price?: number
-          amount?: number
-          sort_order?: number
-          created_at?: string
-        }
-      }
-      invoices: {
-        Row: {
-          id: string
-          user_id: string
-          client_id: string | null
-          quote_id: string | null
-          invoice_number: string
-          title: string | null
-          status: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled'
-          issue_date: string
-          due_date: string | null
-          currency: string
-          subtotal: number
-          tax_rate: number
-          tax_amount: number
-          total: number
-          notes: string | null
-          payment_terms: string | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          client_id?: string | null
-          quote_id?: string | null
-          invoice_number: string
-          title?: string | null
-          status?: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled'
-          issue_date: string
-          due_date?: string | null
-          currency?: string
-          subtotal?: number
-          tax_rate?: number
-          tax_amount?: number
-          total?: number
-          notes?: string | null
-          payment_terms?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          client_id?: string | null
-          quote_id?: string | null
-          invoice_number?: string
-          title?: string | null
-          status?: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled'
-          issue_date?: string
-          due_date?: string | null
-          currency?: string
-          subtotal?: number
-          tax_rate?: number
-          tax_amount?: number
-          total?: number
-          notes?: string | null
-          payment_terms?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-      }
-      invoice_items: {
-        Row: {
-          id: string
-          invoice_id: string
-          description: string
-          quantity: number
-          unit_price: number
-          amount: number
-          sort_order: number
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          invoice_id: string
-          description: string
-          quantity?: number
-          unit_price: number
-          amount: number
-          sort_order?: number
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          invoice_id?: string
           description?: string
           quantity?: number
           unit_price?: number
@@ -460,6 +381,103 @@ export interface Database {
           resource_id?: string | null
           details?: Json | null
           ip_address?: string | null
+          created_at?: string
+        }
+      }
+      invoices: {
+        Row: {
+          id: string
+          user_id: string
+          client_id: string | null
+          quote_id: string | null
+          invoice_number: string
+          title: string | null
+          status: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled'
+          issue_date: string
+          due_date: string | null
+          currency: string
+          subtotal: number
+          tax_rate: number
+          tax_amount: number
+          total: number
+          notes: string | null
+          payment_terms: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          client_id?: string | null
+          quote_id?: string | null
+          invoice_number: string
+          title?: string | null
+          status?: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled'
+          issue_date: string
+          due_date?: string | null
+          currency?: string
+          subtotal?: number
+          tax_rate?: number
+          tax_amount?: number
+          total?: number
+          notes?: string | null
+          payment_terms?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          client_id?: string | null
+          quote_id?: string | null
+          invoice_number?: string
+          title?: string | null
+          status?: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled'
+          issue_date?: string
+          due_date?: string | null
+          currency?: string
+          subtotal?: number
+          tax_rate?: number
+          tax_amount?: number
+          total?: number
+          notes?: string | null
+          payment_terms?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      invoice_items: {
+        Row: {
+          id: string
+          invoice_id: string
+          description: string
+          quantity: number
+          unit_price: number
+          amount: number
+          sort_order: number
+          inventory_item_id: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          invoice_id: string
+          description: string
+          quantity?: number
+          unit_price: number
+          amount: number
+          sort_order?: number
+          inventory_item_id?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          invoice_id?: string
+          description?: string
+          quantity?: number
+          unit_price?: number
+          amount?: number
+          sort_order?: number
+          inventory_item_id?: string | null
           created_at?: string
         }
       }

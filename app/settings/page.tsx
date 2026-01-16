@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { CURRENCIES } from '@/types'
 import { validateFileUpload, validateImageUrl } from '@/lib/utils/validation'
@@ -10,17 +11,39 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { FieldGroup } from '@/components/ui/field-group'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog'
 import { User, Building2, Globe, DollarSign, LogOut, Trash2, Upload, Camera } from 'lucide-react'
 
+const DELETE_REASONS = [
+  { value: 'not_useful', label: 'The app is not useful for my needs' },
+  { value: 'too_complex', label: 'Too complex to use' },
+  { value: 'found_alternative', label: 'Found a better alternative' },
+  { value: 'closing_business', label: 'Closing my business' },
+  { value: 'privacy_concerns', label: 'Privacy concerns' },
+  { value: 'too_expensive', label: 'Too expensive' },
+  { value: 'custom', label: 'Other reason...' },
+]
+
 export default function SettingsPage() {
+  const router = useRouter()
   const { profile, updateProfile, signOut, user } = useAuth()
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState('')
   const [error, setError] = useState('')
   const [uploading, setUploading] = useState(false)
   const [storageReady, setStorageReady] = useState(false)
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-  const [deleteConfirmText, setDeleteConfirmText] = useState('')
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [showReasonStep, setShowReasonStep] = useState(false)
+  const [deleteReason, setDeleteReason] = useState('')
+  const [customReason, setCustomReason] = useState('')
   const [deleting, setDeleting] = useState(false)
 
   const [formData, setFormData] = useState({
@@ -177,8 +200,9 @@ export default function SettingsPage() {
   const handleDeleteAccount = async () => {
     if (!user) return
 
-    if (deleteConfirmText !== 'DELETE MY ACCOUNT') {
-      setError('Please type DELETE MY ACCOUNT to confirm')
+    const reason = deleteReason === 'custom' ? customReason : deleteReason
+    if (!reason) {
+      setError('Please select a reason for leaving')
       return
     }
 
@@ -191,7 +215,8 @@ export default function SettingsPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId: user.id,
-          confirmText: deleteConfirmText,
+          confirmText: 'DELETE MY ACCOUNT',
+          reason,
         }),
       })
 
@@ -202,10 +227,19 @@ export default function SettingsPage() {
       }
 
       await signOut()
+      router.push('/')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete account')
       setDeleting(false)
     }
+  }
+
+  const handleCloseDeleteModal = () => {
+    setShowDeleteModal(false)
+    setShowReasonStep(false)
+    setDeleteReason('')
+    setCustomReason('')
+    setError('')
   }
 
   return (
@@ -235,9 +269,12 @@ export default function SettingsPage() {
 
       {/* Profile Section */}
       <Card className="bg-slate-900 border-slate-800 p-6">
-        <div className="flex items-center gap-3 mb-6">
-          <User className="w-5 h-5 text-violet-400" />
-          <h2 className="text-xl text-slate-100 font-semibold">Profile</h2>
+        <div className="mb-6">
+          <div className="flex items-center gap-3">
+            <User className="w-5 h-5 text-violet-400" />
+            <h2 className="text-xl text-slate-100 font-semibold">Profile</h2>
+          </div>
+          <p className="text-sm text-slate-400 mt-1 ml-8">Your personal account details and profile picture</p>
         </div>
 
         <div className="space-y-6">
@@ -298,9 +335,12 @@ export default function SettingsPage() {
 
       {/* Business Information */}
       <Card className="bg-slate-900 border-slate-800 p-6">
-        <div className="flex items-center gap-3 mb-6">
-          <Building2 className="w-5 h-5 text-violet-400" />
-          <h2 className="text-xl text-slate-100 font-semibold">Business Information</h2>
+        <div className="mb-6">
+          <div className="flex items-center gap-3">
+            <Building2 className="w-5 h-5 text-violet-400" />
+            <h2 className="text-xl text-slate-100 font-semibold">Business Information</h2>
+          </div>
+          <p className="text-sm text-slate-400 mt-1 ml-8">Company details that appear on your invoices and documents</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -343,123 +383,140 @@ export default function SettingsPage() {
           </div>
 
           {/* Form Fields */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="company_name" className="text-sm text-slate-300">Company Name</Label>
-              <Input
-                id="company_name"
-                name="company_name"
-                value={formData.company_name}
-                onChange={handleChange}
-                className="bg-slate-800 border-slate-700 text-slate-100"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="business_number" className="text-sm text-slate-300">Business Number</Label>
-              <Input
-                id="business_number"
-                name="business_number"
-                value={formData.business_number}
-                onChange={handleChange}
-                className="bg-slate-800 border-slate-700 text-slate-100"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="tax_id" className="text-sm text-slate-300">Tax ID</Label>
-              <Input
-                id="tax_id"
-                name="tax_id"
-                value={formData.tax_id}
-                onChange={handleChange}
-                className="bg-slate-800 border-slate-700 text-slate-100"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="phone" className="text-sm text-slate-300">Phone</Label>
-              <Input
-                type="tel"
-                id="phone"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                className="bg-slate-800 border-slate-700 text-slate-100"
-              />
-            </div>
-
-            <div className="md:col-span-2 space-y-2">
-              <Label htmlFor="website" className="text-sm text-slate-300">Website</Label>
-              <div className="relative">
-                <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+          <div className="space-y-6">
+            {/* Company Details */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="company_name" className="text-sm text-slate-300">Company Name</Label>
                 <Input
-                  type="url"
-                  id="website"
-                  name="website"
-                  value={formData.website}
+                  id="company_name"
+                  name="company_name"
+                  value={formData.company_name}
                   onChange={handleChange}
-                  className="bg-slate-800 border-slate-700 text-slate-100 pl-10"
+                  className="bg-slate-800 border-slate-700 text-slate-100"
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="business_number" className="text-sm text-slate-300">
+                  Business Number <span className="text-slate-500 font-normal">(optional)</span>
+                </Label>
+                <Input
+                  id="business_number"
+                  name="business_number"
+                  value={formData.business_number}
+                  onChange={handleChange}
+                  className="bg-slate-800 border-slate-700 text-slate-100"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="tax_id" className="text-sm text-slate-300">
+                  Tax ID <span className="text-slate-500 font-normal">(optional)</span>
+                </Label>
+                <Input
+                  id="tax_id"
+                  name="tax_id"
+                  value={formData.tax_id}
+                  onChange={handleChange}
+                  className="bg-slate-800 border-slate-700 text-slate-100"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="phone" className="text-sm text-slate-300">
+                  Phone <span className="text-slate-500 font-normal">(optional)</span>
+                </Label>
+                <Input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className="bg-slate-800 border-slate-700 text-slate-100"
+                />
+              </div>
+
+              <div className="md:col-span-2 space-y-2">
+                <Label htmlFor="website" className="text-sm text-slate-300">
+                  Website <span className="text-slate-500 font-normal">(optional)</span>
+                </Label>
+                <div className="relative">
+                  <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                  <Input
+                    type="url"
+                    id="website"
+                    name="website"
+                    value={formData.website}
+                    onChange={handleChange}
+                    className="bg-slate-800 border-slate-700 text-slate-100 pl-10"
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="md:col-span-2 space-y-2">
-              <Label htmlFor="address" className="text-sm text-slate-300">Address</Label>
-              <Input
-                id="address"
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                className="bg-slate-800 border-slate-700 text-slate-100"
-              />
-            </div>
+            {/* Address Group */}
+            <FieldGroup label="Business Address (optional)">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="md:col-span-2 space-y-2">
+                  <Label htmlFor="address" className="text-sm text-slate-300">Street Address</Label>
+                  <Input
+                    id="address"
+                    name="address"
+                    value={formData.address}
+                    onChange={handleChange}
+                    className="bg-slate-800 border-slate-700 text-slate-100"
+                  />
+                </div>
 
+                <div className="space-y-2">
+                  <Label htmlFor="city" className="text-sm text-slate-300">City</Label>
+                  <Input
+                    id="city"
+                    name="city"
+                    value={formData.city}
+                    onChange={handleChange}
+                    className="bg-slate-800 border-slate-700 text-slate-100"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="state" className="text-sm text-slate-300">State/Province</Label>
+                  <Input
+                    id="state"
+                    name="state"
+                    value={formData.state}
+                    onChange={handleChange}
+                    className="bg-slate-800 border-slate-700 text-slate-100"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="postal_code" className="text-sm text-slate-300">Postal Code</Label>
+                  <Input
+                    id="postal_code"
+                    name="postal_code"
+                    value={formData.postal_code}
+                    onChange={handleChange}
+                    className="bg-slate-800 border-slate-700 text-slate-100"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="country" className="text-sm text-slate-300">Country</Label>
+                  <Input
+                    id="country"
+                    name="country"
+                    value={formData.country}
+                    onChange={handleChange}
+                    className="bg-slate-800 border-slate-700 text-slate-100"
+                  />
+                </div>
+              </div>
+            </FieldGroup>
+
+            {/* Currency */}
             <div className="space-y-2">
-              <Label htmlFor="city" className="text-sm text-slate-300">City</Label>
-              <Input
-                id="city"
-                name="city"
-                value={formData.city}
-                onChange={handleChange}
-                className="bg-slate-800 border-slate-700 text-slate-100"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="state" className="text-sm text-slate-300">State/Province</Label>
-              <Input
-                id="state"
-                name="state"
-                value={formData.state}
-                onChange={handleChange}
-                className="bg-slate-800 border-slate-700 text-slate-100"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="postal_code" className="text-sm text-slate-300">Postal Code</Label>
-              <Input
-                id="postal_code"
-                name="postal_code"
-                value={formData.postal_code}
-                onChange={handleChange}
-                className="bg-slate-800 border-slate-700 text-slate-100"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="country" className="text-sm text-slate-300">Country</Label>
-              <Input
-                id="country"
-                name="country"
-                value={formData.country}
-                onChange={handleChange}
-                className="bg-slate-800 border-slate-700 text-slate-100"
-              />
-            </div>
-
-            <div className="md:col-span-2 space-y-2">
               <Label htmlFor="default_currency" className="text-sm text-slate-300">
                 <div className="flex items-center gap-2">
                   <DollarSign className="w-4 h-4" />
@@ -526,53 +583,106 @@ export default function SettingsPage() {
           Once you delete your account, there is no going back. All your data including quotes, invoices, clients, and settings will be permanently deleted.
         </p>
 
-        {!showDeleteConfirm ? (
-          <Button
-            onClick={() => setShowDeleteConfirm(true)}
-            variant="destructive"
-            className="bg-rose-600 hover:bg-rose-700 text-white"
-          >
-            <Trash2 className="w-4 h-4 mr-2" />
-            Delete My Account
-          </Button>
-        ) : (
-          <div className="space-y-4">
-            <div className="bg-rose-500/20 border border-rose-500/50 p-4 rounded-lg">
-              <p className="text-rose-400 font-medium mb-2">This action cannot be undone!</p>
-              <p className="text-slate-400 text-sm">
-                Type <strong className="text-rose-400">DELETE MY ACCOUNT</strong> below to confirm:
-              </p>
+        <Button
+          onClick={() => setShowDeleteModal(true)}
+          variant="destructive"
+          className="bg-rose-600 hover:bg-rose-700 text-white"
+        >
+          <Trash2 className="w-4 h-4 mr-2" />
+          Delete My Account
+        </Button>
+      </Card>
+
+      {/* Delete Account Modal */}
+      <Dialog open={showDeleteModal} onOpenChange={handleCloseDeleteModal}>
+        <DialogContent className="bg-slate-900 border-slate-800 sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-slate-100 text-xl">
+              {showReasonStep ? 'We\'re sorry to see you go' : 'Are you sure you want to leave?'}
+            </DialogTitle>
+            <DialogDescription className="text-slate-400">
+              {showReasonStep
+                ? 'Please let us know why you\'re leaving so we can improve.'
+                : 'All your quotes, invoices, clients, and settings will be permanently deleted.'}
+            </DialogDescription>
+          </DialogHeader>
+
+          {error && (
+            <div className="bg-rose-500/20 border border-rose-500/50 text-rose-400 px-4 py-3 rounded-lg text-sm">
+              {error}
             </div>
-            <Input
-              type="text"
-              className="bg-slate-800 border-slate-700 text-slate-100"
-              placeholder="Type DELETE MY ACCOUNT"
-              value={deleteConfirmText}
-              onChange={(e) => setDeleteConfirmText(e.target.value)}
-            />
-            <div className="flex gap-2">
+          )}
+
+          {showReasonStep ? (
+            <div className="space-y-4 py-2">
+              <div className="space-y-2">
+                <Label className="text-sm text-slate-300">Why are you leaving?</Label>
+                <Select value={deleteReason} onValueChange={setDeleteReason}>
+                  <SelectTrigger className="bg-slate-800 border-slate-700 text-slate-100">
+                    <SelectValue placeholder="Select a reason..." />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-900 border-slate-800">
+                    {DELETE_REASONS.map((reason) => (
+                      <SelectItem key={reason.value} value={reason.value}>
+                        {reason.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {deleteReason === 'custom' && (
+                <div className="space-y-2">
+                  <Label className="text-sm text-slate-300">Tell us more</Label>
+                  <Input
+                    type="text"
+                    className="bg-slate-800 border-slate-700 text-slate-100"
+                    placeholder="Please share your reason..."
+                    value={customReason}
+                    onChange={(e) => setCustomReason(e.target.value)}
+                  />
+                </div>
+              )}
+
+              <DialogFooter className="gap-2 sm:gap-2">
+                <Button
+                  onClick={handleCloseDeleteModal}
+                  variant="outline"
+                  className="border-slate-700 text-slate-300 hover:bg-slate-800"
+                  disabled={deleting}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleDeleteAccount}
+                  disabled={deleting || !deleteReason || (deleteReason === 'custom' && !customReason.trim())}
+                  variant="destructive"
+                  className="bg-rose-600 hover:bg-rose-700 text-white"
+                >
+                  {deleting ? 'Deleting...' : 'Delete Account'}
+                </Button>
+              </DialogFooter>
+            </div>
+          ) : (
+            <DialogFooter className="gap-2 sm:gap-2 pt-4">
               <Button
-                onClick={handleDeleteAccount}
-                disabled={deleting || deleteConfirmText !== 'DELETE MY ACCOUNT'}
-                variant="destructive"
-                className="bg-rose-600 hover:bg-rose-700 text-white"
-              >
-                {deleting ? 'Deleting...' : 'Permanently Delete Account'}
-              </Button>
-              <Button
-                onClick={() => {
-                  setShowDeleteConfirm(false)
-                  setDeleteConfirmText('')
-                }}
+                onClick={handleCloseDeleteModal}
                 variant="outline"
                 className="border-slate-700 text-slate-300 hover:bg-slate-800"
               >
-                Cancel
+                No, keep my account
               </Button>
-            </div>
-          </div>
-        )}
-      </Card>
+              <Button
+                onClick={() => setShowReasonStep(true)}
+                variant="destructive"
+                className="bg-rose-600 hover:bg-rose-700 text-white"
+              >
+                Yes, delete my account
+              </Button>
+            </DialogFooter>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

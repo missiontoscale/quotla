@@ -3,18 +3,17 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase/client'
-import { Quote, Invoice } from '@/types'
+import { Quote } from '@/types'
 import { useAuth } from '@/contexts/AuthContext'
 import { format } from 'date-fns'
 import { formatCurrency } from '@/lib/utils/validation'
 
-type Deal = (Quote | Invoice) & { type: 'quote' | 'invoice' }
+type Deal = Quote & { type: 'quote' }
 
 export default function DealsPage() {
   const { user } = useAuth()
   const [deals, setDeals] = useState<Deal[]>([])
   const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState<'all' | 'quotes' | 'invoices'>('all')
   const [statusFilter, setStatusFilter] = useState<string>('all')
 
   useEffect(() => {
@@ -24,30 +23,19 @@ export default function DealsPage() {
   const loadDeals = async () => {
     if (!user) return
 
-    const [quotesRes, invoicesRes] = await Promise.all([
-      supabase
-        .from('quotes')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false }),
-      supabase
-        .from('invoices')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false }),
-    ])
+    const quotesRes = await supabase
+      .from('quotes')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
 
-    const allDeals: Deal[] = [
-      ...(quotesRes.data || []).map(q => ({ ...q, type: 'quote' as const })),
-      ...(invoicesRes.data || []).map(i => ({ ...i, type: 'invoice' as const }))
-    ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    const allDeals: Deal[] = (quotesRes.data || []).map(q => ({ ...q, type: 'quote' as const }))
 
     setDeals(allDeals)
     setLoading(false)
   }
 
   const filteredDeals = deals.filter(deal => {
-    if (filter !== 'all' && deal.type !== filter.slice(0, -1)) return false
     if (statusFilter !== 'all' && deal.status !== statusFilter) return false
     return true
   })
@@ -75,39 +63,6 @@ export default function DealsPage() {
 
         {/* Filters */}
         <div className="flex flex-wrap gap-4">
-          <div className="flex gap-2">
-            <button
-              onClick={() => setFilter('all')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                filter === 'all'
-                  ? 'bg-quotla-orange text-white shadow-md shadow-quotla-orange/40'
-                  : 'bg-white border border-primary-200 text-primary-600 hover:bg-primary-50'
-              }`}
-            >
-              All
-            </button>
-            <button
-              onClick={() => setFilter('quotes')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                filter === 'quotes'
-                  ? 'bg-quotla-orange text-white shadow-md shadow-quotla-orange/40'
-                  : 'bg-white border border-primary-200 text-primary-600 hover:bg-primary-50'
-              }`}
-            >
-              Quotes
-            </button>
-            <button
-              onClick={() => setFilter('invoices')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                filter === 'invoices'
-                  ? 'bg-quotla-orange text-white shadow-md shadow-quotla-orange/40'
-                  : 'bg-white border border-primary-200 text-primary-600 hover:bg-primary-50'
-              }`}
-            >
-              Invoices
-            </button>
-          </div>
-
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
@@ -117,11 +72,8 @@ export default function DealsPage() {
             <option value="draft">Draft</option>
             <option value="sent">Sent</option>
             <option value="approved">Approved</option>
-            <option value="paid">Paid</option>
-            <option value="overdue">Overdue</option>
             <option value="rejected">Rejected</option>
             <option value="expired">Expired</option>
-            <option value="cancelled">Cancelled</option>
           </select>
         </div>
       </div>
@@ -132,22 +84,20 @@ export default function DealsPage() {
           {filteredDeals.map((deal) => (
             <Link
               key={deal.id}
-              href={deal.type === 'quote' ? `/quotes/${deal.id}` : `/invoices/${deal.id}`}
+              href={`/quotes/${deal.id}`}
               className="block p-5 border-2 border-primary-600 rounded-lg hover:border-quotla-green hover:bg-primary-700 transition-all card"
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <div className={`w-2 h-2 rounded-full ${deal.type === 'quote' ? 'bg-quotla-green' : 'bg-green-500'}`}></div>
+                  <div className="w-2 h-2 rounded-full bg-quotla-green"></div>
                   <span className="text-xs font-medium text-primary-400 uppercase">{deal.type}</span>
                 </div>
                 <span
                   className={`px-2 py-1 text-xs font-medium rounded ${
-                    deal.status === 'approved' || deal.status === 'paid'
+                    deal.status === 'approved'
                       ? 'bg-green-100 text-green-800'
                       : deal.status === 'sent'
                       ? 'bg-quotla-green/10 text-quotla-dark'
-                      : deal.status === 'overdue'
-                      ? 'bg-red-100 text-red-800'
                       : 'bg-primary-600 text-primary-100'
                   }`}
                 >
@@ -155,7 +105,7 @@ export default function DealsPage() {
                 </span>
               </div>
               <div className="font-heading font-semibold text-lg text-primary-50 mb-2">
-                {deal.type === 'quote' ? (deal as any).quote_number : (deal as any).invoice_number}
+                {deal.quote_number}
               </div>
               {deal.title && <div className="font-sans text-sm text-primary-300 mb-3">{deal.title}</div>}
               <div className="flex justify-between items-center pt-3 border-t border-primary-600">

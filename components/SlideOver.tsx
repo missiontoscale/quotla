@@ -47,7 +47,7 @@ export default function SlideOver({ isOpen, onClose, title, children, size = 'lg
                 leaveFrom="translate-x-0"
                 leaveTo="translate-x-full"
               >
-                <Dialog.Panel className={`pointer-events-auto w-screen sm:${sizeClasses[size]}`}>
+                <Dialog.Panel className={`pointer-events-auto w-full max-w-full sm:${sizeClasses[size]}`}>
                   <div className="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
                     <div className="bg-primary-600 px-4 py-6 sm:px-6">
                       <div className="flex items-center justify-between">

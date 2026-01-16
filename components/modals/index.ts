@@ -7,9 +7,9 @@
 
 export { GlobalModalManager } from './GlobalModalManager'
 export {
-  OpenInvoiceButton,
   OpenCustomerButton,
-  OpenSupplierButton,
+  OpenVendorButton,
+  OpenExpenseButton,
   OpenProductButton,
 } from './ModalTriggerButtons'
 export { useModal } from '@/contexts/ModalContext'

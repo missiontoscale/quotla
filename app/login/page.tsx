@@ -10,12 +10,80 @@ import GoogleSignInButton from '@/components/auth/GoogleSignInButton'
 import { ROUTES, STORAGE_KEYS, ERROR_MESSAGES } from '@/lib/constants'
 import type { Database } from '@/types/database'
 
+function ResendConfirmation({ email, onClose }: { email: string; onClose: () => void }) {
+  const [resending, setResending] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleResend = async () => {
+    setResending(true)
+    setError('')
+
+    try {
+      const { error: resendError } = await supabase.auth.resend({
+        type: 'signup',
+        email,
+      })
+
+      if (resendError) throw resendError
+      setSuccess(true)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to resend email')
+    } finally {
+      setResending(false)
+    }
+  }
+
+  if (success) {
+    return (
+      <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded">
+        <p className="text-sm font-medium">Confirmation email sent!</p>
+        <p className="text-sm mt-1">Check your inbox and spam folder for the confirmation link.</p>
+        <button
+          onClick={onClose}
+          className="text-sm text-green-700 underline mt-2"
+        >
+          Dismiss
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <div className="bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded">
+      <p className="text-sm font-medium">Email not confirmed</p>
+      <p className="text-sm mt-1">
+        Please confirm your email address before signing in.
+      </p>
+      {error && (
+        <p className="text-sm text-red-600 mt-2">{error}</p>
+      )}
+      <div className="mt-3 flex gap-2">
+        <button
+          onClick={handleResend}
+          disabled={resending}
+          className="text-sm bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded disabled:opacity-50"
+        >
+          {resending ? 'Sending...' : 'Resend confirmation email'}
+        </button>
+        <button
+          onClick={onClose}
+          className="text-sm text-amber-700 underline px-2"
+        >
+          Dismiss
+        </button>
+      </div>
+    </div>
+  )
+}
+
 function LoginForm() {
   const searchParams = useSearchParams()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [showResendConfirmation, setShowResendConfirmation] = useState(false)
 
   // Check for OAuth errors in URL
   useEffect(() => {
@@ -49,7 +117,10 @@ function LoginForm() {
         }
         // Check if it's an email confirmation error
         else if (error.message.includes('Email not confirmed')) {
-          setError('Please confirm your email address before signing in. Check your inbox for the confirmation link.')
+          setShowResendConfirmation(true)
+          setError('')
+          setLoading(false)
+          return
         }
         // Check for invalid credentials
         else if (error.message.includes('Invalid login credentials')) {
@@ -127,7 +198,14 @@ function LoginForm() {
 
           <div className="card">
             <form onSubmit={handleSubmit} className="space-y-6">
-              {error && (
+              {showResendConfirmation && (
+                <ResendConfirmation
+                  email={email}
+                  onClose={() => setShowResendConfirmation(false)}
+                />
+              )}
+
+              {error && !showResendConfirmation && (
                 <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded">
                   {error}
                 </div>

@@ -11,55 +11,8 @@ interface BaseModalButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonEleme
   size?: 'default' | 'sm' | 'lg' | 'icon'
   showIcon?: boolean
   itemId?: string
-  mode?: 'create' | 'view' | 'edit'
+  mode?: 'create' | 'edit'
   onSuccess?: () => void
-}
-
-/**
- * Button to open the Invoice Modal
- *
- * @example
- * // Create new invoice
- * <OpenInvoiceButton />
- *
- * @example
- * // View existing invoice
- * <OpenInvoiceButton itemId="invoice-123" mode="view" />
- *
- * @example
- * // Edit existing invoice
- * <OpenInvoiceButton itemId="invoice-123" mode="edit">Edit Invoice</OpenInvoiceButton>
- */
-export function OpenInvoiceButton({
-  children = 'New Invoice',
-  variant = 'default',
-  size = 'default',
-  showIcon = true,
-  itemId,
-  mode = 'create',
-  onSuccess,
-  ...props
-}: BaseModalButtonProps) {
-  const { openInvoiceModal, setOnSuccess } = useModal()
-
-  const handleClick = () => {
-    if (onSuccess) {
-      setOnSuccess(onSuccess)
-    }
-    openInvoiceModal(itemId, mode)
-  }
-
-  return (
-    <Button
-      onClick={handleClick}
-      variant={variant}
-      size={size}
-      {...props}
-    >
-      {showIcon && <Plus className="mr-2 h-4 w-4" />}
-      {children}
-    </Button>
-  )
 }
 
 /**
@@ -110,24 +63,24 @@ export function OpenCustomerButton({
 }
 
 /**
- * Button to open the Supplier Modal
+ * Button to open the Vendor Modal
  *
  * @example
- * // Create new supplier
- * <OpenSupplierButton />
+ * // Create new vendor
+ * <OpenVendorButton />
  *
  * @example
- * // Edit existing supplier with callback
- * <OpenSupplierButton
- *   itemId="supplier-123"
+ * // Edit existing vendor with callback
+ * <OpenVendorButton
+ *   itemId="vendor-123"
  *   mode="edit"
- *   onSuccess={() => console.log('Supplier updated!')}
+ *   onSuccess={() => console.log('Vendor updated!')}
  * >
- *   Edit Supplier
- * </OpenSupplierButton>
+ *   Edit Vendor
+ * </OpenVendorButton>
  */
-export function OpenSupplierButton({
-  children = 'New Supplier',
+export function OpenVendorButton({
+  children = 'New Vendor',
   variant = 'default',
   size = 'default',
   showIcon = true,
@@ -136,13 +89,62 @@ export function OpenSupplierButton({
   onSuccess,
   ...props
 }: BaseModalButtonProps) {
-  const { openSupplierModal, setOnSuccess } = useModal()
+  const { openVendorModal, setOnSuccess } = useModal()
 
   const handleClick = () => {
     if (onSuccess) {
       setOnSuccess(onSuccess)
     }
-    openSupplierModal(itemId, mode)
+    openVendorModal(itemId, mode)
+  }
+
+  return (
+    <Button
+      onClick={handleClick}
+      variant={variant}
+      size={size}
+      {...props}
+    >
+      {showIcon && <Plus className="mr-2 h-4 w-4" />}
+      {children}
+    </Button>
+  )
+}
+
+/**
+ * Button to open the Expense Modal
+ *
+ * @example
+ * // Create new expense
+ * <OpenExpenseButton />
+ *
+ * @example
+ * // Edit existing expense with callback
+ * <OpenExpenseButton
+ *   itemId="expense-123"
+ *   mode="edit"
+ *   onSuccess={() => console.log('Expense updated!')}
+ * >
+ *   Edit Expense
+ * </OpenExpenseButton>
+ */
+export function OpenExpenseButton({
+  children = 'New Expense',
+  variant = 'default',
+  size = 'default',
+  showIcon = true,
+  itemId,
+  mode = 'create',
+  onSuccess,
+  ...props
+}: BaseModalButtonProps) {
+  const { openExpenseModal, setOnSuccess } = useModal()
+
+  const handleClick = () => {
+    if (onSuccess) {
+      setOnSuccess(onSuccess)
+    }
+    openExpenseModal(itemId, mode)
   }
 
   return (

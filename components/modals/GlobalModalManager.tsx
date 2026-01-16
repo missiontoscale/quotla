@@ -1,9 +1,9 @@
 'use client'
 
 import { useModal } from '@/contexts/ModalContext'
-import { AddInvoiceDialog } from '@/components/invoices/AddInvoiceDialog'
 import { AddCustomerDialog } from '@/components/customers/AddCustomerDialog'
-import { AddSupplierDialog } from '@/components/suppliers/AddSupplierDialog'
+import { AddVendorDialog } from '@/components/expenses/AddVendorDialog'
+import { AddExpenseDialog } from '@/components/expenses/AddExpenseDialog'
 import { AddProductDialog } from '@/components/products/AddProductDialog'
 
 /**
@@ -22,15 +22,6 @@ export function GlobalModalManager() {
 
   return (
     <>
-      {/* Invoice Modal */}
-      <AddInvoiceDialog
-        open={modalState.isOpen && modalState.type === 'invoice'}
-        onOpenChange={closeModal}
-        onSuccess={onSuccess}
-        invoiceId={modalState.itemId}
-        mode={modalState.mode}
-      />
-
       {/* Customer Modal */}
       <AddCustomerDialog
         open={modalState.isOpen && modalState.type === 'customer'}
@@ -40,12 +31,21 @@ export function GlobalModalManager() {
         mode={modalState.mode}
       />
 
-      {/* Supplier Modal */}
-      <AddSupplierDialog
-        open={modalState.isOpen && modalState.type === 'supplier'}
+      {/* Vendor Modal */}
+      <AddVendorDialog
+        open={modalState.isOpen && modalState.type === 'vendor'}
         onOpenChange={closeModal}
         onSuccess={onSuccess}
-        supplierId={modalState.itemId}
+        vendorId={modalState.itemId}
+        mode={modalState.mode}
+      />
+
+      {/* Expense Modal */}
+      <AddExpenseDialog
+        open={modalState.isOpen && modalState.type === 'expense'}
+        onOpenChange={closeModal}
+        onSuccess={onSuccess}
+        expenseId={modalState.itemId}
         mode={modalState.mode}
       />
 

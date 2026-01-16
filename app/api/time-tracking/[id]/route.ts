@@ -34,7 +34,7 @@ export async function GET(
       .from('time_entries')
       .select(`
         *,
-        client:clients(id, name),
+        customer:customers!client_id(id, full_name, company_name),
         quote:quotes(id, quote_number),
         invoice:invoices(id, invoice_number)
       `)

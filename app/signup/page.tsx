@@ -9,6 +9,81 @@ import GoogleSignInButton from '@/components/auth/GoogleSignInButton'
 import Footer from '@/components/Footer'
 import type { Database } from '@/types/database'
 
+function ConfirmationSent({ email }: { email: string }) {
+  const [resending, setResending] = useState(false)
+  const [resendSuccess, setResendSuccess] = useState(false)
+  const [resendError, setResendError] = useState('')
+
+  const handleResend = async () => {
+    setResending(true)
+    setResendError('')
+    setResendSuccess(false)
+
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email,
+      })
+
+      if (error) throw error
+      setResendSuccess(true)
+    } catch (err) {
+      setResendError(err instanceof Error ? err.message : 'Failed to resend email')
+    } finally {
+      setResending(false)
+    }
+  }
+
+  return (
+    <div className="text-center space-y-4">
+      <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded">
+        <div className="flex items-center justify-center mb-2">
+          <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <h3 className="font-semibold text-lg mb-2">Check your email!</h3>
+        <p className="text-sm">
+          We&apos;ve sent a confirmation email to <strong>{email}</strong>
+        </p>
+        <p className="text-sm mt-2">
+          Click the link in the email to verify your account and complete the signup process.
+        </p>
+      </div>
+
+      {resendSuccess && (
+        <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-2 rounded text-sm">
+          Confirmation email resent successfully!
+        </div>
+      )}
+
+      {resendError && (
+        <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-2 rounded text-sm">
+          {resendError}
+        </div>
+      )}
+
+      <div className="text-sm text-primary-300 space-y-2">
+        <p>Didn&apos;t receive the email?</p>
+        <p>Check your spam folder, or</p>
+        <button
+          onClick={handleResend}
+          disabled={resending}
+          className="text-primary-600 hover:text-primary-700 font-medium underline disabled:opacity-50"
+        >
+          {resending ? 'Resending...' : 'Resend confirmation email'}
+        </button>
+      </div>
+
+      <div className="pt-2">
+        <Link href="/login" className="text-primary-600 hover:text-primary-700 font-medium">
+          Back to Sign in
+        </Link>
+      </div>
+    </div>
+  )
+}
+
 export default function SignUpPage() {
   const router = useRouter()
   const [email, setEmail] = useState('')
@@ -111,29 +186,7 @@ export default function SignUpPage() {
 
           <div className="card">
             {success ? (
-              <div className="text-center space-y-4">
-                <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded">
-                  <div className="flex items-center justify-center mb-2">
-                    <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <h3 className="font-semibold text-lg mb-2">Check your email!</h3>
-                  <p className="text-sm">
-                    We&apos;ve sent a confirmation email to <strong>{email}</strong>
-                  </p>
-                  <p className="text-sm mt-2">
-                    Click the link in the email to verify your account and complete the signup process.
-                  </p>
-                </div>
-                <div className="text-sm text-primary-300">
-                  <p>Didn&apos;t receive the email?</p>
-                  <p className="mt-1">Check your spam folder or contact support.</p>
-                </div>
-                <Link href="/login" className="text-primary-600 hover:text-primary-700 font-medium">
-                  Back to Sign in
-                </Link>
-              </div>
+              <ConfirmationSent email={email} />
             ) : (
               <>
                 <form onSubmit={handleSubmit} className="space-y-6">

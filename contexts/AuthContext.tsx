@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { User as SupabaseUser } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase/client'
 import { Profile } from '@/types'
+import { setUserCurrency } from '@/lib/utils/currency'
 
 interface AuthContextType {
   user: SupabaseUser | null
@@ -103,6 +104,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!error && data) {
       setProfile(data as Profile)
       sessionStorage.setItem(cacheKey, JSON.stringify(data))
+      // Sync currency to localStorage for backward compatibility
+      if (data.default_currency) {
+        setUserCurrency(data.default_currency)
+      }
     }
     setLoading(false)
   }
@@ -118,6 +123,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!error && data) {
         setProfile(data as unknown as Profile)
         sessionStorage.setItem(cacheKey, JSON.stringify(data))
+        // Sync currency to localStorage for backward compatibility
+        if (data.default_currency) {
+          setUserCurrency(data.default_currency)
+        }
       }
     } catch (err) {
       // Silently fail for background refresh - cached profile is still valid
@@ -162,6 +171,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (error) throw error
 
     setProfile((prev) => (prev ? { ...prev, ...updates } : null))
+
+    // Sync currency to localStorage if it was updated
+    if (updates.default_currency) {
+      setUserCurrency(updates.default_currency)
+    }
   }
 
   return (

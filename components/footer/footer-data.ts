@@ -46,10 +46,6 @@ export const FOOTER_SECTIONS: FooterSection[] = [
         href: '/features/ai-quotes',
       },
       {
-        label: 'Invoice Management',
-        href: '/features/invoices',
-      },
-      {
         label: 'Inventory Tracking',
         href: '/features/inventory',
       },
@@ -146,7 +142,7 @@ export const FOOTER_BRAND = {
   //name: 'Quotla',
   tagline: 'Seal your deal.',
   description:
-    'Professional invoice, quote, and inventory management for business owners and freelancers. Work smarter, get paid faster.',
+    'Professional quote and inventory management for business owners and freelancers. Work smarter, get paid faster.',
 }
 
 export const FOOTER_SOCIAL = [

@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId, confirmText } = await request.json()
+    const { userId, confirmText, reason } = await request.json()
 
     if (!userId) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 })
@@ -14,6 +14,11 @@ export async function POST(request: NextRequest) {
         { error: 'Please type DELETE MY ACCOUNT to confirm' },
         { status: 400 }
       )
+    }
+
+    // Log the deletion reason for analytics (optional)
+    if (reason) {
+      console.log(`Account deletion reason for user ${userId}: ${reason}`)
     }
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -35,29 +40,19 @@ export async function POST(request: NextRequest) {
       await supabaseAdmin.from('quote_items').delete().in('quote_id', quoteIds)
     }
 
-    // 2. Delete invoice items
-    const { data: invoices } = await supabaseAdmin.from('invoices').select('id').eq('user_id', userId)
-    if (invoices && invoices.length > 0) {
-      const invoiceIds = invoices.map((i) => i.id)
-      await supabaseAdmin.from('invoice_items').delete().in('invoice_id', invoiceIds)
-    }
-
-    // 3. Delete quotes
+    // 2. Delete quotes
     await supabaseAdmin.from('quotes').delete().eq('user_id', userId)
 
-    // 4. Delete invoices
-    await supabaseAdmin.from('invoices').delete().eq('user_id', userId)
+    // 3. Delete customers
+    await supabaseAdmin.from('customers').delete().eq('user_id', userId)
 
-    // 5. Delete clients
-    await supabaseAdmin.from('clients').delete().eq('user_id', userId)
-
-    // 6. Delete blog comments
+    // 4. Delete blog comments
     await supabaseAdmin.from('blog_comments').delete().eq('user_id', userId)
 
-    // 7. Delete profile
+    // 5. Delete profile
     await supabaseAdmin.from('profiles').delete().eq('id', userId)
 
-    // 8. Delete auth user
+    // 6. Delete auth user
     const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(userId)
 
     if (deleteError) {

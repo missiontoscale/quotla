@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { CreateInventoryItemInput, Supplier } from '@/types/inventory'
-import { DEFAULT_BUSINESS_CURRENCY } from '@/lib/utils/currency'
+import { DEFAULT_CURRENCY } from '@/lib/utils/currency'
 import {
   Dialog,
   DialogContent,
@@ -41,7 +41,7 @@ export function AddInventoryItemDialog({ open, onOpenChange, onSuccess }: AddInv
     item_type: 'product',
     unit_price: 0,
     cost_price: 0,
-    currency: DEFAULT_BUSINESS_CURRENCY,
+    currency: DEFAULT_CURRENCY,
     track_inventory: true,
     quantity_on_hand: 0,
     low_stock_threshold: 10,
@@ -89,7 +89,7 @@ export function AddInventoryItemDialog({ open, onOpenChange, onSuccess }: AddInv
         item_type: formData.item_type,
         unit_price: formData.unit_price,
         cost_price: formData.cost_price || 0,
-        currency: formData.currency || DEFAULT_BUSINESS_CURRENCY,
+        currency: formData.currency || DEFAULT_CURRENCY,
         track_inventory: formData.track_inventory ?? true,
         quantity_on_hand: formData.quantity_on_hand || 0,
         low_stock_threshold: formData.low_stock_threshold || 0,
@@ -111,7 +111,7 @@ export function AddInventoryItemDialog({ open, onOpenChange, onSuccess }: AddInv
         item_type: 'product',
         unit_price: 0,
         cost_price: 0,
-        currency: DEFAULT_BUSINESS_CURRENCY,
+        currency: DEFAULT_CURRENCY,
         track_inventory: true,
         quantity_on_hand: 0,
         low_stock_threshold: 10,

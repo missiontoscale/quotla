@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { CURRENCIES } from '@/types'
+import { CURRENCIES } from '@/lib/utils/currency'
 
 interface CurrencyConverterProps {
   currentAmount: number

@@ -3,9 +3,13 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase/client'
-import { Client } from '@/types'
+import { Customer } from '@/types'
 import { useAuth } from '@/contexts/AuthContext'
 import SlideOver from './SlideOver'
+
+interface CustomerWithDisplayName extends Customer {
+  displayName: string
+}
 
 interface ClientsSlideOverProps {
   isOpen: boolean
@@ -14,17 +18,17 @@ interface ClientsSlideOverProps {
 
 export default function ClientsSlideOver({ isOpen, onClose }: ClientsSlideOverProps) {
   const { user } = useAuth()
-  const [clients, setClients] = useState<Client[]>([])
+  const [customers, setCustomers] = useState<CustomerWithDisplayName[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
     if (isOpen) {
-      loadClients()
+      loadCustomers()
     }
   }, [user, isOpen])
 
-  const loadClients = async () => {
+  const loadCustomers = async () => {
     if (!user) return
 
     const { data, error } = await supabase
@@ -35,31 +39,30 @@ export default function ClientsSlideOver({ isOpen, onClose }: ClientsSlideOverPr
       .order('full_name', { ascending: true })
 
     if (!error && data) {
-      // Map customers to Client format
-      const mappedClients = data.map(customer => ({
+      const mappedCustomers: CustomerWithDisplayName[] = data.map(customer => ({
         ...customer,
-        name: customer.company_name || customer.full_name,
+        displayName: customer.company_name || customer.full_name,
       }))
-      setClients(mappedClients as Client[])
+      setCustomers(mappedCustomers)
     }
     setLoading(false)
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this client?')) return
+    if (!confirm('Are you sure you want to delete this customer?')) return
 
     const { error } = await supabase.from('customers').delete().eq('id', id)
 
     if (!error) {
-      setClients(clients.filter((c) => c.id !== id))
+      setCustomers(customers.filter((c) => c.id !== id))
     }
   }
 
-  const filteredClients = clients.filter(
-    (client) =>
-      client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      client.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      client.company_name?.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredCustomers = customers.filter(
+    (customer) =>
+      customer.displayName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      customer.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      customer.company_name?.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   return (
@@ -89,15 +92,15 @@ export default function ClientsSlideOver({ isOpen, onClose }: ClientsSlideOverPr
           <div className="flex items-center justify-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
           </div>
-        ) : filteredClients.length === 0 ? (
+        ) : filteredCustomers.length === 0 ? (
           <div className="card text-center py-12">
-            <p className="text-primary-400 mb-4">No clients found</p>
+            <p className="text-primary-400 mb-4">No customers found</p>
             <Link
               href="/business/customers"
               className="btn btn-primary inline-block"
               onClick={onClose}
             >
-              Add Your First Client
+              Add Your First Customer
             </Link>
           </div>
         ) : (
@@ -115,14 +118,14 @@ export default function ClientsSlideOver({ isOpen, onClose }: ClientsSlideOverPr
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredClients.map((client) => (
-                    <tr key={client.id} className="border-b hover:bg-primary-700">
-                      <td className="py-3 px-4 font-medium">{client.name}</td>
-                      <td className="py-3 px-4 text-sm text-primary-300">{client.email || '-'}</td>
-                      <td className="py-3 px-4 text-sm text-primary-300">{client.phone || '-'}</td>
-                      <td className="py-3 px-4 text-sm text-primary-300">{client.company_name || '-'}</td>
+                  {filteredCustomers.map((customer) => (
+                    <tr key={customer.id} className="border-b hover:bg-primary-700">
+                      <td className="py-3 px-4 font-medium">{customer.displayName}</td>
+                      <td className="py-3 px-4 text-sm text-primary-300">{customer.email || '-'}</td>
+                      <td className="py-3 px-4 text-sm text-primary-300">{customer.phone || '-'}</td>
+                      <td className="py-3 px-4 text-sm text-primary-300">{customer.company_name || '-'}</td>
                       <td className="py-3 px-4 text-sm text-primary-300">
-                        {client.city && client.country ? `${client.city}, ${client.country}` : '-'}
+                        {customer.city && customer.country ? `${customer.city}, ${customer.country}` : '-'}
                       </td>
                       <td className="py-3 px-4 text-right">
                         <Link
@@ -133,7 +136,7 @@ export default function ClientsSlideOver({ isOpen, onClose }: ClientsSlideOverPr
                           View
                         </Link>
                         <button
-                          onClick={() => handleDelete(client.id)}
+                          onClick={() => handleDelete(customer.id)}
                           className="text-red-600 hover:text-red-700 text-sm font-medium"
                         >
                           Delete

@@ -1,5 +1,5 @@
 // Currency utilities for Quotla
-// Handles currency formatting, conversion, and selection
+// Handles currency formatting and selection (no conversion - use API for that)
 
 export interface Currency {
   code: string
@@ -10,7 +10,7 @@ export interface Currency {
   locale: string
 }
 
-// Popular currencies with their details
+// Supported currencies with their details
 export const CURRENCIES: Currency[] = [
   { code: 'NGN', name: 'Nigerian Naira', symbol: '₦', flag: '🇳🇬', decimals: 2, locale: 'en-NG' },
   { code: 'USD', name: 'US Dollar', symbol: '$', flag: '🇺🇸', decimals: 2, locale: 'en-US' },
@@ -34,11 +34,8 @@ export const CURRENCIES: Currency[] = [
   { code: 'GHS', name: 'Ghanaian Cedi', symbol: 'GH₵', flag: '🇬🇭', decimals: 2, locale: 'en-GH' },
 ]
 
-// Default currency for business operations (can be changed by user)
-export const DEFAULT_BUSINESS_CURRENCY = 'USD'
-
-// Pricing is always in USD (subscription plans)
-export const PRICING_CURRENCY = 'USD'
+// Default currency for new visitors (before locale detection)
+export const DEFAULT_CURRENCY = 'NGN'
 
 // Get currency by code
 export function getCurrency(code: string): Currency | undefined {
@@ -52,7 +49,7 @@ export function getCurrencySymbol(code: string): string {
 }
 
 // Format amount with currency
-export function formatCurrency(amount: number, currencyCode: string = DEFAULT_BUSINESS_CURRENCY): string {
+export function formatCurrency(amount: number, currencyCode: string): string {
   const currency = getCurrency(currencyCode)
 
   if (!currency) {
@@ -67,14 +64,14 @@ export function formatCurrency(amount: number, currencyCode: string = DEFAULT_BU
       minimumFractionDigits: currency.decimals,
       maximumFractionDigits: currency.decimals,
     }).format(amount)
-  } catch (error) {
+  } catch {
     // Fallback if Intl fails
     return `${currency.symbol}${amount.toFixed(currency.decimals)}`
   }
 }
 
 // Format amount with custom symbol (for display flexibility)
-export function formatAmount(amount: number, currencyCode: string = DEFAULT_BUSINESS_CURRENCY): string {
+export function formatAmount(amount: number, currencyCode: string): string {
   const currency = getCurrency(currencyCode)
   const decimals = currency?.decimals || 2
 
@@ -84,144 +81,14 @@ export function formatAmount(amount: number, currencyCode: string = DEFAULT_BUSI
   })
 }
 
-// Exchange rate type
-export interface ExchangeRate {
-  from: string
-  to: string
-  rate: number
-  timestamp: number
-}
-
-// Exchange rates cache (in-memory for now, could be localStorage)
-const exchangeRatesCache: Map<string, ExchangeRate> = new Map()
-const CACHE_DURATION = 30 * 60 * 1000 // 30 minutes in milliseconds
-
-// Convert currency (with caching)
-export async function convertCurrency(
-  amount: number,
-  fromCurrency: string,
-  toCurrency: string
-): Promise<number> {
-  if (fromCurrency === toCurrency) {
-    return amount
-  }
-
-  const cacheKey = `${fromCurrency}_${toCurrency}`
-  const cached = exchangeRatesCache.get(cacheKey)
-
-  // Check if cache is still valid
-  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-    return amount * cached.rate
-  }
-
-  // Fetch new rate
-  try {
-    const rate = await fetchExchangeRate(fromCurrency, toCurrency)
-
-    // Cache the rate
-    exchangeRatesCache.set(cacheKey, {
-      from: fromCurrency,
-      to: toCurrency,
-      rate,
-      timestamp: Date.now(),
-    })
-
-    return amount * rate
-  } catch (error) {
-    console.error('Currency conversion error:', error)
-
-    // If we have a cached rate (even if expired), use it
-    if (cached) {
-      console.warn('Using expired exchange rate')
-      return amount * cached.rate
-    }
-
-    // No cached rate available, return original amount
-    return amount
-  }
-}
-
-// Fetch exchange rate from API
-async function fetchExchangeRate(from: string, to: string): Promise<number> {
-  // Using exchangerate-api.com free tier (1,500 requests/month)
-  // You can swap this for another provider or use environment variables for API key
-  const apiUrl = `https://api.exchangerate-api.com/v4/latest/${from}`
-
-  const response = await fetch(apiUrl)
-
-  if (!response.ok) {
-    throw new Error(`Exchange rate API error: ${response.status}`)
-  }
-
-  const data = await response.json()
-
-  if (!data.rates || !data.rates[to]) {
-    throw new Error(`Exchange rate not found for ${from} to ${to}`)
-  }
-
-  return data.rates[to]
-}
-
-// Get cached exchange rate (for display purposes)
-export function getCachedExchangeRate(from: string, to: string): ExchangeRate | null {
-  const cacheKey = `${from}_${to}`
-  const cached = exchangeRatesCache.get(cacheKey)
-
-  if (!cached) return null
-
-  // Check if cache is stale (> 24 hours)
-  const isStale = Date.now() - cached.timestamp > 24 * 60 * 60 * 1000
-
-  return isStale ? null : cached
-}
-
-// Get time since last update
-export function getTimeSinceUpdate(timestamp: number): string {
-  const diff = Date.now() - timestamp
-  const minutes = Math.floor(diff / 60000)
-  const hours = Math.floor(minutes / 60)
-  const days = Math.floor(hours / 24)
-
-  if (days > 0) return `${days}d ago`
-  if (hours > 0) return `${hours}h ago`
-  if (minutes > 0) return `${minutes}m ago`
-  return 'just now'
-}
-
-// Preload exchange rates for common conversions
-export async function preloadExchangeRates(baseCurrency: string = DEFAULT_BUSINESS_CURRENCY) {
-  const commonCurrencies = ['USD', 'EUR', 'GBP', 'NGN']
-
-  const promises = commonCurrencies
-    .filter(curr => curr !== baseCurrency)
-    .map(curr => fetchExchangeRate(baseCurrency, curr).then(rate => {
-      exchangeRatesCache.set(`${baseCurrency}_${curr}`, {
-        from: baseCurrency,
-        to: curr,
-        rate,
-        timestamp: Date.now(),
-      })
-    }).catch(err => {
-      console.warn(`Failed to preload rate for ${baseCurrency} to ${curr}:`, err)
-    }))
-
-  await Promise.allSettled(promises)
-}
-
-// Clear exchange rates cache
-export function clearExchangeRatesCache() {
-  exchangeRatesCache.clear()
-}
-
-// Get user's preferred currency from localStorage
-// This is for business operations (expenses, invoices, quotes)
+// Get user's preferred currency from localStorage (for visitors)
 export function getUserCurrency(): string {
-  if (typeof window === 'undefined') return DEFAULT_BUSINESS_CURRENCY
+  if (typeof window === 'undefined') return DEFAULT_CURRENCY
 
   try {
-    return localStorage.getItem('preferredCurrency') || DEFAULT_BUSINESS_CURRENCY
+    return localStorage.getItem('preferredCurrency') || DEFAULT_CURRENCY
   } catch {
-    return DEFAULT_BUSINESS_CURRENCY
+    return DEFAULT_CURRENCY
   }
 }
 
@@ -238,48 +105,14 @@ export function setUserCurrency(currencyCode: string) {
   }
 }
 
-// Get pricing display currency (for showing plan prices)
-// Pricing plans are in USD but can be displayed in user's preferred currency for reference
-export function getPricingDisplayCurrency(): string {
-  if (typeof window === 'undefined') return PRICING_CURRENCY
-
-  try {
-    // Check if user wants to see pricing in their local currency
-    const displayInLocal = localStorage.getItem('displayPricingInLocalCurrency')
-    if (displayInLocal === 'true') {
-      return getUserCurrency()
-    }
-    return PRICING_CURRENCY
-  } catch {
-    return PRICING_CURRENCY
-  }
-}
-
-// Toggle pricing display between USD and user's currency
-export function togglePricingDisplayCurrency() {
-  if (typeof window === 'undefined') return
-
-  try {
-    const current = localStorage.getItem('displayPricingInLocalCurrency') === 'true'
-    localStorage.setItem('displayPricingInLocalCurrency', String(!current))
-    window.dispatchEvent(new Event('pricingCurrencyChanged'))
-  } catch (error) {
-    console.warn('Failed to toggle pricing currency:', error)
-  }
-}
-
-// Alias for formatCurrency (for backward compatibility)
-export const formatPrice = formatCurrency
-
 // Detect user's currency based on their locale/timezone
-// This is a client-side only function that attempts to detect currency
 export function detectUserCurrency(): string {
-  if (typeof window === 'undefined') return DEFAULT_BUSINESS_CURRENCY
+  if (typeof window === 'undefined') return DEFAULT_CURRENCY
 
   try {
     // Check if we already have a stored preference
     const storedCurrency = getUserCurrency()
-    if (storedCurrency && storedCurrency !== DEFAULT_BUSINESS_CURRENCY) {
+    if (storedCurrency && storedCurrency !== DEFAULT_CURRENCY) {
       return storedCurrency
     }
 
@@ -313,16 +146,19 @@ export function detectUserCurrency(): string {
       'en-SG': 'SGD',
     }
 
-    const detectedCurrency = localeMap[locale] || DEFAULT_BUSINESS_CURRENCY
+    const detectedCurrency = localeMap[locale] || DEFAULT_CURRENCY
 
     // Only auto-set if we found a match
-    if (detectedCurrency !== DEFAULT_BUSINESS_CURRENCY) {
+    if (detectedCurrency !== DEFAULT_CURRENCY) {
       setUserCurrency(detectedCurrency)
     }
 
     return detectedCurrency
   } catch (error) {
     console.warn('Failed to detect user currency:', error)
-    return DEFAULT_BUSINESS_CURRENCY
+    return DEFAULT_CURRENCY
   }
 }
+
+// Alias for formatCurrency (for backward compatibility)
+export const formatPrice = formatCurrency

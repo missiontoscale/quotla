@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Filter, MoreHorizontal, Edit, Trash2, Eye } from 'lucide-react';
+import { Search, Filter, Edit, Trash2 } from 'lucide-react';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import {
@@ -10,12 +10,6 @@ import {
   TableHeader,
   TableRow,
 } from '../ui/table';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
 import {
   Select,
   SelectContent,
@@ -35,7 +29,6 @@ interface DataTableProps {
   data: any[];
   onEdit?: (row: any) => void;
   onDelete?: (row: any) => void;
-  onView?: (row: any) => void;
   searchPlaceholder?: string;
 }
 
@@ -44,7 +37,6 @@ export function DataTable({
   data,
   onEdit,
   onDelete,
-  onView,
   searchPlaceholder = 'Search...',
 }: DataTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -89,8 +81,8 @@ export function DataTable({
                     {column.label}
                   </TableHead>
                 ))}
-                {(onEdit || onDelete || onView) && (
-                  <TableHead className="text-slate-400 text-right text-[0.72rem] py-3 max-md:hidden">Actions</TableHead>
+                {(onEdit || onDelete) && (
+                  <TableHead className="text-slate-400 text-right text-[0.72rem] py-3 max-md:hidden w-20"></TableHead>
                 )}
               </TableRow>
             </TableHeader>
@@ -100,10 +92,9 @@ export function DataTable({
                   key={index}
                   className="border-slate-800 hover:bg-slate-800/50 md:cursor-default cursor-pointer"
                   onClick={() => {
-                    // On mobile, clicking row opens view/edit. On desktop, use action menu.
-                    if (window.innerWidth < 768) {
-                      if (onView) onView(row);
-                      else if (onEdit) onEdit(row);
+                    // On mobile, clicking row opens edit modal
+                    if (window.innerWidth < 768 && onEdit) {
+                      onEdit(row);
                     }
                   }}
                 >
@@ -112,44 +103,38 @@ export function DataTable({
                       {column.render ? column.render(row[column.key], row) : row[column.key]}
                     </TableCell>
                   ))}
-                  {(onEdit || onDelete || onView) && (
+                  {(onEdit || onDelete) && (
                     <TableCell className="text-right py-3 max-md:hidden">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="text-slate-400 hover:text-slate-100 h-8 w-8">
-                            <MoreHorizontal className="w-3.5 h-3.5" />
+                      <div className="flex items-center justify-end gap-1">
+                        {onEdit && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onEdit(row);
+                            }}
+                            className="text-slate-400 hover:text-cyan-400 hover:bg-slate-800 h-7 w-7"
+                            title="Edit"
+                          >
+                            <Edit className="w-3.5 h-3.5" />
                           </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="bg-slate-900 border-slate-800">
-                          {onView && (
-                            <DropdownMenuItem
-                              onClick={() => onView(row)}
-                              className="text-slate-300 hover:bg-slate-800 cursor-pointer text-[0.81rem]"
-                            >
-                              <Eye className="w-3.5 h-3.5 mr-2" />
-                              View
-                            </DropdownMenuItem>
-                          )}
-                          {onEdit && (
-                            <DropdownMenuItem
-                              onClick={() => onEdit(row)}
-                              className="text-slate-300 hover:bg-slate-800 cursor-pointer text-[0.81rem]"
-                            >
-                              <Edit className="w-3.5 h-3.5 mr-2" />
-                              Edit
-                            </DropdownMenuItem>
-                          )}
-                          {onDelete && (
-                            <DropdownMenuItem
-                              onClick={() => onDelete(row)}
-                              className="text-rose-400 hover:bg-slate-800 cursor-pointer text-[0.81rem]"
-                            >
-                              <Trash2 className="w-3.5 h-3.5 mr-2" />
-                              Delete
-                            </DropdownMenuItem>
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                        )}
+                        {onDelete && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onDelete(row);
+                            }}
+                            className="text-slate-400 hover:text-rose-400 hover:bg-slate-800 h-7 w-7"
+                            title="Delete"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </Button>
+                        )}
+                      </div>
                     </TableCell>
                   )}
                 </TableRow>

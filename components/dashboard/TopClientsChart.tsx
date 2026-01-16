@@ -27,7 +27,7 @@ export default function TopClientsChart() {
     try {
       const { data: invoices, error } = await supabase
         .from('invoices')
-        .select('client_id, total, status, client:clients(id, name)')
+        .select('client_id, total, status, customer:customers!client_id(id, full_name, company_name)')
         .eq('user_id', user.id)
         .eq('status', 'paid')
 
@@ -41,13 +41,13 @@ export default function TopClientsChart() {
         return
       }
 
-      // Group by client
+      // Group by customer
       const clientMap = new Map<string, { name: string; revenue: number; invoices: number }>()
 
       invoices.forEach(inv => {
-        const client = inv.client as { id: string; name: string } | null
-        const clientKey = client?.id || inv.client_id || 'unknown'
-        const clientName = client?.name || 'Unknown Client'
+        const customer = inv.customer as { id: string; full_name: string; company_name: string | null } | null
+        const clientKey = customer?.id || inv.client_id || 'unknown'
+        const clientName = customer?.company_name || customer?.full_name || 'Unknown Customer'
 
         if (!clientMap.has(clientKey)) {
           clientMap.set(clientKey, {

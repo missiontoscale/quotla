@@ -43,14 +43,6 @@ export const ROUTES = {
     EDIT: (id: string) => `/quotes/${id}/edit`,
   },
 
-  // Invoices
-  INVOICES: {
-    LIST: '/business/invoices',
-    NEW: '/business/invoices/new',
-    VIEW: (id: string) => `/business/invoices/${id}`,
-    EDIT: (id: string) => `/business/invoices/${id}/edit`,
-  },
-
   // Clients/Customers
   CLIENTS: {
     LIST: '/business/customers',
@@ -62,15 +54,11 @@ export const ROUTES = {
   // Business routes
   BUSINESS: {
     DASHBOARD: '/business/dashboard',
-    CUSTOMERS: '/business/customers',
-    SUPPLIERS: '/business/suppliers',
+    SALES: '/business/sales',
+    EXPENSES: '/business/expenses',
     PRODUCTS: '/business/products',
     STOCK_MOVEMENTS: '/business/stock-movements',
-    INVOICES: '/business/invoices',
-    PURCHASE_ORDERS: '/business/purchase-orders',
-    PAYMENTS: '/business/payments',
-    ACCOUNTS: '/business/accounts',
-    AUDIT: '/business/audit',
+    ADMIN: '/business/admin',
   },
 
   // Legal & Info
@@ -89,7 +77,6 @@ export const API_ROUTES = {
   AI: {
     GENERATE: '/api/ai/generate',
     GENERATE_QUOTE: '/api/ai/generate-quote',
-    GENERATE_INVOICE: '/api/ai/generate-invoice',
     TRANSCRIBE: '/api/ai/transcribe',
   },
 

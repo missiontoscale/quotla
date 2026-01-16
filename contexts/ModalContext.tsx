@@ -2,13 +2,13 @@
 
 import { createContext, useContext, useState, ReactNode } from 'react'
 
-type ModalType = 'invoice' | 'customer' | 'supplier' | 'product'
+type ModalType = 'customer' | 'vendor' | 'expense' | 'product'
 
 interface ModalState {
   type: ModalType | null
   isOpen: boolean
   itemId?: string
-  mode?: 'create' | 'view' | 'edit'
+  mode?: 'create' | 'edit'
 }
 
 interface ModalContextType {
@@ -16,10 +16,10 @@ interface ModalContextType {
   modalState: ModalState
 
   // Open modals
-  openInvoiceModal: (itemId?: string, mode?: 'create' | 'view' | 'edit') => void
-  openCustomerModal: (itemId?: string, mode?: 'create' | 'view' | 'edit') => void
-  openSupplierModal: (itemId?: string, mode?: 'create' | 'view' | 'edit') => void
-  openProductModal: (itemId?: string, mode?: 'create' | 'view' | 'edit') => void
+  openCustomerModal: (itemId?: string, mode?: 'create' | 'edit') => void
+  openVendorModal: (itemId?: string, mode?: 'create' | 'edit') => void
+  openExpenseModal: (itemId?: string, mode?: 'create' | 'edit') => void
+  openProductModal: (itemId?: string, mode?: 'create' | 'edit') => void
 
   // Close modal
   closeModal: () => void
@@ -38,16 +38,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
   })
   const [successCallback, setSuccessCallback] = useState<() => void>(() => () => {})
 
-  const openInvoiceModal = (itemId?: string, mode: 'create' | 'view' | 'edit' = 'create') => {
-    setModalState({
-      type: 'invoice',
-      isOpen: true,
-      itemId,
-      mode,
-    })
-  }
-
-  const openCustomerModal = (itemId?: string, mode: 'create' | 'view' | 'edit' = 'create') => {
+  const openCustomerModal = (itemId?: string, mode: 'create' | 'edit' = 'create') => {
     setModalState({
       type: 'customer',
       isOpen: true,
@@ -56,16 +47,25 @@ export function ModalProvider({ children }: { children: ReactNode }) {
     })
   }
 
-  const openSupplierModal = (itemId?: string, mode: 'create' | 'view' | 'edit' = 'create') => {
+  const openVendorModal = (itemId?: string, mode: 'create' | 'edit' = 'create') => {
     setModalState({
-      type: 'supplier',
+      type: 'vendor',
       isOpen: true,
       itemId,
       mode,
     })
   }
 
-  const openProductModal = (itemId?: string, mode: 'create' | 'view' | 'edit' = 'create') => {
+  const openExpenseModal = (itemId?: string, mode: 'create' | 'edit' = 'create') => {
+    setModalState({
+      type: 'expense',
+      isOpen: true,
+      itemId,
+      mode,
+    })
+  }
+
+  const openProductModal = (itemId?: string, mode: 'create' | 'edit' = 'create') => {
     setModalState({
       type: 'product',
       isOpen: true,
@@ -93,9 +93,9 @@ export function ModalProvider({ children }: { children: ReactNode }) {
     <ModalContext.Provider
       value={{
         modalState,
-        openInvoiceModal,
         openCustomerModal,
-        openSupplierModal,
+        openVendorModal,
+        openExpenseModal,
         openProductModal,
         closeModal,
         onSuccess,

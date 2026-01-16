@@ -1,16 +1,11 @@
 'use client'
 
 import {
-  LayoutDashboard,
-  Users,
-  Truck,
+  Home,
+  TrendingUp,
   Package,
-  ArrowLeftRight,
-  FileText,
-  ShoppingCart,
-  CreditCard,
-  BookOpen,
-  Shield,
+  Receipt,
+  Settings,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
@@ -23,17 +18,19 @@ interface SidebarProps {
   onToggleCollapse: () => void;
 }
 
-const menuItems = [
-  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/business/dashboard' },
-  { id: 'customers', label: 'Customers', icon: Users, path: '/business/customers' },
-  { id: 'suppliers', label: 'Suppliers', icon: Truck, path: '/business/suppliers' },
-  { id: 'products', label: 'Products', icon: Package, path: '/business/products' },
-  { id: 'stock', label: 'Stock Movements', icon: ArrowLeftRight, path: '/business/stock-movements' },
-  { id: 'invoices', label: 'Invoices', icon: FileText, path: '/business/invoices' },
-  { id: 'purchase-orders', label: 'Purchase Orders', icon: ShoppingCart, path: '/business/purchase-orders' },
-  { id: 'payments', label: 'Payments', icon: CreditCard, path: '/business/payments' },
-  { id: 'accounts', label: 'Accounts', icon: BookOpen, path: '/business/accounts' },
-  { id: 'audit', label: 'Audit Logs', icon: Shield, path: '/business/audit' },
+interface MenuItem {
+  id: string;
+  label: string;
+  icon: typeof Home;
+  path: string;
+}
+
+const menuItems: MenuItem[] = [
+  { id: 'dashboard', label: 'Dashboard', icon: Home, path: '/business/dashboard' },
+  { id: 'sales', label: 'Sales', icon: TrendingUp, path: '/business/sales' },
+  { id: 'inventory', label: 'Inventory', icon: Package, path: '/business/products' },
+  { id: 'expenses', label: 'Expenses', icon: Receipt, path: '/business/expenses' },
+  { id: 'admin', label: 'Admin', icon: Settings, path: '/business/admin' },
 ];
 
 export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
@@ -41,7 +38,7 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
 
   return (
     <div
-      className={`bg-slate-900 border-r border-slate-800 flex flex-col transition-all duration-300 ${
+      className={`bg-slate-900 border-r border-slate-800 flex flex-col h-full overflow-hidden transition-all duration-300 ${
         collapsed ? 'w-16' : 'w-64'
       }`}
     >
@@ -64,26 +61,28 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
         </Button>
       </div>
 
-      <nav className="flex-1 p-2 space-y-1 overflow-y-auto">
-        {menuItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = pathname === item.path || pathname?.startsWith(item.path + '/');
-          return (
-            <Link
-              key={item.id}
-              href={item.path}
-              className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg transition-all ${
-                isActive
-                  ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
-                  : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800'
-              }`}
-              title={collapsed ? item.label : undefined}
-            >
-              <Icon className="w-4.5 h-4.5 max-md:w-5 max-md:h-5 flex-shrink-0" />
-              {!collapsed && <span className="text-[0.81rem]">{item.label}</span>}
-            </Link>
-          );
-        })}
+      <nav className="flex-1 p-2 overflow-y-auto">
+        <div className="space-y-1">
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = pathname === item.path || pathname?.startsWith(item.path + '/');
+            return (
+              <Link
+                key={item.id}
+                href={item.path}
+                className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg transition-all ${
+                  isActive
+                    ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
+                    : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800'
+                }`}
+                title={collapsed ? item.label : undefined}
+              >
+                <Icon className="w-4.5 h-4.5 flex-shrink-0" />
+                {!collapsed && <span className="text-[0.81rem]">{item.label}</span>}
+              </Link>
+            );
+          })}
+        </div>
       </nav>
     </div>
   );

@@ -6,13 +6,13 @@ import { supabase } from '@/lib/supabase/client'
 import { ShoppingListItem } from '@/types'
 import Navbar from '@/components/Navbar'
 import LoadingSpinner from '@/components/LoadingSpinner'
-import { formatCurrency, DEFAULT_BUSINESS_CURRENCY, getUserCurrency } from '@/lib/utils/currency'
+import { formatCurrency, DEFAULT_CURRENCY, getUserCurrency } from '@/lib/utils/currency'
 
 export default function ShoppingListPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [items, setItems] = useState<ShoppingListItem[]>([])
-  const [displayCurrency] = useState<string>(getUserCurrency() || DEFAULT_BUSINESS_CURRENCY)
+  const [displayCurrency] = useState<string>(getUserCurrency() || DEFAULT_CURRENCY)
   const [filter, setFilter] = useState<'all' | 'pending' | 'purchased'>('pending')
 
   useEffect(() => {

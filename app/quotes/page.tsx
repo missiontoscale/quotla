@@ -30,7 +30,7 @@ export default function QuotesPage() {
     setLoading(true)
     let query = supabase
       .from('quotes')
-      .select('*, client:clients(*)')
+      .select('*, customer:customers!client_id(*)')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
 

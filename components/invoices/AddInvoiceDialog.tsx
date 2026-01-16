@@ -1,15 +1,10 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { supabase } from '@/lib/supabase/client'
-import { useAuth } from '@/contexts/AuthContext'
-import { Client, LineItem, CURRENCIES, INVOICE_STATUSES } from '@/types'
-import { calculateTax, calculateTotal } from '@/lib/utils/validation'
-import InventoryItemSelector from '@/components/InventoryItemSelector'
-import { useCurrencyConversion } from '@/hooks/useCurrencyConversion'
-import { getCurrencySymbol } from '@/lib/utils/currency'
-import { generateInvoiceNumber } from '@/lib/utils/invoice-generator'
+import { useUserCurrency } from '@/hooks/useUserCurrency'
+import { deductStockForInvoice, restoreStockForInvoice, hasStockBeenDeducted } from '@/lib/inventory/stock-operations'
+import { FileText, User, Calendar, DollarSign, Plus, Trash2, Package, Check, ChevronsUpDown, UserPlus, Save } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -28,811 +23,1112 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  Command,
+  CommandGroup,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command'
+import { FormSection } from '@/components/ui/form-section'
+import { formatCurrency, CURRENCIES } from '@/lib/utils/currency'
+
+interface LineItem {
+  id: string
+  description: string
+  quantity: number
+  unit_price: number
+  amount: number
+  inventory_item_id?: string
+  isCustomItem?: boolean // True if typed manually (not from inventory)
+  savedToInventory?: boolean // True if user chose to save to inventory
+}
+
+interface Customer {
+  id: string
+  name: string
+  company_name: string | null
+  isTemporary?: boolean // True if typed manually (not yet saved to DB)
+}
+
+interface InventoryItem {
+  id: string
+  name: string
+  unit_price: number
+}
 
 interface AddInvoiceDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onSuccess: () => void
-  invoiceId?: string // If provided, this is view/edit mode
-  mode?: 'create' | 'view' | 'edit' // Operation mode
+  invoiceId?: string
+  mode?: 'create' | 'edit' | 'view'
 }
 
-export function AddInvoiceDialog({ open, onOpenChange, onSuccess, invoiceId, mode = 'create' }: AddInvoiceDialogProps) {
-  const router = useRouter()
-  const { user, profile } = useAuth()
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [clients, setClients] = useState<Client[]>([])
-  const [selectedCustomerCurrency, setSelectedCustomerCurrency] = useState<string | null>(null)
-  const [currentMode, setCurrentMode] = useState(mode)
+interface InvoiceFormData {
+  client_id: string
+  invoice_number: string
+  title: string
+  status: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled'
+  issue_date: string
+  due_date: string
+  currency: string
+  tax_rate: number
+  notes: string
+  payment_terms: string
+}
 
-  const [formData, setFormData] = useState({
+function generateInvoiceNumber(): string {
+  const date = new Date()
+  const year = date.getFullYear().toString().slice(-2)
+  const month = (date.getMonth() + 1).toString().padStart(2, '0')
+  const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0')
+  return `INV-${year}${month}-${random}`
+}
+
+export function AddInvoiceDialog({
+  open,
+  onOpenChange,
+  onSuccess,
+  invoiceId,
+  mode = 'create'
+}: AddInvoiceDialogProps) {
+  const { currency: userCurrency } = useUserCurrency()
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [customers, setCustomers] = useState<Customer[]>([])
+  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([])
+  const [customerComboboxOpen, setCustomerComboboxOpen] = useState(false)
+  const [customerSearchValue, setCustomerSearchValue] = useState('')
+    const customerDropdownRef = useRef<HTMLDivElement>(null)
+  const [savingCustomer, setSavingCustomer] = useState(false)
+  const [savingItemId, setSavingItemId] = useState<string | null>(null)
+  const [lineItemSearchValues, setLineItemSearchValues] = useState<Record<string, string>>({})
+  const [openLineItemDropdown, setOpenLineItemDropdown] = useState<string | null>(null)
+  const lineItemDropdownRefs = useRef<Record<string, HTMLDivElement | null>>({})
+
+  // Track original status for stock operations on status change
+  const [originalStatus, setOriginalStatus] = useState<'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled' | null>(null)
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (customerDropdownRef.current && !customerDropdownRef.current.contains(event.target as Node)) {
+        setCustomerComboboxOpen(false)
+      }
+      // Close line item dropdown if clicking outside
+      if (openLineItemDropdown) {
+        const ref = lineItemDropdownRefs.current[openLineItemDropdown]
+        if (ref && !ref.contains(event.target as Node)) {
+          setOpenLineItemDropdown(null)
+        }
+      }
+    }
+
+    if (customerComboboxOpen || openLineItemDropdown) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [customerComboboxOpen, openLineItemDropdown])
+
+  const today = new Date().toISOString().split('T')[0]
+  const defaultDueDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+
+  const [formData, setFormData] = useState<InvoiceFormData>({
     client_id: '',
-    invoice_number: '', // Will be auto-generated on dialog open
+    invoice_number: generateInvoiceNumber(),
     title: '',
-    status: 'draft' as const,
-    issue_date: new Date().toISOString().split('T')[0],
-    due_date: '',
-    currency: profile?.default_currency || 'NGN',
+    status: 'draft',
+    issue_date: today,
+    due_date: defaultDueDate,
+    currency: userCurrency || 'NGN',
     tax_rate: 0,
     notes: '',
-    payment_terms: '',
+    payment_terms: 'Payment due within 30 days of invoice date.',
   })
 
-  const [items, setItems] = useState<LineItem[]>([
-    { name: '', description: '', quantity: 1, unit_price: 0, amount: 0, sort_order: 0 },
+  const [lineItems, setLineItems] = useState<LineItem[]>([
+    { id: crypto.randomUUID(), description: '', quantity: 1, unit_price: 0, amount: 0 }
   ])
 
-  useEffect(() => {
-    // Update currentMode when mode prop changes
-    setCurrentMode(mode)
-  }, [mode])
+  const isViewMode = mode === 'view'
+  const isEditMode = !!invoiceId
+
+  // Calculate totals
+  const subtotal = useMemo(() => {
+    return lineItems.reduce((sum, item) => sum + item.amount, 0)
+  }, [lineItems])
+
+  const taxAmount = useMemo(() => {
+    return subtotal * (formData.tax_rate / 100)
+  }, [subtotal, formData.tax_rate])
+
+  const total = useMemo(() => {
+    return subtotal + taxAmount
+  }, [subtotal, taxAmount])
 
   useEffect(() => {
-    if (!open) return
-
-    if (open && user) {
-      const initializeDialog = async () => {
-        const loadedClients = await loadClients()
-
-        if (invoiceId) {
-          // View/Edit mode: Load existing invoice
-          await loadInvoice(loadedClients)
-        } else {
-          // Create mode: Reset form with auto-generated invoice number
-          const invoiceNumber = await generateInvoiceNumber(user.id)
-          setFormData({
-            client_id: '',
-            invoice_number: invoiceNumber,
-            title: '',
-            status: 'draft',
-            issue_date: new Date().toISOString().split('T')[0],
-            due_date: '',
-            currency: profile?.default_currency || 'USD',
-            tax_rate: 0,
-            notes: '',
-            payment_terms: '',
-          })
-          setItems([
-            { name: '', description: '', quantity: 1, unit_price: 0, amount: 0, sort_order: 0 },
-          ])
-          setCurrentMode('create')
-        }
-        setError('')
+    if (open) {
+      fetchCustomers()
+      fetchInventoryItems()
+      if (invoiceId) {
+        loadInvoice()
+      } else {
+        resetForm()
       }
-
-      initializeDialog()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, user, profile?.default_currency, invoiceId])
+  }, [open, invoiceId])
 
-  const loadClients = async () => {
-    if (!user) return []
-
-    const { data } = await supabase
-      .from('customers')
-      .select('id, full_name, company_name, email, preferred_currency')
-      .eq('user_id', user.id)
-      .eq('is_active', true)
-      .order('full_name', { ascending: true })
-
-    if (data) {
-      // Map customers to match Client interface with name field
-      const mappedClients = data.map(customer => ({
-        ...customer,
-        name: customer.company_name || customer.full_name,
-        id: customer.id,
-        preferred_currency: customer.preferred_currency || 'NGN'
-      }))
-      setClients(mappedClients as Client[])
-      return mappedClients as Client[]
-    }
-    return []
+  const resetForm = () => {
+    setFormData({
+      client_id: '',
+      invoice_number: generateInvoiceNumber(),
+      title: '',
+      status: 'draft',
+      issue_date: today,
+      due_date: defaultDueDate,
+      currency: userCurrency || 'NGN',
+      tax_rate: 0,
+      notes: '',
+      payment_terms: 'Payment due within 30 days of invoice date.',
+    })
+    setLineItems([
+      { id: crypto.randomUUID(), description: '', quantity: 1, unit_price: 0, amount: 0 }
+    ])
+    setOriginalStatus(null)
+    setError(null)
   }
 
-  const isViewMode = currentMode === 'view'
+  const fetchCustomers = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
 
-  const loadInvoice = async (clientsList?: Client[]) => {
-    if (!user || !invoiceId) return
+      const { data, error } = await supabase
+        .from('customers')
+        .select('id, full_name, company_name')
+        .eq('user_id', user.id)
+        .eq('is_active', true)
+        .order('full_name')
+
+      if (error) throw error
+      setCustomers((data || []).map(c => ({
+        id: c.id,
+        name: c.full_name,
+        company_name: c.company_name
+      })))
+    } catch (err) {
+      console.error('Error fetching customers:', err)
+    }
+  }
+
+  const fetchInventoryItems = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      const { data, error } = await supabase
+        .from('inventory_items')
+        .select('id, name, unit_price')
+        .eq('user_id', user.id)
+        .eq('is_active', true)
+        .order('name')
+
+      if (error) throw error
+      setInventoryItems(data || [])
+    } catch (err) {
+      console.error('Error fetching inventory items:', err)
+    }
+  }
+
+  // Use a customer name temporarily without saving to DB
+  const useTemporaryCustomer = (name: string) => {
+    if (!name.trim()) return
+
+    const tempId = `temp-${crypto.randomUUID()}`
+    const tempCustomer: Customer = {
+      id: tempId,
+      name: name.trim(),
+      company_name: null,
+      isTemporary: true,
+    }
+    setCustomers(prev => [...prev, tempCustomer])
+    setFormData({ ...formData, client_id: tempId })
+    setCustomerSearchValue('')
+    setCustomerComboboxOpen(false)
+  }
+
+  // Save a temporary customer to the database
+  const saveCustomerToDB = async (customerId: string) => {
+    const customer = customers.find(c => c.id === customerId)
+    if (!customer || !customer.isTemporary) return
+
+    setSavingCustomer(true)
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
+
+      const { data: newCustomer, error } = await supabase
+        .from('customers')
+        .insert({
+          user_id: user.id,
+          full_name: customer.name,
+          is_active: true,
+        })
+        .select('id, full_name, company_name')
+        .single()
+
+      if (error) throw error
+
+      if (newCustomer) {
+        // Replace the temporary customer with the saved one
+        setCustomers(prev => prev.map(c =>
+          c.id === customerId
+            ? { id: newCustomer.id, name: newCustomer.full_name, company_name: newCustomer.company_name, isTemporary: false }
+            : c
+        ))
+        // Update form data with the real customer ID
+        if (formData.client_id === customerId) {
+          setFormData({ ...formData, client_id: newCustomer.id })
+        }
+      }
+    } catch (err) {
+      console.error('Error saving customer:', err)
+      setError('Unable to save customer. Please try again.')
+    } finally {
+      setSavingCustomer(false)
+    }
+  }
+
+  // Save a custom line item to inventory
+  const saveLineItemToInventory = async (lineItemId: string) => {
+    const lineItem = lineItems.find(item => item.id === lineItemId)
+    if (!lineItem || !lineItem.isCustomItem || lineItem.savedToInventory) return
+
+    setSavingItemId(lineItemId)
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
+
+      const { data: newItem, error } = await supabase
+        .from('inventory_items')
+        .insert({
+          user_id: user.id,
+          name: lineItem.description,
+          unit_price: lineItem.unit_price,
+          quantity: 0, // Start with 0 stock
+          is_active: true,
+        })
+        .select('id, name, unit_price')
+        .single()
+
+      if (error) throw error
+
+      if (newItem) {
+        // Add to inventory items list
+        setInventoryItems(prev => [...prev, newItem])
+        // Mark the line item as saved and link to inventory
+        setLineItems(items => items.map(item =>
+          item.id === lineItemId
+            ? { ...item, inventory_item_id: newItem.id, savedToInventory: true, isCustomItem: false }
+            : item
+        ))
+      }
+    } catch (err) {
+      console.error('Error saving item to inventory:', err)
+      setError('Unable to save item to inventory. Please try again.')
+    } finally {
+      setSavingItemId(null)
+    }
+  }
+
+  // Use a custom item description (not from inventory)
+  const useCustomLineItem = (lineItemId: string, description: string) => {
+    setLineItems(items => items.map(item => {
+      if (item.id !== lineItemId) return item
+      return {
+        ...item,
+        description,
+        inventory_item_id: undefined,
+        isCustomItem: true,
+        savedToInventory: false,
+      }
+    }))
+    setLineItemSearchValues(prev => ({ ...prev, [lineItemId]: '' }))
+    setOpenLineItemDropdown(null)
+  }
+
+  // Get filtered inventory items for a line item
+  const getFilteredInventoryItems = (lineItemId: string) => {
+    const searchValue = lineItemSearchValues[lineItemId] || ''
+    if (!searchValue) return inventoryItems
+    return inventoryItems.filter(item =>
+      item.name.toLowerCase().includes(searchValue.toLowerCase())
+    )
+  }
+
+  // Check if search value matches an existing inventory item
+  const searchMatchesInventory = (lineItemId: string) => {
+    const searchValue = lineItemSearchValues[lineItemId] || ''
+    if (!searchValue) return false
+    return inventoryItems.some(item =>
+      item.name.toLowerCase() === searchValue.toLowerCase()
+    )
+  }
+
+  // Get selected customer display name
+  const selectedCustomer = customers.find(c => c.id === formData.client_id)
+  const selectedCustomerDisplay = selectedCustomer
+    ? (selectedCustomer.company_name || selectedCustomer.name)
+    : null
+
+  // Filter customers based on search and check if search matches any existing
+  const filteredCustomers = customers.filter(customer => {
+    const displayName = customer.company_name || customer.name
+    return displayName.toLowerCase().includes(customerSearchValue.toLowerCase())
+  })
+
+  const searchMatchesExisting = customers.some(customer => {
+    const displayName = customer.company_name || customer.name
+    return displayName.toLowerCase() === customerSearchValue.toLowerCase()
+  })
+
+  const loadInvoice = async () => {
+    if (!invoiceId) return
 
     setLoading(true)
-    setError('')
-
+    setError(null)
     try {
-      // Load invoice data
-      const { data: invoiceData, error: invoiceError } = await supabase
+      const { data: invoice, error: invoiceError } = await supabase
         .from('invoices')
         .select('*')
         .eq('id', invoiceId)
-        .eq('user_id', user.id)
         .single()
 
-      if (invoiceError) throw new Error(`Failed to load invoice: ${invoiceError.message}`)
-      if (!invoiceData) throw new Error('Invoice not found')
+      if (invoiceError) throw invoiceError
 
-      // Load invoice items
-      const { data: itemsData, error: itemsError } = await supabase
+      const { data: items, error: itemsError } = await supabase
         .from('invoice_items')
         .select('*')
         .eq('invoice_id', invoiceId)
-        .order('sort_order', { ascending: true })
+        .order('sort_order')
 
-      if (itemsError) throw new Error(`Failed to load invoice items: ${itemsError.message}`)
+      if (itemsError) throw itemsError
 
-      if (itemsData && itemsData.length > 0) {
-        const loadedItems = itemsData.map(item => ({
-          name: item.description || '',
-          description: '',
-          quantity: item.quantity,
-          unit_price: item.unit_price,
-          amount: item.amount,
-          sort_order: item.sort_order,
-          inventory_item_id: item.inventory_item_id,
-        }))
-        setItems(loadedItems)
-      } else {
-        setItems([{ name: '', description: '', quantity: 1, unit_price: 0, amount: 0, sort_order: 0 }])
-      }
+      if (invoice) {
+        // Track original status for stock operations
+        setOriginalStatus(invoice.status)
 
-      // Set form data
-      setFormData({
-        client_id: invoiceData.client_id || '',
-        invoice_number: invoiceData.invoice_number,
-        title: invoiceData.title || '',
-        status: invoiceData.status,
-        issue_date: invoiceData.issue_date,
-        due_date: invoiceData.due_date || '',
-        currency: invoiceData.currency,
-        tax_rate: invoiceData.tax_rate,
-        notes: invoiceData.notes || '',
-        payment_terms: invoiceData.payment_terms || '',
-      })
+        setFormData({
+          client_id: invoice.client_id || '',
+          invoice_number: invoice.invoice_number,
+          title: invoice.title || '',
+          status: invoice.status,
+          issue_date: invoice.issue_date,
+          due_date: invoice.due_date || '',
+          currency: invoice.currency,
+          tax_rate: invoice.tax_rate || 0,
+          notes: invoice.notes || '',
+          payment_terms: invoice.payment_terms || '',
+        })
 
-      // Set customer preferred currency if applicable
-      const clientsToSearch = clientsList || clients
-      if (invoiceData.client_id && clientsToSearch.length > 0) {
-        const selectedClient = clientsToSearch.find(c => c.id === invoiceData.client_id)
-        if (selectedClient && (selectedClient as any).preferred_currency) {
-          setSelectedCustomerCurrency((selectedClient as any).preferred_currency)
+        if (items && items.length > 0) {
+          setLineItems(items.map(item => ({
+            id: item.id,
+            description: item.description,
+            quantity: item.quantity,
+            unit_price: item.unit_price,
+            amount: item.amount,
+            inventory_item_id: item.inventory_item_id || undefined,
+          })))
         }
       }
-
-      setLoading(false)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load invoice')
-      setLoading(false)
-    }
-  }
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    setFormData((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }))
-  }
-
-  const handleClientChange = (clientId: string) => {
-    setFormData({ ...formData, client_id: clientId })
-
-    // Find the selected client and set their preferred currency
-    const selectedClient = clients.find(c => c.id === clientId)
-    if (selectedClient && (selectedClient as any).preferred_currency) {
-      setSelectedCustomerCurrency((selectedClient as any).preferred_currency)
-    } else {
-      setSelectedCustomerCurrency(null)
-    }
-  }
-
-  const handleItemChange = (index: number, field: keyof LineItem, value: string | number) => {
-    const newItems = [...items]
-    newItems[index] = { ...newItems[index], [field]: value }
-
-    if (field === 'quantity' || field === 'unit_price') {
-      const qty = field === 'quantity' ? Number(value) : newItems[index].quantity
-      const price = field === 'unit_price' ? Number(value) : newItems[index].unit_price
-      newItems[index].amount = Number((qty * price).toFixed(2))
-    }
-
-    setItems(newItems)
-  }
-
-  const addItem = () => {
-    setItems([
-      ...items,
-      { name: '', description: '', quantity: 1, unit_price: 0, amount: 0, sort_order: items.length },
-    ])
-  }
-
-  const removeItem = (index: number) => {
-    if (items.length === 1) return
-    setItems(items.filter((_, i) => i !== index))
-  }
-
-  const handleInventoryItemSelected = (item: any, quantity: number = 1) => {
-    const newItems = [...items]
-
-    // Check if this product is already in the list
-    const existingIndex = newItems.findIndex(
-      lineItem => lineItem.inventory_item_id === item.id
-    )
-
-    if (existingIndex >= 0) {
-      // Product already exists, add to its quantity
-      const existingItem = newItems[existingIndex]
-      const newQty = existingItem.quantity + quantity
-      newItems[existingIndex] = {
-        ...existingItem,
-        quantity: newQty,
-        amount: Number((newQty * existingItem.unit_price).toFixed(2))
-      }
-      setItems(newItems)
-    } else {
-      // Find the first blank item (no name filled yet)
-      const blankIndex = newItems.findIndex(item => !item.name || item.name.trim() === '')
-
-      if (blankIndex >= 0) {
-        // Fill the first blank item
-        newItems[blankIndex] = {
-          ...newItems[blankIndex],
-          name: item.name,
-          description: item.description || '',
-          unit_price: item.unit_price,
-          quantity: quantity,
-          amount: item.unit_price * quantity,
-          inventory_item_id: item.id
-        }
-        setItems(newItems)
-      } else {
-        // Add as a new line item
-        const newItem: LineItem = {
-          name: item.name,
-          description: item.description || '',
-          unit_price: item.unit_price,
-          quantity: quantity,
-          amount: item.unit_price * quantity,
-          sort_order: items.length,
-          inventory_item_id: item.id
-        }
-        setItems([...newItems, newItem])
-      }
-    }
-  }
-
-  const calculateTotals = () => {
-    const subtotal = items.reduce((sum, item) => sum + item.amount, 0)
-    const taxAmount = calculateTax(subtotal, formData.tax_rate)
-    const total = calculateTotal(subtotal, taxAmount)
-    return { subtotal, taxAmount, total }
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
-
-    if (!user) {
-      setError('You must be logged in')
-      setLoading(false)
-      return
-    }
-
-    if (items.some((item) => !item.name || !item.name.trim())) {
-      setError('All line items must have a product/service name')
-      setLoading(false)
-      return
-    }
-
-    try {
-      const { subtotal, taxAmount, total } = calculateTotals()
-
-      if (invoiceId) {
-        // Update existing invoice
-        const { error: invoiceError } = await supabase
-          .from('invoices')
-          .update({
-            client_id: formData.client_id || null,
-            invoice_number: formData.invoice_number,
-            title: formData.title || null,
-            status: formData.status,
-            issue_date: formData.issue_date,
-            due_date: formData.due_date || null,
-            currency: formData.currency,
-            subtotal,
-            tax_rate: formData.tax_rate,
-            tax_amount: taxAmount,
-            total,
-            notes: formData.notes || null,
-            payment_terms: formData.payment_terms || null,
-          })
-          .eq('id', invoiceId)
-          .eq('user_id', user.id)
-
-        if (invoiceError) throw invoiceError
-
-        // Delete existing items
-        await supabase
-          .from('invoice_items')
-          .delete()
-          .eq('invoice_id', invoiceId)
-
-        // Insert new items
-        const itemsToInsert = items.map((item, index) => ({
-          invoice_id: invoiceId,
-          description: item.name || item.description, // Use name as description
-          quantity: item.quantity,
-          unit_price: item.unit_price,
-          amount: item.amount,
-          sort_order: index,
-          inventory_item_id: item.inventory_item_id || null,
-        }))
-
-        const { error: itemsError } = await supabase
-          .from('invoice_items')
-          .insert(itemsToInsert)
-
-        if (itemsError) throw itemsError
-      } else {
-        // Create new invoice
-        const { data: invoice, error: invoiceError } = await supabase
-          .from('invoices')
-          .insert({
-            user_id: user.id,
-            client_id: formData.client_id || null,
-            invoice_number: formData.invoice_number,
-            title: formData.title || null,
-            status: formData.status,
-            issue_date: formData.issue_date,
-            due_date: formData.due_date || null,
-            currency: formData.currency,
-            subtotal,
-            tax_rate: formData.tax_rate,
-            tax_amount: taxAmount,
-            total,
-            notes: formData.notes || null,
-            payment_terms: formData.payment_terms || null,
-          })
-          .select()
-          .single()
-
-        if (invoiceError) throw invoiceError
-
-        const itemsToInsert = items.map((item, index) => ({
-          invoice_id: invoice.id,
-          description: item.name || item.description, // Use name as description
-          quantity: item.quantity,
-          unit_price: item.unit_price,
-          amount: item.amount,
-          sort_order: index,
-          inventory_item_id: item.inventory_item_id || null,
-        }))
-
-        const { error: itemsError } = await supabase
-          .from('invoice_items')
-          .insert(itemsToInsert)
-
-        if (itemsError) throw itemsError
-      }
-
-      onSuccess()
-      onOpenChange(false)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : `Failed to ${invoiceId ? 'update' : 'create'} invoice`)
+      console.error('Error loading invoice:', err)
+      setError('Unable to load invoice. Please try again.')
     } finally {
       setLoading(false)
     }
   }
 
-  const { subtotal, taxAmount, total } = useMemo(() => calculateTotals(), [items, formData.tax_rate])
+  const updateLineItem = (id: string, field: keyof LineItem, value: any) => {
+    setLineItems(items => items.map(item => {
+      if (item.id !== id) return item
 
-  // Use currency conversion hook if customer currency differs
-  // Memoize the target currency to prevent unnecessary conversions
-  const targetCurrency = useMemo(() => selectedCustomerCurrency || formData.currency, [selectedCustomerCurrency, formData.currency])
+      const updated = { ...item, [field]: value }
 
-  const { convertedAmount: convertedTotal, isConverting } = useCurrencyConversion(
-    total,
-    formData.currency,
-    targetCurrency
-  )
+      // Recalculate amount when quantity or unit_price changes
+      if (field === 'quantity' || field === 'unit_price') {
+        updated.amount = updated.quantity * updated.unit_price
+      }
+
+      return updated
+    }))
+  }
+
+  const addLineItem = () => {
+    setLineItems(items => [
+      ...items,
+      { id: crypto.randomUUID(), description: '', quantity: 1, unit_price: 0, amount: 0 }
+    ])
+  }
+
+  const removeLineItem = (id: string) => {
+    if (lineItems.length <= 1) return
+    setLineItems(items => items.filter(item => item.id !== id))
+  }
+
+  const selectInventoryItem = (lineItemId: string, inventoryItemId: string) => {
+    const inventoryItem = inventoryItems.find(i => i.id === inventoryItemId)
+    if (!inventoryItem) return
+
+    setLineItems(items => items.map(item => {
+      if (item.id !== lineItemId) return item
+      return {
+        ...item,
+        inventory_item_id: inventoryItemId,
+        description: inventoryItem.name,
+        unit_price: inventoryItem.unit_price,
+        amount: item.quantity * inventoryItem.unit_price,
+      }
+    }))
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (isViewMode) return
+
+    // Validation
+    if (!formData.client_id) {
+      setError('Please select a customer')
+      return
+    }
+
+
+    const validItems = lineItems.filter(item => item.description && item.quantity > 0)
+    if (validItems.length === 0) {
+      setError('Please add at least one line item with a description')
+      return
+    }
+
+    setLoading(true)
+    setError(null)
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
+
+      // Check if the selected customer is temporary (not saved to DB)
+      const selectedCustomer = customers.find(c => c.id === formData.client_id)
+      const isTemporaryCustomer = selectedCustomer?.isTemporary === true
+
+      // If customer is temporary, save them to the database first
+      let finalClientId: string | null = formData.client_id
+      if (isTemporaryCustomer && selectedCustomer) {
+        const { data: newCustomer, error: customerError } = await supabase
+          .from('customers')
+          .insert({
+            user_id: user.id,
+            full_name: selectedCustomer.name,
+            is_active: true,
+          })
+          .select('id')
+          .single()
+
+        if (customerError) {
+          console.error('Error saving customer:', customerError)
+          // Set to null if customer save fails - invoice can still be created without a customer
+          finalClientId = null
+        } else if (newCustomer) {
+          finalClientId = newCustomer.id
+          // Update the customers list with the real ID
+          setCustomers(prev => prev.map(c =>
+            c.id === formData.client_id
+              ? { ...c, id: newCustomer.id, isTemporary: false }
+              : c
+          ))
+        }
+      }
+
+      const invoiceData = {
+        user_id: user.id,
+        client_id: finalClientId && !finalClientId.startsWith('temp-') ? finalClientId : null,
+        invoice_number: formData.invoice_number,
+        title: formData.title || null,
+        status: formData.status,
+        issue_date: formData.issue_date,
+        due_date: formData.due_date || null,
+        currency: formData.currency,
+        subtotal,
+        tax_rate: formData.tax_rate,
+        tax_amount: taxAmount,
+        total,
+        notes: formData.notes || null,
+        payment_terms: formData.payment_terms || null,
+      }
+
+      let savedInvoiceId = invoiceId
+
+      if (invoiceId) {
+        // Update existing invoice
+        const { error: updateError } = await supabase
+          .from('invoices')
+          .update(invoiceData)
+          .eq('id', invoiceId)
+          .eq('user_id', user.id)
+
+        if (updateError) throw updateError
+
+        // Delete existing line items
+        await supabase
+          .from('invoice_items')
+          .delete()
+          .eq('invoice_id', invoiceId)
+      } else {
+        // Create new invoice
+        const { data: newInvoice, error: insertError } = await supabase
+          .from('invoices')
+          .insert(invoiceData)
+          .select()
+          .single()
+
+        if (insertError) throw insertError
+        savedInvoiceId = newInvoice.id
+      }
+
+      // Insert line items
+      const itemsToInsert = validItems.map((item, index) => ({
+        invoice_id: savedInvoiceId,
+        description: item.description,
+        quantity: item.quantity,
+        unit_price: item.unit_price,
+        amount: item.amount,
+        sort_order: index,
+        inventory_item_id: item.inventory_item_id || null,
+      }))
+
+      const { error: itemsError } = await supabase
+        .from('invoice_items')
+        .insert(itemsToInsert)
+
+      if (itemsError) throw itemsError
+
+      // Handle stock operations based on status transitions
+      const newStatus = formData.status
+      const prevStatus = originalStatus // null for new invoices
+
+      // Determine if stock should be deducted or restored
+      const wasStockDeducted = prevStatus === 'sent' || prevStatus === 'paid'
+      const shouldDeductStock = newStatus === 'sent' || newStatus === 'paid'
+      const isCancelling = newStatus === 'cancelled'
+
+      if (savedInvoiceId) {
+        // Deduct stock when transitioning to 'sent' or 'paid' from a non-deducted state
+        if (shouldDeductStock && !wasStockDeducted) {
+          const result = await deductStockForInvoice(savedInvoiceId, user.id)
+          if (!result.success) {
+            console.error('Stock deduction failed:', result.error)
+            // Don't fail the invoice save, just log the error
+          }
+        }
+        // Restore stock when cancelling from a deducted state
+        else if (isCancelling && wasStockDeducted) {
+          const result = await restoreStockForInvoice(savedInvoiceId, user.id)
+          if (!result.success) {
+            console.error('Stock restoration failed:', result.error)
+          }
+        }
+      }
+
+      onSuccess()
+      onOpenChange(false)
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message :
+        (typeof err === 'object' && err !== null && 'message' in err) ? String((err as { message: unknown }).message) :
+        'Unknown error'
+      console.error(`Error ${invoiceId ? 'updating' : 'creating'} invoice:`, errorMessage, err)
+      setError(`Unable to ${invoiceId ? 'update' : 'create'} invoice: ${errorMessage}`)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-slate-900 border-slate-800 text-slate-100 max-w-3xl max-h-[95vh] overflow-y-auto w-[95vw] p-4 sm:p-6">
+      <DialogContent className="bg-slate-900 border-slate-800 text-slate-100 max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <div className="flex justify-between items-center">
-            <DialogTitle className="text-lg sm:text-xl">
-              {currentMode === 'view' ? 'View Invoice' : currentMode === 'edit' ? 'Edit Invoice' : 'Create Invoice'}
-            </DialogTitle>
-            {invoiceId && currentMode === 'view' && (
-              <Button
-                onClick={() => setCurrentMode('edit')}
-                variant="outline"
-                size="sm"
-                className="border-slate-700 text-slate-300 hover:bg-slate-800"
-              >
-                Edit
-              </Button>
-            )}
-          </div>
+          <DialogTitle className="text-xl">
+            {isViewMode ? 'View Invoice' : isEditMode ? 'Edit Invoice' : 'Create Invoice'}
+          </DialogTitle>
         </DialogHeader>
-
-        {loading && invoiceId ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-500 mx-auto mb-4"></div>
-              <p className="text-slate-400">Loading invoice details...</p>
+        <form onSubmit={handleSubmit} className="space-y-4 py-4">
+          {error && (
+            <div className="bg-rose-500/10 border border-rose-500/50 rounded-lg p-3">
+              <p className="text-sm text-rose-400">{error}</p>
             </div>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 py-2 sm:py-4">
-            {error && (
-              <div className="bg-red-500/20 border border-red-500/50 text-red-400 px-3 py-2 rounded text-sm">
-                {error}
+          )}
+
+          {/* Customer & Invoice Info - Most important, at top */}
+          <FormSection title="Invoice Details" icon={FileText} description="Basic invoice information">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="invoice-number" className="text-xs">Invoice Number *</Label>
+                <Input
+                  id="invoice-number"
+                  value={formData.invoice_number}
+                  onChange={(e) => setFormData({ ...formData, invoice_number: e.target.value })}
+                  required
+                  disabled={isViewMode}
+                  className="bg-slate-800 border-slate-700 h-8 text-sm"
+                />
               </div>
-            )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="invoice_number" className="text-xs">Invoice # *</Label>
+              <div className="space-y-2">
+                <Label htmlFor="status" className="text-xs">Status</Label>
+                <Select
+                  value={formData.status}
+                  onValueChange={(value) => setFormData({ ...formData, status: value as any })}
+                  disabled={isViewMode}
+                >
+                  <SelectTrigger className="bg-slate-800 border-slate-700 h-8 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-900 border-slate-800">
+                    <SelectItem value="draft">Draft</SelectItem>
+                    <SelectItem value="sent">Sent</SelectItem>
+                    <SelectItem value="paid">Paid</SelectItem>
+                    <SelectItem value="overdue">Overdue</SelectItem>
+                    <SelectItem value="cancelled">Cancelled</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="title" className="text-xs">Title (optional)</Label>
               <Input
-                id="invoice_number"
-                name="invoice_number"
-                required
-                value={formData.invoice_number}
-                onChange={handleChange}
+                id="title"
+                placeholder="e.g., Website Development Services"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 disabled={isViewMode}
-                className="bg-slate-800 border-slate-700 h-9 text-sm"
+                className="bg-slate-800 border-slate-700 h-8 text-sm"
               />
             </div>
+          </FormSection>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="client_id" className="text-xs">Customer/Client</Label>
-              <Select
-                value={formData.client_id}
-                onValueChange={handleClientChange}
-                disabled={isViewMode}
-              >
-                <SelectTrigger id="client_id" className="bg-slate-800 border-slate-700 h-9 text-sm">
-                  <SelectValue placeholder="Select customer/client" />
-                </SelectTrigger>
-                <SelectContent className="bg-slate-900 border-slate-800">
-                  {clients.length > 0 ? (
-                    clients.map((client) => (
-                      <SelectItem key={client.id} value={client.id}>
-                        {client.name}
-                      </SelectItem>
-                    ))
-                  ) : (
-                    <div className="px-2 py-1.5 text-xs text-slate-400 text-center">
-                      No customers/clients added yet
-                    </div>
-                  )}
-                </SelectContent>
-              </Select>
-              {selectedCustomerCurrency && selectedCustomerCurrency !== formData.currency && (
-                <p className="text-xs text-cyan-400 mt-1">
-                  Customer prefers {getCurrencySymbol(selectedCustomerCurrency)} {selectedCustomerCurrency}. Prices will be converted.
-                </p>
-              )}
-            </div>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="title" className="text-xs">Title (Optional)</Label>
-            <Input
-              id="title"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              placeholder="Monthly Services"
-              disabled={isViewMode}
-              className="bg-slate-800 border-slate-700 h-9 text-sm"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="issue_date" className="text-xs">Issue *</Label>
-              <Input
-                type="date"
-                id="issue_date"
-                name="issue_date"
-                required
-                value={formData.issue_date}
-                onChange={handleChange}
-                disabled={isViewMode}
-                className="bg-slate-800 border-slate-700 h-9 text-sm"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="due_date" className="text-xs">Due</Label>
-              <Input
-                type="date"
-                id="due_date"
-                name="due_date"
-                value={formData.due_date}
-                onChange={handleChange}
-                disabled={isViewMode}
-                className="bg-slate-800 border-slate-700 h-9 text-sm"
-              />
-            </div>
-
-            <div className="space-y-1.5 col-span-2 sm:col-span-1">
-              <Label htmlFor="currency" className="text-xs">Currency *</Label>
-              <Select
-                value={formData.currency}
-                onValueChange={(value) => setFormData({ ...formData, currency: value })}
-                disabled={isViewMode}
-              >
-                <SelectTrigger id="currency" className="bg-slate-800 border-slate-700 h-9 text-sm">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-slate-900 border-slate-800 max-h-60">
-                  {CURRENCIES.map((currency) => (
-                    <SelectItem key={currency.code} value={currency.code}>
-                      {currency.code}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="space-y-3 border-t border-slate-700 pt-4">
-            <div className="flex items-center justify-between">
-              <Label className="text-sm font-semibold">Line Items</Label>
-              {!isViewMode && (
-                <div className="flex-1 ml-4">
-                  <InventoryItemSelector
-                    onSelect={handleInventoryItemSelected}
-                    currency={formData.currency}
-                    selectedItems={items}
-                  />
+          {/* Customer Selection */}
+          <FormSection title="Customer" icon={User} description="Who is this invoice for?">
+            <div className="space-y-2">
+              <Label htmlFor="customer" className="text-xs">Select Customer *</Label>
+              <div className="relative" ref={customerDropdownRef}>
+                <Input
+                  placeholder="Search or add a customer..."
+                  value={customerSearchValue || selectedCustomerDisplay || ''}
+                  onChange={(e) => {
+                    setCustomerSearchValue(e.target.value)
+                    if (formData.client_id && e.target.value !== selectedCustomerDisplay) {
+                      setFormData({ ...formData, client_id: '' })
+                    }
+                  }}
+                  onFocus={() => setCustomerComboboxOpen(true)}
+                  disabled={isViewMode}
+                  className="bg-slate-800 border-slate-700 h-8 text-sm pr-8"
+                />
+                <ChevronsUpDown className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50 pointer-events-none" />
+                {customerComboboxOpen && (
+                  <div className="absolute z-50 w-full mt-1 bg-slate-900 border border-slate-800 rounded-md shadow-lg">
+                    <Command className="bg-slate-900" shouldFilter={false}>
+                      <CommandList className="max-h-60">
+                        {filteredCustomers.length === 0 && !customerSearchValue && (
+                          <div className="py-6 text-center text-sm text-slate-400">No customers found.</div>
+                        )}
+                        {filteredCustomers.length === 0 && customerSearchValue && !searchMatchesExisting && (
+                          <div className="p-2">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              className="w-full justify-start text-sm text-cyan-400 hover:text-cyan-300 hover:bg-slate-800"
+                              onClick={() => useTemporaryCustomer(customerSearchValue)}
+                            >
+                              <UserPlus className="mr-2 h-4 w-4" />
+                              Use "{customerSearchValue}"
+                            </Button>
+                          </div>
+                        )}
+                        <CommandGroup>
+                          {filteredCustomers.map((customer) => (
+                            <CommandItem
+                              key={customer.id}
+                              value={customer.id}
+                              onSelect={() => {
+                                setFormData({ ...formData, client_id: customer.id })
+                                setCustomerSearchValue('')
+                                setCustomerComboboxOpen(false)
+                              }}
+                              className="text-sm cursor-pointer hover:bg-slate-800"
+                            >
+                              <Check
+                                className={`mr-2 h-4 w-4 ${
+                                  formData.client_id === customer.id ? "opacity-100" : "opacity-0"
+                                }`}
+                              />
+                              {customer.company_name || customer.name}
+                              {customer.isTemporary && (
+                                <span className="ml-2 text-xs text-amber-400">(unsaved)</span>
+                              )}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                        {customerSearchValue && !searchMatchesExisting && filteredCustomers.length > 0 && (
+                          <CommandGroup className="border-t border-slate-800">
+                            <CommandItem
+                              onSelect={() => useTemporaryCustomer(customerSearchValue)}
+                              className="text-sm cursor-pointer text-cyan-400 hover:text-cyan-300 hover:bg-slate-800"
+                            >
+                              <UserPlus className="mr-2 h-4 w-4" />
+                              Use "{customerSearchValue}"
+                            </CommandItem>
+                          </CommandGroup>
+                        )}
+                      </CommandList>
+                    </Command>
+                  </div>
+                )}
+              </div>
+              {/* Save as Customer button - shows when a temporary customer is selected */}
+              {selectedCustomer?.isTemporary && !isViewMode && (
+                <div className="flex items-center gap-2 p-2 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                  <span className="text-xs text-amber-400 flex-1">
+                    "{selectedCustomer.name}" is not saved to your customers list
+                  </span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => saveCustomerToDB(selectedCustomer.id)}
+                    disabled={savingCustomer}
+                    className="text-xs h-7 text-amber-400 hover:text-amber-300 hover:bg-amber-500/20"
+                  >
+                    <Save className="mr-1 h-3 w-3" />
+                    {savingCustomer ? 'Saving...' : 'Save as Customer'}
+                  </Button>
                 </div>
               )}
             </div>
+          </FormSection>
 
-            {items.map((item, index) => (
-              <div key={index} className="border border-slate-700 rounded-lg p-2.5 sm:p-3 space-y-2.5 sm:space-y-3 bg-slate-800/30">
+          {/* Dates */}
+          <FormSection title="Dates" icon={Calendar} description="Issue and due dates">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="issue-date" className="text-xs">Issue Date *</Label>
+                <Input
+                  id="issue-date"
+                  type="date"
+                  value={formData.issue_date}
+                  onChange={(e) => setFormData({ ...formData, issue_date: e.target.value })}
+                  required
+                  disabled={isViewMode}
+                  className="bg-slate-800 border-slate-700 h-8 text-sm"
+                />
+              </div>
 
-                {/* If item is from inventory, show simplified view */}
-                {item.inventory_item_id ? (
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-cyan-400 text-xs">📦</span>
-                          <h4 className="text-slate-100 font-medium text-sm">{item.name}</h4>
+              <div className="space-y-2">
+                <Label htmlFor="due-date" className="text-xs">Due Date</Label>
+                <Input
+                  id="due-date"
+                  type="date"
+                  value={formData.due_date}
+                  onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
+                  disabled={isViewMode}
+                  className="bg-slate-800 border-slate-700 h-8 text-sm"
+                />
+              </div>
+            </div>
+          </FormSection>
+
+          {/* Line Items */}
+          <FormSection title="Line Items" icon={Package} description="Products or services being invoiced">
+            <div className="space-y-3">
+              {lineItems.map((item, index) => {
+                const filteredItems = getFilteredInventoryItems(item.id)
+                const searchValue = lineItemSearchValues[item.id] || ''
+                const matchesInventory = searchMatchesInventory(item.id)
+
+                return (
+                  <div key={item.id} className="space-y-2">
+                    <div className="grid grid-cols-12 gap-2 items-end">
+                      <div className="col-span-12 sm:col-span-5 space-y-1">
+                        {index === 0 && <Label className="text-xs">Item / Description</Label>}
+                        <div
+                          className="relative"
+                          ref={(el) => { lineItemDropdownRefs.current[item.id] = el }}
+                        >
+                          <Input
+                            placeholder="Search inventory or type custom item..."
+                            value={searchValue || item.description}
+                            onChange={(e) => {
+                              setLineItemSearchValues(prev => ({ ...prev, [item.id]: e.target.value }))
+                              // If they're typing, clear the linked inventory item
+                              if (item.inventory_item_id && e.target.value !== item.description) {
+                                updateLineItem(item.id, 'description', e.target.value)
+                                updateLineItem(item.id, 'inventory_item_id', undefined)
+                                setLineItems(items => items.map(i =>
+                                  i.id === item.id ? { ...i, isCustomItem: true, savedToInventory: false } : i
+                                ))
+                              }
+                            }}
+                            onFocus={() => setOpenLineItemDropdown(item.id)}
+                            disabled={isViewMode}
+                            className="bg-slate-800 border-slate-700 h-8 text-sm pr-8"
+                          />
+                          <ChevronsUpDown className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50 pointer-events-none" />
+                          {openLineItemDropdown === item.id && (
+                            <div className="absolute z-50 w-full mt-1 bg-slate-900 border border-slate-800 rounded-md shadow-lg">
+                              <Command className="bg-slate-900" shouldFilter={false}>
+                                <CommandList className="max-h-48">
+                                  {filteredItems.length === 0 && !searchValue && (
+                                    <div className="py-4 text-center text-sm text-slate-400">No inventory items found.</div>
+                                  )}
+                                  {filteredItems.length === 0 && searchValue && !matchesInventory && (
+                                    <div className="p-2">
+                                      <Button
+                                        type="button"
+                                        variant="ghost"
+                                        className="w-full justify-start text-sm text-cyan-400 hover:text-cyan-300 hover:bg-slate-800"
+                                        onClick={() => useCustomLineItem(item.id, searchValue)}
+                                      >
+                                        <Plus className="mr-2 h-4 w-4" />
+                                        Use "{searchValue}"
+                                      </Button>
+                                    </div>
+                                  )}
+                                  <CommandGroup>
+                                    {filteredItems.map((inv) => (
+                                      <CommandItem
+                                        key={inv.id}
+                                        value={inv.id}
+                                        onSelect={() => {
+                                          selectInventoryItem(item.id, inv.id)
+                                          setLineItemSearchValues(prev => ({ ...prev, [item.id]: '' }))
+                                          setOpenLineItemDropdown(null)
+                                        }}
+                                        className="text-sm cursor-pointer hover:bg-slate-800"
+                                      >
+                                        <Check
+                                          className={`mr-2 h-4 w-4 ${
+                                            item.inventory_item_id === inv.id ? "opacity-100" : "opacity-0"
+                                          }`}
+                                        />
+                                        <span className="flex-1">{inv.name}</span>
+                                        <span className="text-xs text-slate-400">
+                                          {formatCurrency(inv.unit_price, formData.currency)}
+                                        </span>
+                                      </CommandItem>
+                                    ))}
+                                  </CommandGroup>
+                                  {searchValue && !matchesInventory && filteredItems.length > 0 && (
+                                    <CommandGroup className="border-t border-slate-800">
+                                      <CommandItem
+                                        onSelect={() => useCustomLineItem(item.id, searchValue)}
+                                        className="text-sm cursor-pointer text-cyan-400 hover:text-cyan-300 hover:bg-slate-800"
+                                      >
+                                        <Plus className="mr-2 h-4 w-4" />
+                                        Use "{searchValue}"
+                                      </CommandItem>
+                                    </CommandGroup>
+                                  )}
+                                </CommandList>
+                              </Command>
+                            </div>
+                          )}
                         </div>
-                        {item.description && (
-                          <p className="text-slate-400 text-xs">{item.description}</p>
+                      </div>
+                      <div className="col-span-4 sm:col-span-2 space-y-1">
+                        {index === 0 && <Label className="text-xs">Qty</Label>}
+                        <Input
+                          type="number"
+                          min="1"
+                          step="1"
+                          value={item.quantity}
+                          onChange={(e) => updateLineItem(item.id, 'quantity', parseFloat(e.target.value) || 1)}
+                          disabled={isViewMode}
+                          className="bg-slate-800 border-slate-700 h-8 text-sm"
+                        />
+                      </div>
+                      <div className="col-span-4 sm:col-span-2 space-y-1">
+                        {index === 0 && <Label className="text-xs">Price</Label>}
+                        <Input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={item.unit_price}
+                          onChange={(e) => updateLineItem(item.id, 'unit_price', parseFloat(e.target.value) || 0)}
+                          disabled={isViewMode}
+                          className="bg-slate-800 border-slate-700 h-8 text-sm"
+                        />
+                      </div>
+                      <div className="col-span-3 sm:col-span-2 space-y-1">
+                        {index === 0 && <Label className="text-xs">Amount</Label>}
+                        <div className="h-8 flex items-center text-sm text-slate-300">
+                          {formatCurrency(item.amount, formData.currency)}
+                        </div>
+                      </div>
+                      <div className="col-span-1 space-y-1">
+                        {index === 0 && <Label className="text-xs">&nbsp;</Label>}
+                        {!isViewMode && lineItems.length > 1 && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeLineItem(item.id)}
+                            className="h-8 w-8 p-0 text-slate-400 hover:text-rose-400"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                         )}
                       </div>
-                      <div className="text-right">
-                        <p className="text-xs text-slate-400">Unit Price</p>
-                        <p className="text-sm font-semibold text-cyan-400">{formData.currency} {item.unit_price.toFixed(2)}</p>
+                    </div>
+                    {/* Save to Inventory button - shows for custom items with description and price */}
+                    {item.isCustomItem && !item.savedToInventory && item.description && item.unit_price > 0 && !isViewMode && (
+                      <div className="flex items-center gap-2 p-2 bg-amber-500/10 border border-amber-500/30 rounded-lg ml-0 sm:ml-0">
+                        <span className="text-xs text-amber-400 flex-1">
+                          "{item.description}" is not in your inventory
+                        </span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => saveLineItemToInventory(item.id)}
+                          disabled={savingItemId === item.id}
+                          className="text-xs h-7 text-amber-400 hover:text-amber-300 hover:bg-amber-500/20"
+                        >
+                          <Save className="mr-1 h-3 w-3" />
+                          {savingItemId === item.id ? 'Saving...' : 'Save to Inventory'}
+                        </Button>
                       </div>
-                    </div>
-
-                    {/* Quantity Controls */}
-                    <div className="flex items-center justify-between bg-slate-900/50 rounded-lg p-3">
-                      <span className="text-slate-300 text-sm">Quantity</span>
-                      <div className="flex items-center gap-2">
-                        <div className="flex items-center gap-1 bg-slate-900 rounded-lg border border-slate-600 p-0.5">
-                          {!isViewMode && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const newQty = Math.max(1, item.quantity - 1)
-                                handleItemChange(index, 'quantity', newQty)
-                              }}
-                              className="w-8 h-8 flex items-center justify-center rounded hover:bg-slate-700 text-slate-300 transition-colors"
-                            >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-                              </svg>
-                            </button>
-                          )}
-                          <input
-                            type="number"
-                            min="1"
-                            value={item.quantity}
-                            onChange={(e) => handleItemChange(index, 'quantity', parseInt(e.target.value) || 1)}
-                            disabled={isViewMode}
-                            className="w-14 text-center bg-transparent border-0 text-slate-100 text-sm focus:outline-none focus:ring-0"
-                          />
-                          {!isViewMode && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                handleItemChange(index, 'quantity', item.quantity + 1)
-                              }}
-                              className="w-8 h-8 flex items-center justify-center rounded hover:bg-slate-700 text-slate-300 transition-colors"
-                            >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                              </svg>
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Total Amount */}
-                    <div className="flex items-center justify-between bg-cyan-500/10 rounded-lg p-3 border border-cyan-500/30">
-                      <span className="text-slate-300 text-sm font-medium">Line Total</span>
-                      <span className="text-cyan-400 text-lg font-bold">{formData.currency} {item.amount.toFixed(2)}</span>
-                    </div>
+                    )}
                   </div>
-                ) : (
-                  /* Manual entry fields */
-                  <div className="space-y-2.5">
-                    <div className="space-y-1.5">
-                      <Label htmlFor={`name-${index}`} className="text-xs">Product/Service *</Label>
-                      <Input
-                        id={`name-${index}`}
-                        value={item.name || ''}
-                        onChange={(e) => handleItemChange(index, 'name', e.target.value)}
-                        placeholder="e.g., Consulting Service"
-                        required
-                        disabled={isViewMode}
-                        className="bg-slate-800 border-slate-700 h-9 text-sm"
-                      />
-                    </div>
+                )
+              })}
 
-                    <div className="space-y-1.5">
-                      <Label htmlFor={`description-${index}`} className="text-xs">Description</Label>
-                      <Textarea
-                        id={`description-${index}`}
-                        value={item.description}
-                        onChange={(e) => handleItemChange(index, 'description', e.target.value)}
-                        placeholder="Details..."
-                        rows={2}
-                        disabled={isViewMode}
-                        className="bg-slate-800 border-slate-700 min-h-14 text-sm resize-none"
-                      />
-                    </div>
+              {!isViewMode && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={addLineItem}
+                  className="text-cyan-400 hover:text-cyan-300"
+                >
+                  <Plus className="h-4 w-4 mr-1" />
+                  Add Line Item
+                </Button>
+              )}
+            </div>
+          </FormSection>
 
-                    <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
-                      <div className="space-y-1.5">
-                        <Label htmlFor={`quantity-${index}`} className="text-[10px] sm:text-xs">Qty</Label>
-                        <Input
-                          id={`quantity-${index}`}
-                          type="number"
-                          step="0.01"
-                          min="1"
-                          value={item.quantity}
-                          onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
-                          required
-                          disabled={isViewMode}
-                          className="bg-slate-800 border-slate-700 h-9 text-sm"
-                        />
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <Label htmlFor={`unit-price-${index}`} className="text-[10px] sm:text-xs">Price</Label>
-                        <Input
-                          id={`unit-price-${index}`}
-                          type="number"
-                          step="0.01"
-                          min="0"
-                          value={item.unit_price}
-                          onChange={(e) => handleItemChange(index, 'unit_price', e.target.value)}
-                          required
-                          disabled={isViewMode}
-                          className="bg-slate-800 border-slate-700 h-9 text-sm"
-                        />
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <Label className="text-[10px] sm:text-xs">Total</Label>
-                        <div className="h-9 px-2 rounded-md border border-slate-700 bg-slate-700/50 flex items-center justify-end text-xs sm:text-sm font-semibold text-cyan-400">
-                          {item.amount.toFixed(2)}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {items.length > 1 && !isViewMode && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => removeItem(index)}
-                    className="border-red-500/50 text-red-400 hover:bg-red-500/20 text-[11px] sm:text-xs h-8 w-full"
-                  >
-                    Remove
-                  </Button>
-                )}
+          {/* Pricing & Totals */}
+          <FormSection title="Totals" icon={DollarSign} description="Currency and tax settings">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="currency" className="text-xs">Currency</Label>
+                <Select
+                  value={formData.currency}
+                  onValueChange={(value) => setFormData({ ...formData, currency: value })}
+                  disabled={isViewMode}
+                >
+                  <SelectTrigger className="bg-slate-800 border-slate-700 h-8 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-900 border-slate-800 max-h-60">
+                    {CURRENCIES.map((curr) => (
+                      <SelectItem key={curr.code} value={curr.code}>
+                        {curr.symbol} {curr.code} - {curr.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-            ))}
 
-            {/* Add Item button after all items */}
-            {!isViewMode && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={addItem}
-                className="border-slate-700 text-slate-300 hover:bg-slate-800 text-xs h-9 w-full"
-              >
-                + Add Item
-              </Button>
-            )}
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="tax-rate" className="text-xs">Tax Rate (%)</Label>
+                <Input
+                  id="tax-rate"
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  value={formData.tax_rate}
+                  onChange={(e) => setFormData({ ...formData, tax_rate: parseFloat(e.target.value) || 0 })}
+                  disabled={isViewMode}
+                  className="bg-slate-800 border-slate-700 h-8 text-sm"
+                />
+              </div>
+            </div>
 
-          <div className="grid grid-cols-2 gap-2 sm:gap-4 border-t border-slate-700 pt-3">
-            <div className="space-y-1.5">
-              <Label htmlFor="tax_rate" className="text-xs">Tax (%)</Label>
-              <Input
-                type="number"
-                step="0.01"
-                min="0"
-                max="100"
-                id="tax_rate"
-                name="tax_rate"
-                value={formData.tax_rate}
-                onChange={handleChange}
+            {/* Totals Summary */}
+            <div className="mt-4 p-3 bg-slate-800/50 rounded-lg space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-400">Subtotal</span>
+                <span className="text-slate-200">{formatCurrency(subtotal, formData.currency)}</span>
+              </div>
+              {formData.tax_rate > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-400">Tax ({formData.tax_rate}%)</span>
+                  <span className="text-slate-200">{formatCurrency(taxAmount, formData.currency)}</span>
+                </div>
+              )}
+              <div className="flex justify-between text-base font-medium border-t border-slate-700 pt-2">
+                <span className="text-slate-200">Total</span>
+                <span className="text-emerald-400">{formatCurrency(total, formData.currency)}</span>
+              </div>
+            </div>
+          </FormSection>
+
+          {/* Notes & Terms - Collapsible, less important */}
+          <FormSection
+            title="Notes & Terms"
+            icon={FileText}
+            description="Additional information"
+            collapsible
+            defaultOpen={false}
+          >
+            <div className="space-y-2">
+              <Label htmlFor="notes" className="text-xs">Notes (optional)</Label>
+              <Textarea
+                id="notes"
+                placeholder="Any additional notes for the customer..."
+                value={formData.notes}
+                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 disabled={isViewMode}
-                className="bg-slate-800 border-slate-700 h-9 text-sm"
+                className="bg-slate-800 border-slate-700 min-h-16 text-sm"
+                rows={2}
               />
             </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="status" className="text-xs">Status</Label>
-              <Select
-                value={formData.status}
-                onValueChange={(value) => setFormData({ ...formData, status: value as typeof formData.status })}
+            <div className="space-y-2">
+              <Label htmlFor="payment-terms" className="text-xs">Payment Terms (optional)</Label>
+              <Textarea
+                id="payment-terms"
+                placeholder="e.g., Payment due within 30 days..."
+                value={formData.payment_terms}
+                onChange={(e) => setFormData({ ...formData, payment_terms: e.target.value })}
                 disabled={isViewMode}
-              >
-                <SelectTrigger id="status" className="bg-slate-800 border-slate-700 h-9 text-sm">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-slate-900 border-slate-800">
-                  {INVOICE_STATUSES.map((status) => (
-                    <SelectItem key={status} value={status}>
-                      {status}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                className="bg-slate-800 border-slate-700 min-h-16 text-sm"
+                rows={2}
+              />
             </div>
-          </div>
+          </FormSection>
 
-          <div className="bg-slate-800 rounded-lg p-3 sm:p-4 space-y-1.5 sm:space-y-2">
-            <div className="flex justify-between text-xs sm:text-sm">
-              <span className="text-slate-400">Subtotal:</span>
-              <span className="font-medium">{getCurrencySymbol(formData.currency)}{subtotal.toFixed(2)} {formData.currency}</span>
-            </div>
-            <div className="flex justify-between text-xs sm:text-sm">
-              <span className="text-slate-400">Tax ({formData.tax_rate}%):</span>
-              <span className="font-medium">{getCurrencySymbol(formData.currency)}{taxAmount.toFixed(2)} {formData.currency}</span>
-            </div>
-            <div className="flex justify-between text-base sm:text-lg font-bold border-t border-slate-700 pt-2">
-              <span>Total ({formData.currency}):</span>
-              <span className="text-cyan-400">{getCurrencySymbol(formData.currency)}{total.toFixed(2)}</span>
-            </div>
-            {selectedCustomerCurrency && selectedCustomerCurrency !== formData.currency && (
-              <div className="flex justify-between text-base sm:text-lg font-bold border-t border-green-700/30 pt-2 bg-green-500/10 -mx-3 sm:-mx-4 px-3 sm:px-4 py-2 rounded-b-lg">
-                <span className="text-green-400">Customer Total ({selectedCustomerCurrency}):</span>
-                <span className="text-green-400">
-                  {isConverting ? (
-                    <span className="text-sm">Converting...</span>
-                  ) : (
-                    <span>{getCurrencySymbol(selectedCustomerCurrency)}{convertedTotal?.toFixed(2)}</span>
-                  )}
-                </span>
-              </div>
-            )}
-          </div>
-
-          <DialogFooter className="gap-2 pt-2 sm:pt-4 flex-col-reverse sm:flex-row">
+          <DialogFooter className="gap-2 pt-4">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              className="border-slate-700 text-slate-300 hover:bg-slate-800 text-sm h-10 w-full sm:w-auto"
+              className="border-slate-700 text-slate-300 hover:bg-slate-800 text-sm h-9"
             >
               {isViewMode ? 'Close' : 'Cancel'}
             </Button>
@@ -840,14 +1136,16 @@ export function AddInvoiceDialog({ open, onOpenChange, onSuccess, invoiceId, mod
               <Button
                 type="submit"
                 disabled={loading}
-                className="bg-cyan-500 hover:bg-cyan-600 text-white text-sm h-10 w-full sm:w-auto"
+                className="bg-cyan-500 hover:bg-cyan-600 text-white text-sm h-9"
               >
-                {loading ? (invoiceId ? 'Updating...' : 'Creating...') : (invoiceId ? 'Update Invoice' : 'Create Invoice')}
+                {loading
+                  ? (isEditMode ? 'Updating...' : 'Creating...')
+                  : (isEditMode ? 'Update Invoice' : 'Create Invoice')
+                }
               </Button>
             )}
           </DialogFooter>
         </form>
-        )}
       </DialogContent>
     </Dialog>
   )

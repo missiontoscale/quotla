@@ -87,7 +87,14 @@
       "Bash(git log:*)",
       "Bash(npx supabase:*)",
       "Bash(git grep:*)",
-      "Read(//c/Users/ASUS/Documents/Projects/**)"
+      "Read(//c/Users/ASUS/Documents/Projects/**)",
+      "Bash(^d \")",
+      "Bash(xargs:*)",
+      "Bash(npm run lint:*)",
+      "Bash(npx next build)",
+      "Bash(cd:*)",
+      "Bash(Get-ChildItem -Path 'c:\\\\Users\\\\ASUS\\\\Documents\\\\Projects\\\\Projects completed @ Mission To Scale\\\\quotla\\\\supabase' -Recurse -File)",
+      "Bash(Select-Object -ExpandProperty FullName)"
     ],
     "deny": [],
     "ask": []

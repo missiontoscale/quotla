@@ -1,9 +1,9 @@
 'use client'
 
 import {
-  OpenInvoiceButton,
   OpenCustomerButton,
-  OpenSupplierButton,
+  OpenVendorButton,
+  OpenExpenseButton,
   OpenProductButton,
   useModal
 } from '@/components/modals'
@@ -17,7 +17,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
  * Use this to test that the modal system is working correctly.
  */
 export default function ModalDemoPage() {
-  const { openInvoiceModal, openCustomerModal, setOnSuccess } = useModal()
+  const { openCustomerModal, openVendorModal, openExpenseModal, setOnSuccess } = useModal()
 
   const handleSuccess = () => {
     alert('Success callback triggered!')
@@ -45,9 +45,9 @@ export default function ModalDemoPage() {
           <div>
             <h4 className="font-semibold mb-2">Create Mode (Default)</h4>
             <div className="flex flex-wrap gap-2">
-              <OpenInvoiceButton />
               <OpenCustomerButton />
-              <OpenSupplierButton />
+              <OpenVendorButton />
+              <OpenExpenseButton />
               <OpenProductButton />
             </div>
           </div>
@@ -55,9 +55,9 @@ export default function ModalDemoPage() {
           <div>
             <h4 className="font-semibold mb-2">Custom Text</h4>
             <div className="flex flex-wrap gap-2">
-              <OpenInvoiceButton>Create Invoice</OpenInvoiceButton>
               <OpenCustomerButton>Add Customer</OpenCustomerButton>
-              <OpenSupplierButton>Add Supplier</OpenSupplierButton>
+              <OpenVendorButton>Add Vendor</OpenVendorButton>
+              <OpenExpenseButton>Add Expense</OpenExpenseButton>
               <OpenProductButton>Add Product</OpenProductButton>
             </div>
           </div>
@@ -65,28 +65,28 @@ export default function ModalDemoPage() {
           <div>
             <h4 className="font-semibold mb-2">Different Variants</h4>
             <div className="flex flex-wrap gap-2">
-              <OpenInvoiceButton variant="default">Default</OpenInvoiceButton>
-              <OpenInvoiceButton variant="outline">Outline</OpenInvoiceButton>
-              <OpenInvoiceButton variant="ghost">Ghost</OpenInvoiceButton>
-              <OpenInvoiceButton variant="secondary">Secondary</OpenInvoiceButton>
+              <OpenExpenseButton variant="default">Default</OpenExpenseButton>
+              <OpenExpenseButton variant="outline">Outline</OpenExpenseButton>
+              <OpenExpenseButton variant="ghost">Ghost</OpenExpenseButton>
+              <OpenExpenseButton variant="secondary">Secondary</OpenExpenseButton>
             </div>
           </div>
 
           <div>
             <h4 className="font-semibold mb-2">Different Sizes</h4>
             <div className="flex flex-wrap gap-2 items-center">
-              <OpenInvoiceButton size="sm">Small</OpenInvoiceButton>
-              <OpenInvoiceButton size="default">Default</OpenInvoiceButton>
-              <OpenInvoiceButton size="lg">Large</OpenInvoiceButton>
+              <OpenExpenseButton size="sm">Small</OpenExpenseButton>
+              <OpenExpenseButton size="default">Default</OpenExpenseButton>
+              <OpenExpenseButton size="lg">Large</OpenExpenseButton>
             </div>
           </div>
 
           <div>
             <h4 className="font-semibold mb-2">Without Icon</h4>
             <div className="flex flex-wrap gap-2">
-              <OpenInvoiceButton showIcon={false}>
-                No Icon Invoice
-              </OpenInvoiceButton>
+              <OpenExpenseButton showIcon={false}>
+                No Icon Expense
+              </OpenExpenseButton>
               <OpenCustomerButton showIcon={false}>
                 No Icon Customer
               </OpenCustomerButton>
@@ -96,9 +96,9 @@ export default function ModalDemoPage() {
           <div>
             <h4 className="font-semibold mb-2">With Success Callback</h4>
             <div className="flex flex-wrap gap-2">
-              <OpenInvoiceButton onSuccess={handleSuccess}>
-                Invoice with Callback
-              </OpenInvoiceButton>
+              <OpenExpenseButton onSuccess={handleSuccess}>
+                Expense with Callback
+              </OpenExpenseButton>
               <OpenCustomerButton onSuccess={handleSuccess}>
                 Customer with Callback
               </OpenCustomerButton>
@@ -119,8 +119,8 @@ export default function ModalDemoPage() {
           <div>
             <h4 className="font-semibold mb-2">Basic Hook Usage</h4>
             <div className="flex flex-wrap gap-2">
-              <Button onClick={() => openInvoiceModal()}>
-                Open Invoice Modal
+              <Button onClick={() => openExpenseModal()}>
+                Open Expense Modal
               </Button>
               <Button onClick={() => openCustomerModal()}>
                 Open Customer Modal
@@ -134,10 +134,10 @@ export default function ModalDemoPage() {
               <Button
                 onClick={() => {
                   setOnSuccess(handleSuccess)
-                  openInvoiceModal()
+                  openExpenseModal()
                 }}
               >
-                Invoice with Callback (Hook)
+                Expense with Callback (Hook)
               </Button>
               <Button
                 onClick={() => {
@@ -172,16 +172,16 @@ export default function ModalDemoPage() {
           <div>
             <h4 className="font-semibold mb-2">View Mode</h4>
             <div className="flex flex-wrap gap-2">
-              <OpenInvoiceButton
+              <OpenExpenseButton
                 itemId="replace-with-real-id"
-                mode="view"
+                mode="edit"
                 variant="outline"
               >
-                View Invoice
-              </OpenInvoiceButton>
+                View Expense
+              </OpenExpenseButton>
               <OpenCustomerButton
                 itemId="replace-with-real-id"
-                mode="view"
+                mode="edit"
                 variant="outline"
               >
                 View Customer
@@ -192,13 +192,13 @@ export default function ModalDemoPage() {
           <div>
             <h4 className="font-semibold mb-2">Edit Mode</h4>
             <div className="flex flex-wrap gap-2">
-              <OpenInvoiceButton
+              <OpenExpenseButton
                 itemId="replace-with-real-id"
                 mode="edit"
                 variant="outline"
               >
-                Edit Invoice
-              </OpenInvoiceButton>
+                Edit Expense
+              </OpenExpenseButton>
               <OpenCustomerButton
                 itemId="replace-with-real-id"
                 mode="edit"
@@ -228,15 +228,15 @@ export default function ModalDemoPage() {
             <Button
               onClick={() => {
                 setOnSuccess(() => {
-                  alert('Customer created! Now opening invoice modal...')
+                  alert('Vendor created! Now opening expense modal...')
                   setTimeout(() => {
-                    openInvoiceModal()
+                    openExpenseModal()
                   }, 500)
                 })
-                openCustomerModal()
+                openVendorModal()
               }}
             >
-              Create Customer → Then Invoice
+              Create Vendor → Then Expense
             </Button>
           </div>
 
@@ -247,15 +247,15 @@ export default function ModalDemoPage() {
             </p>
             <Button
               onClick={() => {
-                const hasPermission = confirm('Do you have permission to create invoices?')
+                const hasPermission = confirm('Do you have permission to create expenses?')
                 if (hasPermission) {
-                  openInvoiceModal()
+                  openExpenseModal()
                 } else {
                   alert('Permission denied!')
                 }
               }}
             >
-              Conditional Invoice Create
+              Conditional Expense Create
             </Button>
           </div>
 
@@ -272,7 +272,7 @@ export default function ModalDemoPage() {
                   console.log(`Operations completed: ${operationCount}`)
                   alert(`This is operation #${operationCount}`)
                 })
-                openInvoiceModal()
+                openExpenseModal()
               }}
             >
               Track Operations

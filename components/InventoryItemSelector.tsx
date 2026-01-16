@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { InventoryItem } from '@/types/inventory'
 import InlineInventoryCreator from './InlineInventoryCreator'
-import { convertCurrency, formatCurrency } from '@/lib/utils/currency'
+import { formatCurrency } from '@/lib/utils/currency'
 
 interface InventoryItemSelectorProps {
   onSelect: (item: InventoryItem, quantity?: number) => void
@@ -41,13 +41,24 @@ export default function InventoryItemSelector({ onSelect, currency, disabled, se
             cost_price: item.cost_price,
           }
         } else {
-          // Convert both unit price and cost price
+          // Convert both unit price and cost price via API
           try {
-            const convertedUnitPrice = await convertCurrency(item.unit_price, item.currency, currency)
-            const convertedCostPrice = await convertCurrency(item.cost_price, item.currency, currency)
+            const [unitPriceRes, costPriceRes] = await Promise.all([
+              fetch('/api/currency/convert', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount: item.unit_price, from: item.currency, to: currency }),
+              }),
+              fetch('/api/currency/convert', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount: item.cost_price, from: item.currency, to: currency }),
+              }),
+            ])
+            const [unitPriceData, costPriceData] = await Promise.all([unitPriceRes.json(), costPriceRes.json()])
             conversions[item.id] = {
-              unit_price: convertedUnitPrice,
-              cost_price: convertedCostPrice,
+              unit_price: unitPriceData.convertedAmount ?? item.unit_price,
+              cost_price: costPriceData.convertedAmount ?? item.cost_price,
             }
           } catch (error) {
             console.error(`Failed to convert prices for ${item.name}:`, error)
