@@ -5,23 +5,24 @@ import { supabase } from '@/lib/supabase/client'
 import { useAuth } from '@/contexts/AuthContext'
 import { Expense, ExpenseCategory, CreateExpenseInput, DEFAULT_EXPENSE_CATEGORIES } from '@/types/expenses'
 import { formatCurrency } from '@/lib/utils/validation'
-import { getUserCurrency, setUserCurrency, CURRENCIES } from '@/lib/utils/currency'
+import { setUserCurrency, CURRENCIES } from '@/lib/utils/currency'
+import { useUserCurrency } from '@/hooks/useUserCurrency'
 import { format } from 'date-fns'
 
 export default function ExpenseTracker() {
   const { user } = useAuth()
+  const { currency: profileCurrency } = useUserCurrency()
   const [expenses, setExpenses] = useState<Expense[]>([])
   const [categories, setCategories] = useState<ExpenseCategory[]>([])
   const [loading, setLoading] = useState(true)
   const [isAddingExpense, setIsAddingExpense] = useState(false)
   const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7)) // YYYY-MM
-  const [userCurrency, setUserCurrencyState] = useState<string>('USD')
+  const [userCurrency, setUserCurrencyState] = useState<string>(profileCurrency)
 
-  // Initialize user's preferred currency
+  // Sync with user's profile currency
   useEffect(() => {
-    const savedCurrency = getUserCurrency()
-    setUserCurrencyState(savedCurrency)
-  }, [])
+    setUserCurrencyState(profileCurrency)
+  }, [profileCurrency])
 
   // Form state
   const [newExpense, setNewExpense] = useState<CreateExpenseInput>({
@@ -130,7 +131,7 @@ export default function ExpenseTracker() {
       setNewExpense({
         description: '',
         amount: 0,
-        currency: 'USD',
+        currency: profileCurrency,
         category: '',
         expense_date: new Date().toISOString().split('T')[0],
         is_tax_deductible: false,

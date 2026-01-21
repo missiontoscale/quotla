@@ -509,119 +509,84 @@ export default function ProductsPage() {
         product={selectedProduct}
       />
 
-      {/* Stats Cards - Modern Gradient Design */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        {/* Stock Health Card - Featured */}
-        <Card className="bg-gradient-to-br from-cyan-500/10 to-cyan-600/5 border border-cyan-500/20 p-5 hover:border-cyan-500/40 transition-all duration-300 sm:col-span-2 lg:col-span-1">
-          <div className="flex items-start justify-between mb-3">
-            <div>
-              <p className="text-xs font-medium text-cyan-400 uppercase tracking-wider mb-1">Stock Health</p>
-              <p className="text-3xl font-bold text-slate-50">{stockHealthPercentage}%</p>
-            </div>
-            <div className="w-10 h-10 bg-cyan-500/20 rounded-lg flex items-center justify-center">
+      {/* Stats Cards - Clean 3-column design */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Stock Health Card */}
+        <Card className="bg-slate-900 border-slate-800 p-5">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 bg-cyan-500/10 rounded-xl flex items-center justify-center">
               <Package className="w-5 h-5 text-cyan-400" />
+            </div>
+            <div>
+              <p className="text-xs text-slate-500 uppercase tracking-wider">Stock Health</p>
+              <p className="text-2xl font-bold text-slate-100">{stockHealthPercentage}%</p>
             </div>
           </div>
           {/* Stock breakdown bar */}
-          <div className="mt-3">
+          <div className="mb-3">
             <div className="flex h-2 rounded-full overflow-hidden bg-slate-800">
-              <div
-                className="bg-emerald-500 transition-all duration-500"
-                style={{ width: `${stats.total > 0 ? (stats.inStock / stats.total) * 100 : 0}%` }}
-              />
-              <div
-                className="bg-amber-500 transition-all duration-500"
-                style={{ width: `${stats.total > 0 ? (stats.lowStock / stats.total) * 100 : 0}%` }}
-              />
-              <div
-                className="bg-rose-500 transition-all duration-500"
-                style={{ width: `${stats.total > 0 ? (stats.outOfStock / stats.total) * 100 : 0}%` }}
-              />
+              <div className="bg-emerald-500 transition-all" style={{ width: `${stats.total > 0 ? (stats.inStock / stats.total) * 100 : 0}%` }} />
+              <div className="bg-amber-500 transition-all" style={{ width: `${stats.total > 0 ? (stats.lowStock / stats.total) * 100 : 0}%` }} />
+              <div className="bg-rose-500 transition-all" style={{ width: `${stats.total > 0 ? (stats.outOfStock / stats.total) * 100 : 0}%` }} />
             </div>
-            <div className="flex items-center justify-between mt-2 text-xs text-slate-500">
-              <span className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                {stats.inStock} OK
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-amber-500"></span>
-                {stats.lowStock} Low
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-rose-500"></span>
-                {stats.outOfStock} Out
-              </span>
-            </div>
+          </div>
+          <div className="flex items-center justify-between text-xs text-slate-500">
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500"></span>{stats.inStock} OK</span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500"></span>{stats.lowStock} Low</span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-rose-500"></span>{stats.outOfStock} Out</span>
           </div>
         </Card>
 
-        {/* Inventory Value */}
-        <Card className="bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border border-emerald-500/20 p-5 hover:border-emerald-500/40 transition-all duration-300">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <p className="text-xs font-medium text-emerald-400 uppercase tracking-wider mb-2">Inventory Value</p>
-              <p className="text-2xl font-bold text-slate-50">{formatCurrency(stats.totalValue, displayCurrency)}</p>
-              <p className="text-xs text-slate-500 mt-2">{stats.total} products</p>
-            </div>
-            <div className="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center">
+        {/* Inventory Value Card */}
+        <Card className="bg-slate-900 border-slate-800 p-5">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center">
               <TrendingUp className="w-5 h-5 text-emerald-400" />
             </div>
-          </div>
-        </Card>
-
-        {/* Stock In Today */}
-        <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 border border-blue-500/20 p-5 hover:border-blue-500/40 transition-all duration-300">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <p className="text-xs font-medium text-blue-400 uppercase tracking-wider mb-2">Stock In Today</p>
-              <p className="text-2xl font-bold text-slate-50">+{stats.stockInToday}</p>
-              <p className="text-xs text-slate-500 mt-2">Units received</p>
-            </div>
-            <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
-              <ArrowDown className="w-5 h-5 text-blue-400" />
+            <div>
+              <p className="text-xs text-slate-500 uppercase tracking-wider">Inventory Value</p>
+              <p className="text-2xl font-bold text-slate-100">{formatCurrency(stats.totalValue, displayCurrency)}</p>
             </div>
           </div>
-        </Card>
-
-        {/* Stock Out Today */}
-        <Card className="bg-gradient-to-br from-rose-500/10 to-rose-600/5 border border-rose-500/20 p-5 hover:border-rose-500/40 transition-all duration-300">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <p className="text-xs font-medium text-rose-400 uppercase tracking-wider mb-2">Stock Out Today</p>
-              <p className="text-2xl font-bold text-slate-50">-{stats.stockOutToday}</p>
-              <p className="text-xs text-slate-500 mt-2">Units dispatched</p>
+          <div className="flex items-center justify-between pt-3 border-t border-slate-800">
+            <div>
+              <p className="text-xs text-slate-500">Products</p>
+              <p className="text-sm font-medium text-slate-300">{stats.total}</p>
             </div>
-            <div className="w-10 h-10 bg-rose-500/20 rounded-lg flex items-center justify-center">
-              <ArrowUp className="w-5 h-5 text-rose-400" />
+            <div className="text-right">
+              <p className="text-xs text-slate-500">Today</p>
+              <p className="text-sm font-medium text-emerald-400">+{stats.stockInToday} / -{stats.stockOutToday}</p>
             </div>
           </div>
         </Card>
 
-        {/* Top Performer */}
-        <Card className="bg-gradient-to-br from-amber-500/10 to-amber-600/5 border border-amber-500/20 p-5 hover:border-amber-500/40 transition-all duration-300">
-          <div className="flex items-start justify-between">
-            <div className="flex-1 min-w-0">
-              <p className="text-xs font-medium text-amber-400 uppercase tracking-wider mb-2">Top Performer</p>
-              {stats.topPerformer ? (
-                <>
-                  <p className="text-lg font-bold text-slate-50 truncate" title={stats.topPerformer.name}>
-                    {stats.topPerformer.name}
-                  </p>
-                  <p className="text-xs text-slate-500 mt-2">
-                    {formatCurrency(stats.topPerformer.profit, displayCurrency)} from {stats.topPerformer.unitsSold} units
-                  </p>
-                </>
-              ) : (
-                <>
-                  <p className="text-lg font-bold text-slate-500">No sales yet</p>
-                  <p className="text-xs text-slate-600 mt-2">Sell products to see top performer</p>
-                </>
-              )}
-            </div>
-            <div className="w-10 h-10 bg-amber-500/20 rounded-lg flex items-center justify-center">
+        {/* Top Performer Card */}
+        <Card className="bg-slate-900 border-slate-800 p-5">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center">
               <Trophy className="w-5 h-5 text-amber-400" />
             </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs text-slate-500 uppercase tracking-wider">Top Performer</p>
+              {stats.topPerformer ? (
+                <p className="text-lg font-bold text-slate-100 truncate">{stats.topPerformer.name}</p>
+              ) : (
+                <p className="text-lg font-bold text-slate-500">No sales yet</p>
+              )}
+            </div>
           </div>
+          {stats.topPerformer && (
+            <div className="flex items-center justify-between pt-3 border-t border-slate-800">
+              <div>
+                <p className="text-xs text-slate-500">Profit</p>
+                <p className="text-sm font-semibold text-emerald-400">{formatCurrency(stats.topPerformer.profit, displayCurrency)}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-xs text-slate-500">Units Sold</p>
+                <p className="text-sm font-medium text-slate-300">{stats.topPerformer.unitsSold}</p>
+              </div>
+            </div>
+          )}
         </Card>
       </div>
 

@@ -43,7 +43,7 @@ export default function OnboardingPage() {
     country: '',
     phone: '',
     website: '',
-    default_currency: 'USD',
+    default_currency: 'NGN',
   })
 
   useEffect(() => {

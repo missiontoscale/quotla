@@ -53,7 +53,7 @@ export default function ForContractorsPage() {
       title: 'Portfolio Library',
       tagline: 'Showcase your work',
       description: 'Store project photos and examples to share with potential clients.',
-      link: '/inventory',
+      link: '/business/products',
       stats: 'Unlimited storage',
       bgGradient: 'from-quotla-green via-quotla-dark to-secondary-700'
     },

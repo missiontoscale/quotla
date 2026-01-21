@@ -353,53 +353,54 @@ export default function ExpensesPage() {
         mode={vendorDialogMode}
       />
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="bg-slate-900 border-slate-800 p-6">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-emerald-500/20 rounded-lg">
-              <DollarSign className="w-5 h-5 text-emerald-400" />
+      {/* Stats Cards - Clean 2-column design */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Expenses Overview Card */}
+        <Card className="bg-slate-900 border-slate-800 p-5">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 bg-rose-500/10 rounded-xl flex items-center justify-center">
+              <DollarSign className="w-5 h-5 text-rose-400" />
             </div>
             <div>
-              <p className="text-slate-400 text-sm">Total Expenses</p>
-              <h3 className="text-2xl text-slate-100">
+              <p className="text-xs text-slate-500 uppercase tracking-wider">Total Expenses</p>
+              <p className="text-2xl font-bold text-slate-100">
                 {formatCurrency(stats.totalExpenses, displayCurrency)}
-              </h3>
+              </p>
             </div>
           </div>
-        </Card>
-        <Card className="bg-slate-900 border-slate-800 p-6">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-cyan-500/20 rounded-lg">
-              <TrendingUp className="w-5 h-5 text-cyan-400" />
-            </div>
+          <div className="flex items-center justify-between pt-3 border-t border-slate-800">
             <div>
-              <p className="text-slate-400 text-sm">This Month</p>
-              <h3 className="text-2xl text-cyan-400">
+              <p className="text-xs text-slate-500">This Month</p>
+              <p className="text-sm font-semibold text-cyan-400">
                 {formatCurrency(stats.thisMonth, displayCurrency)}
-              </h3>
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-slate-500">Pending</p>
+              <p className="text-sm font-semibold text-amber-400">{stats.pendingExpenses}</p>
             </div>
           </div>
         </Card>
-        <Card className="bg-slate-900 border-slate-800 p-6">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-violet-500/20 rounded-lg">
+
+        {/* Vendors Card */}
+        <Card className="bg-slate-900 border-slate-800 p-5">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 bg-violet-500/10 rounded-xl flex items-center justify-center">
               <Truck className="w-5 h-5 text-violet-400" />
             </div>
             <div>
-              <p className="text-slate-400 text-sm">Active Vendors</p>
-              <h3 className="text-2xl text-slate-100">{stats.activeVendors}</h3>
+              <p className="text-xs text-slate-500 uppercase tracking-wider">Vendors</p>
+              <p className="text-2xl font-bold text-slate-100">{stats.activeVendors} active</p>
             </div>
           </div>
-        </Card>
-        <Card className="bg-slate-900 border-slate-800 p-6">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-amber-500/20 rounded-lg">
-              <Receipt className="w-5 h-5 text-amber-400" />
-            </div>
+          <div className="flex items-center justify-between pt-3 border-t border-slate-800">
             <div>
-              <p className="text-slate-400 text-sm">Pending</p>
-              <h3 className="text-2xl text-amber-400">{stats.pendingExpenses}</h3>
+              <p className="text-xs text-slate-500">Total</p>
+              <p className="text-sm font-medium text-slate-300">{stats.totalVendors}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-slate-500">Categories</p>
+              <p className="text-sm font-medium text-violet-400">{stats.categories}</p>
             </div>
           </div>
         </Card>

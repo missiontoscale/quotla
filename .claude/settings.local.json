@@ -94,7 +94,8 @@
       "Bash(npx next build)",
       "Bash(cd:*)",
       "Bash(Get-ChildItem -Path 'c:\\\\Users\\\\ASUS\\\\Documents\\\\Projects\\\\Projects completed @ Mission To Scale\\\\quotla\\\\supabase' -Recurse -File)",
-      "Bash(Select-Object -ExpandProperty FullName)"
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(npx next build --no-lint)"
     ],
     "deny": [],
     "ask": []

@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
         quote_id: body.quote_id || null,
         invoice_id: body.invoice_id || null,
         client_id: body.client_id || null,
-        currency: body.currency || 'USD',
+        currency: body.currency || 'NGN',
         date: body.date || new Date().toISOString().split('T')[0],
         is_reimbursable: body.is_reimbursable ?? false,
         notes: body.notes || null,

@@ -5,11 +5,15 @@ import { Card } from '@/components/ui/card'
 import { DataTable } from '@/components/dashboard/DataTable'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Wallet, Scale, TrendingUp, BarChart3 } from 'lucide-react'
 import { supabase } from '@/lib/supabase/client'
 import { useAuth } from '@/contexts/AuthContext'
+import { formatCurrency } from '@/lib/utils/currency'
+import { useUserCurrency } from '@/hooks/useUserCurrency'
 
 export default function AdminPage() {
   const { user } = useAuth()
+  const { currency } = useUserCurrency()
   const [accountsData, setAccountsData] = useState([])
   const [journalEntriesData, setJournalEntriesData] = useState([])
   const [auditLogs, setAuditLogs] = useState([])
@@ -110,22 +114,54 @@ export default function AdminPage() {
         </TabsList>
 
         <TabsContent value="accounts" className="mt-6 space-y-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
-            <Card className="bg-slate-900 border-slate-800 p-4 md:p-6">
-              <p className="text-slate-400 text-xs md:text-sm">Total Assets</p>
-              <h3 className="text-lg md:text-2xl text-slate-100 mt-1 md:mt-2">${stats.totalAssets.toFixed(2)}</h3>
+          {/* Stats Cards - Clean 2-column design */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Assets & Liabilities Card */}
+            <Card className="bg-slate-900 border-slate-800 p-5">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center">
+                  <Wallet className="w-5 h-5 text-emerald-400" />
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500 uppercase tracking-wider">Total Assets</p>
+                  <p className="text-2xl font-bold text-slate-100">{formatCurrency(stats.totalAssets, currency)}</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between pt-3 border-t border-slate-800">
+                <div>
+                  <p className="text-xs text-slate-500">Liabilities</p>
+                  <p className="text-sm font-semibold text-rose-400">{formatCurrency(stats.totalLiabilities, currency)}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-slate-500">Net Position</p>
+                  <p className="text-sm font-semibold text-emerald-400">{formatCurrency(stats.totalAssets - stats.totalLiabilities, currency)}</p>
+                </div>
+              </div>
             </Card>
-            <Card className="bg-slate-900 border-slate-800 p-4 md:p-6">
-              <p className="text-slate-400 text-xs md:text-sm">Total Liabilities</p>
-              <h3 className="text-lg md:text-2xl text-slate-100 mt-1 md:mt-2">${stats.totalLiabilities.toFixed(2)}</h3>
-            </Card>
-            <Card className="bg-slate-900 border-slate-800 p-4 md:p-6">
-              <p className="text-slate-400 text-xs md:text-sm">Total Equity</p>
-              <h3 className="text-lg md:text-2xl text-slate-100 mt-1 md:mt-2">${stats.totalEquity.toFixed(2)}</h3>
-            </Card>
-            <Card className="bg-slate-900 border-slate-800 p-4 md:p-6">
-              <p className="text-slate-400 text-xs md:text-sm">Net Income</p>
-              <h3 className="text-lg md:text-2xl text-slate-100 mt-1 md:mt-2">${stats.netIncome.toFixed(2)}</h3>
+
+            {/* Equity & Income Card */}
+            <Card className="bg-slate-900 border-slate-800 p-5">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-violet-500/10 rounded-xl flex items-center justify-center">
+                  <Scale className="w-5 h-5 text-violet-400" />
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500 uppercase tracking-wider">Total Equity</p>
+                  <p className="text-2xl font-bold text-slate-100">{formatCurrency(stats.totalEquity, currency)}</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between pt-3 border-t border-slate-800">
+                <div>
+                  <p className="text-xs text-slate-500">Net Income</p>
+                  <p className={`text-sm font-semibold ${stats.netIncome >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                    {formatCurrency(stats.netIncome, currency)}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-slate-500">Status</p>
+                  <p className="text-sm font-medium text-violet-400">Active</p>
+                </div>
+              </div>
             </Card>
           </div>
           <DataTable

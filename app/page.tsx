@@ -23,8 +23,8 @@ export default function HomePage() {
   const [placeholderPhraseIndex, setPlaceholderPhraseIndex] = useState(0)
   const [isPlaceholderDeleting, setIsPlaceholderDeleting] = useState(false)
   const [currency, setCurrency] = useState<Currency>({
-    code: 'USD',
-    symbol: '$',
+    code: 'NGN',
+    symbol: '₦',
     rate: 1,
   })
   const [isLoadingCurrency, setIsLoadingCurrency] = useState(true)

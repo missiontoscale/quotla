@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import VoiceRecorder from './VoiceRecorder'
 import { classifyIntent, classifyIntentFast, type Intent } from '@/lib/ai/intent-classifier'
 import { storeTransferData } from '@/lib/utils/secure-transfer'
+import { useUserCurrency } from '@/hooks/useUserCurrency'
 
 interface Message {
   role: 'user' | 'assistant'
@@ -14,6 +15,7 @@ interface Message {
 }
 
 export default function QuotlaChat({ onClose }: { onClose?: () => void } = {}) {
+  const { currency: userCurrency } = useUserCurrency()
   const initialMessage: Message = {
     role: 'assistant',
     content: 'Hello! I\'m Quotla, your AI assistant. I can help you generate quotes and invoices, or answer business questions. What can I help you with today?'
@@ -114,7 +116,7 @@ export default function QuotlaChat({ onClose }: { onClose?: () => void } = {}) {
       }
 
       // Get currency symbol with default
-      const currency = quote.currency || 'USD'
+      const currency = quote.currency || userCurrency
       const currencySymbol = currency === 'NGN' ? '₦' :
                             currency === 'EUR' ? '€' :
                             currency === 'GBP' ? '£' : '$'
@@ -235,7 +237,7 @@ export default function QuotlaChat({ onClose }: { onClose?: () => void } = {}) {
       }
 
       // Get currency symbol with default
-      const currency = invoice.currency || 'USD'
+      const currency = invoice.currency || userCurrency
       const currencySymbol = currency === 'NGN' ? '₦' :
                             currency === 'EUR' ? '€' :
                             currency === 'GBP' ? '£' : '$'

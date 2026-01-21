@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { ModalProvider } from '@/contexts/ModalContext'
 import { GlobalModalManager } from '@/components/modals/GlobalModalManager'
+import { Toaster } from '@/components/ui/toaster'
 import { STORAGE_KEYS } from '@/lib/constants'
 
 function ThemeInitializer() {
@@ -26,6 +27,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <ThemeInitializer />
         {children}
         <GlobalModalManager />
+        <Toaster />
       </ModalProvider>
     </AuthProvider>
   )

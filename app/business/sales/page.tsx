@@ -614,109 +614,82 @@ export default function SalesPage() {
         onAddInvoice={handleAddInvoiceFromModal}
       />
 
-      {/* Stats Cards - Redesigned */}
-      <div className="relative rounded-2xl overflow-hidden">
-        {/* Background with subtle gradient */}
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-800/50 to-slate-900" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cyan-500/5 via-transparent to-transparent" />
-
-        {/* Stats Grid */}
-        <div className="relative z-10 grid grid-cols-2 lg:grid-cols-5 divide-x divide-slate-700/50">
-          {/* Total Revenue */}
-          <div className="group p-6 hover:bg-slate-800/30 transition-all duration-300 cursor-default">
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-2">
-                <div className="p-2 bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 rounded-xl border border-emerald-500/20 group-hover:border-emerald-500/40 transition-colors">
-                  <DollarSign className="w-4 h-4 text-emerald-400" />
-                </div>
-                <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">Revenue</span>
-              </div>
-              <div>
-                <h3 className="text-2xl lg:text-3xl font-semibold text-slate-100 tracking-tight">
-                  {formatCurrency(stats.totalRevenue, displayCurrency)}
-                </h3>
-                <p className="text-xs text-emerald-400/80 mt-1">From paid invoices</p>
-              </div>
+      {/* Stats Cards - Clean 3-column design */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Revenue & Profit Card */}
+        <Card className="bg-slate-900 border-slate-800 p-5">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center">
+              <DollarSign className="w-5 h-5 text-emerald-400" />
+            </div>
+            <div>
+              <p className="text-xs text-slate-500 uppercase tracking-wider">Revenue</p>
+              <p className="text-2xl font-bold text-slate-100">
+                {formatCurrency(stats.totalRevenue, displayCurrency)}
+              </p>
             </div>
           </div>
-
-          {/* Gross Profit */}
-          <div className="group p-6 hover:bg-slate-800/30 transition-all duration-300 cursor-default">
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-2">
-                <div className="p-2 bg-gradient-to-br from-teal-500/20 to-teal-600/10 rounded-xl border border-teal-500/20 group-hover:border-teal-500/40 transition-colors">
-                  <TrendingUp className="w-4 h-4 text-teal-400" />
-                </div>
-                <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">Profit</span>
-              </div>
-              <div>
-                <h3 className="text-2xl lg:text-3xl font-semibold text-slate-100 tracking-tight">
-                  {formatCurrency(stats.grossProfit, displayCurrency)}
-                </h3>
-                <p className="text-xs text-teal-400/80 mt-1">{stats.profitMargin.toFixed(1)}% margin</p>
-              </div>
+          <div className="flex items-center justify-between pt-3 border-t border-slate-800">
+            <div>
+              <p className="text-xs text-slate-500">Gross Profit</p>
+              <p className="text-sm font-semibold text-emerald-400">
+                {formatCurrency(stats.grossProfit, displayCurrency)}
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-slate-500">Margin</p>
+              <p className="text-sm font-semibold text-teal-400">{stats.profitMargin.toFixed(1)}%</p>
             </div>
           </div>
+        </Card>
 
-          {/* Pending Invoices */}
-          <div className="group p-6 hover:bg-slate-800/30 transition-all duration-300 cursor-default">
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-2">
-                <div className="p-2 bg-gradient-to-br from-amber-500/20 to-amber-600/10 rounded-xl border border-amber-500/20 group-hover:border-amber-500/40 transition-colors">
-                  <Clock className="w-4 h-4 text-amber-400" />
-                </div>
-                <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">Pending</span>
-              </div>
-              <div>
-                <h3 className="text-2xl lg:text-3xl font-semibold text-slate-100 tracking-tight">
-                  {stats.pendingInvoices}
-                  <span className="text-lg text-slate-500 font-normal ml-1">invoices</span>
-                </h3>
-                <p className="text-xs text-amber-400/80 mt-1">Awaiting payment</p>
-              </div>
+        {/* Invoices Card */}
+        <Card className="bg-slate-900 border-slate-800 p-5">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center">
+              <Clock className="w-5 h-5 text-amber-400" />
+            </div>
+            <div>
+              <p className="text-xs text-slate-500 uppercase tracking-wider">Pending</p>
+              <p className="text-2xl font-bold text-slate-100">{stats.pendingInvoices} invoices</p>
             </div>
           </div>
-
-          {/* Active Customers */}
-          <div className="group p-6 hover:bg-slate-800/30 transition-all duration-300 cursor-default">
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-2">
-                <div className="p-2 bg-gradient-to-br from-cyan-500/20 to-cyan-600/10 rounded-xl border border-cyan-500/20 group-hover:border-cyan-500/40 transition-colors">
-                  <Users className="w-4 h-4 text-cyan-400" />
-                </div>
-                <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">Customers</span>
-              </div>
-              <div>
-                <h3 className="text-2xl lg:text-3xl font-semibold text-slate-100 tracking-tight">
-                  {stats.activeCustomers}
-                  <span className="text-lg text-slate-500 font-normal ml-1">active</span>
-                </h3>
-                <p className="text-xs text-cyan-400/80 mt-1">In your network</p>
-              </div>
+          <div className="flex items-center justify-between pt-3 border-t border-slate-800">
+            <div>
+              <p className="text-xs text-slate-500">Outstanding</p>
+              <p className="text-sm font-semibold text-rose-400">
+                {formatCurrency(stats.outstanding, displayCurrency)}
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-slate-500">Awaiting</p>
+              <p className="text-sm font-medium text-slate-300">Payment</p>
             </div>
           </div>
+        </Card>
 
-          {/* Outstanding */}
-          <div className="group p-6 hover:bg-slate-800/30 transition-all duration-300 cursor-default">
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-2">
-                <div className="p-2 bg-gradient-to-br from-rose-500/20 to-rose-600/10 rounded-xl border border-rose-500/20 group-hover:border-rose-500/40 transition-colors">
-                  <FileText className="w-4 h-4 text-rose-400" />
-                </div>
-                <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">Outstanding</span>
-              </div>
-              <div>
-                <h3 className="text-2xl lg:text-3xl font-semibold text-slate-100 tracking-tight">
-                  {formatCurrency(stats.outstanding, displayCurrency)}
-                </h3>
-                <p className="text-xs text-rose-400/80 mt-1">Total owed</p>
-              </div>
+        {/* Customers Card */}
+        <Card className="bg-slate-900 border-slate-800 p-5">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 bg-cyan-500/10 rounded-xl flex items-center justify-center">
+              <Users className="w-5 h-5 text-cyan-400" />
+            </div>
+            <div>
+              <p className="text-xs text-slate-500 uppercase tracking-wider">Customers</p>
+              <p className="text-2xl font-bold text-slate-100">{stats.activeCustomers} active</p>
             </div>
           </div>
-        </div>
-
-        {/* Bottom accent line */}
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/30 to-transparent" />
+          <div className="flex items-center justify-between pt-3 border-t border-slate-800">
+            <div>
+              <p className="text-xs text-slate-500">Total</p>
+              <p className="text-sm font-medium text-slate-300">{customers.length}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-slate-500">Network</p>
+              <p className="text-sm font-medium text-cyan-400">Active</p>
+            </div>
+          </div>
+        </Card>
       </div>
 
       {/* Two-Pane Layout */}

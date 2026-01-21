@@ -2,14 +2,15 @@
 
 import { useState, useEffect } from 'react'
 import type { ProjectProfitability, ProfitabilitySummary } from '@/types/profitability'
-import { formatCurrency, getUserCurrency } from '@/lib/utils/currency'
+import { formatCurrency } from '@/lib/utils/currency'
+import { useUserCurrency } from '@/hooks/useUserCurrency'
 
 export default function ProfitabilityDashboard() {
+  const { currency } = useUserCurrency()
   const [profitability, setProfitability] = useState<ProjectProfitability[]>([])
   const [summary, setSummary] = useState<ProfitabilitySummary | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [selectedClient, setSelectedClient] = useState<string>('')
-  const [currency, setCurrency] = useState<string>('USD')
 
   // Load profitability data
   const loadProfitability = async () => {
@@ -30,12 +31,6 @@ export default function ProfitabilityDashboard() {
       setIsLoading(false)
     }
   }
-
-  useEffect(() => {
-    // Get user's preferred currency
-    const userCurrency = getUserCurrency()
-    setCurrency(userCurrency)
-  }, [])
 
   useEffect(() => {
     loadProfitability()

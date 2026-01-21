@@ -90,8 +90,8 @@ export function parseAIResponse(response: string): ParsedDocumentData | null {
       client.address = clientAddressMatch[1].trim()
     }
 
-    // Extract currency (look for common symbols and codes)
-    let currency = 'USD'
+    // Extract currency (look for common symbols and codes) - default to NGN
+    let currency = 'NGN'
     if (response.includes('₦') || response.includes('NGN')) currency = 'NGN'
     else if (response.includes('$') || response.includes('USD')) currency = 'USD'
     else if (response.includes('€') || response.includes('EUR')) currency = 'EUR'

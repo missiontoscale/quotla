@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
         const data = await response.json()
 
         if (data.country_code && !data.error) {
-          const currency = COUNTRY_CURRENCY_MAP[data.country_code] || data.currency || 'USD'
+          const currency = COUNTRY_CURRENCY_MAP[data.country_code] || data.currency || 'NGN'
 
           locationInfo = {
             country: data.country_name || data.country_code,
@@ -81,11 +81,11 @@ export async function GET(request: NextRequest) {
       console.warn('ipapi.co failed:', error)
     }
 
-    // Fallback to default USD
+    // Fallback to default NGN
     locationInfo = {
-      country: 'United States',
-      countryCode: 'US',
-      currency: 'USD',
+      country: 'Nigeria',
+      countryCode: 'NG',
+      currency: 'NGN',
     }
 
     return NextResponse.json(locationInfo)
@@ -94,9 +94,9 @@ export async function GET(request: NextRequest) {
 
     // Return default on error
     return NextResponse.json({
-      country: 'United States',
-      countryCode: 'US',
-      currency: 'USD',
+      country: 'Nigeria',
+      countryCode: 'NG',
+      currency: 'NGN',
     })
   }
 }

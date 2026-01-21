@@ -481,6 +481,47 @@ export interface Database {
           created_at?: string
         }
       }
+      notifications: {
+        Row: {
+          id: string
+          user_id: string
+          type: 'low_stock' | 'invoice_paid' | 'invoice_overdue' | 'new_order' | 'payment_received' | 'quote_accepted' | 'quote_rejected' | 'system'
+          title: string
+          message: string
+          priority: 'low' | 'medium' | 'high' | 'urgent'
+          is_read: boolean
+          read_at: string | null
+          action_url: string | null
+          metadata: Json | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          type: 'low_stock' | 'invoice_paid' | 'invoice_overdue' | 'new_order' | 'payment_received' | 'quote_accepted' | 'quote_rejected' | 'system'
+          title: string
+          message: string
+          priority?: 'low' | 'medium' | 'high' | 'urgent'
+          is_read?: boolean
+          read_at?: string | null
+          action_url?: string | null
+          metadata?: Json | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          type?: 'low_stock' | 'invoice_paid' | 'invoice_overdue' | 'new_order' | 'payment_received' | 'quote_accepted' | 'quote_rejected' | 'system'
+          title?: string
+          message?: string
+          priority?: 'low' | 'medium' | 'high' | 'urgent'
+          is_read?: boolean
+          read_at?: string | null
+          action_url?: string | null
+          metadata?: Json | null
+          created_at?: string
+        }
+      }
     }
   }
 }

@@ -150,10 +150,6 @@ setOnSuccess(() => {
 openCustomerModal()
 ```
 
-## Testing URL
-
-Visit `/modal-demo` to test all functionality
-
 ## Documentation
 
 - 📖 Complete Guide: `docs/MODAL_SYSTEM.md`

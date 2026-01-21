@@ -146,7 +146,7 @@ export function AddExpenseDialog({
         setFormData({
           description: data.description || '',
           amount: data.amount?.toString() || '',
-          currency: data.currency || 'USD',
+          currency: data.currency || userDefaultCurrency,
           category: data.category || '',
           expense_date: data.expense_date || new Date().toISOString().split('T')[0],
           payment_method: data.payment_method || 'card',

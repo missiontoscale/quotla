@@ -102,7 +102,7 @@ export function extractInvoiceDataFromConversation(messages: ConversationMessage
       console.log(`Parsed hourly service: ${hours} hours x ${description} @ ${rate}/hour`)
 
       items.push({
-        description: `${description} (${hours} hours @ ${currency === 'USD' ? '$' : currency}${rate}/hr)`,
+        description: `${description} (${hours} hours @ ${currency === 'NGN' ? '₦' : currency === 'USD' ? '$' : currency === 'EUR' ? '€' : currency === 'GBP' ? '£' : '₦'}${rate}/hr)`,
         quantity: hours,
         unit_price: rate
       })

@@ -38,6 +38,7 @@ export interface User {
 }
 
 export const CURRENCIES = [
+  { code: 'NGN', symbol: '₦', name: 'Nigerian Naira' },
   { code: 'USD', symbol: '$', name: 'US Dollar' },
   { code: 'EUR', symbol: '€', name: 'Euro' },
   { code: 'GBP', symbol: '£', name: 'British Pound' },
@@ -48,7 +49,6 @@ export const CURRENCIES = [
   { code: 'INR', symbol: '₹', name: 'Indian Rupee' },
   // African Currencies
   { code: 'ZAR', symbol: 'R', name: 'South African Rand' },
-  { code: 'NGN', symbol: '₦', name: 'Nigerian Naira' },
   { code: 'KES', symbol: 'KSh', name: 'Kenyan Shilling' },
   { code: 'GHS', symbol: 'GH₵', name: 'Ghanaian Cedi' },
   { code: 'EGP', symbol: 'E£', name: 'Egyptian Pound' },

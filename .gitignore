@@ -47,3 +47,7 @@ next-env.d.ts
 
 # OS
 Thumbs.db
+
+.sql
+*.sql
+*.sqlite

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { supabase } from '@/lib/supabase/client'
 import { useAuth } from '@/contexts/AuthContext'
 import { formatCurrency } from '@/lib/utils/validation'
+import { useUserCurrency } from '@/hooks/useUserCurrency'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from './ui/sheet'
 import { Button } from './ui/button'
 import { Package, AlertCircle } from 'lucide-react'
@@ -33,6 +34,7 @@ interface InventorySlideOverProps {
 
 export default function InventorySlideOver({ isOpen, onClose }: InventorySlideOverProps) {
   const { user } = useAuth()
+  const { currency: userCurrency } = useUserCurrency()
   const [items, setItems] = useState<InventoryItem[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
@@ -98,7 +100,7 @@ export default function InventorySlideOver({ isOpen, onClose }: InventorySlideOv
 
         <div className="space-y-6 py-6">
           <div className="flex flex-col sm:flex-row gap-3">
-            <Link href="/inventory" className="flex-1" onClick={onClose}>
+            <Link href="/business/products" className="flex-1" onClick={onClose}>
               <Button className="w-full bg-cyan-600 hover:bg-cyan-500 rounded-none font-bold uppercase">
                 Add New Product
               </Button>
@@ -167,7 +169,7 @@ export default function InventorySlideOver({ isOpen, onClose }: InventorySlideOv
               <p className="text-slate-400 mb-4">
                 {searchQuery || filter !== 'all' ? 'No items match your filters' : 'No products in inventory'}
               </p>
-              <Link href="/inventory" onClick={onClose}>
+              <Link href="/business/products" onClick={onClose}>
                 <Button className="bg-cyan-600 hover:bg-cyan-500 rounded-none font-bold uppercase">
                   Add Your First Product
                 </Button>
@@ -214,7 +216,7 @@ export default function InventorySlideOver({ isOpen, onClose }: InventorySlideOv
                       </div>
                       <div className="text-right">
                         <div className="text-lg font-black text-cyan-400">
-                          {formatCurrency(item.unit_price, item.currency || 'USD')}
+                          {formatCurrency(item.unit_price, item.currency || userCurrency)}
                         </div>
                         {item.track_inventory && (
                           <div className={`text-xs mt-1 font-mono ${
@@ -277,7 +279,7 @@ export default function InventorySlideOver({ isOpen, onClose }: InventorySlideOv
                 <div className="text-2xl font-black text-cyan-400">
                   {formatCurrency(
                     filteredItems.reduce((sum, item) => sum + item.quantity_on_hand * item.cost_price, 0),
-                    filteredItems[0]?.currency || 'USD'
+                    filteredItems[0]?.currency || userCurrency
                   )}
                 </div>
               </div>

@@ -103,7 +103,7 @@ export async function detectUserLocation(): Promise<LocationInfo> {
       const data = await response.json()
 
       if (data.country_code && !data.error) {
-        const currency = COUNTRY_CURRENCY_MAP[data.country_code] || data.currency || 'USD'
+        const currency = COUNTRY_CURRENCY_MAP[data.country_code] || data.currency || 'NGN'
 
         return {
           country: data.country_name || data.country_code,
@@ -127,7 +127,7 @@ export async function detectUserLocation(): Promise<LocationInfo> {
       const data = await response.json()
 
       if (data.status === 'success' && data.countryCode) {
-        const currency = COUNTRY_CURRENCY_MAP[data.countryCode] || data.currency || 'USD'
+        const currency = COUNTRY_CURRENCY_MAP[data.countryCode] || data.currency || 'NGN'
 
         return {
           country: data.country,
@@ -140,11 +140,11 @@ export async function detectUserLocation(): Promise<LocationInfo> {
     console.warn('ip-api.com failed:', error)
   }
 
-  // Ultimate fallback - use USD
+  // Ultimate fallback - use NGN
   return {
-    country: 'United States',
-    countryCode: 'US',
-    currency: 'USD',
+    country: 'Nigeria',
+    countryCode: 'NG',
+    currency: 'NGN',
   }
 }
 
@@ -152,7 +152,7 @@ export async function detectUserLocation(): Promise<LocationInfo> {
  * Get currency code from country code
  */
 export function getCurrencyFromCountry(countryCode: string): string {
-  return COUNTRY_CURRENCY_MAP[countryCode.toUpperCase()] || 'USD'
+  return COUNTRY_CURRENCY_MAP[countryCode.toUpperCase()] || 'NGN'
 }
 
 /**

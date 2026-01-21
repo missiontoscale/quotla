@@ -24,7 +24,7 @@ export default function ForBusinessPage() {
     {
       title: 'Inventory Tracking',
       description: 'Manage products and stock',
-      link: '/inventory',
+      link: '/business/products',
       color: 'from-secondary-500 to-quotla-orange'
     },
     {

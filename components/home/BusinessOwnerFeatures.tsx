@@ -24,7 +24,7 @@ export default function BusinessOwnerFeatures() {
         </svg>
       ),
       color: "from-blue-500 to-cyan-500",
-      link: "/inventory"
+      link: "/business/products"
     },
     {
       title: "Profitability Analysis",

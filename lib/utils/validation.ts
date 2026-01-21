@@ -60,7 +60,7 @@ export function validatePhoneNumber(phone: string): boolean {
   return re.test(phone)
 }
 
-export function formatCurrency(amount: number, currency: string = 'USD'): string {
+export function formatCurrency(amount: number, currency: string = 'NGN'): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency,
