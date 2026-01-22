@@ -254,10 +254,12 @@ export function AICreateModal({ open, onOpenChange }: AICreateModalProps) {
             documentId: encodeURIComponent(JSON.stringify(aiDataForForm)),
             documentType: parsedData.type
           }])
-        } else {
-          setChatMessages(prev => [...prev.slice(-24), { role: 'assistant', content: `${aiResponse}\n\n⚠️ I couldn't parse the document data. Please provide more details or create manually.`, timestamp: new Date() }])
-        }
-      } else {
+        } 
+        // else {
+        //   setChatMessages(prev => [...prev.slice(-24), { role: 'assistant', content: `${aiResponse}\n\n⚠️ I couldn't parse the document data. Please provide more details or create manually.`, timestamp: new Date() }])
+        // }
+      } 
+      else {
         setChatMessages(prev => [...prev.slice(-24), { role: 'assistant', content: aiResponse, timestamp: new Date() }])
       }
     } catch (error) {

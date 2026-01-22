@@ -95,7 +95,11 @@
       "Bash(cd:*)",
       "Bash(Get-ChildItem -Path 'c:\\\\Users\\\\ASUS\\\\Documents\\\\Projects\\\\Projects completed @ Mission To Scale\\\\quotla\\\\supabase' -Recurse -File)",
       "Bash(Select-Object -ExpandProperty FullName)",
-      "Bash(npx next build --no-lint)"
+      "Bash(npx next build --no-lint)",
+      "Bash(git -C /c/Users/ASUS/Documents/Projects/Projects completed @ Mission To Scale/quotla log --oneline --all)",
+      "Bash(git -C /c/Users/ASUS/Documents/Projects/Projects completed @ Mission To Scale/quotla show this_is_what_the_sql_config_looks_like.sql)",
+      "Bash(git -C /c/Users/ASUS/Documents/Projects/Projects completed @ Mission To Scale/quotla log --all --full-history -- \"this_is_what_the_sql_config_looks_like.sql\")",
+      "Bash(git -C /c/Users/ASUS/Documents/Projects/Projects\\\\ completed\\\\ @\\\\ Mission\\\\ To\\\\ Scale/quotla show:*)"
     ],
     "deny": [],
     "ask": []

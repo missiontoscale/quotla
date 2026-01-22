@@ -522,6 +522,145 @@ export interface Database {
           created_at?: string
         }
       }
+      expenses: {
+        Row: {
+          id: string
+          user_id: string
+          description: string
+          amount: number
+          currency: string
+          category: string
+          expense_date: string
+          payment_method: string | null
+          is_tax_deductible: boolean
+          is_recurring: boolean
+          recurring_frequency: 'monthly' | 'quarterly' | 'yearly' | null
+          vendor_name: string | null
+          supplier_id: string | null
+          invoice_id: string | null
+          receipt_url: string | null
+          notes: string | null
+          tags: Json
+          status: 'pending' | 'approved' | 'reimbursed' | 'rejected'
+          import_batch_id: string | null
+          bank_transaction_id: string | null
+          bank_description: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          description: string
+          amount: number
+          currency?: string
+          category: string
+          expense_date: string
+          payment_method?: string | null
+          is_tax_deductible?: boolean
+          is_recurring?: boolean
+          recurring_frequency?: 'monthly' | 'quarterly' | 'yearly' | null
+          vendor_name?: string | null
+          supplier_id?: string | null
+          invoice_id?: string | null
+          receipt_url?: string | null
+          notes?: string | null
+          tags?: Json
+          status?: 'pending' | 'approved' | 'reimbursed' | 'rejected'
+          import_batch_id?: string | null
+          bank_transaction_id?: string | null
+          bank_description?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          description?: string
+          amount?: number
+          currency?: string
+          category?: string
+          expense_date?: string
+          payment_method?: string | null
+          is_tax_deductible?: boolean
+          is_recurring?: boolean
+          recurring_frequency?: 'monthly' | 'quarterly' | 'yearly' | null
+          vendor_name?: string | null
+          supplier_id?: string | null
+          invoice_id?: string | null
+          receipt_url?: string | null
+          notes?: string | null
+          tags?: Json
+          status?: 'pending' | 'approved' | 'reimbursed' | 'rejected'
+          import_batch_id?: string | null
+          bank_transaction_id?: string | null
+          bank_description?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      bank_statement_imports: {
+        Row: {
+          id: string
+          user_id: string
+          file_name: string
+          file_type: 'csv' | 'pdf' | 'xlsx' | 'xls'
+          file_url: string | null
+          file_size: number | null
+          bank_name: string | null
+          account_number: string | null
+          statement_period_start: string | null
+          statement_period_end: string | null
+          total_transactions: number
+          imported_expenses: number
+          imported_income: number
+          skipped_transactions: number
+          status: 'processing' | 'completed' | 'failed' | 'undone'
+          error_message: string | null
+          created_at: string
+          completed_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          file_name: string
+          file_type: 'csv' | 'pdf' | 'xlsx' | 'xls'
+          file_url?: string | null
+          file_size?: number | null
+          bank_name?: string | null
+          account_number?: string | null
+          statement_period_start?: string | null
+          statement_period_end?: string | null
+          total_transactions?: number
+          imported_expenses?: number
+          imported_income?: number
+          skipped_transactions?: number
+          status?: 'processing' | 'completed' | 'failed' | 'undone'
+          error_message?: string | null
+          created_at?: string
+          completed_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          file_name?: string
+          file_type?: 'csv' | 'pdf' | 'xlsx' | 'xls'
+          file_url?: string | null
+          file_size?: number | null
+          bank_name?: string | null
+          account_number?: string | null
+          statement_period_start?: string | null
+          statement_period_end?: string | null
+          total_transactions?: number
+          imported_expenses?: number
+          imported_income?: number
+          skipped_transactions?: number
+          status?: 'processing' | 'completed' | 'failed' | 'undone'
+          error_message?: string | null
+          created_at?: string
+          completed_at?: string | null
+        }
+      }
     }
   }
 }

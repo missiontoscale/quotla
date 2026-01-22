@@ -6,7 +6,7 @@ import { DataTable } from '@/components/dashboard/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Users, FileText, DollarSign, Clock, RefreshCw, ChevronRight, Receipt, TrendingUp } from 'lucide-react';
+import { Plus, Users, FileText, DollarSign, Clock, RefreshCw, ChevronRight, Receipt, TrendingUp, Upload } from 'lucide-react';
 import { restoreStockForInvoice } from '@/lib/inventory/stock-operations';
 import { AddCustomerDialog } from '@/components/customers/AddCustomerDialog';
 import { CustomerPreviewCard } from '@/components/customers/CustomerPreviewCard';
@@ -14,6 +14,7 @@ import { CustomerListModal } from '@/components/customers/CustomerListModal';
 import { AddInvoiceDialog } from '@/components/invoices/AddInvoiceDialog';
 import { InvoicePreviewCard } from '@/components/invoices/InvoicePreviewCard';
 import { InvoiceListModal } from '@/components/invoices/InvoiceListModal';
+import { BankImportModal } from '@/components/bank-import/BankImportModal';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDisplayCurrency } from '@/hooks/useUserCurrency';
@@ -94,6 +95,9 @@ export default function SalesPage() {
 
   // Invoice list modal state
   const [invoiceListModalOpen, setInvoiceListModalOpen] = useState(false);
+
+  // Bank import modal state
+  const [bankImportModalOpen, setBankImportModalOpen] = useState(false);
 
   // Data state
   const [customers, setCustomers] = useState<CustomerRow[]>([]);
@@ -559,6 +563,14 @@ export default function SalesPage() {
             )}
           </div>
           <Button
+            variant="outline"
+            onClick={() => setBankImportModalOpen(true)}
+            className="border-emerald-700 text-emerald-400 hover:bg-emerald-900/20"
+          >
+            <Upload className="w-4 h-4 mr-2" />
+            Import Statement
+          </Button>
+          <Button
             onClick={() => setAddInvoiceOpen(true)}
             className="bg-cyan-500 hover:bg-cyan-600 text-white"
           >
@@ -612,6 +624,11 @@ export default function SalesPage() {
         onEdit={handleEditInvoice}
         onDelete={handleDeleteInvoice}
         onAddInvoice={handleAddInvoiceFromModal}
+      />
+      <BankImportModal
+        open={bankImportModalOpen}
+        onOpenChange={setBankImportModalOpen}
+        onSuccess={fetchInvoices}
       />
 
       {/* Stats Cards - Clean 3-column design */}

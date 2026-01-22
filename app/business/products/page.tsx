@@ -83,12 +83,17 @@ export default function ProductsPage() {
   }, [user]);
 
   const fetchProducts = async () => {
+    if (!user?.id) {
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       const { data, error } = await supabase
         .from('inventory_items')
         .select('*')
-        .eq('user_id', user?.id)
+        .eq('user_id', user.id)
         .eq('item_type', 'product')
         .order('created_at', { ascending: false });
 
@@ -108,14 +113,18 @@ export default function ProductsPage() {
 
       setProducts(formattedProducts);
       calculateStats(formattedProducts, data || []);
-    } catch (error) {
-      console.error('Error fetching products:', error);
+    } catch (error: any) {
+      console.error('Error fetching products:', error?.message || error?.code || String(error));
     } finally {
       setLoading(false);
     }
   };
 
   const fetchStockMovements = async () => {
+    if (!user?.id) {
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('stock_movements')
@@ -128,6 +137,7 @@ export default function ProductsPage() {
             item_type
           )
         `)
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(100);
 
@@ -154,8 +164,8 @@ export default function ProductsPage() {
           .filter(m => ['adjustment', 'transfer'].includes(m.movement_type))
           .length
       }));
-    } catch (error) {
-      console.error('Error loading stock movements:', error);
+    } catch (error: any) {
+      console.error('Error loading stock movements:', error?.message || error?.code || String(error));
     }
   };
 

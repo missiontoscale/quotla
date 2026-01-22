@@ -5,10 +5,11 @@ import { Card } from '@/components/ui/card';
 import { DataTable } from '@/components/dashboard/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Plus, DollarSign, Truck, TrendingUp, Receipt, RefreshCw } from 'lucide-react';
+import { Plus, DollarSign, Truck, TrendingUp, Receipt, RefreshCw, Upload } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AddExpenseDialog } from '@/components/expenses/AddExpenseDialog';
 import { AddVendorDialog } from '@/components/expenses/AddVendorDialog';
+import { BankImportModal } from '@/components/bank-import/BankImportModal';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDisplayCurrency } from '@/hooks/useUserCurrency';
@@ -58,6 +59,9 @@ export default function ExpensesPage() {
   const [editVendorDialogOpen, setEditVendorDialogOpen] = useState(false);
   const [selectedVendorId, setSelectedVendorId] = useState<string | undefined>(undefined);
   const [vendorDialogMode, setVendorDialogMode] = useState<'create' | 'edit'>('create');
+
+  // Bank import modal state
+  const [bankImportModalOpen, setBankImportModalOpen] = useState(false);
 
   // Data state
   const [expensesData, setExpensesData] = useState<ExpenseRow[]>([]);
@@ -308,13 +312,23 @@ export default function ExpensesPage() {
             )}
           </div>
           {activeTab === 'expenses' ? (
-            <Button
-              onClick={() => setAddExpenseDialogOpen(true)}
-              className="bg-cyan-500 hover:bg-cyan-600 text-white"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Expense
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setBankImportModalOpen(true)}
+                className="border-emerald-700 text-emerald-400 hover:bg-emerald-900/20"
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                Import Statement
+              </Button>
+              <Button
+                onClick={() => setAddExpenseDialogOpen(true)}
+                className="bg-cyan-500 hover:bg-cyan-600 text-white"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add Expense
+              </Button>
+            </div>
           ) : (
             <Button
               onClick={() => setAddVendorDialogOpen(true)}
@@ -351,6 +365,11 @@ export default function ExpensesPage() {
         onSuccess={handleVendorAdded}
         vendorId={selectedVendorId}
         mode={vendorDialogMode}
+      />
+      <BankImportModal
+        open={bankImportModalOpen}
+        onOpenChange={setBankImportModalOpen}
+        onSuccess={fetchExpenses}
       />
 
       {/* Stats Cards - Clean 2-column design */}
