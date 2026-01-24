@@ -2,98 +2,107 @@
  * Dashboard Theme Configuration
  *
  * Centralized theme variables for the /business dashboard pages.
- * Edit these values to easily customize colors, accents, and spacing across all dashboard components.
+ * Uses Quotla brand colors: quotla-dark, quotla-green, quotla-light, quotla-orange
+ *
+ * Brand Colors:
+ * - quotla-dark:   #0e1616 (primary-800) - Deep dark background
+ * - quotla-green:  #445642 (primary-500) - Primary brand green
+ * - quotla-light:  #fffad6 (primary-50)  - Cream/light for contrast
+ * - quotla-orange: #ce6203 (secondary-500) - Accent/highlight color
  */
 
 // =============================================================================
-// COLOR PALETTE
+// COLOR PALETTE - Using Quotla Brand Colors
 // =============================================================================
 
 export const dashboardColors = {
-  // Background colors
+  // Background colors - Based on quotla-dark (#0e1616)
   bg: {
-    primary: 'bg-slate-900/50',      // Main card backgrounds
-    secondary: 'bg-slate-800/50',     // Nested elements
-    tertiary: 'bg-slate-800/30',      // Subtle backgrounds
-    hover: 'bg-slate-800',            // Hover states
+    primary: 'bg-quotla-dark/90',           // Main card backgrounds
+    secondary: 'bg-primary-700/50',          // Nested elements
+    tertiary: 'bg-primary-700/30',           // Subtle backgrounds
+    hover: 'bg-primary-700',                 // Hover states
+    page: 'bg-quotla-dark',                  // Page background
   },
 
   // Border colors
   border: {
-    default: 'border-slate-800',
-    subtle: 'border-slate-700/50',
-    focus: 'border-slate-700',
+    default: 'border-primary-600',
+    subtle: 'border-primary-600/50',
+    focus: 'border-quotla-green',
+    accent: 'border-quotla-orange/30',
   },
 
-  // Text colors
+  // Text colors - Using quotla-light for contrast on dark
   text: {
-    primary: 'text-slate-100',        // Headings, important text
-    secondary: 'text-slate-200',      // Secondary headings
-    muted: 'text-slate-500',          // Muted/helper text
-    label: 'text-slate-400',          // Labels
-    tiny: 'text-slate-500',           // Timestamps, metadata
+    primary: 'text-primary-50',              // Headings, important text (quotla-light)
+    secondary: 'text-primary-100',           // Secondary headings
+    muted: 'text-primary-400',               // Muted/helper text
+    label: 'text-primary-300',               // Labels
+    tiny: 'text-primary-400',                // Timestamps, metadata
+    accent: 'text-quotla-orange',            // Accent text
   },
 
   // Accent colors for different features
   accent: {
-    // Revenue/Money - Emerald
+    // Revenue/Money - Quotla Green
     revenue: {
-      bg: 'bg-emerald-500/10',
+      bg: 'bg-quotla-green/15',
       text: 'text-emerald-400',
-      border: 'border-emerald-500/30',
-      hover: 'hover:border-emerald-500/30',
+      border: 'border-quotla-green/40',
+      hover: 'hover:border-quotla-green/60',
     },
-    // Customers/Users - Cyan
+    // Customers/Users - Quotla Orange tinted
     customers: {
-      bg: 'bg-cyan-500/10',
-      text: 'text-cyan-400',
-      border: 'border-cyan-500/30',
-      hover: 'hover:border-cyan-500/30',
+      bg: 'bg-quotla-orange/10',
+      text: 'text-quotla-orange',
+      border: 'border-quotla-orange/30',
+      hover: 'hover:border-quotla-orange/50',
     },
-    // Products/Inventory - Purple
+    // Products/Inventory - Quotla Green
     products: {
-      bg: 'bg-purple-500/10',
-      text: 'text-purple-400',
-      border: 'border-purple-500/30',
-      hover: 'hover:border-purple-500/30',
+      bg: 'bg-quotla-green/15',
+      text: 'text-quotla-green',
+      border: 'border-quotla-green/30',
+      hover: 'hover:border-quotla-green/50',
     },
     // Growth/Positive - Green
     growth: {
-      bg: 'bg-green-500/10',
-      text: 'text-green-400',
-      border: 'border-green-500/30',
-      hover: 'hover:border-green-500/30',
+      bg: 'bg-quotla-green/15',
+      text: 'text-emerald-400',
+      border: 'border-quotla-green/30',
+      hover: 'hover:border-quotla-green/50',
     },
-    // Alerts/Warning - Amber
+    // Alerts/Warning - Amber with orange tint
     warning: {
-      bg: 'bg-amber-500/10',
-      text: 'text-amber-400',
-      border: 'border-amber-500/20',
-      hover: 'hover:border-amber-500/30',
-      gradient: 'from-amber-950/20 to-slate-900/50',
+      bg: 'bg-secondary-400/10',
+      text: 'text-secondary-400',
+      border: 'border-secondary-400/20',
+      hover: 'hover:border-secondary-400/40',
+      gradient: 'from-secondary-900/30 to-quotla-dark/50',
     },
     // Danger/Error - Rose
     danger: {
       bg: 'bg-rose-500/10',
       text: 'text-rose-400',
       border: 'border-rose-500/30',
-      hover: 'hover:border-rose-500/30',
+      hover: 'hover:border-rose-500/40',
     },
-    // Primary actions - Violet/Purple gradient
+    // Primary actions - Quotla Orange gradient
     primary: {
-      bg: 'bg-violet-500/10',
-      text: 'text-violet-400',
-      border: 'border-violet-500/30',
-      hover: 'hover:border-violet-500/30',
-      gradient: 'from-violet-600 to-purple-600',
-      gradientHover: 'hover:from-violet-500 hover:to-purple-500',
+      bg: 'bg-quotla-orange/10',
+      text: 'text-quotla-orange',
+      border: 'border-quotla-orange/30',
+      hover: 'hover:border-quotla-orange/50',
+      gradient: 'from-quotla-orange to-secondary-600',
+      gradientHover: 'hover:from-secondary-400 hover:to-quotla-orange',
     },
-    // Info/Links - Blue
+    // Info/Links - Quotla Light tinted
     info: {
-      bg: 'bg-blue-500/10',
-      text: 'text-blue-400',
-      border: 'border-blue-500/30',
-      hover: 'hover:border-blue-500/30',
+      bg: 'bg-primary-50/5',
+      text: 'text-primary-200',
+      border: 'border-primary-300/20',
+      hover: 'hover:border-primary-300/40',
     },
   },
 } as const
@@ -156,10 +165,12 @@ export const dashboardComponents = {
   // Button presets (use with Button component)
   button: {
     primary: `bg-gradient-to-r ${dashboardColors.accent.primary.gradient} ${dashboardColors.accent.primary.gradientHover}`,
+    secondary: 'bg-quotla-green hover:bg-quotla-green/90 text-primary-50',
+    accent: 'bg-quotla-orange hover:bg-secondary-400 text-white',
   },
 
-  // Loading spinner
-  spinner: `animate-spin rounded-full border-2 border-slate-700 border-t-cyan-500`,
+  // Loading spinner - Using Quotla Orange
+  spinner: `animate-spin rounded-full border-2 border-primary-600 border-t-quotla-orange`,
 } as const
 
 // =============================================================================

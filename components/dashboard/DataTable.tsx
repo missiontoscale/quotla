@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Search, Filter, Edit, Trash2 } from 'lucide-react';
+import { useState, ReactNode } from 'react';
+import { Search, Edit, Trash2, X } from 'lucide-react';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import {
@@ -29,7 +29,10 @@ interface DataTableProps {
   data: any[];
   onEdit?: (row: any) => void;
   onDelete?: (row: any) => void;
+  onView?: (row: any) => void;
   searchPlaceholder?: string;
+  filters?: ReactNode;
+  resultCount?: number;
 }
 
 export function DataTable({
@@ -37,7 +40,10 @@ export function DataTable({
   data,
   onEdit,
   onDelete,
+  onView,
   searchPlaceholder = 'Search...',
+  filters,
+  resultCount,
 }: DataTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -53,6 +59,8 @@ export function DataTable({
   const startIndex = (currentPage - 1) * pageSize;
   const paginatedData = filteredData.slice(startIndex, startIndex + pageSize);
 
+  const displayCount = resultCount !== undefined ? resultCount : filteredData.length;
+
   return (
     <div className="space-y-3.5">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -61,14 +69,25 @@ export function DataTable({
           <Input
             placeholder={searchPlaceholder}
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-9 h-9 text-[0.81rem] bg-slate-800 border-slate-700 text-slate-100"
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="pl-9 pr-9 h-9 text-[0.81rem] bg-slate-800 border-slate-700 text-slate-100"
           />
+          {searchTerm && (
+            <button
+              onClick={() => {
+                setSearchTerm('');
+                setCurrentPage(1);
+              }}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
-        <Button variant="outline" className="border-slate-700 text-slate-300 hover:bg-slate-800 text-[0.81rem] h-9 hidden sm:flex">
-          <Filter className="w-3.5 h-3.5 mr-2" />
-          Filter
-        </Button>
+        {filters}
       </div>
 
       <div className="bg-slate-900 border border-slate-800 rounded-lg overflow-hidden">
@@ -92,9 +111,13 @@ export function DataTable({
                   key={index}
                   className="border-slate-800 hover:bg-slate-800/50 md:cursor-default cursor-pointer"
                   onClick={() => {
-                    // On mobile, clicking row opens edit modal
-                    if (window.innerWidth < 768 && onEdit) {
-                      onEdit(row);
+                    // On mobile, clicking row opens view/edit modal
+                    if (window.innerWidth < 768) {
+                      if (onView) {
+                        onView(row);
+                      } else if (onEdit) {
+                        onEdit(row);
+                      }
                     }
                   }}
                 >

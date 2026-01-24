@@ -5,14 +5,23 @@ import { Card } from '@/components/ui/card';
 import { DataTable } from '@/components/dashboard/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Users, FileText, DollarSign, Clock, RefreshCw, ChevronRight, Receipt, TrendingUp, Upload } from 'lucide-react';
+import { Plus, Users, DollarSign, Clock, RefreshCw, ChevronRight, Receipt, Upload, ArrowUpRight, ArrowDownRight, TrendingUp, Target, Percent } from 'lucide-react';
+import { format, subMonths, startOfMonth, endOfMonth, eachMonthOfInterval } from 'date-fns';
+import {
+  ComposedChart,
+  Line,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer
+} from 'recharts';
+import { cn } from '@/hooks/use-dashboard-theme';
 import { restoreStockForInvoice } from '@/lib/inventory/stock-operations';
 import { AddCustomerDialog } from '@/components/customers/AddCustomerDialog';
 import { CustomerPreviewCard } from '@/components/customers/CustomerPreviewCard';
 import { CustomerListModal } from '@/components/customers/CustomerListModal';
 import { AddInvoiceDialog } from '@/components/invoices/AddInvoiceDialog';
-import { InvoicePreviewCard } from '@/components/invoices/InvoicePreviewCard';
 import { InvoiceListModal } from '@/components/invoices/InvoiceListModal';
 import { BankImportModal } from '@/components/bank-import/BankImportModal';
 import { supabase } from '@/lib/supabase/client';
@@ -37,18 +46,6 @@ interface CustomerRow {
   status: string;
   balance: number;
   totalEarnings: number;
-  hasActiveQuotes: boolean;
-}
-
-interface QuoteRow {
-  id: string;
-  quote_number: string;
-  client: string;
-  client_id: string | null;
-  title: string;
-  status: string;
-  total: number;
-  issue_date: string;
 }
 
 interface InvoiceRow {
@@ -63,19 +60,13 @@ interface InvoiceRow {
   due_date: string | null;
 }
 
-type QuoteFilter = 'all' | 'draft' | 'sent' | 'approved' | 'rejected' | 'expired';
 type InvoiceFilter = 'all' | 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
-type LeftPaneTab = 'invoices' | 'quotes';
 
 export default function SalesPage() {
   const { user } = useAuth();
   const { displayCurrency, setDisplayCurrency, isConverted } = useDisplayCurrency();
 
-  // Left pane tab state
-  const [leftPaneTab, setLeftPaneTab] = useState<LeftPaneTab>('invoices');
-
   // Filter states
-  const [quoteFilter, setQuoteFilter] = useState<QuoteFilter>('all');
   const [invoiceFilter, setInvoiceFilter] = useState<InvoiceFilter>('all');
 
   // Customer dialog state
@@ -101,7 +92,6 @@ export default function SalesPage() {
 
   // Data state
   const [customers, setCustomers] = useState<CustomerRow[]>([]);
-  const [quotes, setQuotes] = useState<QuoteRow[]>([]);
   const [invoices, setInvoices] = useState<InvoiceRow[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -115,6 +105,9 @@ export default function SalesPage() {
     profitMargin: 0
   });
 
+  // Monthly sales data for trend chart
+  const [monthlySalesData, setMonthlySalesData] = useState<{month: string, revenue: number, profit: number}[]>([]);
+
   useEffect(() => {
     if (user) {
       fetchData();
@@ -123,7 +116,7 @@ export default function SalesPage() {
 
   const fetchData = async () => {
     setLoading(true);
-    await Promise.all([fetchCustomers(), fetchQuotes(), fetchInvoices()]);
+    await Promise.all([fetchCustomers(), fetchInvoices()]);
     setLoading(false);
   };
 
@@ -137,39 +130,20 @@ export default function SalesPage() {
 
       if (customersError) throw customersError;
 
-      // Fetch quotes and invoices to calculate earnings
-      const { data: quotesData } = await supabase
-        .from('quotes')
-        .select('client_id, status, total')
-        .eq('user_id', user?.id);
-
+      // Fetch invoices to calculate earnings
       const { data: invoicesData } = await supabase
         .from('invoices')
         .select('client_id, status, total')
         .eq('user_id', user?.id);
 
       // Calculate stats per customer
-      const customerStats: Record<string, { totalEarnings: number; activeQuotes: number }> = {};
-
-      (quotesData || []).forEach((q: any) => {
-        if (q.client_id) {
-          if (!customerStats[q.client_id]) {
-            customerStats[q.client_id] = { totalEarnings: 0, activeQuotes: 0 };
-          }
-          if (q.status === 'approved') {
-            customerStats[q.client_id].totalEarnings += q.total || 0;
-          }
-          if (q.status === 'draft' || q.status === 'sent') {
-            customerStats[q.client_id].activeQuotes += 1;
-          }
-        }
-      });
+      const customerStats: Record<string, { totalEarnings: number }> = {};
 
       // Add paid invoice earnings
       (invoicesData || []).forEach((inv: any) => {
         if (inv.client_id) {
           if (!customerStats[inv.client_id]) {
-            customerStats[inv.client_id] = { totalEarnings: 0, activeQuotes: 0 };
+            customerStats[inv.client_id] = { totalEarnings: 0 };
           }
           if (inv.status === 'paid') {
             customerStats[inv.client_id].totalEarnings += inv.total || 0;
@@ -186,7 +160,6 @@ export default function SalesPage() {
         status: c.is_active ? 'active' : 'inactive',
         balance: c.outstanding_balance || 0,
         totalEarnings: customerStats[c.id]?.totalEarnings || 0,
-        hasActiveQuotes: (customerStats[c.id]?.activeQuotes || 0) > 0,
       }));
 
       setCustomers(formatted);
@@ -201,58 +174,6 @@ export default function SalesPage() {
       }));
     } catch (error) {
       console.error('Error fetching customers:', error);
-    }
-  };
-
-  const fetchQuotes = async () => {
-    try {
-      // Fetch quotes first
-      const { data: quotesData, error: quotesError } = await supabase
-        .from('quotes')
-        .select('*')
-        .eq('user_id', user?.id)
-        .order('created_at', { ascending: false });
-
-      if (quotesError) throw quotesError;
-
-      // Fetch customer names separately to avoid FK cache issues
-      const clientIds = (quotesData || [])
-        .map((q: any) => q.client_id)
-        .filter((id: string | null): id is string => id !== null);
-
-      let customerMap: Record<string, { full_name: string; company_name: string | null }> = {};
-      if (clientIds.length > 0) {
-        const { data: customersData } = await supabase
-          .from('customers')
-          .select('id, full_name, company_name')
-          .in('id', clientIds);
-
-        customerMap = (customersData || []).reduce((acc: any, c: any) => {
-          acc[c.id] = { full_name: c.full_name, company_name: c.company_name };
-          return acc;
-        }, {});
-      }
-
-      const formatted: QuoteRow[] = (quotesData || []).map((q: any) => {
-        const customer = q.client_id ? customerMap[q.client_id] : null;
-        return {
-          id: q.id,
-          quote_number: q.quote_number,
-          client: customer?.company_name || customer?.full_name || 'No client',
-          client_id: q.client_id,
-          title: q.title || '-',
-          status: q.status,
-          total: q.total,
-          issue_date: new Date(q.issue_date).toLocaleDateString()
-        };
-      });
-
-      setQuotes(formatted);
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message :
-        (typeof error === 'object' && error !== null && 'message' in error) ? String((error as { message: unknown }).message) :
-        'Unknown error';
-      console.error('Error fetching quotes:', errorMessage, error);
     }
   };
 
@@ -354,13 +275,198 @@ export default function SalesPage() {
       const grossProfit = revenue - totalCogs;
       const profitMargin = revenue > 0 ? (grossProfit / revenue) * 100 : 0;
 
+      // Month-over-month calculations
+      const thisMonthStart = startOfMonth(new Date());
+      const lastMonthStart = startOfMonth(subMonths(new Date(), 1));
+      const lastMonthEnd = endOfMonth(subMonths(new Date(), 1));
+
+      const thisMonthPaid = paidInvoices.filter((inv: any) =>
+        new Date(inv.issue_date) >= thisMonthStart
+      );
+      const thisMonthRevenue = thisMonthPaid.reduce((sum: number, inv: any) => sum + (inv.total || 0), 0);
+
+      // Calculate this month's COGS
+      let thisMonthCogs = 0;
+      if (thisMonthPaid.length > 0) {
+        const thisMonthIds = thisMonthPaid.map((inv: any) => inv.id);
+        const { data: thisMonthItems } = await supabase
+          .from('invoice_items')
+          .select('quantity, inventory_item_id')
+          .in('invoice_id', thisMonthIds);
+
+        if (thisMonthItems && thisMonthItems.length > 0) {
+          const inventoryIds = (thisMonthItems as any[])
+            .map((item: any) => item.inventory_item_id)
+            .filter((id: string | null): id is string => id !== null);
+
+          if (inventoryIds.length > 0) {
+            const { data: costs } = await supabase
+              .from('inventory_items')
+              .select('id, cost_price')
+              .in('id', inventoryIds);
+
+            const costMap = (costs || []).reduce((acc: Record<string, number>, item: any) => {
+              acc[item.id] = item.cost_price || 0;
+              return acc;
+            }, {});
+
+            thisMonthCogs = (thisMonthItems as any[]).reduce((sum: number, item: any) => {
+              const costPrice = item.inventory_item_id ? (costMap[item.inventory_item_id] || 0) : 0;
+              return sum + (costPrice * item.quantity);
+            }, 0);
+          }
+        }
+      }
+
+      const thisMonthProfit = thisMonthRevenue - thisMonthCogs;
+
+      const lastMonthPaid = paidInvoices.filter((inv: any) => {
+        const date = new Date(inv.issue_date);
+        return date >= lastMonthStart && date <= lastMonthEnd;
+      });
+      const lastMonthRevenue = lastMonthPaid.reduce((sum: number, inv: any) => sum + (inv.total || 0), 0);
+
+      // Calculate last month's COGS
+      let lastMonthCogs = 0;
+      if (lastMonthPaid.length > 0) {
+        const lastMonthIds = lastMonthPaid.map((inv: any) => inv.id);
+        const { data: lastMonthItems } = await supabase
+          .from('invoice_items')
+          .select('quantity, inventory_item_id')
+          .in('invoice_id', lastMonthIds);
+
+        if (lastMonthItems && lastMonthItems.length > 0) {
+          const inventoryIds = (lastMonthItems as any[])
+            .map((item: any) => item.inventory_item_id)
+            .filter((id: string | null): id is string => id !== null);
+
+          if (inventoryIds.length > 0) {
+            const { data: costs } = await supabase
+              .from('inventory_items')
+              .select('id, cost_price')
+              .in('id', inventoryIds);
+
+            const costMap = (costs || []).reduce((acc: Record<string, number>, item: any) => {
+              acc[item.id] = item.cost_price || 0;
+              return acc;
+            }, {});
+
+            lastMonthCogs = (lastMonthItems as any[]).reduce((sum: number, item: any) => {
+              const costPrice = item.inventory_item_id ? (costMap[item.inventory_item_id] || 0) : 0;
+              return sum + (costPrice * item.quantity);
+            }, 0);
+          }
+        }
+      }
+
+      const lastMonthProfit = lastMonthRevenue - lastMonthCogs;
+
+      // Growth percentages
+      const revenueGrowth = lastMonthRevenue > 0
+        ? ((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100
+        : thisMonthRevenue > 0 ? 100 : 0;
+      const profitGrowth = lastMonthProfit > 0
+        ? ((thisMonthProfit - lastMonthProfit) / lastMonthProfit) * 100
+        : thisMonthProfit > 0 ? 100 : 0;
+
+      // Average invoice value
+      const avgInvoiceValue = thisMonthPaid.length > 0
+        ? thisMonthRevenue / thisMonthPaid.length
+        : 0;
+      const lastAvgInvoiceValue = lastMonthPaid.length > 0
+        ? lastMonthRevenue / lastMonthPaid.length
+        : 0;
+      const avgInvoiceGrowth = lastAvgInvoiceValue > 0
+        ? ((avgInvoiceValue - lastAvgInvoiceValue) / lastAvgInvoiceValue) * 100
+        : avgInvoiceValue > 0 ? 100 : 0;
+
+      // Days Sales Outstanding (DSO)
+      const avgReceivable = (stats.outstanding || 0);
+      const dailySales = revenue / 365;
+      const dso = dailySales > 0 ? avgReceivable / dailySales : 0;
+
+      // Conversion rate
+      const totalInvoiceCount = formatted.length;
+      const paidCount = paidInvoices.length;
+      const conversionRate = totalInvoiceCount > 0 ? (paidCount / totalInvoiceCount) * 100 : 0;
+
+      // Build 6-month trend data
+      const sixMonthsAgo = subMonths(new Date(), 5);
+      const months = eachMonthOfInterval({
+        start: startOfMonth(sixMonthsAgo),
+        end: new Date()
+      });
+
+      const monthlyTrend = await Promise.all(months.map(async (month) => {
+        const monthStart = startOfMonth(month);
+        const monthEnd = endOfMonth(month);
+
+        const monthInvoices = paidInvoices.filter((inv: any) => {
+          const date = new Date(inv.issue_date);
+          return date >= monthStart && date <= monthEnd;
+        });
+
+        const monthRevenue = monthInvoices.reduce((sum: number, inv: any) => sum + (inv.total || 0), 0);
+
+        // Calculate month's COGS
+        let monthCogs = 0;
+        if (monthInvoices.length > 0) {
+          const monthIds = monthInvoices.map((inv: any) => inv.id);
+          const { data: monthItems } = await supabase
+            .from('invoice_items')
+            .select('quantity, inventory_item_id')
+            .in('invoice_id', monthIds);
+
+          if (monthItems && monthItems.length > 0) {
+            const inventoryIds = (monthItems as any[])
+              .map((item: any) => item.inventory_item_id)
+              .filter((id: string | null): id is string => id !== null);
+
+            if (inventoryIds.length > 0) {
+              const { data: costs } = await supabase
+                .from('inventory_items')
+                .select('id, cost_price')
+                .in('id', inventoryIds);
+
+              const costMap = (costs || []).reduce((acc: Record<string, number>, item: any) => {
+                acc[item.id] = item.cost_price || 0;
+                return acc;
+              }, {});
+
+              monthCogs = (monthItems as any[]).reduce((sum: number, item: any) => {
+                const costPrice = item.inventory_item_id ? (costMap[item.inventory_item_id] || 0) : 0;
+                return sum + (costPrice * item.quantity);
+              }, 0);
+            }
+          }
+        }
+
+        return {
+          month: format(month, 'MMM'),
+          revenue: monthRevenue,
+          profit: monthRevenue - monthCogs
+        };
+      }));
+
+      setMonthlySalesData(monthlyTrend);
+
       setStats(prev => ({
         ...prev,
         pendingInvoices: pending,
         totalRevenue: revenue,
         grossProfit,
-        profitMargin
-      }));
+        profitMargin,
+        thisMonthRevenue,
+        lastMonthRevenue,
+        revenueGrowth,
+        thisMonthProfit,
+        lastMonthProfit,
+        profitGrowth,
+        avgInvoiceValue,
+        avgInvoiceGrowth,
+        dso,
+        conversionRate
+      } as any));
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message :
         (typeof error === 'object' && error !== null && 'message' in error) ? String((error as { message: unknown }).message) :
@@ -370,11 +476,6 @@ export default function SalesPage() {
   };
 
   // Filter data
-  const filteredQuotes = useMemo(() => {
-    if (quoteFilter === 'all') return quotes;
-    return quotes.filter(q => q.status === quoteFilter);
-  }, [quotes, quoteFilter]);
-
   const filteredInvoices = useMemo(() => {
     if (invoiceFilter === 'all') return invoices;
     return invoices.filter(inv => inv.status === invoiceFilter);
@@ -470,36 +571,6 @@ export default function SalesPage() {
     setAddInvoiceOpen(true);
   };
 
-  const quoteColumns = [
-    { key: 'quote_number', label: 'Quote #' },
-    { key: 'client', label: 'Client' },
-    { key: 'title', label: 'Title' },
-    {
-      key: 'status',
-      label: 'Status',
-      render: (value: string) => {
-        const statusColors: Record<string, string> = {
-          draft: 'bg-slate-500/20 text-slate-400',
-          sent: 'bg-blue-500/20 text-blue-400',
-          approved: 'bg-emerald-500/20 text-emerald-400',
-          rejected: 'bg-rose-500/20 text-rose-400',
-          expired: 'bg-amber-500/20 text-amber-400'
-        };
-        return (
-          <Badge className={statusColors[value] || statusColors.draft}>
-            {value}
-          </Badge>
-        );
-      },
-    },
-    {
-      key: 'total',
-      label: 'Total',
-      render: (value: number) => formatCurrency(value || 0, displayCurrency)
-    },
-    { key: 'issue_date', label: 'Date' },
-  ];
-
   const invoiceColumns = [
     { key: 'invoice_number', label: 'Invoice #' },
     { key: 'client_name', label: 'Customer' },
@@ -509,11 +580,11 @@ export default function SalesPage() {
       label: 'Status',
       render: (value: string) => {
         const statusColors: Record<string, string> = {
-          draft: 'bg-slate-500/20 text-slate-400',
+          draft: 'bg-primary-600/20 text-primary-400',
           sent: 'bg-blue-500/20 text-blue-400',
-          paid: 'bg-emerald-500/20 text-emerald-400',
+          paid: 'bg-quotla-green/20 text-emerald-400',
           overdue: 'bg-rose-500/20 text-rose-400',
-          cancelled: 'bg-slate-600/20 text-slate-500'
+          cancelled: 'bg-primary-700/20 text-primary-400'
         };
         return (
           <Badge className={statusColors[value] || statusColors.draft}>
@@ -538,16 +609,16 @@ export default function SalesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl text-slate-100">Sales</h1>
-          <p className="text-slate-400 mt-1">Manage invoices, quotes and customers</p>
+          <h1 className="text-3xl text-primary-50">Sales</h1>
+          <p className="text-primary-400 mt-1">Manage invoices and customers</p>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <Select value={displayCurrency} onValueChange={setDisplayCurrency}>
-              <SelectTrigger className="w-[120px] bg-slate-800 border-slate-700 text-slate-100 h-9 text-sm">
+              <SelectTrigger className="w-[120px] bg-primary-700 border-primary-600 text-primary-50 h-9 text-sm">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-slate-900 border-slate-800">
+              <SelectContent className="bg-quotla-dark border-primary-600">
                 {CURRENCIES.map((curr) => (
                   <SelectItem key={curr.code} value={curr.code}>
                     {curr.symbol} {curr.code}
@@ -565,14 +636,14 @@ export default function SalesPage() {
           <Button
             variant="outline"
             onClick={() => setBankImportModalOpen(true)}
-            className="border-emerald-700 text-emerald-400 hover:bg-emerald-900/20"
+            className="border-quotla-green text-quotla-green hover:bg-quotla-green/10"
           >
             <Upload className="w-4 h-4 mr-2" />
             Import Statement
           </Button>
           <Button
             onClick={() => setAddInvoiceOpen(true)}
-            className="bg-cyan-500 hover:bg-cyan-600 text-white"
+            className="bg-quotla-orange hover:bg-secondary-400 text-white"
           >
             <Plus className="w-4 h-4 mr-2" />
             New Invoice
@@ -631,79 +702,275 @@ export default function SalesPage() {
         onSuccess={fetchInvoices}
       />
 
-      {/* Stats Cards - Clean 3-column design */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Revenue & Profit Card */}
-        <Card className="bg-slate-900 border-slate-800 p-5">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center">
-              <DollarSign className="w-5 h-5 text-emerald-400" />
-            </div>
+      {/* Enhanced Sales Metrics - Row 1: Sales Performance Overview */}
+      <div className="mb-4">
+        <Card className={cn(
+          'p-6 border shadow-lg',
+          'bg-gradient-to-br from-quotla-dark/95 to-primary-800/50',
+          'border-quotla-green/20 hover:border-quotla-green/40 transition-all duration-300',
+          'shadow-quotla-dark/50'
+        )}>
+          {/* Header */}
+          <div className="flex items-start justify-between mb-5">
             <div>
-              <p className="text-xs text-slate-500 uppercase tracking-wider">Revenue</p>
-              <p className="text-2xl font-bold text-slate-100">
-                {formatCurrency(stats.totalRevenue, displayCurrency)}
-              </p>
+              <p className="text-xs font-medium uppercase tracking-wider text-primary-400">Sales Performance</p>
             </div>
           </div>
-          <div className="flex items-center justify-between pt-3 border-t border-slate-800">
-            <div>
-              <p className="text-xs text-slate-500">Gross Profit</p>
-              <p className="text-sm font-semibold text-emerald-400">
-                {formatCurrency(stats.grossProfit, displayCurrency)}
-              </p>
+
+          {/* Metric Pills */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+            {/* Revenue Pill */}
+            <div className={cn(
+              'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
+              'bg-primary-700/30 border-quotla-green/20 hover:border-quotla-green/40'
+            )}>
+              <p className="text-xs text-primary-400 mb-1">Revenue</p>
+              <div className="flex items-baseline gap-2">
+                <p className="text-lg font-bold text-primary-50">
+                  {formatCurrency((stats as any).thisMonthRevenue || 0, displayCurrency)}
+                </p>
+                {(stats as any).revenueGrowth !== undefined && (stats as any).revenueGrowth !== 0 && (
+                  <span className={cn(
+                    'flex items-center gap-0.5 text-xs font-medium',
+                    (stats as any).revenueGrowth > 0 ? 'text-emerald-400' : 'text-rose-400'
+                  )}>
+                    {(stats as any).revenueGrowth > 0 ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+                    {Math.abs((stats as any).revenueGrowth).toFixed(1)}%
+                  </span>
+                )}
+              </div>
             </div>
-            <div className="text-right">
-              <p className="text-xs text-slate-500">Margin</p>
-              <p className="text-sm font-semibold text-teal-400">{stats.profitMargin.toFixed(1)}%</p>
+
+            {/* Gross Profit Pill */}
+            <div className={cn(
+              'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
+              'bg-primary-700/30 border-emerald-500/20 hover:border-emerald-500/40'
+            )}>
+              <p className="text-xs text-primary-400 mb-1">Gross Profit</p>
+              <div className="flex items-baseline gap-2">
+                <p className="text-lg font-bold text-primary-50">
+                  {formatCurrency((stats as any).thisMonthProfit || 0, displayCurrency)}
+                </p>
+                {(stats as any).profitGrowth !== undefined && (stats as any).profitGrowth !== 0 && (
+                  <span className={cn(
+                    'flex items-center gap-0.5 text-xs font-medium',
+                    (stats as any).profitGrowth > 0 ? 'text-emerald-400' : 'text-rose-400'
+                  )}>
+                    {(stats as any).profitGrowth > 0 ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+                    {Math.abs((stats as any).profitGrowth).toFixed(1)}%
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Profit Margin Pill */}
+            <div className={cn(
+              'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
+              'bg-primary-700/30 border-teal-500/20 hover:border-teal-500/40'
+            )}>
+              <p className="text-xs text-primary-400 mb-1">Margin</p>
+              <div className="flex items-baseline gap-2">
+                <p className="text-lg font-bold text-primary-50">
+                  {stats.profitMargin.toFixed(1)}%
+                </p>
+              </div>
+            </div>
+
+            {/* Average Invoice Value Pill */}
+            <div className={cn(
+              'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
+              'bg-primary-700/30 border-quotla-orange/20 hover:border-quotla-orange/40'
+            )}>
+              <p className="text-xs text-primary-400 mb-1">Avg Invoice</p>
+              <div className="flex items-baseline gap-2">
+                <p className="text-lg font-bold text-primary-50">
+                  {formatCurrency((stats as any).avgInvoiceValue || 0, displayCurrency)}
+                </p>
+                {(stats as any).avgInvoiceGrowth !== undefined && (stats as any).avgInvoiceGrowth !== 0 && (
+                  <span className={cn(
+                    'flex items-center gap-0.5 text-xs font-medium',
+                    (stats as any).avgInvoiceGrowth > 0 ? 'text-emerald-400' : 'text-rose-400'
+                  )}>
+                    {(stats as any).avgInvoiceGrowth > 0 ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+                    {Math.abs((stats as any).avgInvoiceGrowth).toFixed(1)}%
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* 6-Month Trend Chart */}
+          <div className="h-[200px] mt-2">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart data={monthlySalesData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="salesRevenueGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#445642" stopOpacity={0.5}/>
+                    <stop offset="95%" stopColor="#445642" stopOpacity={0.05}/>
+                  </linearGradient>
+                </defs>
+                <XAxis
+                  dataKey="month"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#8a8a66', fontSize: 11 }}
+                />
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#8a8a66', fontSize: 11 }}
+                  tickFormatter={(value) => value >= 1000 ? `${(value/1000).toFixed(0)}k` : value}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#0e1616',
+                    border: '1px solid #445642',
+                    borderRadius: '8px',
+                    fontSize: '12px',
+                    color: '#fffad6'
+                  }}
+                  formatter={(value: number, name: string) => {
+                    const labels: Record<string, string> = {
+                      revenue: 'Revenue',
+                      profit: 'Profit'
+                    };
+                    return [formatCurrency(value, displayCurrency), labels[name] || name];
+                  }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="revenue"
+                  stroke="#445642"
+                  strokeWidth={2}
+                  fill="url(#salesRevenueGradient)"
+                />
+                <Line
+                  type="monotone"
+                  dataKey="profit"
+                  stroke="#10b981"
+                  strokeWidth={2}
+                  dot={{ fill: '#10b981', r: 3 }}
+                />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Legend */}
+          <div className="flex items-center justify-center gap-6 mt-4">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-quotla-green/50 rounded-full" />
+              <span className="text-xs text-primary-300">Revenue</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-0.5 bg-emerald-500" style={{ width: '16px' }} />
+              <span className="text-xs text-primary-300">Profit</span>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Row 2: Operational Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        {/* Pending Invoices Card */}
+        <Card className="bg-quotla-dark/90 border-primary-600 p-5">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 bg-quotla-orange/10 rounded-xl flex items-center justify-center">
+              <Clock className="w-5 h-5 text-quotla-orange" />
+            </div>
+            <div>
+              <p className="text-xs text-primary-400 uppercase tracking-wider">Pending Invoices</p>
+              <p className="text-2xl font-bold text-primary-50">{stats.pendingInvoices}</p>
+            </div>
+          </div>
+          <div className="pt-3 border-t border-primary-600">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-primary-400">Outstanding Amount</span>
+              <span className="text-sm font-semibold text-rose-400">
+                {formatCurrency(stats.outstanding, displayCurrency)}
+              </span>
             </div>
           </div>
         </Card>
 
-        {/* Invoices Card */}
-        <Card className="bg-slate-900 border-slate-800 p-5">
+        {/* Days Sales Outstanding (DSO) Card */}
+        <Card className="bg-quotla-dark/90 border-primary-600 p-5">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center">
-              <Clock className="w-5 h-5 text-amber-400" />
+              <Target className="w-5 h-5 text-amber-400" />
             </div>
             <div>
-              <p className="text-xs text-slate-500 uppercase tracking-wider">Pending</p>
-              <p className="text-2xl font-bold text-slate-100">{stats.pendingInvoices} invoices</p>
+              <p className="text-xs text-primary-400 uppercase tracking-wider">Days Sales Outstanding</p>
+              <p className="text-2xl font-bold text-primary-50">{((stats as any).dso || 0).toFixed(0)} days</p>
             </div>
           </div>
-          <div className="flex items-center justify-between pt-3 border-t border-slate-800">
-            <div>
-              <p className="text-xs text-slate-500">Outstanding</p>
-              <p className="text-sm font-semibold text-rose-400">
-                {formatCurrency(stats.outstanding, displayCurrency)}
-              </p>
-            </div>
-            <div className="text-right">
-              <p className="text-xs text-slate-500">Awaiting</p>
-              <p className="text-sm font-medium text-slate-300">Payment</p>
+          <div className="pt-3 border-t border-primary-600">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-primary-400">Industry Benchmark</span>
+              <span className="text-sm font-medium text-primary-200">30-45 days</span>
             </div>
           </div>
         </Card>
 
-        {/* Customers Card */}
-        <Card className="bg-slate-900 border-slate-800 p-5">
+        {/* Conversion Rate Card */}
+        <Card className="bg-quotla-dark/90 border-primary-600 p-5">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-cyan-500/10 rounded-xl flex items-center justify-center">
-              <Users className="w-5 h-5 text-cyan-400" />
+            <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center">
+              <TrendingUp className="w-5 h-5 text-emerald-400" />
             </div>
             <div>
-              <p className="text-xs text-slate-500 uppercase tracking-wider">Customers</p>
-              <p className="text-2xl font-bold text-slate-100">{stats.activeCustomers} active</p>
+              <p className="text-xs text-primary-400 uppercase tracking-wider">Conversion Rate</p>
+              <p className="text-2xl font-bold text-primary-50">{((stats as any).conversionRate || 0).toFixed(1)}%</p>
             </div>
           </div>
-          <div className="flex items-center justify-between pt-3 border-t border-slate-800">
-            <div>
-              <p className="text-xs text-slate-500">Total</p>
-              <p className="text-sm font-medium text-slate-300">{customers.length}</p>
+          <div className="pt-3 border-t border-primary-600">
+            <div className="w-full bg-primary-700 rounded-full h-2 overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-500"
+                style={{ width: `${Math.min((stats as any).conversionRate || 0, 100)}%` }}
+              />
             </div>
-            <div className="text-right">
-              <p className="text-xs text-slate-500">Network</p>
-              <p className="text-sm font-medium text-cyan-400">Active</p>
+          </div>
+        </Card>
+      </div>
+
+      {/* Row 3: Customer Insights */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        {/* Active Customers Card */}
+        <Card className="bg-quotla-dark/90 border-primary-600 p-5">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 bg-quotla-green/15 rounded-xl flex items-center justify-center">
+              <Users className="w-5 h-5 text-quotla-green" />
+            </div>
+            <div>
+              <p className="text-xs text-primary-400 uppercase tracking-wider">Active Customers</p>
+              <p className="text-2xl font-bold text-primary-50">{stats.activeCustomers}</p>
+            </div>
+          </div>
+          <div className="pt-3 border-t border-primary-600">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-primary-400">Total Customers</span>
+              <span className="text-sm font-medium text-primary-200">{customers.length}</span>
+            </div>
+          </div>
+        </Card>
+
+        {/* Customer Value Card */}
+        <Card className="bg-quotla-dark/90 border-primary-600 p-5">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 bg-teal-500/10 rounded-xl flex items-center justify-center">
+              <DollarSign className="w-5 h-5 text-teal-400" />
+            </div>
+            <div>
+              <p className="text-xs text-primary-400 uppercase tracking-wider">Avg Customer Value</p>
+              <p className="text-2xl font-bold text-primary-50">
+                {formatCurrency(stats.activeCustomers > 0 ? stats.totalRevenue / stats.activeCustomers : 0, displayCurrency)}
+              </p>
+            </div>
+          </div>
+          <div className="pt-3 border-t border-primary-600">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-primary-400">Lifetime Value</span>
+              <span className="text-sm font-medium text-teal-400">Per Customer</span>
             </div>
           </div>
         </Card>
@@ -711,87 +978,44 @@ export default function SalesPage() {
 
       {/* Two-Pane Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Pane - Invoices/Quotes with Tabs */}
-        <div className="lg:col-span-2 p-6 bg-slate-900 border border-cyan-500/20 rounded-2xl">
-          <Tabs value={leftPaneTab} onValueChange={(v) => setLeftPaneTab(v as LeftPaneTab)} className="w-full">
-            <div className="flex items-center justify-between">
-              <TabsList className="bg-slate-800 border border-cyan-500/20">
-                <TabsTrigger
-                  value="invoices"
-                  className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-300"
-                >
-                  <Receipt className="w-4 h-4 mr-2" />
-                  Invoices
-                </TabsTrigger>
-                <TabsTrigger
-                  value="quotes"
-                  className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-300"
-                >
-                  <FileText className="w-4 h-4 mr-2" />
-                  Quotes
-                </TabsTrigger>
-              </TabsList>
-
-              {leftPaneTab === 'invoices' ? (
-                <Select value={invoiceFilter} onValueChange={(v) => setInvoiceFilter(v as InvoiceFilter)}>
-                  <SelectTrigger className="w-[140px] bg-slate-800 border-cyan-500/20 text-slate-100 h-9 text-sm">
-                    <SelectValue placeholder="Filter" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-slate-900 border-slate-800">
-                    <SelectItem value="all">All Invoices</SelectItem>
-                    <SelectItem value="draft">Draft</SelectItem>
-                    <SelectItem value="sent">Sent</SelectItem>
-                    <SelectItem value="paid">Paid</SelectItem>
-                    <SelectItem value="overdue">Overdue</SelectItem>
-                    <SelectItem value="cancelled">Cancelled</SelectItem>
-                  </SelectContent>
-                </Select>
-              ) : (
-                <Select value={quoteFilter} onValueChange={(v) => setQuoteFilter(v as QuoteFilter)}>
-                  <SelectTrigger className="w-[140px] bg-slate-800 border-cyan-500/20 text-slate-100 h-9 text-sm">
-                    <SelectValue placeholder="Filter" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-slate-900 border-slate-800">
-                    <SelectItem value="all">All Quotes</SelectItem>
-                    <SelectItem value="draft">Draft</SelectItem>
-                    <SelectItem value="sent">Sent</SelectItem>
-                    <SelectItem value="approved">Approved</SelectItem>
-                    <SelectItem value="rejected">Rejected</SelectItem>
-                    <SelectItem value="expired">Expired</SelectItem>
-                  </SelectContent>
-                </Select>
-              )}
-            </div>
-
-            <TabsContent value="invoices" className="mt-4">
-              <DataTable
-                columns={invoiceColumns}
-                data={filteredInvoices}
-                searchPlaceholder="Search invoices..."
-                onView={handleViewInvoice}
-                onEdit={handleEditInvoice}
-                onDelete={handleDeleteInvoice}
-              />
-            </TabsContent>
-
-            <TabsContent value="quotes" className="mt-4">
-              <DataTable
-                columns={quoteColumns}
-                data={filteredQuotes}
-                searchPlaceholder="Search quotes..."
-                onView={(row) => window.location.href = `/quotes/${row.id}`}
-              />
-            </TabsContent>
-          </Tabs>
+        {/* Left Pane - Invoices */}
+        <div className="lg:col-span-2 p-6 bg-quotla-dark/90 border border-quotla-orange/20 rounded-2xl">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-medium text-primary-50 flex items-center gap-2">
+              <Receipt className="w-5 h-5 text-quotla-orange" />
+              Invoices
+            </h2>
+            <Select value={invoiceFilter} onValueChange={(v) => setInvoiceFilter(v as InvoiceFilter)}>
+              <SelectTrigger className="w-[140px] bg-primary-700 border-quotla-orange/20 text-primary-50 h-9 text-sm">
+                <SelectValue placeholder="Filter" />
+              </SelectTrigger>
+              <SelectContent className="bg-quotla-dark border-primary-600">
+                <SelectItem value="all">All Invoices</SelectItem>
+                <SelectItem value="draft">Draft</SelectItem>
+                <SelectItem value="sent">Sent</SelectItem>
+                <SelectItem value="paid">Paid</SelectItem>
+                <SelectItem value="overdue">Overdue</SelectItem>
+                <SelectItem value="cancelled">Cancelled</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <DataTable
+            columns={invoiceColumns}
+            data={filteredInvoices}
+            searchPlaceholder="Search invoices..."
+            onView={handleViewInvoice}
+            onEdit={handleEditInvoice}
+            onDelete={handleDeleteInvoice}
+          />
         </div>
 
         {/* Right Pane - Customers Preview */}
-        <div className="p-5 bg-slate-900 border border-slate-800 rounded-2xl">
+        <div className="p-5 bg-quotla-dark/90 border border-primary-600 rounded-2xl">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-medium text-slate-100">Customers</h2>
+            <h2 className="text-lg font-medium text-primary-50">Customers</h2>
             <button
               onClick={() => setCustomerListModalOpen(true)}
-              className="text-sm text-slate-400 hover:text-slate-200 flex items-center gap-1"
+              className="text-sm text-quotla-orange hover:text-secondary-400 flex items-center gap-1"
             >
               View all
               <ChevronRight className="w-4 h-4" />
@@ -801,12 +1025,12 @@ export default function SalesPage() {
           <div className="space-y-2 max-h-[400px] overflow-y-auto">
             {customers.length === 0 ? (
               <div className="text-center py-8">
-                <p className="text-sm text-slate-500">No customers yet</p>
+                <p className="text-sm text-primary-400">No customers yet</p>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setAddCustomerOpen(true)}
-                  className="mt-2 text-slate-400 hover:text-slate-200"
+                  className="mt-2 text-primary-400 hover:text-primary-100"
                 >
                   <Plus className="w-4 h-4 mr-1" />
                   Add Customer

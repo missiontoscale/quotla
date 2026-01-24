@@ -1,12 +1,22 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { DataTable } from '@/components/dashboard/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Plus, DollarSign, Truck, TrendingUp, Receipt, RefreshCw, Upload } from 'lucide-react';
+import { Plus, DollarSign, Truck, TrendingUp, Receipt, RefreshCw, Upload, ArrowUpRight, ArrowDownRight, Calendar, Percent, BarChart3 } from 'lucide-react';
+import { format, subMonths, startOfMonth, endOfMonth, eachMonthOfInterval } from 'date-fns';
+import {
+  ComposedChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer
+} from 'recharts';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { FilterSelect } from '@/components/filters';
 import { AddExpenseDialog } from '@/components/expenses/AddExpenseDialog';
 import { AddVendorDialog } from '@/components/expenses/AddVendorDialog';
 import { BankImportModal } from '@/components/bank-import/BankImportModal';
@@ -22,6 +32,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  dashboardColors as colors,
+  dashboardComponents as components,
+  cn
+} from '@/hooks/use-dashboard-theme';
 
 interface ExpenseRow {
   id: string;
@@ -43,10 +58,18 @@ interface VendorRow {
   status: string;
 }
 
+type ExpenseStatusFilter = 'all' | 'pending' | 'approved' | 'reimbursed' | 'rejected';
+type VendorStatusFilter = 'all' | 'active' | 'inactive';
+
 export default function ExpensesPage() {
   const { user } = useAuth();
   const { userCurrency, displayCurrency, setDisplayCurrency, isConverted } = useDisplayCurrency();
   const [activeTab, setActiveTab] = useState('expenses');
+
+  // Filter states
+  const [expenseStatusFilter, setExpenseStatusFilter] = useState<ExpenseStatusFilter>('all');
+  const [expenseCategoryFilter, setExpenseCategoryFilter] = useState<string>('all');
+  const [vendorStatusFilter, setVendorStatusFilter] = useState<VendorStatusFilter>('all');
 
   // Expense dialog state
   const [addExpenseDialogOpen, setAddExpenseDialogOpen] = useState(false);
@@ -78,6 +101,9 @@ export default function ExpensesPage() {
     categories: 0
   });
 
+  // Monthly expense trend data
+  const [monthlyExpenseData, setMonthlyExpenseData] = useState<{month: string, total: number}[]>([]);
+
   useEffect(() => {
     if (user) {
       fetchExpenses();
@@ -108,20 +134,87 @@ export default function ExpensesPage() {
 
       setExpensesData(formattedExpenses);
 
+      // Current calculations
       const now = new Date();
-      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-      const thisMonthExpenses = (data || []).filter((e: any) => new Date(e.expense_date) >= startOfMonth);
+      const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      const thisMonthExpenses = (data || []).filter((e: any) => new Date(e.expense_date) >= thisMonthStart);
       const thisMonthTotal = thisMonthExpenses.reduce((sum: number, e: any) => sum + (e.amount || 0), 0);
       const pendingCount = (data || []).filter((e: any) => e.status === 'pending').length;
       const uniqueCategories = new Set((data || []).map((e: any) => e.category));
 
+      // NEW: Month-over-month comparison
+      const lastMonthStart = startOfMonth(subMonths(new Date(), 1));
+      const lastMonthEnd = endOfMonth(subMonths(new Date(), 1));
+
+      const lastMonthExpenses = (data || []).filter((e: any) => {
+        const date = new Date(e.expense_date);
+        return date >= lastMonthStart && date <= lastMonthEnd;
+      });
+      const lastMonthTotal = lastMonthExpenses.reduce((sum: number, e: any) => sum + (e.amount || 0), 0);
+
+      const expensesGrowth = lastMonthTotal > 0
+        ? ((thisMonthTotal - lastMonthTotal) / lastMonthTotal) * 100
+        : thisMonthTotal > 0 ? 100 : 0;
+
+      // NEW: Average daily expense
+      const daysInMonth = new Date().getDate();
+      const avgDailyExpense = thisMonthTotal / daysInMonth;
+
+      // NEW: Status breakdown
+      const statusBreakdown = {
+        pending: (data || []).filter((e: any) => e.status === 'pending').length,
+        approved: (data || []).filter((e: any) => e.status === 'approved').length,
+        reimbursed: (data || []).filter((e: any) => e.status === 'reimbursed').length,
+        rejected: (data || []).filter((e: any) => e.status === 'rejected').length
+      };
+
+      // NEW: Category totals for top categories
+      const categoryTotals = (data || []).reduce((acc: any, exp: any) => {
+        if (!acc[exp.category]) {
+          acc[exp.category] = 0;
+        }
+        acc[exp.category] += exp.amount || 0;
+        return acc;
+      }, {});
+
+      const topCategories = Object.entries(categoryTotals)
+        .map(([category, amount]) => ({ category, amount: amount as number }))
+        .sort((a, b) => b.amount - a.amount)
+        .slice(0, 5);
+
+      // NEW: 6-month trend data
+      const sixMonthsAgo = subMonths(new Date(), 5);
+      const months = eachMonthOfInterval({ start: startOfMonth(sixMonthsAgo), end: new Date() });
+
+      const monthlyTrend = months.map(month => {
+        const monthStart = startOfMonth(month);
+        const monthEnd = endOfMonth(month);
+        const monthExpenses = (data || []).filter((exp: any) => {
+          const date = new Date(exp.expense_date);
+          return date >= monthStart && date <= monthEnd;
+        });
+
+        return {
+          month: format(month, 'MMM'),
+          total: monthExpenses.reduce((sum: number, e: any) => sum + (e.amount || 0), 0)
+        };
+      });
+
+      setMonthlyExpenseData(monthlyTrend);
+
+      // Update stats state with new metrics
       setStats(prev => ({
         ...prev,
         totalExpenses: (data || []).reduce((sum: number, e: any) => sum + (e.amount || 0), 0),
         thisMonth: thisMonthTotal,
         pendingExpenses: pendingCount,
-        categories: uniqueCategories.size
-      }));
+        categories: uniqueCategories.size,
+        lastMonthTotal,
+        expensesGrowth,
+        avgDailyExpense,
+        statusBreakdown,
+        topCategories
+      } as any));
     } catch (error) {
       console.error('Error fetching expenses:', error);
     } finally {
@@ -231,6 +324,40 @@ export default function ExpensesPage() {
     }
   };
 
+  // Get unique categories from expenses
+  const expenseCategories = useMemo(() => {
+    const categories = [...new Set(expensesData.map(e => e.category).filter(Boolean))];
+    return categories.map(cat => ({ value: cat, label: cat }));
+  }, [expensesData]);
+
+  // Filter expenses
+  const filteredExpenses = useMemo(() => {
+    return expensesData.filter(expense => {
+      const matchesStatus = expenseStatusFilter === 'all' || expense.status === expenseStatusFilter;
+      const matchesCategory = expenseCategoryFilter === 'all' || expense.category === expenseCategoryFilter;
+      return matchesStatus && matchesCategory;
+    });
+  }, [expensesData, expenseStatusFilter, expenseCategoryFilter]);
+
+  // Filter vendors
+  const filteredVendors = useMemo(() => {
+    if (vendorStatusFilter === 'all') return vendorsData;
+    return vendorsData.filter(v => v.status === vendorStatusFilter);
+  }, [vendorsData, vendorStatusFilter]);
+
+  // Filter options
+  const expenseStatusOptions = [
+    { value: 'pending', label: 'Pending', color: 'amber' as const },
+    { value: 'approved', label: 'Approved', color: 'emerald' as const },
+    { value: 'reimbursed', label: 'Reimbursed', color: 'blue' as const },
+    { value: 'rejected', label: 'Rejected', color: 'rose' as const },
+  ];
+
+  const vendorStatusOptions = [
+    { value: 'active', label: 'Active', color: 'emerald' as const },
+    { value: 'inactive', label: 'Inactive', color: 'slate' as const },
+  ];
+
   const expenseColumns = [
     { key: 'description', label: 'Description' },
     { key: 'vendor', label: 'Vendor' },
@@ -271,8 +398,8 @@ export default function ExpensesPage() {
       label: 'Status',
       render: (value: string) => {
         const statusColors: Record<string, string> = {
-          active: 'bg-emerald-500/20 text-emerald-400',
-          inactive: 'bg-slate-500/20 text-slate-400',
+          active: 'bg-quotla-green/20 text-emerald-400',
+          inactive: 'bg-primary-600/20 text-primary-400',
         };
         return (
           <Badge className={statusColors[value] || statusColors.active}>
@@ -287,16 +414,16 @@ export default function ExpensesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl text-slate-100">Expenses</h1>
-          <p className="text-slate-400 mt-1">Track expenses and manage vendors</p>
+          <h1 className="text-3xl text-primary-50">Expenses</h1>
+          <p className="text-primary-400 mt-1">Track expenses and manage vendors</p>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <Select value={displayCurrency} onValueChange={setDisplayCurrency}>
-              <SelectTrigger className="w-[120px] bg-slate-800 border-slate-700 text-slate-100 h-9 text-sm">
+              <SelectTrigger className="w-[120px] bg-primary-700 border-primary-600 text-primary-50 h-9 text-sm">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-slate-900 border-slate-800">
+              <SelectContent className="bg-quotla-dark border-primary-600">
                 {CURRENCIES.map((curr) => (
                   <SelectItem key={curr.code} value={curr.code}>
                     {curr.symbol} {curr.code}
@@ -316,14 +443,14 @@ export default function ExpensesPage() {
               <Button
                 variant="outline"
                 onClick={() => setBankImportModalOpen(true)}
-                className="border-emerald-700 text-emerald-400 hover:bg-emerald-900/20"
+                className="border-quotla-green text-quotla-green hover:bg-quotla-green/10"
               >
                 <Upload className="w-4 h-4 mr-2" />
                 Import Statement
               </Button>
               <Button
                 onClick={() => setAddExpenseDialogOpen(true)}
-                className="bg-cyan-500 hover:bg-cyan-600 text-white"
+                className="bg-quotla-orange hover:bg-secondary-400 text-white"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Add Expense
@@ -332,7 +459,7 @@ export default function ExpensesPage() {
           ) : (
             <Button
               onClick={() => setAddVendorDialogOpen(true)}
-              className="bg-cyan-500 hover:bg-cyan-600 text-white"
+              className="bg-quotla-orange hover:bg-secondary-400 text-white"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Vendor
@@ -372,54 +499,223 @@ export default function ExpensesPage() {
         onSuccess={fetchExpenses}
       />
 
-      {/* Stats Cards - Clean 2-column design */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Expenses Overview Card */}
-        <Card className="bg-slate-900 border-slate-800 p-5">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-rose-500/10 rounded-xl flex items-center justify-center">
-              <DollarSign className="w-5 h-5 text-rose-400" />
-            </div>
+      {/* Enhanced Expense Metrics */}
+
+      {/* Row 1: Expense Overview Card (Full-width) */}
+      <div className="mb-4">
+        <Card className={cn(
+          'p-6 border shadow-lg',
+          'bg-gradient-to-br from-quotla-dark/95 to-primary-800/50',
+          'border-rose-500/20 hover:border-rose-500/40 transition-all duration-300',
+          'shadow-quotla-dark/50'
+        )}>
+          {/* Header */}
+          <div className="flex items-start justify-between mb-5">
             <div>
-              <p className="text-xs text-slate-500 uppercase tracking-wider">Total Expenses</p>
-              <p className="text-2xl font-bold text-slate-100">
-                {formatCurrency(stats.totalExpenses, displayCurrency)}
-              </p>
+              <p className="text-xs font-medium uppercase tracking-wider text-primary-400">Expense Overview</p>
             </div>
           </div>
-          <div className="flex items-center justify-between pt-3 border-t border-slate-800">
-            <div>
-              <p className="text-xs text-slate-500">This Month</p>
-              <p className="text-sm font-semibold text-cyan-400">
-                {formatCurrency(stats.thisMonth, displayCurrency)}
-              </p>
+
+          {/* Metric Pills */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+            {/* Total Expenses Pill */}
+            <div className={cn(
+              'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
+              'bg-primary-700/30 border-rose-500/20 hover:border-rose-500/40'
+            )}>
+              <p className="text-xs text-primary-400 mb-1">Total Expenses</p>
+              <div className="flex items-baseline gap-2">
+                <p className="text-lg font-bold text-primary-50">
+                  {formatCurrency(stats.totalExpenses, displayCurrency)}
+                </p>
+              </div>
             </div>
-            <div className="text-right">
-              <p className="text-xs text-slate-500">Pending</p>
-              <p className="text-sm font-semibold text-amber-400">{stats.pendingExpenses}</p>
+
+            {/* This Month Pill */}
+            <div className={cn(
+              'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
+              'bg-primary-700/30 border-amber-500/20 hover:border-amber-500/40'
+            )}>
+              <p className="text-xs text-primary-400 mb-1">This Month</p>
+              <div className="flex items-baseline gap-2">
+                <p className="text-lg font-bold text-primary-50">
+                  {formatCurrency(stats.thisMonth, displayCurrency)}
+                </p>
+                {(stats as any).expensesGrowth !== undefined && (stats as any).expensesGrowth !== 0 && (
+                  <span className={cn(
+                    'flex items-center gap-0.5 text-xs font-medium',
+                    (stats as any).expensesGrowth > 0 ? 'text-rose-400' : 'text-emerald-400'
+                  )}>
+                    {(stats as any).expensesGrowth > 0 ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+                    {Math.abs((stats as any).expensesGrowth).toFixed(1)}%
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Avg Daily Expense Pill */}
+            <div className={cn(
+              'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
+              'bg-primary-700/30 border-quotla-orange/20 hover:border-quotla-orange/40'
+            )}>
+              <p className="text-xs text-primary-400 mb-1">Avg Daily</p>
+              <div className="flex items-baseline gap-2">
+                <p className="text-lg font-bold text-primary-50">
+                  {formatCurrency((stats as any).avgDailyExpense || 0, displayCurrency)}
+                </p>
+              </div>
+            </div>
+
+            {/* Categories Pill */}
+            <div className={cn(
+              'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
+              'bg-primary-700/30 border-teal-500/20 hover:border-teal-500/40'
+            )}>
+              <p className="text-xs text-primary-400 mb-1">Categories</p>
+              <div className="flex items-baseline gap-2">
+                <p className="text-lg font-bold text-primary-50">
+                  {stats.categories}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* 6-Month Trend Chart */}
+          <div className="h-[200px] mt-2">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart data={monthlyExpenseData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="expenseGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#ef4444" stopOpacity={0.5}/>
+                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0.05}/>
+                  </linearGradient>
+                </defs>
+                <XAxis
+                  dataKey="month"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#8a8a66', fontSize: 11 }}
+                />
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#8a8a66', fontSize: 11 }}
+                  tickFormatter={(value) => value >= 1000 ? `${(value/1000).toFixed(0)}k` : value}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#0e1616',
+                    border: '1px solid #ef4444',
+                    borderRadius: '8px',
+                    fontSize: '12px',
+                    color: '#fffad6'
+                  }}
+                  formatter={(value: number) => [formatCurrency(value, displayCurrency), 'Expenses']}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="total"
+                  stroke="#ef4444"
+                  strokeWidth={2}
+                  fill="url(#expenseGradient)"
+                />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Legend */}
+          <div className="flex items-center justify-center gap-6 mt-4">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-rose-500/50 rounded-full" />
+              <span className="text-xs text-primary-300">Total Expenses</span>
             </div>
           </div>
         </Card>
+      </div>
 
-        {/* Vendors Card */}
-        <Card className="bg-slate-900 border-slate-800 p-5">
+      {/* Row 2: Category & Status Breakdown */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        {/* Top Categories Card */}
+        <Card className="bg-quotla-dark/90 border-primary-600 p-5">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-violet-500/10 rounded-xl flex items-center justify-center">
-              <Truck className="w-5 h-5 text-violet-400" />
+            <div className="w-10 h-10 bg-quotla-orange/10 rounded-xl flex items-center justify-center">
+              <BarChart3 className="w-5 h-5 text-quotla-orange" />
             </div>
             <div>
-              <p className="text-xs text-slate-500 uppercase tracking-wider">Vendors</p>
-              <p className="text-2xl font-bold text-slate-100">{stats.activeVendors} active</p>
+              <p className="text-xs text-primary-400 uppercase tracking-wider">Top Categories</p>
             </div>
           </div>
-          <div className="flex items-center justify-between pt-3 border-t border-slate-800">
+          <div className="space-y-2">
+            {((stats as any).topCategories || []).map((cat: any, idx: number) => (
+              <div key={idx} className="flex items-center justify-between">
+                <span className="text-sm text-primary-200">{cat.category}</span>
+                <span className="text-sm font-semibold text-rose-400">
+                  {formatCurrency(cat.amount, displayCurrency)}
+                </span>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        {/* Status Breakdown Card */}
+        <Card className="bg-quotla-dark/90 border-primary-600 p-5">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center">
+              <Receipt className="w-5 h-5 text-amber-400" />
+            </div>
             <div>
-              <p className="text-xs text-slate-500">Total</p>
-              <p className="text-sm font-medium text-slate-300">{stats.totalVendors}</p>
+              <p className="text-xs text-primary-400 uppercase tracking-wider">Status Breakdown</p>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-primary-400">Pending</span>
+              <span className="text-sm font-medium text-amber-400">
+                {((stats as any).statusBreakdown?.pending || 0)}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-primary-400">Approved</span>
+              <span className="text-sm font-medium text-emerald-400">
+                {((stats as any).statusBreakdown?.approved || 0)}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-primary-400">Reimbursed</span>
+              <span className="text-sm font-medium text-teal-400">
+                {((stats as any).statusBreakdown?.reimbursed || 0)}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-primary-400">Rejected</span>
+              <span className="text-sm font-medium text-rose-400">
+                {((stats as any).statusBreakdown?.rejected || 0)}
+              </span>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Row 3: Vendors Card (Enhanced) */}
+      <div className="mb-4">
+        <Card className="bg-quotla-dark/90 border-primary-600 p-5">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 bg-quotla-green/15 rounded-xl flex items-center justify-center">
+              <Truck className="w-5 h-5 text-quotla-green" />
+            </div>
+            <div>
+              <p className="text-xs text-primary-400 uppercase tracking-wider">Vendors</p>
+              <p className="text-2xl font-bold text-primary-50">{stats.activeVendors} active</p>
+            </div>
+          </div>
+          <div className="flex items-center justify-between pt-3 border-t border-primary-600">
+            <div>
+              <p className="text-xs text-primary-400">Total Vendors</p>
+              <p className="text-sm font-medium text-primary-200">{stats.totalVendors}</p>
             </div>
             <div className="text-right">
-              <p className="text-xs text-slate-500">Categories</p>
-              <p className="text-sm font-medium text-violet-400">{stats.categories}</p>
+              <p className="text-xs text-primary-400">Network</p>
+              <p className="text-sm font-medium text-quotla-green">Active</p>
             </div>
           </div>
         </Card>
@@ -427,11 +723,11 @@ export default function ExpensesPage() {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="bg-slate-800 border-slate-700">
-          <TabsTrigger value="expenses" className="data-[state=active]:bg-slate-700">
+        <TabsList className="bg-primary-700 border-primary-600">
+          <TabsTrigger value="expenses" className="data-[state=active]:bg-quotla-orange/20 data-[state=active]:text-quotla-orange">
             Expenses
           </TabsTrigger>
-          <TabsTrigger value="vendors" className="data-[state=active]:bg-slate-700">
+          <TabsTrigger value="vendors" className="data-[state=active]:bg-quotla-orange/20 data-[state=active]:text-quotla-orange">
             Vendors
           </TabsTrigger>
         </TabsList>
@@ -439,22 +735,49 @@ export default function ExpensesPage() {
         <TabsContent value="expenses" className="mt-6">
           <DataTable
             columns={expenseColumns}
-            data={expensesData}
+            data={filteredExpenses}
             searchPlaceholder="Search expenses..."
             onView={handleViewExpense}
             onEdit={handleEditExpense}
             onDelete={handleDeleteExpense}
+            filters={
+              <div className="flex gap-2">
+                <FilterSelect
+                  options={expenseStatusOptions}
+                  value={expenseStatusFilter}
+                  onChange={(v) => setExpenseStatusFilter(v as ExpenseStatusFilter)}
+                  placeholder="Status"
+                  allLabel="All Status"
+                />
+                <FilterSelect
+                  options={expenseCategories}
+                  value={expenseCategoryFilter}
+                  onChange={setExpenseCategoryFilter}
+                  placeholder="Category"
+                  allLabel="All Categories"
+                />
+              </div>
+            }
           />
         </TabsContent>
 
         <TabsContent value="vendors" className="mt-6">
           <DataTable
             columns={vendorColumns}
-            data={vendorsData}
+            data={filteredVendors}
             searchPlaceholder="Search vendors..."
             onView={handleViewVendor}
             onEdit={handleEditVendor}
             onDelete={handleDeleteVendor}
+            filters={
+              <FilterSelect
+                options={vendorStatusOptions}
+                value={vendorStatusFilter}
+                onChange={(v) => setVendorStatusFilter(v as VendorStatusFilter)}
+                placeholder="Status"
+                allLabel="All Status"
+              />
+            }
           />
         </TabsContent>
       </Tabs>

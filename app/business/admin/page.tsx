@@ -1,23 +1,35 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Card } from '@/components/ui/card'
 import { DataTable } from '@/components/dashboard/DataTable'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Wallet, Scale, TrendingUp, BarChart3 } from 'lucide-react'
+import { FilterSelect } from '@/components/filters'
 import { supabase } from '@/lib/supabase/client'
 import { useAuth } from '@/contexts/AuthContext'
 import { formatCurrency } from '@/lib/utils/currency'
 import { useUserCurrency } from '@/hooks/useUserCurrency'
+import {
+  dashboardColors as colors,
+  dashboardComponents as components,
+  cn
+} from '@/hooks/use-dashboard-theme'
+
+type AccountTypeFilter = 'all' | 'Asset' | 'Liability' | 'Equity' | 'Revenue' | 'Expense'
 
 export default function AdminPage() {
   const { user } = useAuth()
   const { currency } = useUserCurrency()
-  const [accountsData, setAccountsData] = useState([])
-  const [journalEntriesData, setJournalEntriesData] = useState([])
-  const [auditLogs, setAuditLogs] = useState([])
+  const [accountsData, setAccountsData] = useState<any[]>([])
+  const [journalEntriesData, setJournalEntriesData] = useState<any[]>([])
+  const [auditLogs, setAuditLogs] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+
+  // Filter states
+  const [accountTypeFilter, setAccountTypeFilter] = useState<AccountTypeFilter>('all')
+
   const [stats, setStats] = useState({
     totalAssets: 0,
     totalLiabilities: 0,
@@ -46,6 +58,21 @@ export default function AdminPage() {
       setLoading(false)
     }
   }
+
+  // Filter accounts
+  const filteredAccounts = useMemo(() => {
+    if (accountTypeFilter === 'all') return accountsData
+    return accountsData.filter(account => account.type === accountTypeFilter)
+  }, [accountsData, accountTypeFilter])
+
+  // Account type filter options
+  const accountTypeOptions = [
+    { value: 'Asset', label: 'Asset', color: 'emerald' as const },
+    { value: 'Liability', label: 'Liability', color: 'rose' as const },
+    { value: 'Equity', label: 'Equity', color: 'cyan' as const },
+    { value: 'Revenue', label: 'Revenue', color: 'blue' as const },
+    { value: 'Expense', label: 'Expense', color: 'amber' as const },
+  ]
 
   const accountColumns = [
     { key: 'code', label: 'Code' },
@@ -96,19 +123,19 @@ export default function AdminPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl md:text-3xl text-slate-100">Admin</h1>
-        <p className="text-slate-400 mt-1 text-sm md:text-base">Manage accounts, journal entries, and audit logs</p>
+        <h1 className="text-2xl md:text-3xl text-primary-50">Admin</h1>
+        <p className="text-primary-400 mt-1 text-sm md:text-base">Manage accounts, journal entries, and audit logs</p>
       </div>
 
       <Tabs defaultValue="accounts" className="w-full">
-        <TabsList className="bg-slate-900 border border-slate-800 w-full md:w-auto">
-          <TabsTrigger value="accounts" className="data-[state=active]:bg-slate-800 flex-1 md:flex-none">
+        <TabsList className="bg-quotla-dark/90 border border-primary-600 w-full md:w-auto">
+          <TabsTrigger value="accounts" className="data-[state=active]:bg-quotla-green/20 data-[state=active]:text-quotla-green flex-1 md:flex-none">
             Accounts
           </TabsTrigger>
-          <TabsTrigger value="journal" className="data-[state=active]:bg-slate-800 flex-1 md:flex-none">
+          <TabsTrigger value="journal" className="data-[state=active]:bg-quotla-green/20 data-[state=active]:text-quotla-green flex-1 md:flex-none">
             Journal
           </TabsTrigger>
-          <TabsTrigger value="audit" className="data-[state=active]:bg-slate-800 flex-1 md:flex-none">
+          <TabsTrigger value="audit" className="data-[state=active]:bg-quotla-green/20 data-[state=active]:text-quotla-green flex-1 md:flex-none">
             Audit Logs
           </TabsTrigger>
         </TabsList>
@@ -117,59 +144,68 @@ export default function AdminPage() {
           {/* Stats Cards - Clean 2-column design */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Assets & Liabilities Card */}
-            <Card className="bg-slate-900 border-slate-800 p-5">
+            <Card className="bg-quotla-dark/90 border-primary-600 p-5">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center">
+                <div className="w-10 h-10 bg-quotla-green/15 rounded-xl flex items-center justify-center">
                   <Wallet className="w-5 h-5 text-emerald-400" />
                 </div>
                 <div>
-                  <p className="text-xs text-slate-500 uppercase tracking-wider">Total Assets</p>
-                  <p className="text-2xl font-bold text-slate-100">{formatCurrency(stats.totalAssets, currency)}</p>
+                  <p className="text-xs text-primary-400 uppercase tracking-wider">Total Assets</p>
+                  <p className="text-2xl font-bold text-primary-50">{formatCurrency(stats.totalAssets, currency)}</p>
                 </div>
               </div>
-              <div className="flex items-center justify-between pt-3 border-t border-slate-800">
+              <div className="flex items-center justify-between pt-3 border-t border-primary-600">
                 <div>
-                  <p className="text-xs text-slate-500">Liabilities</p>
+                  <p className="text-xs text-primary-400">Liabilities</p>
                   <p className="text-sm font-semibold text-rose-400">{formatCurrency(stats.totalLiabilities, currency)}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs text-slate-500">Net Position</p>
+                  <p className="text-xs text-primary-400">Net Position</p>
                   <p className="text-sm font-semibold text-emerald-400">{formatCurrency(stats.totalAssets - stats.totalLiabilities, currency)}</p>
                 </div>
               </div>
             </Card>
 
             {/* Equity & Income Card */}
-            <Card className="bg-slate-900 border-slate-800 p-5">
+            <Card className="bg-quotla-dark/90 border-primary-600 p-5">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-violet-500/10 rounded-xl flex items-center justify-center">
-                  <Scale className="w-5 h-5 text-violet-400" />
+                <div className="w-10 h-10 bg-quotla-orange/10 rounded-xl flex items-center justify-center">
+                  <Scale className="w-5 h-5 text-quotla-orange" />
                 </div>
                 <div>
-                  <p className="text-xs text-slate-500 uppercase tracking-wider">Total Equity</p>
-                  <p className="text-2xl font-bold text-slate-100">{formatCurrency(stats.totalEquity, currency)}</p>
+                  <p className="text-xs text-primary-400 uppercase tracking-wider">Total Equity</p>
+                  <p className="text-2xl font-bold text-primary-50">{formatCurrency(stats.totalEquity, currency)}</p>
                 </div>
               </div>
-              <div className="flex items-center justify-between pt-3 border-t border-slate-800">
+              <div className="flex items-center justify-between pt-3 border-t border-primary-600">
                 <div>
-                  <p className="text-xs text-slate-500">Net Income</p>
+                  <p className="text-xs text-primary-400">Net Income</p>
                   <p className={`text-sm font-semibold ${stats.netIncome >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
                     {formatCurrency(stats.netIncome, currency)}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs text-slate-500">Status</p>
-                  <p className="text-sm font-medium text-violet-400">Active</p>
+                  <p className="text-xs text-primary-400">Status</p>
+                  <p className="text-sm font-medium text-quotla-orange">Active</p>
                 </div>
               </div>
             </Card>
           </div>
           <DataTable
             columns={accountColumns}
-            data={accountsData}
+            data={filteredAccounts}
             searchPlaceholder="Search accounts..."
             onView={(row) => console.log('View', row)}
             onEdit={(row) => console.log('Edit', row)}
+            filters={
+              <FilterSelect
+                options={accountTypeOptions}
+                value={accountTypeFilter}
+                onChange={(v) => setAccountTypeFilter(v as AccountTypeFilter)}
+                placeholder="Type"
+                allLabel="All Types"
+              />
+            }
           />
         </TabsContent>
 

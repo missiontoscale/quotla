@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { DataTable } from '@/components/dashboard/DataTable';
 import { Badge } from '@/components/ui/badge';
@@ -20,8 +20,23 @@ import {
   Undo,
   CheckCircle2,
   XCircle,
-  Trophy
+  Trophy,
+  Activity,
+  Zap,
+  Archive
 } from 'lucide-react';
+import { format, subMonths, startOfMonth, endOfMonth, eachMonthOfInterval, differenceInDays } from 'date-fns';
+import {
+  ComposedChart,
+  Bar,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  Legend
+} from 'recharts';
+import { FilterSelect } from '@/components/filters';
 import { AddProductDialog } from '@/components/products/AddProductDialog';
 import { AdjustStockDialog } from '@/components/products/AdjustStockDialog';
 import { supabase } from '@/lib/supabase/client';
@@ -37,11 +52,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  dashboardColors as colors,
+  dashboardComponents as components,
+  cn
+} from '@/hooks/use-dashboard-theme';
+
+type ProductStatusFilter = 'all' | 'in-stock' | 'low-stock' | 'out-of-stock';
+type MovementTypeFilter = 'all' | 'purchase' | 'sale' | 'adjustment' | 'return' | 'damage' | 'transfer';
 
 export default function ProductsPage() {
   const { user } = useAuth();
   const { displayCurrency, setDisplayCurrency, isConverted } = useDisplayCurrency();
   const [activeTab, setActiveTab] = useState('products');
+
+  // Filter states
+  const [productStatusFilter, setProductStatusFilter] = useState<ProductStatusFilter>('all');
+  const [movementTypeFilter, setMovementTypeFilter] = useState<MovementTypeFilter>('all');
 
   // Product dialog state
   const [addDialogOpen, setAddDialogOpen] = useState(false);
@@ -73,6 +100,14 @@ export default function ProductsPage() {
     adjustmentsToday: 0,
     topPerformer: null as { name: string; profit: number; unitsSold: number } | null
   });
+
+  // Monthly stock movement trend data
+  const [monthlyStockData, setMonthlyStockData] = useState<{
+    month: string;
+    stockIn: number;
+    stockOut: number;
+    inventoryValue: number;
+  }[]>([]);
 
   useEffect(() => {
     if (user) {
@@ -174,14 +209,60 @@ export default function ProductsPage() {
       sum + ((item.quantity_on_hand || 0) * (item.cost_price || 0)), 0
     );
 
+    // NEW: Calculate inventory turnover rate
+    // Get sales from last 30 days
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const recentSales = movements.filter(m =>
+      m.movement_type === 'sale' &&
+      new Date(m.created_at) >= thirtyDaysAgo
+    );
+
+    const costOfGoodsSold = recentSales.reduce((sum, m) => {
+      const product = formattedProducts.find(p => p.id === m.inventory_item_id);
+      return sum + ((product?.costPrice || 0) * Math.abs(m.quantity_change));
+    }, 0);
+
+    // Annualize COGS (30 days to 365 days)
+    const annualizedCOGS = costOfGoodsSold * (365 / 30);
+    const inventoryTurnover = totalValue > 0 ? annualizedCOGS / totalValue : 0;
+
+    // NEW: Identify deadstock (no sales in 90+ days)
+    const ninetyDaysAgo = new Date();
+    ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+
+    const deadstockProducts = formattedProducts.filter(p => {
+      const lastSale = movements
+        .filter(m => m.inventory_item_id === p.id && m.movement_type === 'sale')
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
+
+      return !lastSale || new Date(lastSale.created_at) < ninetyDaysAgo;
+    });
+
+    // NEW: Calculate average stock age
+    const avgStockAge = formattedProducts.length > 0
+      ? formattedProducts.reduce((sum, p) => {
+          const firstPurchase = movements
+            .filter(m => m.inventory_item_id === p.id && m.movement_type === 'purchase')
+            .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())[0];
+
+          if (!firstPurchase) return sum;
+          return sum + differenceInDays(new Date(), new Date(firstPurchase.created_at));
+        }, 0) / formattedProducts.length
+      : 0;
+
     setStats(prev => ({
       ...prev,
       total: formattedProducts.length,
       inStock: formattedProducts.filter(p => p.status === 'in-stock').length,
       lowStock: formattedProducts.filter(p => p.status === 'low-stock').length,
       outOfStock: formattedProducts.filter(p => p.status === 'out-of-stock').length,
-      totalValue
-    }));
+      totalValue,
+      inventoryTurnover,
+      deadstockCount: deadstockProducts.length,
+      avgStockAge: Math.round(avgStockAge)
+    } as any));
   };
 
   const fetchTopPerformer = async () => {
@@ -278,6 +359,63 @@ export default function ProductsPage() {
     }
   };
 
+  const calculateStockMovementTrend = () => {
+    const sixMonthsAgo = subMonths(new Date(), 5);
+    const months = eachMonthOfInterval({
+      start: startOfMonth(sixMonthsAgo),
+      end: new Date()
+    });
+
+    const monthlyTrend = months.map(month => {
+      const monthStart = startOfMonth(month);
+      const monthEnd = endOfMonth(month);
+
+      const monthMovements = movements.filter(m => {
+        const date = new Date(m.created_at);
+        return date >= monthStart && date <= monthEnd;
+      });
+
+      const stockIn = monthMovements
+        .filter(m => ['purchase', 'return'].includes(m.movement_type))
+        .reduce((sum, m) => sum + Math.abs(m.quantity_change), 0);
+
+      const stockOut = monthMovements
+        .filter(m => ['sale', 'damage'].includes(m.movement_type))
+        .reduce((sum, m) => sum + Math.abs(m.quantity_change), 0);
+
+      // Calculate month-end inventory value (simplified)
+      const monthEndValue = products.reduce((sum, p) => {
+        // Get quantity at end of month
+        const relevantMovements = movements.filter(mv =>
+          mv.inventory_item_id === p.id &&
+          new Date(mv.created_at) <= monthEnd
+        );
+
+        const quantityAtMonthEnd = relevantMovements.length > 0
+          ? relevantMovements[relevantMovements.length - 1].quantity_after
+          : p.stock;
+
+        return sum + (quantityAtMonthEnd * p.costPrice);
+      }, 0);
+
+      return {
+        month: format(month, 'MMM'),
+        stockIn,
+        stockOut,
+        inventoryValue: monthEndValue
+      };
+    });
+
+    setMonthlyStockData(monthlyTrend);
+  };
+
+  // Call calculateStockMovementTrend when movements or products data changes
+  useEffect(() => {
+    if (movements.length > 0 && products.length > 0) {
+      calculateStockMovementTrend();
+    }
+  }, [movements, products]);
+
   const handleProductAdded = () => {
     fetchProducts();
     fetchStockMovements();
@@ -341,6 +479,35 @@ export default function ProductsPage() {
     ? Math.round((stats.inStock / stats.total) * 100)
     : 0;
 
+  // Filter products based on status
+  const filteredProducts = useMemo(() => {
+    if (productStatusFilter === 'all') return products;
+    return products.filter(p => p.status === productStatusFilter);
+  }, [products, productStatusFilter]);
+
+  // Filter movements based on type
+  const filteredMovements = useMemo(() => {
+    if (movementTypeFilter === 'all') return movements;
+    return movements.filter(m => m.movement_type === movementTypeFilter);
+  }, [movements, movementTypeFilter]);
+
+  // Filter options for products
+  const productStatusOptions = [
+    { value: 'in-stock', label: 'In Stock', color: 'emerald' as const },
+    { value: 'low-stock', label: 'Low Stock', color: 'amber' as const },
+    { value: 'out-of-stock', label: 'Out of Stock', color: 'rose' as const },
+  ];
+
+  // Filter options for movements
+  const movementTypeOptions = [
+    { value: 'purchase', label: 'Purchase', color: 'emerald' as const },
+    { value: 'sale', label: 'Sale', color: 'rose' as const },
+    { value: 'adjustment', label: 'Adjustment', color: 'amber' as const },
+    { value: 'return', label: 'Return', color: 'blue' as const },
+    { value: 'damage', label: 'Damage', color: 'rose' as const },
+    { value: 'transfer', label: 'Transfer', color: 'cyan' as const },
+  ];
+
   const productColumns = [
     { key: 'sku', label: 'SKU' },
     { key: 'name', label: 'Product Name' },
@@ -359,10 +526,10 @@ export default function ProductsPage() {
             e.stopPropagation();
             handleAdjustStock(row);
           }}
-          className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-cyan-500/50 transition-colors group cursor-pointer"
+          className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-primary-700 hover:bg-primary-600 border border-primary-600 hover:border-quotla-orange/50 transition-colors group cursor-pointer"
           title="Click to adjust stock"
         >
-          <Package className="w-3.5 h-3.5 text-slate-400 group-hover:text-cyan-400" />
+          <Package className="w-3.5 h-3.5 text-primary-400 group-hover:text-quotla-orange" />
           <span className="font-medium">{value}</span>
         </button>
       ),
@@ -419,8 +586,8 @@ export default function ProductsPage() {
       label: 'Product',
       render: (value: any) => (
         <div>
-          <div className="text-slate-200">{value?.name || 'Unknown'}</div>
-          <div className="text-xs text-slate-500">{value?.sku || '-'}</div>
+          <div className="text-primary-100">{value?.name || 'Unknown'}</div>
+          <div className="text-xs text-primary-400">{value?.sku || '-'}</div>
         </div>
       ),
     },
@@ -436,14 +603,14 @@ export default function ProductsPage() {
     {
       key: 'quantity_after',
       label: 'Stock After',
-      render: (value: number) => <span className="text-slate-300">{value}</span>
+      render: (value: number) => <span className="text-primary-200">{value}</span>
     },
     {
       key: 'notes',
       label: 'Notes',
       render: (value: string) => value ? (
-        <span className="text-slate-400 text-sm truncate max-w-xs block">{value}</span>
-      ) : <span className="text-slate-500">-</span>
+        <span className="text-primary-400 text-sm truncate max-w-xs block">{value}</span>
+      ) : <span className="text-primary-400">-</span>
     },
   ];
 
@@ -451,8 +618,7 @@ export default function ProductsPage() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="relative">
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-cyan-500 border-t-transparent"></div>
-          <div className="absolute inset-0 animate-ping rounded-full h-16 w-16 border-2 border-cyan-300 opacity-20"></div>
+          <div className={cn(components.spinner, 'h-16 w-16')} />
         </div>
       </div>
     );
@@ -463,16 +629,16 @@ export default function ProductsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl text-slate-100">Products & Inventory</h1>
-          <p className="text-slate-400 mt-1">Manage your products and track stock movements</p>
+          <h1 className="text-3xl text-primary-50">Products & Inventory</h1>
+          <p className="text-primary-400 mt-1">Manage your products and track stock movements</p>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <Select value={displayCurrency} onValueChange={setDisplayCurrency}>
-              <SelectTrigger className="w-[120px] bg-slate-800 border-slate-700 text-slate-100 h-9 text-sm">
+              <SelectTrigger className="w-[120px] bg-primary-700 border-primary-600 text-primary-50 h-9 text-sm">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-slate-900 border-slate-800">
+              <SelectContent className="bg-quotla-dark border-primary-600">
                 {CURRENCIES.map((curr) => (
                   <SelectItem key={curr.code} value={curr.code}>
                     {curr.symbol} {curr.code}
@@ -490,7 +656,7 @@ export default function ProductsPage() {
           {activeTab === 'products' && (
             <Button
               onClick={() => setAddDialogOpen(true)}
-              className="bg-cyan-500 hover:bg-cyan-600 text-white"
+              className="bg-quotla-orange hover:bg-secondary-400 text-white"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Product
@@ -519,97 +685,284 @@ export default function ProductsPage() {
         product={selectedProduct}
       />
 
-      {/* Stats Cards - Clean 3-column design */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Stock Health Card */}
-        <Card className="bg-slate-900 border-slate-800 p-5">
+      {/* Enhanced Product Metrics */}
+
+      {/* Row 1: Stock Health Card (Enhanced) */}
+      <div className="mb-4">
+        <Card className="bg-quotla-dark/90 border-primary-600 p-5">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-cyan-500/10 rounded-xl flex items-center justify-center">
-              <Package className="w-5 h-5 text-cyan-400" />
+            <div className="w-10 h-10 bg-quotla-green/15 rounded-xl flex items-center justify-center">
+              <Package className="w-5 h-5 text-quotla-green" />
             </div>
             <div>
-              <p className="text-xs text-slate-500 uppercase tracking-wider">Stock Health</p>
-              <p className="text-2xl font-bold text-slate-100">{stockHealthPercentage}%</p>
+              <p className="text-xs text-primary-400 uppercase tracking-wider">Stock Health</p>
+              <p className="text-2xl font-bold text-primary-50">
+                {Math.round((stats.inStock / stats.total) * 100)}%
+              </p>
             </div>
           </div>
-          {/* Stock breakdown bar */}
+
+          {/* Visual breakdown bar */}
           <div className="mb-3">
-            <div className="flex h-2 rounded-full overflow-hidden bg-slate-800">
-              <div className="bg-emerald-500 transition-all" style={{ width: `${stats.total > 0 ? (stats.inStock / stats.total) * 100 : 0}%` }} />
-              <div className="bg-amber-500 transition-all" style={{ width: `${stats.total > 0 ? (stats.lowStock / stats.total) * 100 : 0}%` }} />
-              <div className="bg-rose-500 transition-all" style={{ width: `${stats.total > 0 ? (stats.outOfStock / stats.total) * 100 : 0}%` }} />
+            <div className="h-2 bg-primary-700 rounded-full overflow-hidden flex">
+              <div
+                className="bg-emerald-500 transition-all duration-500"
+                style={{ width: `${(stats.inStock / stats.total) * 100}%` }}
+              />
+              <div
+                className="bg-amber-500 transition-all duration-500"
+                style={{ width: `${(stats.lowStock / stats.total) * 100}%` }}
+              />
+              <div
+                className="bg-rose-500 transition-all duration-500"
+                style={{ width: `${(stats.outOfStock / stats.total) * 100}%` }}
+              />
             </div>
           </div>
-          <div className="flex items-center justify-between text-xs text-slate-500">
-            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500"></span>{stats.inStock} OK</span>
-            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500"></span>{stats.lowStock} Low</span>
-            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-rose-500"></span>{stats.outOfStock} Out</span>
+
+          <div className="grid grid-cols-3 gap-2 text-xs">
+            <div className="flex items-center gap-1">
+              <CheckCircle2 className="w-3 h-3 text-emerald-500" />
+              <span className="text-primary-400">In Stock:</span>
+              <span className="font-medium text-primary-200">{stats.inStock}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <AlertTriangle className="w-3 h-3 text-amber-500" />
+              <span className="text-primary-400">Low:</span>
+              <span className="font-medium text-primary-200">{stats.lowStock}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <XCircle className="w-3 h-3 text-rose-500" />
+              <span className="text-primary-400">Out:</span>
+              <span className="font-medium text-primary-200">{stats.outOfStock}</span>
+            </div>
+          </div>
+
+          {/* NEW: Inventory Turnover Rate */}
+          <div className="mt-4 pt-4 border-t border-primary-600">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-primary-400">Inventory Turnover</span>
+              <span className="text-sm font-semibold text-quotla-green">
+                {(stats as any).inventoryTurnover?.toFixed(1) || '0.0'}x
+              </span>
+            </div>
           </div>
         </Card>
+      </div>
 
-        {/* Inventory Value Card */}
-        <Card className="bg-slate-900 border-slate-800 p-5">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center">
-              <TrendingUp className="w-5 h-5 text-emerald-400" />
-            </div>
+      {/* Row 2: Inventory Performance Overview (Full-width) */}
+      <div className="mb-4">
+        <Card className={cn(
+          'p-6 border shadow-lg',
+          'bg-gradient-to-br from-quotla-dark/95 to-primary-800/50',
+          'border-quotla-green/20 hover:border-quotla-green/40 transition-all duration-300',
+          'shadow-quotla-dark/50'
+        )}>
+          {/* Header */}
+          <div className="flex items-start justify-between mb-5">
             <div>
-              <p className="text-xs text-slate-500 uppercase tracking-wider">Inventory Value</p>
-              <p className="text-2xl font-bold text-slate-100">{formatCurrency(stats.totalValue, displayCurrency)}</p>
+              <p className="text-xs font-medium uppercase tracking-wider text-primary-400">Inventory Performance</p>
             </div>
           </div>
-          <div className="flex items-center justify-between pt-3 border-t border-slate-800">
-            <div>
-              <p className="text-xs text-slate-500">Products</p>
-              <p className="text-sm font-medium text-slate-300">{stats.total}</p>
+
+          {/* Metric Pills */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+            {/* Inventory Value Pill */}
+            <div className={cn(
+              'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
+              'bg-primary-700/30 border-quotla-green/20 hover:border-quotla-green/40'
+            )}>
+              <p className="text-xs text-primary-400 mb-1">Inventory Value</p>
+              <div className="flex items-baseline gap-2">
+                <p className="text-lg font-bold text-primary-50">
+                  {formatCurrency(stats.totalValue, displayCurrency)}
+                </p>
+              </div>
             </div>
-            <div className="text-right">
-              <p className="text-xs text-slate-500">Today</p>
-              <p className="text-sm font-medium text-emerald-400">+{stats.stockInToday} / -{stats.stockOutToday}</p>
+
+            {/* Turnover Rate Pill */}
+            <div className={cn(
+              'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
+              'bg-primary-700/30 border-emerald-500/20 hover:border-emerald-500/40'
+            )}>
+              <p className="text-xs text-primary-400 mb-1">Turnover Rate</p>
+              <div className="flex items-baseline gap-2">
+                <p className="text-lg font-bold text-primary-50">
+                  {((stats as any).inventoryTurnover || 0).toFixed(1)}x
+                </p>
+              </div>
+            </div>
+
+            {/* Avg Stock Age Pill */}
+            <div className={cn(
+              'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
+              'bg-primary-700/30 border-amber-500/20 hover:border-amber-500/40'
+            )}>
+              <p className="text-xs text-primary-400 mb-1">Avg Stock Age</p>
+              <div className="flex items-baseline gap-2">
+                <p className="text-lg font-bold text-primary-50">
+                  {(stats as any).avgStockAge || 0} days
+                </p>
+              </div>
+            </div>
+
+            {/* Deadstock Pill */}
+            <div className={cn(
+              'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
+              'bg-primary-700/30 border-rose-500/20 hover:border-rose-500/40'
+            )}>
+              <p className="text-xs text-primary-400 mb-1">Deadstock</p>
+              <div className="flex items-baseline gap-2">
+                <p className="text-lg font-bold text-primary-50">
+                  {(stats as any).deadstockCount || 0}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Stock Movement Trend Chart */}
+          <div className="h-[200px] mt-2">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart data={monthlyStockData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                <XAxis
+                  dataKey="month"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#8a8a66', fontSize: 11 }}
+                />
+                <YAxis
+                  yAxisId="quantity"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#8a8a66', fontSize: 11 }}
+                  label={{ value: 'Units', angle: -90, position: 'insideLeft', style: { fill: '#8a8a66', fontSize: 10 } }}
+                />
+                <YAxis
+                  yAxisId="value"
+                  orientation="right"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#8a8a66', fontSize: 11 }}
+                  tickFormatter={(value) => value >= 1000 ? `${(value/1000).toFixed(0)}k` : value}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#0e1616',
+                    border: '1px solid #445642',
+                    borderRadius: '8px',
+                    fontSize: '12px',
+                    color: '#fffad6'
+                  }}
+                  formatter={(value: number, name: string) => {
+                    if (name === 'inventoryValue') {
+                      return [formatCurrency(value, displayCurrency), 'Inventory Value'];
+                    }
+                    return [value, name === 'stockIn' ? 'Stock In' : 'Stock Out'];
+                  }}
+                />
+                <Bar yAxisId="quantity" dataKey="stockIn" fill="#10b981" name="Stock In" />
+                <Bar yAxisId="quantity" dataKey="stockOut" fill="#ef4444" name="Stock Out" />
+                <Line
+                  yAxisId="value"
+                  type="monotone"
+                  dataKey="inventoryValue"
+                  stroke="#ce6203"
+                  strokeWidth={2}
+                  dot={{ fill: '#ce6203', r: 3 }}
+                  name="Inventory Value"
+                />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Legend */}
+          <div className="flex items-center justify-center gap-6 mt-4">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-emerald-500 rounded" />
+              <span className="text-xs text-primary-300">Stock In</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-rose-500 rounded" />
+              <span className="text-xs text-primary-300">Stock Out</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-0.5 bg-quotla-orange" style={{ width: '16px' }} />
+              <span className="text-xs text-primary-300">Inventory Value</span>
             </div>
           </div>
         </Card>
+      </div>
 
+      {/* Row 3: Product Insights */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         {/* Top Performer Card */}
-        <Card className="bg-slate-900 border-slate-800 p-5">
+        <Card className="bg-quotla-dark/90 border-primary-600 p-5">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center">
               <Trophy className="w-5 h-5 text-amber-400" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs text-slate-500 uppercase tracking-wider">Top Performer</p>
+              <p className="text-xs text-primary-400 uppercase tracking-wider">Top Performer</p>
               {stats.topPerformer ? (
-                <p className="text-lg font-bold text-slate-100 truncate">{stats.topPerformer.name}</p>
+                <p className="text-lg font-bold text-primary-50 truncate">{stats.topPerformer.name}</p>
               ) : (
-                <p className="text-lg font-bold text-slate-500">No sales yet</p>
+                <p className="text-lg font-bold text-primary-400">No sales yet</p>
               )}
             </div>
           </div>
           {stats.topPerformer && (
-            <div className="flex items-center justify-between pt-3 border-t border-slate-800">
+            <div className="flex items-center justify-between pt-3 border-t border-primary-600">
               <div>
-                <p className="text-xs text-slate-500">Profit</p>
+                <p className="text-xs text-primary-400">Profit</p>
                 <p className="text-sm font-semibold text-emerald-400">{formatCurrency(stats.topPerformer.profit, displayCurrency)}</p>
               </div>
               <div className="text-right">
-                <p className="text-xs text-slate-500">Units Sold</p>
-                <p className="text-sm font-medium text-slate-300">{stats.topPerformer.unitsSold}</p>
+                <p className="text-xs text-primary-400">Units Sold</p>
+                <p className="text-sm font-medium text-primary-200">{stats.topPerformer.unitsSold}</p>
               </div>
             </div>
           )}
+        </Card>
+
+        {/* Stock In Today Card */}
+        <Card className="bg-quotla-dark/90 border-primary-600 p-5">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center">
+              <ArrowDown className="w-5 h-5 text-emerald-400" />
+            </div>
+            <div>
+              <p className="text-xs text-primary-400 uppercase tracking-wider">Stock In Today</p>
+              <p className="text-2xl font-bold text-primary-50">{stats.stockInToday}</p>
+            </div>
+          </div>
+          <p className="text-xs text-primary-400">Units received</p>
+        </Card>
+
+        {/* Stock Out Today Card */}
+        <Card className="bg-quotla-dark/90 border-primary-600 p-5">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 bg-rose-500/10 rounded-xl flex items-center justify-center">
+              <ArrowUp className="w-5 h-5 text-rose-400" />
+            </div>
+            <div>
+              <p className="text-xs text-primary-400 uppercase tracking-wider">Stock Out Today</p>
+              <p className="text-2xl font-bold text-primary-50">{stats.stockOutToday}</p>
+            </div>
+          </div>
+          <p className="text-xs text-primary-400">Units sold/removed</p>
         </Card>
       </div>
 
       {/* Low Stock Alert - Only show if there are items needing attention */}
       {stats.lowStock > 0 || stats.outOfStock > 0 ? (
-        <Card className="bg-gradient-to-r from-amber-950/30 to-slate-900/50 border border-amber-500/30 p-4">
+        <Card className="bg-gradient-to-r from-amber-950/30 to-quotla-dark/50 border border-amber-500/30 p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-amber-500/20 rounded-lg flex items-center justify-center shrink-0">
               <AlertTriangle className="w-5 h-5 text-amber-400" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-slate-200">Stock Alert</p>
-              <p className="text-xs text-slate-400">
+              <p className="text-sm font-semibold text-primary-100">Stock Alert</p>
+              <p className="text-xs text-primary-400">
                 {stats.lowStock > 0 && `${stats.lowStock} item${stats.lowStock > 1 ? 's' : ''} running low`}
                 {stats.lowStock > 0 && stats.outOfStock > 0 && ' • '}
                 {stats.outOfStock > 0 && `${stats.outOfStock} item${stats.outOfStock > 1 ? 's' : ''} out of stock`}
@@ -629,12 +982,12 @@ export default function ProductsPage() {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="bg-slate-800 border-slate-700">
-          <TabsTrigger value="products" className="data-[state=active]:bg-slate-700">
+        <TabsList className="bg-primary-700 border-primary-600">
+          <TabsTrigger value="products" className="data-[state=active]:bg-quotla-green/20 data-[state=active]:text-quotla-green">
             <Package className="w-4 h-4 mr-2" />
             Products ({stats.total})
           </TabsTrigger>
-          <TabsTrigger value="movements" className="data-[state=active]:bg-slate-700">
+          <TabsTrigger value="movements" className="data-[state=active]:bg-quotla-green/20 data-[state=active]:text-quotla-green">
             <ArrowLeftRight className="w-4 h-4 mr-2" />
             Stock Movements ({movements.length})
           </TabsTrigger>
@@ -643,11 +996,20 @@ export default function ProductsPage() {
         <TabsContent value="products" className="mt-6">
           <DataTable
             columns={productColumns}
-            data={products}
+            data={filteredProducts}
             searchPlaceholder="Search products..."
             onView={handleView}
             onEdit={handleEdit}
             onDelete={handleDelete}
+            filters={
+              <FilterSelect
+                options={productStatusOptions}
+                value={productStatusFilter}
+                onChange={(v) => setProductStatusFilter(v as ProductStatusFilter)}
+                placeholder="Status"
+                allLabel="All Status"
+              />
+            }
           />
         </TabsContent>
 
@@ -655,14 +1017,23 @@ export default function ProductsPage() {
           {movements.length > 0 ? (
             <DataTable
               columns={movementColumns}
-              data={movements}
+              data={filteredMovements}
               searchPlaceholder="Search movements..."
+              filters={
+                <FilterSelect
+                  options={movementTypeOptions}
+                  value={movementTypeFilter}
+                  onChange={(v) => setMovementTypeFilter(v as MovementTypeFilter)}
+                  placeholder="Type"
+                  allLabel="All Types"
+                />
+              }
             />
           ) : (
-            <div className="bg-slate-900 border border-slate-800 rounded-lg p-12 text-center">
-              <Package className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-              <p className="text-slate-400">No stock movements recorded yet</p>
-              <p className="text-slate-500 text-sm mt-2">
+            <div className="bg-quotla-dark/90 border border-primary-600 rounded-lg p-12 text-center">
+              <Package className="w-12 h-12 text-primary-600 mx-auto mb-4" />
+              <p className="text-primary-400">No stock movements recorded yet</p>
+              <p className="text-primary-400 text-sm mt-2">
                 Stock movements will appear here when inventory changes occur
               </p>
             </div>

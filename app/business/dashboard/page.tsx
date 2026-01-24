@@ -36,7 +36,9 @@ import {
   Tooltip,
   ResponsiveContainer,
   BarChart,
-  Bar
+  Bar,
+  ComposedChart,
+  Line
 } from 'recharts'
 import {
   dashboardColors as colors,
@@ -309,6 +311,19 @@ export default function DashboardPage() {
   // Determine if user needs attention on any critical metrics
   const hasUrgentItems = stats.overdueInvoices > 0 || stats.lowStockCount > 0
 
+  // Calculate month-over-month growth for expenses and profit
+  const lastMonthExpenses = monthlyData[monthlyData.length - 2]?.expenses || 0
+  const currentMonthExpenses = monthlyData[monthlyData.length - 1]?.expenses || 0
+  const expensesGrowth = lastMonthExpenses > 0
+    ? ((currentMonthExpenses - lastMonthExpenses) / lastMonthExpenses) * 100
+    : 0
+
+  const lastMonthProfit = monthlyData[monthlyData.length - 2]?.profit || 0
+  const currentMonthProfit = monthlyData[monthlyData.length - 1]?.profit || 0
+  const profitGrowth = lastMonthProfit > 0
+    ? ((currentMonthProfit - lastMonthProfit) / lastMonthProfit) * 100
+    : 0
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -334,13 +349,6 @@ export default function DashboardPage() {
               {format(new Date(), 'EEEE, MMMM d, yyyy')}
             </p>
           </div>
-          <Button
-            onClick={() => setShowAICreate(true)}
-            className={cn(components.button.primary, 'text-sm h-9')}
-          >
-            <Sparkles className="w-4 h-4 mr-2" />
-            AI Create
-          </Button>
         </header>
 
         {/* ================================================================
@@ -365,7 +373,7 @@ export default function DashboardPage() {
                         <p className="text-sm font-medium text-rose-400">
                           {stats.overdueInvoices} Overdue Invoice{stats.overdueInvoices > 1 ? 's' : ''}
                         </p>
-                        <p className="text-xs text-slate-400">
+                        <p className="text-xs text-primary-400">
                           {formatCurrency(stats.overdueAmount, currency)} outstanding
                         </p>
                       </div>
@@ -392,7 +400,7 @@ export default function DashboardPage() {
                         <p className="text-sm font-medium text-amber-400">
                           {stats.lowStockCount} Low Stock Item{stats.lowStockCount > 1 ? 's' : ''}
                         </p>
-                        <p className="text-xs text-slate-400">
+                        <p className="text-xs text-primary-400">
                           Requires restocking
                         </p>
                       </div>
@@ -412,125 +420,188 @@ export default function DashboardPage() {
         <section aria-labelledby="primary-metrics">
           <h2 id="primary-metrics" className="sr-only">Primary Business Metrics</h2>
 
-          {/* Primary KPI Row - Revenue & Profit */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-            {/* Revenue with Trend Chart */}
+          {/* Primary KPI Row - Financial Overview */}
+          <div className="mb-4">
+            {/* Combined Financial Overview Card */}
             <Card className={cn(
-              'p-5 border lg:col-span-2',
-              colors.bg.primary, colors.border.default
+              'p-6 border shadow-lg',
+              'bg-gradient-to-br from-quotla-dark/95 to-primary-800/50',
+              'border-quotla-green/20 hover:border-quotla-green/40 transition-all duration-300',
+              'shadow-quotla-dark/50'
             )}>
-              <div className="flex items-start justify-between mb-4">
+              {/* Header */}
+              <div className="flex items-start justify-between mb-5">
                 <div>
-                  <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Revenue Trend</p>
-                  <div className="flex items-baseline gap-3 mt-1">
-                    <p className="text-2xl font-bold text-slate-100">
+                  <p className={cn('text-xs font-medium uppercase tracking-wider', colors.text.muted)}>Financial Overview</p>
+                </div>
+                <Link href="/business/sales" className="text-xs text-quotla-orange hover:text-secondary-400 flex items-center gap-1 transition-colors">
+                  View Sales <ChevronRight className="w-3 h-3" />
+                </Link>
+              </div>
+
+              {/* Metric Pills */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                {/* Revenue Pill */}
+                <div className={cn(
+                  'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
+                  'bg-primary-700/30 border-quotla-green/20 hover:border-quotla-green/40'
+                )}>
+                  <p className="text-xs text-primary-400 mb-1">Revenue</p>
+                  <div className="flex items-baseline gap-2">
+                    <p className="text-lg font-bold text-primary-50">
                       {formatCurrency(stats.monthlyRevenue, currency)}
                     </p>
                     {stats.revenueGrowth !== 0 && (
                       <span className={cn(
-                        'flex items-center gap-0.5 text-sm font-medium px-2 py-0.5 rounded-full',
-                        stats.revenueGrowth > 0
-                          ? 'bg-emerald-500/10 text-emerald-400'
-                          : 'bg-rose-500/10 text-rose-400'
+                        'flex items-center gap-0.5 text-xs font-medium',
+                        stats.revenueGrowth > 0 ? 'text-emerald-400' : 'text-rose-400'
                       )}>
                         {stats.revenueGrowth > 0 ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
                         {Math.abs(stats.revenueGrowth).toFixed(1)}%
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-slate-500 mt-1">This month vs last month</p>
                 </div>
-                <Link href="/business/sales" className="text-xs text-cyan-400 hover:text-cyan-300 flex items-center gap-1">
-                  View Sales <ChevronRight className="w-3 h-3" />
-                </Link>
+
+                {/* Expenses Pill */}
+                <div className={cn(
+                  'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
+                  'bg-primary-700/30 border-rose-500/20 hover:border-rose-500/40'
+                )}>
+                  <p className="text-xs text-primary-400 mb-1">Expenses</p>
+                  <div className="flex items-baseline gap-2">
+                    <p className="text-lg font-bold text-primary-50">
+                      {formatCurrency(currentMonthExpenses, currency)}
+                    </p>
+                    {expensesGrowth !== 0 && (
+                      <span className={cn(
+                        'flex items-center gap-0.5 text-xs font-medium',
+                        expensesGrowth > 0 ? 'text-rose-400' : 'text-emerald-400'
+                      )}>
+                        {expensesGrowth > 0 ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+                        {Math.abs(expensesGrowth).toFixed(1)}%
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Profit Pill */}
+                <div className={cn(
+                  'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
+                  'bg-primary-700/30 border-emerald-500/20 hover:border-emerald-500/40'
+                )}>
+                  <p className="text-xs text-primary-400 mb-1">Profit</p>
+                  <div className="flex items-baseline gap-2">
+                    <p className="text-lg font-bold text-primary-50">
+                      {formatCurrency(currentMonthProfit, currency)}
+                    </p>
+                    {profitGrowth !== 0 && (
+                      <span className={cn(
+                        'flex items-center gap-0.5 text-xs font-medium',
+                        profitGrowth > 0 ? 'text-emerald-400' : 'text-rose-400'
+                      )}>
+                        {profitGrowth > 0 ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+                        {Math.abs(profitGrowth).toFixed(1)}%
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Margin Pill */}
+                <div className={cn(
+                  'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
+                  'bg-primary-700/30 border-teal-500/20 hover:border-teal-500/40'
+                )}>
+                  <p className="text-xs text-primary-400 mb-1">Margin</p>
+                  <div className="flex items-baseline gap-2">
+                    <p className="text-lg font-bold text-primary-50">
+                      {stats.profitMargin.toFixed(1)}%
+                    </p>
+                  </div>
+                </div>
               </div>
 
-              {/* Revenue Area Chart */}
-              <div className="h-[140px] mt-2">
+              {/* Combined Multi-Line Chart */}
+              <div className="h-[200px] mt-2">
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={monthlyData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                  <ComposedChart data={monthlyData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                     <defs>
                       <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                        <stop offset="5%" stopColor="#445642" stopOpacity={0.5}/>
+                        <stop offset="95%" stopColor="#445642" stopOpacity={0.05}/>
                       </linearGradient>
                     </defs>
                     <XAxis
                       dataKey="month"
                       axisLine={false}
                       tickLine={false}
-                      tick={{ fill: '#64748b', fontSize: 11 }}
+                      tick={{ fill: '#8a8a66', fontSize: 11 }}
                     />
                     <YAxis
                       axisLine={false}
                       tickLine={false}
-                      tick={{ fill: '#64748b', fontSize: 11 }}
+                      tick={{ fill: '#8a8a66', fontSize: 11 }}
                       tickFormatter={(value) => value >= 1000 ? `${(value/1000).toFixed(0)}k` : value}
                     />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: '#1e293b',
-                        border: '1px solid #334155',
+                        backgroundColor: '#0e1616',
+                        border: '1px solid #445642',
                         borderRadius: '8px',
-                        fontSize: '12px'
+                        fontSize: '12px',
+                        color: '#fffad6'
                       }}
-                      formatter={(value: number) => [formatCurrency(value, currency), 'Revenue']}
+                      formatter={(value: number, name: string) => {
+                        const labels: Record<string, string> = {
+                          revenue: 'Revenue',
+                          expenses: 'Expenses',
+                          profit: 'Profit'
+                        }
+                        return [formatCurrency(value, currency), labels[name] || name]
+                      }}
                     />
+                    {/* Revenue Area */}
                     <Area
                       type="monotone"
                       dataKey="revenue"
-                      stroke="#10b981"
+                      stroke="#445642"
                       strokeWidth={2}
                       fill="url(#revenueGradient)"
                     />
-                  </AreaChart>
+                    {/* Expenses Line (Dashed) */}
+                    <Line
+                      type="monotone"
+                      dataKey="expenses"
+                      stroke="#ef4444"
+                      strokeWidth={2}
+                      strokeDasharray="5 5"
+                      dot={{ fill: '#ef4444', r: 3 }}
+                    />
+                    {/* Profit Line (Solid) */}
+                    <Line
+                      type="monotone"
+                      dataKey="profit"
+                      stroke="#10b981"
+                      strokeWidth={2}
+                      dot={{ fill: '#10b981', r: 3 }}
+                    />
+                  </ComposedChart>
                 </ResponsiveContainer>
               </div>
-            </Card>
 
-            {/* Profit Margin & Gross Profit */}
-            <Card className={cn(
-              'p-5 border',
-              colors.bg.primary, colors.border.default
-            )}>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-teal-500/10 rounded-xl flex items-center justify-center">
-                  <Target className="w-5 h-5 text-teal-400" />
+              {/* Legend */}
+              <div className="flex items-center justify-center gap-6 mt-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-quotla-green/50 rounded-full" />
+                  <span className="text-xs text-primary-300">Revenue</span>
                 </div>
-                <div>
-                  <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Profit Margin</p>
-                  <p className="text-2xl font-bold text-slate-100">{stats.profitMargin.toFixed(1)}%</p>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-0.5 bg-rose-500" style={{ width: '16px' }} />
+                  <span className="text-xs text-primary-300">Expenses</span>
                 </div>
-              </div>
-
-              {/* Visual margin indicator */}
-              <div className="mb-4">
-                <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-teal-500 to-emerald-400 rounded-full transition-all duration-500"
-                    style={{ width: `${Math.min(stats.profitMargin, 100)}%` }}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-slate-500">Gross Profit</span>
-                  <span className="text-sm font-semibold text-emerald-400">
-                    {formatCurrency(stats.grossProfit, currency)}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-slate-500">Total Revenue</span>
-                  <span className="text-sm font-medium text-slate-300">
-                    {formatCurrency(stats.totalRevenue, currency)}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-slate-500">Avg/Customer</span>
-                  <span className="text-sm font-medium text-slate-300">
-                    {formatCurrency(stats.avgRevenuePerCustomer, currency)}
-                  </span>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-0.5 bg-emerald-500" style={{ width: '16px' }} />
+                  <span className="text-xs text-primary-300">Profit</span>
                 </div>
               </div>
             </Card>
@@ -545,15 +616,15 @@ export default function DashboardPage() {
                 colors.bg.primary, colors.border.default
               )}>
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 bg-cyan-500/10 rounded-lg flex items-center justify-center">
-                    <FileText className="w-4 h-4 text-cyan-400" />
+                  <div className="w-9 h-9 bg-quotla-orange/10 rounded-lg flex items-center justify-center">
+                    <FileText className="w-4 h-4 text-quotla-orange" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs text-slate-500">Pending</p>
-                    <p className="text-lg font-semibold text-slate-100">{stats.pendingInvoices}</p>
+                    <p className="text-xs text-primary-400">Pending</p>
+                    <p className="text-lg font-semibold text-primary-50">{stats.pendingInvoices}</p>
                   </div>
                 </div>
-                <p className="text-xs text-slate-500 mt-2 truncate">
+                <p className="text-xs text-primary-400 mt-2 truncate">
                   {formatCurrency(stats.pendingAmount, currency)} awaiting
                 </p>
               </Card>
@@ -570,13 +641,13 @@ export default function DashboardPage() {
                     <Wallet className="w-4 h-4 text-amber-400" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs text-slate-500">Outstanding</p>
-                    <p className="text-lg font-semibold text-slate-100">
+                    <p className="text-xs text-primary-400">Outstanding</p>
+                    <p className="text-lg font-semibold text-primary-50">
                       {formatCurrency(stats.pendingAmount + stats.overdueAmount, currency)}
                     </p>
                   </div>
                 </div>
-                <p className="text-xs text-slate-500 mt-2">
+                <p className="text-xs text-primary-400 mt-2">
                   Accounts receivable
                 </p>
               </Card>
@@ -589,18 +660,18 @@ export default function DashboardPage() {
                 colors.bg.primary, colors.border.default
               )}>
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 bg-purple-500/10 rounded-lg flex items-center justify-center">
-                    <Users className="w-4 h-4 text-purple-400" />
+                  <div className="w-9 h-9 bg-quotla-green/15 rounded-lg flex items-center justify-center">
+                    <Users className="w-4 h-4 text-quotla-green" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs text-slate-500">Customers</p>
-                    <p className="text-lg font-semibold text-slate-100">{stats.totalCustomers}</p>
+                    <p className="text-xs text-primary-400">Customers</p>
+                    <p className="text-lg font-semibold text-primary-50">{stats.totalCustomers}</p>
                   </div>
                 </div>
                 {stats.newCustomersThisMonth > 0 ? (
                   <p className="text-xs text-emerald-400 mt-2">+{stats.newCustomersThisMonth} this month</p>
                 ) : (
-                  <p className="text-xs text-slate-500 mt-2">Active accounts</p>
+                  <p className="text-xs text-primary-400 mt-2">Active accounts</p>
                 )}
               </Card>
             </Link>
@@ -612,17 +683,17 @@ export default function DashboardPage() {
                 colors.bg.primary, colors.border.default
               )}>
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 bg-violet-500/10 rounded-lg flex items-center justify-center">
-                    <Package className="w-4 h-4 text-violet-400" />
+                  <div className="w-9 h-9 bg-quotla-green/15 rounded-lg flex items-center justify-center">
+                    <Package className="w-4 h-4 text-quotla-green" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs text-slate-500">Inventory</p>
-                    <p className="text-lg font-semibold text-slate-100">
+                    <p className="text-xs text-primary-400">Inventory</p>
+                    <p className="text-lg font-semibold text-primary-50">
                       {formatCurrency(stats.inventoryValue, currency)}
                     </p>
                   </div>
                 </div>
-                <p className="text-xs text-slate-500 mt-2">{stats.totalProducts} products</p>
+                <p className="text-xs text-primary-400 mt-2">{stats.totalProducts} products</p>
               </Card>
             </Link>
           </div>
@@ -645,10 +716,10 @@ export default function DashboardPage() {
                   <Card className={cn(
                     'p-3 border transition-all cursor-pointer group text-center',
                     colors.bg.primary, colors.border.default,
-                    'hover:border-cyan-500/30 hover:bg-cyan-500/5'
+                    'hover:border-quotla-orange/30 hover:bg-quotla-orange/5'
                   )}>
-                    <FileText className="w-5 h-5 text-cyan-400 mx-auto mb-2" />
-                    <span className="text-sm font-medium text-slate-200">New Invoice</span>
+                    <FileText className="w-5 h-5 text-quotla-orange mx-auto mb-2" />
+                    <span className="text-sm font-medium text-primary-100">New Invoice</span>
                   </Card>
                 </Link>
 
@@ -656,10 +727,10 @@ export default function DashboardPage() {
                   <Card className={cn(
                     'p-3 border transition-all cursor-pointer group text-center',
                     colors.bg.primary, colors.border.default,
-                    'hover:border-purple-500/30 hover:bg-purple-500/5'
+                    'hover:border-quotla-green/30 hover:bg-quotla-green/5'
                   )}>
-                    <Users className="w-5 h-5 text-purple-400 mx-auto mb-2" />
-                    <span className="text-sm font-medium text-slate-200">Add Customer</span>
+                    <Users className="w-5 h-5 text-quotla-green mx-auto mb-2" />
+                    <span className="text-sm font-medium text-primary-100">Add Customer</span>
                   </Card>
                 </Link>
 
@@ -667,20 +738,31 @@ export default function DashboardPage() {
                   <Card className={cn(
                     'p-3 border transition-all cursor-pointer group text-center',
                     colors.bg.primary, colors.border.default,
-                    'hover:border-green-500/30 hover:bg-green-500/5'
+                    'hover:border-quotla-green/30 hover:bg-quotla-green/5'
                   )}>
-                    <Package className="w-5 h-5 text-green-400 mx-auto mb-2" />
-                    <span className="text-sm font-medium text-slate-200">Add Product</span>
+                    <Package className="w-5 h-5 text-quotla-green mx-auto mb-2" />
+                    <span className="text-sm font-medium text-primary-100">Add Product</span>
                   </Card>
                 </Link>
               </div>
             </section>
 
+            {/* AI Create Button */}
+            <div className="flex justify-center">
+              <Button
+                onClick={() => setShowAICreate(true)}
+                className={cn(components.button.primary, 'text-sm h-9 w-full max-w-xs')}
+              >
+                <Sparkles className="w-4 h-4 mr-2" />
+                AI Create
+              </Button>
+            </div>
+
             {/* Activity Feed - Primary information flow */}
             <Card className={components.card.base}>
               <div className="flex items-center justify-between mb-4">
                 <h2 className={components.heading.card}>Recent Activity</h2>
-                <span className="text-xs text-slate-500">Last 7 days</span>
+                <span className="text-xs text-primary-400">Last 7 days</span>
               </div>
               <ActivityFeed />
             </Card>
@@ -715,8 +797,8 @@ export default function DashboardPage() {
                       )}
                     >
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium text-slate-200 truncate">{item.name}</p>
-                        <p className="text-xs text-slate-500">{item.sku || 'No SKU'}</p>
+                        <p className="text-sm font-medium text-primary-100 truncate">{item.name}</p>
+                        <p className="text-xs text-primary-400">{item.sku || 'No SKU'}</p>
                       </div>
                       <div className="text-right ml-4">
                         <p className={cn(
@@ -725,7 +807,7 @@ export default function DashboardPage() {
                         )}>
                           {item.quantity_on_hand} left
                         </p>
-                        <p className="text-xs text-slate-500">Threshold: {item.low_stock_threshold}</p>
+                        <p className="text-xs text-primary-400">Threshold: {item.low_stock_threshold}</p>
                       </div>
                     </div>
                   ))}
