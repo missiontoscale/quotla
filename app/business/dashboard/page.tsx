@@ -426,9 +426,9 @@ function DashboardContent() {
     <>
       <div className={cn(spacing.page, 'max-w-[1400px] mx-auto')}>
         {/* ================================================================
-            HEADER - Clear context with greeting
+            HEADER - Clear context with greeting (desktop only, mobile greeting in TopBar)
         ================================================================ */}
-        <header>
+        <header className="hidden md:block">
           <h1 className={components.heading.page}>
             {greeting}{profile?.company_name ? `, ${profile.company_name}` : ''}
           </h1>
@@ -520,53 +520,93 @@ function DashboardContent() {
               </Link>
             </div>
 
-            {/* First Row: Revenue + Profit/Expenses */}
-            {/* Mobile: Single card containing all three metrics */}
-            {/* Desktop: Two-column layout with separate styled divs */}
-            <div className="mb-4">
-              {/* Mobile Layout - Single Card */}
-              <div className={cn(
-                'md:hidden p-4 rounded-xl border backdrop-blur-sm',
-                'bg-primary-700/30 border-quotla-green/20'
-              )}>
-                <LargeAVITPFMetric
-                  label="Revenue"
-                  value={stats.monthlyRevenue}
-                  change={stats.revenueGrowth}
-                  currency={currency}
-                  colorScheme="green"
-                />
-                <div className="grid grid-cols-2 gap-3 mt-4">
-                  <div className={cn(
-                    'p-3 rounded-lg border backdrop-blur-sm',
-                    'bg-primary-800/30 border-emerald-500/20'
-                  )}>
-                    <CompactAVITPFMetric
-                      label="Profit"
-                      value={currentMonthProfit}
-                      change={profitGrowth}
-                      currency={currency}
-                      colorScheme="emerald"
-                    />
-                  </div>
-                  <div className={cn(
-                    'p-3 rounded-lg border backdrop-blur-sm',
-                    'bg-primary-800/30 border-rose-500/20'
-                  )}>
-                    <CompactAVITPFMetric
-                      label="Expenses"
-                      value={currentMonthExpenses}
-                      change={expensesGrowth}
-                      currency={currency}
-                      colorScheme="rose"
-                      invertColors
-                    />
-                  </div>
+            {/* Mobile Layout - True 2-column grid */}
+            <div className="md:hidden grid grid-cols-2 gap-3 mb-6">
+              {/* Left Column - Revenue, Profit, Expenses */}
+              <div className="space-y-3">
+                <div className={cn(
+                  'p-3 rounded-lg border backdrop-blur-sm',
+                  'bg-primary-700/30 border-quotla-green/20'
+                )}>
+                  <CompactAVITPFMetric
+                    label="Revenue"
+                    value={stats.monthlyRevenue}
+                    change={stats.revenueGrowth}
+                    currency={currency}
+                    colorScheme="green"
+                  />
+                </div>
+                <div className={cn(
+                  'p-3 rounded-lg border backdrop-blur-sm',
+                  'bg-primary-700/30 border-emerald-500/20'
+                )}>
+                  <CompactAVITPFMetric
+                    label="Profit"
+                    value={currentMonthProfit}
+                    change={profitGrowth}
+                    currency={currency}
+                    colorScheme="emerald"
+                  />
+                </div>
+                <div className={cn(
+                  'p-3 rounded-lg border backdrop-blur-sm',
+                  'bg-primary-700/30 border-rose-500/20'
+                )}>
+                  <CompactAVITPFMetric
+                    label="Expenses"
+                    value={currentMonthExpenses}
+                    change={expensesGrowth}
+                    currency={currency}
+                    colorScheme="rose"
+                    invertColors
+                  />
                 </div>
               </div>
 
-              {/* Desktop Layout - Two Columns */}
-              <div className="hidden md:grid md:grid-cols-2 gap-4">
+              {/* Right Column - Sales, Customers, Stock */}
+              <div className="space-y-3">
+                <div className={cn(
+                  'p-3 rounded-lg border backdrop-blur-sm',
+                  'bg-primary-700/30 border-quotla-orange/20'
+                )}>
+                  <CompactAVITPFMetric
+                    label="Sales"
+                    value={stats.salesCount}
+                    change={stats.salesCount - stats.lastMonthSalesCount}
+                    isInteger
+                    colorScheme="orange"
+                  />
+                </div>
+                <div className={cn(
+                  'p-3 rounded-lg border backdrop-blur-sm',
+                  'bg-primary-700/30 border-teal-500/20'
+                )}>
+                  <CompactAVITPFMetric
+                    label="Customers"
+                    value={stats.totalCustomers}
+                    change={stats.newCustomersThisMonth - stats.lastMonthCustomers}
+                    isInteger
+                    colorScheme="teal"
+                  />
+                </div>
+                <div className={cn(
+                  'p-3 rounded-lg border backdrop-blur-sm',
+                  'bg-primary-700/30 border-emerald-500/20'
+                )}>
+                  <CompactAVITPFMetric
+                    label="Stock"
+                    value={stats.stockQuantity}
+                    change={stats.stockQuantity - stats.lastMonthStockQuantity}
+                    isInteger
+                    colorScheme="emerald"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Desktop Layout - First Row: Revenue + Profit/Expenses */}
+            <div className="hidden md:block mb-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div className={cn(
                   'p-4 rounded-xl border backdrop-blur-sm',
                   'bg-primary-700/30 border-quotla-green/20'
@@ -609,52 +649,9 @@ function DashboardContent() {
               </div>
             </div>
 
-            {/* Second Row: Sales + Customers/Stock */}
-            {/* Mobile: Single card containing all three metrics */}
-            {/* Desktop: Two-column layout with separate styled divs */}
-            <div className="mb-6">
-              {/* Mobile Layout - Single Card */}
-              <div className={cn(
-                'md:hidden p-4 rounded-xl border backdrop-blur-sm',
-                'bg-primary-700/30 border-quotla-orange/20'
-              )}>
-                <LargeAVITPFMetric
-                  label="Sales"
-                  value={stats.salesCount}
-                  change={stats.salesCount - stats.lastMonthSalesCount}
-                  isInteger
-                  colorScheme="orange"
-                />
-                <div className="grid grid-cols-2 gap-3 mt-4">
-                  <div className={cn(
-                    'p-3 rounded-lg border backdrop-blur-sm',
-                    'bg-primary-800/30 border-teal-500/20'
-                  )}>
-                    <CompactAVITPFMetric
-                      label="Customers"
-                      value={stats.totalCustomers}
-                      change={stats.newCustomersThisMonth - stats.lastMonthCustomers}
-                      isInteger
-                      colorScheme="teal"
-                    />
-                  </div>
-                  <div className={cn(
-                    'p-3 rounded-lg border backdrop-blur-sm',
-                    'bg-primary-800/30 border-emerald-500/20'
-                  )}>
-                    <CompactAVITPFMetric
-                      label="Stock"
-                      value={stats.stockQuantity}
-                      change={stats.stockQuantity - stats.lastMonthStockQuantity}
-                      isInteger
-                      colorScheme="emerald"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Desktop Layout - Two Columns */}
-              <div className="hidden md:grid md:grid-cols-2 gap-4">
+            {/* Desktop Layout - Second Row: Sales + Customers/Stock */}
+            <div className="hidden md:block mb-6">
+              <div className="grid grid-cols-2 gap-4">
                 <div className={cn(
                   'p-4 rounded-xl border backdrop-blur-sm',
                   'bg-primary-700/30 border-quotla-orange/20'
