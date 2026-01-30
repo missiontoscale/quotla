@@ -16,10 +16,13 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
 import { NotificationCenter } from '../notifications/NotificationCenter';
+import { useGreeting } from '@/hooks/useGreeting';
+import { format } from 'date-fns';
 
 export function TopBar() {
   const { user } = useAuth();
   const router = useRouter();
+  const greeting = useGreeting();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -30,7 +33,23 @@ export function TopBar() {
 
   return (
     <header className="h-14 flex-shrink-0 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-4 sm:px-6 overflow-hidden">
-      <div className="flex items-center gap-3 flex-1 max-w-2xl">
+      {/* Mobile Header: Avatar + Greeting + Date */}
+      <div className="flex md:hidden items-center gap-2.5">
+        <div className="w-8 h-8 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+          <User className="w-4 h-4 text-white" />
+        </div>
+        <div className="flex flex-col">
+          <span className="text-[0.72rem] text-slate-100 font-medium capitalize">
+            {greeting}, {userName}
+          </span>
+          <span className="text-[0.65rem] text-slate-400">
+            {format(new Date(), 'EEE, MMM d')}
+          </span>
+        </div>
+      </div>
+
+      {/* Desktop Search - Hidden on mobile */}
+      <div className="hidden md:flex items-center gap-3 flex-1 max-w-2xl">
         <div className="relative flex-1">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
           <Input
