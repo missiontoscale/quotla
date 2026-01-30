@@ -12,7 +12,7 @@ interface GoogleSignInButtonProps {
 
 export default function GoogleSignInButton({
   mode = 'signin',
-  redirectTo = '/dashboard',
+  redirectTo = '/business/dashboard',
   className
 }: GoogleSignInButtonProps) {
   const [isLoading, setIsLoading] = useState(false)

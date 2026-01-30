@@ -10,6 +10,15 @@ export type BlogPost = Database['public']['Tables']['blog_posts']['Row']
 export type BlogComment = Database['public']['Tables']['blog_comments']['Row']
 export type NewsletterSubscriber = Database['public']['Tables']['newsletter_subscribers']['Row']
 
+// Stripe/Billing types
+export type StripeCustomer = Database['public']['Tables']['stripe_customers']['Row']
+export type StripeSubscription = Database['public']['Tables']['stripe_subscriptions']['Row']
+export type StripePaymentIntent = Database['public']['Tables']['stripe_payment_intents']['Row']
+export type StripeInvoice = Database['public']['Tables']['stripe_invoices']['Row']
+export type CancellationSurvey = Database['public']['Tables']['cancellation_surveys']['Row']
+
+export type SubscriptionStatus = StripeSubscription['status']
+
 export interface QuoteWithItems extends Quote {
   items: QuoteItem[]
   customer?: Customer | null

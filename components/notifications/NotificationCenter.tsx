@@ -316,19 +316,6 @@ export function NotificationCenter() {
           )}
         </ScrollArea>
 
-        {/* Footer */}
-        {notifications.length > 0 && (
-          <div className="px-4 py-2.5 border-t border-slate-800 bg-slate-800/30">
-            <Link
-              href="/notifications"
-              className="text-[0.75rem] text-quotla-orange hover:text-orange-400 font-medium flex items-center justify-center gap-1 transition-colors"
-              onClick={() => setOpen(false)}
-            >
-              View all notifications
-              <ExternalLink className="w-3 h-3" />
-            </Link>
-          </div>
-        )}
       </DropdownMenuContent>
     </DropdownMenu>
   )

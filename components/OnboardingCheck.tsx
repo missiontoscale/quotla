@@ -18,7 +18,7 @@ export default function OnboardingCheck({ children }: { children: React.ReactNod
   const [onboardingComplete, setOnboardingComplete] = useState(false)
 
   // Paths that should skip onboarding check
-  const skipPaths = ['/onboarding', '/auth', '/settings', '/']
+  const skipPaths = ['/onboarding', '/auth', '/business/settings', '/']
 
   useEffect(() => {
     const checkOnboarding = async () => {

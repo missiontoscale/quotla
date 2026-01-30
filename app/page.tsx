@@ -353,7 +353,7 @@ export default function HomePage() {
         </section>
 
         {/* Story Section 2: The Solution - Smooth color transition - CENTERED */}
-        <section className="relative py-32 bg-gradient-to-b from-quotla-light via-quotla-green/10 to-quotla-dark overflow-hidden">
+        <section id="solutions" className="relative py-32 bg-gradient-to-b from-quotla-light via-quotla-green/10 to-quotla-dark overflow-hidden">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-20">
               <div className="inline-block px-6 py-2 bg-quotla-orange/20 backdrop-blur-sm rounded-full mb-6 border border-quotla-orange/30">
@@ -415,7 +415,7 @@ export default function HomePage() {
         </section>
 
         {/* Story Section 3: Features - Bold showcase - FULL WIDTH */}
-        <section className="relative py-32 bg-quotla-dark overflow-hidden">
+        <section id="features" className="relative py-32 bg-quotla-dark overflow-hidden">
           {/* Animated background elements */}
           <div className="absolute inset-0">
             <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-quotla-orange/10 rounded-full blur-[150px] animate-morph"></div>

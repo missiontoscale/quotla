@@ -30,6 +30,7 @@ export interface SubscriptionPlan {
   id: string
   name: string
   priceUSD: number
+  stripePriceId?: string
   popular?: boolean
   features: string[]
   cta: string
@@ -38,31 +39,83 @@ export interface SubscriptionPlan {
     quotes: number
     invoices: number
   }
+  tier: 'free' | 'starter' | 'essentials' | 'pro'
+  analytics: {
+    basicAnalytics: boolean
+    yoyComparisons: boolean
+    forecasting: boolean
+    anomalyDetection: boolean
+  }
 }
+
+export type PlanTier = SubscriptionPlan['tier']
+
+// Stripe Price IDs - Replace with your actual Stripe Price IDs
+export const STRIPE_PRICE_IDS = {
+  starter: process.env.NEXT_PUBLIC_STRIPE_STARTER_PRICE_ID || 'price_starter',
+  essentials: process.env.NEXT_PUBLIC_STRIPE_ESSENTIALS_PRICE_ID || 'price_essentials',
+  pro: process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID || 'price_pro',
+} as const
 
 export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   {
     id: 'free',
     name: 'Free',
     priceUSD: 0,
+    tier: 'free',
     features: [
       '3 AI-generated quotes per month',
-      '10 manual quotes',
-      '5 manual invoices',
+      '5 manual quotes',
+      '3 manual invoices',
       'Basic templates',
       'Email support',
     ],
     cta: 'Get Started',
     limits: {
       aiQuotes: 3,
-      quotes: 10,
-      invoices: 5,
+      quotes: 5,
+      invoices: 3,
+    },
+    analytics: {
+      basicAnalytics: true,
+      yoyComparisons: false,
+      forecasting: false,
+      anomalyDetection: false,
     },
   },
   {
-    id: 'professional',
-    name: 'Professional',
-    priceUSD: 19,
+    id: 'starter',
+    name: 'Starter',
+    priceUSD: 1,
+    stripePriceId: STRIPE_PRICE_IDS.starter,
+    tier: 'starter',
+    features: [
+      '10 AI-generated quotes per month',
+      '25 manual quotes',
+      '15 manual invoices',
+      'Basic templates',
+      'Email support',
+      'Basic analytics',
+    ],
+    cta: 'Start for $1',
+    limits: {
+      aiQuotes: 10,
+      quotes: 25,
+      invoices: 15,
+    },
+    analytics: {
+      basicAnalytics: true,
+      yoyComparisons: false,
+      forecasting: false,
+      anomalyDetection: false,
+    },
+  },
+  {
+    id: 'essentials',
+    name: 'Essentials',
+    priceUSD: 5,
+    stripePriceId: STRIPE_PRICE_IDS.essentials,
+    tier: 'essentials',
     popular: true,
     features: [
       '50 AI-generated quotes per month',
@@ -71,18 +124,28 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
       'Premium templates',
       'Priority support',
       'Custom branding',
+      'Basic analytics',
+      'Year-over-year comparisons',
     ],
-    cta: 'Upgrade to Professional',
+    cta: 'Get Essentials',
     limits: {
       aiQuotes: 50,
       quotes: Infinity,
       invoices: Infinity,
     },
+    analytics: {
+      basicAnalytics: true,
+      yoyComparisons: true,
+      forecasting: false,
+      anomalyDetection: false,
+    },
   },
   {
-    id: 'business',
-    name: 'Business',
-    priceUSD: 49,
+    id: 'pro',
+    name: 'Pro',
+    priceUSD: 19,
+    stripePriceId: STRIPE_PRICE_IDS.pro,
+    tier: 'pro',
     features: [
       'Unlimited AI-generated quotes',
       'Unlimited manual quotes',
@@ -90,17 +153,47 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
       'All premium templates',
       '24/7 priority support',
       'Custom branding',
-      'Team collaboration',
       'Advanced analytics',
+      'Year-over-year comparisons',
+      'Sales forecasting',
+      'Anomaly detection & alerts',
     ],
-    cta: 'Upgrade to Business',
+    cta: 'Go Pro',
     limits: {
       aiQuotes: Infinity,
       quotes: Infinity,
       invoices: Infinity,
     },
+    analytics: {
+      basicAnalytics: true,
+      yoyComparisons: true,
+      forecasting: true,
+      anomalyDetection: true,
+    },
   },
 ]
+
+export function getPlanById(planId: string): SubscriptionPlan | undefined {
+  return SUBSCRIPTION_PLANS.find((p) => p.id === planId)
+}
+
+export function getPlanByTier(tier: PlanTier): SubscriptionPlan | undefined {
+  return SUBSCRIPTION_PLANS.find((p) => p.tier === tier)
+}
+
+export function canAccessFeature(
+  planId: string,
+  feature: keyof SubscriptionPlan['analytics']
+): boolean {
+  const plan = getPlanById(planId)
+  return plan?.analytics[feature] ?? false
+}
+
+export function getUpgradePlans(currentPlanId: string): SubscriptionPlan[] {
+  const currentPlan = getPlanById(currentPlanId)
+  if (!currentPlan) return SUBSCRIPTION_PLANS.filter((p) => p.id !== 'free')
+  return SUBSCRIPTION_PLANS.filter((p) => p.priceUSD > currentPlan.priceUSD)
+}
 
 export function getRemainingQuota(
   planId: string,

@@ -23,17 +23,9 @@ export const ROUTES = {
 
   // Protected pages
   DASHBOARD: '/business/dashboard',
-  SETTINGS: '/settings',
+  SETTINGS: '/business/settings',
   ADMIN: '/admin',
   ADVISOR: '/advisor',
-
-  // Deals
-  DEALS: {
-    LIST: '/business/dashboard/deals',
-    NEW: '/business/dashboard/deals/new',
-    VIEW: (id: string) => `/business/dashboard/deals/${id}`,
-    EDIT: (id: string) => `/business/dashboard/deals/${id}/edit`,
-  },
 
   // Quotes
   QUOTES: {
@@ -58,7 +50,6 @@ export const ROUTES = {
     EXPENSES: '/business/expenses',
     PRODUCTS: '/business/products',
     STOCK_MOVEMENTS: '/business/stock-movements',
-    ADMIN: '/business/admin',
   },
 
   // Legal & Info

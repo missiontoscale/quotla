@@ -65,7 +65,7 @@ export function OnboardingProgress() {
           title: 'Set up your business',
           description: 'Add your company name and address',
           completed: hasCompanyName && hasAddress,
-          link: '/settings',
+          link: '/business/settings',
           icon: Building2
         },
         {

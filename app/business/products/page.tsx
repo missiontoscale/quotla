@@ -11,8 +11,6 @@ import {
   RefreshCw,
   Package,
   AlertTriangle,
-  TrendingDown,
-  TrendingUp,
   ArrowDown,
   ArrowUp,
   ArrowLeftRight,
@@ -20,12 +18,13 @@ import {
   Undo,
   CheckCircle2,
   XCircle,
-  Trophy,
-  Activity,
-  Zap,
-  Archive
+  Trophy
 } from 'lucide-react';
+import { AVITPFMetric, LargeAVITPFMetric, CompactAVITPFMetric } from '@/components/analytics';
 import { format, subMonths, startOfMonth, endOfMonth, eachMonthOfInterval, differenceInDays } from 'date-fns';
+import { DateFilterProvider } from '@/contexts/DateFilterContext';
+import { useDateFilter } from '@/hooks/useDateFilter';
+import { PageDateFilter } from '@/components/filters';
 import {
   ComposedChart,
   Bar,
@@ -62,8 +61,17 @@ type ProductStatusFilter = 'all' | 'in-stock' | 'low-stock' | 'out-of-stock';
 type MovementTypeFilter = 'all' | 'purchase' | 'sale' | 'adjustment' | 'return' | 'damage' | 'transfer';
 
 export default function ProductsPage() {
+  return (
+    <DateFilterProvider>
+      <ProductsContent />
+    </DateFilterProvider>
+  )
+}
+
+function ProductsContent() {
   const { user } = useAuth();
   const { displayCurrency, setDisplayCurrency, isConverted } = useDisplayCurrency();
+  const { dateRange, isFilterActive, filterArrayByDate, formattedDateRange } = useDateFilter();
   const [activeTab, setActiveTab] = useState('products');
 
   // Filter states
@@ -115,7 +123,7 @@ export default function ProductsPage() {
       fetchStockMovements();
       fetchTopPerformer();
     }
-  }, [user]);
+  }, [user, dateRange]);
 
   const fetchProducts = async () => {
     if (!user?.id) {
@@ -178,7 +186,12 @@ export default function ProductsPage() {
 
       if (error) throw error;
 
-      const stockMovements = (data || []) as StockMovement[];
+      // Apply date filter to stock movements if active
+      const filteredMovements = isFilterActive
+        ? filterArrayByDate(data || [], (m: any) => m.created_at)
+        : data || [];
+
+      const stockMovements = filteredMovements as StockMovement[];
       setMovements(stockMovements);
 
       // Calculate today's stats
@@ -630,9 +643,12 @@ export default function ProductsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl text-primary-50">Products & Inventory</h1>
-          <p className="text-primary-400 mt-1">Manage your products and track stock movements</p>
+          <p className="text-primary-400 mt-1">
+            {isFilterActive ? formattedDateRange : 'Manage your products and track stock movements'}
+          </p>
         </div>
         <div className="flex items-center gap-3">
+          <PageDateFilter />
           <div className="flex items-center gap-2">
             <Select value={displayCurrency} onValueChange={setDisplayCurrency}>
               <SelectTrigger className="w-[120px] bg-primary-700 border-primary-600 text-primary-50 h-9 text-sm">
@@ -765,57 +781,97 @@ export default function ProductsPage() {
             </div>
           </div>
 
-          {/* Metric Pills */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-            {/* Inventory Value Pill */}
+          {/* AVITPF Metric Layout - First Row: Inventory Value (large) + Turnover/Stock Age (stacked) */}
+          <div className="flex flex-col md:flex-row gap-4 mb-6">
+            {/* Inventory Value - Large */}
             <div className={cn(
-              'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
+              'flex-1 p-4 rounded-xl border backdrop-blur-sm transition-all duration-200',
               'bg-primary-700/30 border-quotla-green/20 hover:border-quotla-green/40'
             )}>
-              <p className="text-xs text-primary-400 mb-1">Inventory Value</p>
-              <div className="flex items-baseline gap-2">
-                <p className="text-lg font-bold text-primary-50">
-                  {formatCurrency(stats.totalValue, displayCurrency)}
-                </p>
+              <LargeAVITPFMetric
+                label="Inventory Value"
+                value={stats.totalValue}
+                change={null}
+                currency={displayCurrency}
+                colorScheme="green"
+              />
+            </div>
+
+            {/* Turnover + Stock Age - Stacked */}
+            <div className="flex flex-col gap-3">
+              <div className={cn(
+                'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
+                'bg-primary-700/30 border-emerald-500/20 hover:border-emerald-500/40'
+              )}>
+                <CompactAVITPFMetric
+                  label="Turnover Rate"
+                  value={Number(((stats as any).inventoryTurnover || 0).toFixed(1))}
+                  change={null}
+                  isInteger
+                  colorScheme="emerald"
+                  className="[&>div>span:first-child]:after:content-['x']"
+                />
+              </div>
+              <div className={cn(
+                'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
+                'bg-primary-700/30 border-amber-500/20 hover:border-amber-500/40'
+              )}>
+                <CompactAVITPFMetric
+                  label="Avg Stock Age"
+                  value={(stats as any).avgStockAge || 0}
+                  change={null}
+                  isInteger
+                  colorScheme="orange"
+                  className="[&>div>span:first-child]:after:content-['_days']"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Second Row: Total Stock (large) + Stock In/Out (stacked) */}
+          <div className="flex flex-col md:flex-row gap-4 mb-6">
+            {/* Total Stock - Large */}
+            <div className={cn(
+              'flex-1 p-4 rounded-xl border backdrop-blur-sm transition-all duration-200',
+              'bg-primary-700/30 border-quotla-orange/20 hover:border-quotla-orange/40'
+            )}>
+              <LargeAVITPFMetric
+                label="Total Products"
+                value={stats.total}
+                change={null}
+                isInteger
+                colorScheme="orange"
+              />
+              <div className="mt-2 text-xs text-primary-400">
+                {stats.inStock} in stock • {stats.lowStock} low • {stats.outOfStock} out
               </div>
             </div>
 
-            {/* Turnover Rate Pill */}
-            <div className={cn(
-              'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
-              'bg-primary-700/30 border-emerald-500/20 hover:border-emerald-500/40'
-            )}>
-              <p className="text-xs text-primary-400 mb-1">Turnover Rate</p>
-              <div className="flex items-baseline gap-2">
-                <p className="text-lg font-bold text-primary-50">
-                  {((stats as any).inventoryTurnover || 0).toFixed(1)}x
-                </p>
+            {/* Stock In/Out + Deadstock - Stacked */}
+            <div className="flex flex-col gap-3">
+              <div className={cn(
+                'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
+                'bg-primary-700/30 border-emerald-500/20 hover:border-emerald-500/40'
+              )}>
+                <CompactAVITPFMetric
+                  label="Stock In Today"
+                  value={stats.stockInToday}
+                  change={null}
+                  isInteger
+                  colorScheme="emerald"
+                />
               </div>
-            </div>
-
-            {/* Avg Stock Age Pill */}
-            <div className={cn(
-              'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
-              'bg-primary-700/30 border-amber-500/20 hover:border-amber-500/40'
-            )}>
-              <p className="text-xs text-primary-400 mb-1">Avg Stock Age</p>
-              <div className="flex items-baseline gap-2">
-                <p className="text-lg font-bold text-primary-50">
-                  {(stats as any).avgStockAge || 0} days
-                </p>
-              </div>
-            </div>
-
-            {/* Deadstock Pill */}
-            <div className={cn(
-              'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
-              'bg-primary-700/30 border-rose-500/20 hover:border-rose-500/40'
-            )}>
-              <p className="text-xs text-primary-400 mb-1">Deadstock</p>
-              <div className="flex items-baseline gap-2">
-                <p className="text-lg font-bold text-primary-50">
-                  {(stats as any).deadstockCount || 0}
-                </p>
+              <div className={cn(
+                'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
+                'bg-primary-700/30 border-rose-500/20 hover:border-rose-500/40'
+              )}>
+                <CompactAVITPFMetric
+                  label="Stock Out Today"
+                  value={stats.stockOutToday}
+                  change={null}
+                  isInteger
+                  colorScheme="rose"
+                />
               </div>
             </div>
           </div>

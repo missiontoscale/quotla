@@ -5,6 +5,7 @@ export { FilterCombobox } from './FilterCombobox'
 export { FilterMultiSelect } from './FilterMultiSelect'
 export { FilterDateRange } from './FilterDateRange'
 export { FilterActivePills } from './FilterActivePills'
+export { PageDateFilter, CompactDateFilter } from './PageDateFilter'
 
 export type {
   FilterOption,

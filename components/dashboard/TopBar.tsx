@@ -43,7 +43,7 @@ export function TopBar() {
       <div className="flex items-center gap-2">
         <NotificationCenter />
 
-        <Link href="/settings" className="hidden sm:block">
+        <Link href="/business/settings" className="hidden sm:block">
           <Button variant="ghost" size="icon" className="text-slate-400 hover:text-slate-100 h-9 w-9">
             <Settings className="w-4.5 h-4.5" />
           </Button>
@@ -62,7 +62,7 @@ export function TopBar() {
             <DropdownMenuLabel className="text-slate-100 text-[0.81rem]">My Account</DropdownMenuLabel>
             <DropdownMenuSeparator className="bg-slate-800" />
             <DropdownMenuItem asChild>
-              <Link href="/settings" className="text-slate-300 hover:bg-slate-800 cursor-pointer text-[0.81rem]">
+              <Link href="/business/settings" className="text-slate-300 hover:bg-slate-800 cursor-pointer text-[0.81rem]">
                 Settings
               </Link>
             </DropdownMenuItem>

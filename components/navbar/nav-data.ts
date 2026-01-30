@@ -45,12 +45,12 @@ export const GUEST_NAV_LINKS: NavLink[] = [
       },
       {
         label: 'For Small Business',
-        href: '/solutions/small-business',
+        href: '/solutions',
         description: 'Scale your operations efficiently'
       },
       {
         label: 'For Agencies',
-        href: '/solutions/agencies',
+        href: '/solutions',
         description: 'Manage multiple clients seamlessly'
       },
     ]
@@ -63,22 +63,22 @@ export const GUEST_NAV_LINKS: NavLink[] = [
     dropdownItems: [
       {
         label: 'AI Quote Generation',
-        href: '/features/ai-quotes',
+        href: '/#features',
         description: 'Create quotes in seconds'
       },
       {
         label: 'Inventory Tracking',
-        href: '/features/inventory',
+        href: '/#features',
         description: 'Manage stock and products'
       },
       {
         label: 'Multi-Currency',
-        href: '/features/multi-currency',
+        href: '/#features',
         description: 'Work globally with ease'
       },
       {
         label: 'Client Portal',
-        href: '/features/client-portal',
+        href: '/#features',
         description: 'Centralized client management'
       },
     ]
@@ -100,14 +100,9 @@ export const GUEST_NAV_LINKS: NavLink[] = [
         description: 'Our story and mission'
       },
       {
-        label: 'Help Center',
-        href: '/help',
+        label: 'Help & Contact',
+        href: ROUTES.ABOUT,
         description: 'Get support and answers'
-      },
-      {
-        label: 'API Documentation',
-        href: '/docs/api',
-        description: 'Developer resources'
       },
     ]
   },
@@ -144,12 +139,7 @@ export const AUTH_NAV_LINKS: NavLink[] = [
     hasDropdown: true,
     dropdownItems: [
       {
-        label: 'Quotes',
-        href: '/quotes',
-        description: 'Create professional quotes'
-      },
-      {
-        label: 'Sales',
+        label: 'Sales & Quotes',
         href: '/business/sales',
         description: 'Customers & quotes'
       },
@@ -162,69 +152,6 @@ export const AUTH_NAV_LINKS: NavLink[] = [
         label: 'Expenses',
         href: '/business/expenses',
         description: 'Track expenses & vendors'
-      },
-      {
-        label: 'Payments',
-        href: '/business/payments',
-        description: 'Track payments'
-      },
-      {
-        label: 'Accounts',
-        href: '/business/accounts',
-        description: 'Manage accounts'
-      },
-      {
-        label: 'Audit Logs',
-        href: '/business/audit',
-        description: 'View audit trail'
-      },
-      {
-        label: 'Analytics',
-        href: '/analytics',
-        description: 'Business insights & reports'
-      },
-      {
-        label: 'Integrations',
-        href: '/settings/integrations',
-        description: 'Connect your tools'
-      },
-    ]
-  },
-  {
-    label: 'For Professionals',
-    href: '#',
-    authRequired: true,
-    hasDropdown: true,
-    dropdownItems: [
-      {
-        label: 'Time Tracking',
-        href: '/time-tracking',
-        description: 'Track billable hours'
-      },
-      {
-        label: 'Project Management',
-        href: '/projects',
-        description: 'Organize your work'
-      },
-      {
-        label: 'Expense Tracking',
-        href: '/expenses',
-        description: 'Monitor spending'
-      },
-      {
-        label: 'Schedule Meeting',
-        href: '/schedule',
-        description: 'Book consultations'
-      },
-      {
-        label: 'Portfolio',
-        href: '/portfolio',
-        description: 'Showcase your work'
-      },
-      {
-        label: 'Proposals',
-        href: '/proposals',
-        description: 'Win more projects'
       },
     ]
   },
@@ -243,11 +170,6 @@ export const AUTH_NAV_LINKS: NavLink[] = [
         label: 'Community',
         href: ROUTES.COMMUNITY,
         description: 'Connect with peers'
-      },
-      {
-        label: 'Help Center',
-        href: '/help',
-        description: 'Get support'
       },
     ]
   },

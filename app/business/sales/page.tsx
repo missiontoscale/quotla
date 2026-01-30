@@ -5,8 +5,19 @@ import { Card } from '@/components/ui/card';
 import { DataTable } from '@/components/dashboard/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Plus, Users, DollarSign, Clock, RefreshCw, ChevronRight, Receipt, Upload, ArrowUpRight, ArrowDownRight, TrendingUp, Target, Percent } from 'lucide-react';
+import { Plus, Users, DollarSign, Clock, RefreshCw, ChevronRight, Receipt, Upload, TrendingUp, Target } from 'lucide-react';
 import { format, subMonths, startOfMonth, endOfMonth, eachMonthOfInterval } from 'date-fns';
+import {
+  getYoYDateRange,
+  buildPartialYoYChartData,
+  calculateYoYComparison,
+  analyzeTrend,
+} from '@/lib/analytics';
+import type { YoYMonthlyDataPoint, TrendAnalysisResult } from '@/lib/analytics';
+import { TrendIndicator, InlineTrend, AVITPFMetric, LargeAVITPFMetric, CompactAVITPFMetric } from '@/components/analytics';
+import { DateFilterProvider } from '@/contexts/DateFilterContext';
+import { useDateFilter } from '@/hooks/useDateFilter';
+import { PageDateFilter } from '@/components/filters';
 import {
   ComposedChart,
   Line,
@@ -63,8 +74,17 @@ interface InvoiceRow {
 type InvoiceFilter = 'all' | 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
 
 export default function SalesPage() {
+  return (
+    <DateFilterProvider>
+      <SalesContent />
+    </DateFilterProvider>
+  )
+}
+
+function SalesContent() {
   const { user } = useAuth();
   const { displayCurrency, setDisplayCurrency, isConverted } = useDisplayCurrency();
+  const { dateRange, isFilterActive, filterArrayByDate, formattedDateRange } = useDateFilter();
 
   // Filter states
   const [invoiceFilter, setInvoiceFilter] = useState<InvoiceFilter>('all');
@@ -102,17 +122,29 @@ export default function SalesPage() {
     activeCustomers: 0,
     outstanding: 0,
     grossProfit: 0,
-    profitMargin: 0
+    profitMargin: 0,
+    yoyRevenueGrowth: null as number | null,
+    yoyProfitGrowth: null as number | null,
+    salesCount: 0,
+    lastMonthSalesCount: 0,
+    salesCountChange: 0,
+    thisMonthCustomerCount: 0,
+    lastMonthCustomerCount: 0,
+    customerCountChange: 0
   });
 
   // Monthly sales data for trend chart
   const [monthlySalesData, setMonthlySalesData] = useState<{month: string, revenue: number, profit: number}[]>([]);
 
+  // YoY data
+  const [yoyChartData, setYoyChartData] = useState<YoYMonthlyDataPoint[]>([]);
+  const [revenueTrend, setRevenueTrend] = useState<TrendAnalysisResult | null>(null);
+
   useEffect(() => {
     if (user) {
       fetchData();
     }
-  }, [user]);
+  }, [user, dateRange]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -206,7 +238,12 @@ export default function SalesPage() {
         }, {});
       }
 
-      const formatted: InvoiceRow[] = (invoicesData || []).map((inv: any) => {
+      // Apply date filter to invoices if active
+      const filteredInvoicesData = isFilterActive
+        ? filterArrayByDate(invoicesData || [], (inv: any) => inv.issue_date)
+        : invoicesData || [];
+
+      const formatted: InvoiceRow[] = filteredInvoicesData.map((inv: any) => {
         const customer = inv.client_id ? customerMap[inv.client_id] : null;
         return {
           id: inv.id,
@@ -223,9 +260,9 @@ export default function SalesPage() {
 
       setInvoices(formatted);
 
-      // Calculate stats
+      // Calculate stats (use filtered data)
       const pending = formatted.filter(inv => inv.status === 'sent' || inv.status === 'overdue').length;
-      const paidInvoices = (invoicesData || []).filter((inv: any) => inv.status === 'paid');
+      const paidInvoices = filteredInvoicesData.filter((inv: any) => inv.status === 'paid');
       const revenue = paidInvoices.reduce((sum: number, inv: any) => sum + (inv.total || 0), 0);
 
       // Calculate gross profit from paid invoices
@@ -284,6 +321,7 @@ export default function SalesPage() {
         new Date(inv.issue_date) >= thisMonthStart
       );
       const thisMonthRevenue = thisMonthPaid.reduce((sum: number, inv: any) => sum + (inv.total || 0), 0);
+      const thisMonthSalesCount = thisMonthPaid.length;
 
       // Calculate this month's COGS
       let thisMonthCogs = 0;
@@ -325,6 +363,8 @@ export default function SalesPage() {
         return date >= lastMonthStart && date <= lastMonthEnd;
       });
       const lastMonthRevenue = lastMonthPaid.reduce((sum: number, inv: any) => sum + (inv.total || 0), 0);
+      const lastMonthSalesCount = lastMonthPaid.length;
+      const salesCountChange = thisMonthSalesCount - lastMonthSalesCount;
 
       // Calculate last month's COGS
       let lastMonthCogs = 0;
@@ -450,6 +490,44 @@ export default function SalesPage() {
 
       setMonthlySalesData(monthlyTrend);
 
+      // YoY calculations
+      const yoyRange = getYoYDateRange(dateRange);
+      const { data: lastYearInvoices } = await supabase
+        .from('invoices')
+        .select('id, total, status, issue_date')
+        .eq('user_id', user?.id)
+        .eq('status', 'paid')
+        .gte('issue_date', format(yoyRange.previous.start, 'yyyy-MM-dd'))
+        .lte('issue_date', format(yoyRange.previous.end, 'yyyy-MM-dd'));
+
+      const lastYearRevenue = (lastYearInvoices || []).reduce(
+        (sum, inv) => sum + (inv.total || 0), 0
+      );
+      const yoyRevenueComparison = calculateYoYComparison(revenue, lastYearRevenue);
+
+      // Build YoY chart data
+      const allInvoicesForYoY = [...paidInvoices, ...(lastYearInvoices || [])];
+      const yoyData = buildPartialYoYChartData(
+        allInvoicesForYoY,
+        {
+          dateAccessor: (inv: any) => inv.issue_date,
+          valueAccessor: (inv: any) => inv.total || 0,
+          aggregation: 'sum'
+        }
+      );
+      setYoyChartData(yoyData);
+
+      // Analyze revenue trend
+      const revenueValues = monthlyTrend.map(m => m.revenue);
+      const trendResult = analyzeTrend(revenueValues);
+      setRevenueTrend(trendResult);
+
+      // Calculate YoY profit (simplified)
+      const lastYearProfit = lastYearRevenue > 0 && revenue > 0
+        ? lastYearRevenue * (grossProfit / revenue)
+        : 0;
+      const yoyProfitComparison = calculateYoYComparison(grossProfit, lastYearProfit);
+
       setStats(prev => ({
         ...prev,
         pendingInvoices: pending,
@@ -465,7 +543,12 @@ export default function SalesPage() {
         avgInvoiceValue,
         avgInvoiceGrowth,
         dso,
-        conversionRate
+        conversionRate,
+        yoyRevenueGrowth: yoyRevenueComparison.percentageChange,
+        yoyProfitGrowth: yoyProfitComparison.percentageChange,
+        salesCount: thisMonthSalesCount,
+        lastMonthSalesCount,
+        salesCountChange
       } as any));
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message :
@@ -610,9 +693,12 @@ export default function SalesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl text-primary-50">Sales</h1>
-          <p className="text-primary-400 mt-1">Manage invoices and customers</p>
+          <p className="text-primary-400 mt-1">
+            {isFilterActive ? formattedDateRange : 'Manage invoices and customers'}
+          </p>
         </div>
         <div className="flex items-center gap-3">
+          <PageDateFilter />
           <div className="flex items-center gap-2">
             <Select value={displayCurrency} onValueChange={setDisplayCurrency}>
               <SelectTrigger className="w-[120px] bg-primary-700 border-primary-600 text-primary-50 h-9 text-sm">
@@ -717,84 +803,99 @@ export default function SalesPage() {
             </div>
           </div>
 
-          {/* Metric Pills */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-            {/* Revenue Pill */}
+          {/* AVITPF Metric Layout - First Row: Revenue (large) + Profit/Margin (stacked) */}
+          <div className="flex flex-col md:flex-row gap-4 mb-6">
+            {/* Revenue - Large */}
             <div className={cn(
-              'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
+              'flex-1 p-4 rounded-xl border backdrop-blur-sm transition-all duration-200',
               'bg-primary-700/30 border-quotla-green/20 hover:border-quotla-green/40'
             )}>
-              <p className="text-xs text-primary-400 mb-1">Revenue</p>
-              <div className="flex items-baseline gap-2">
-                <p className="text-lg font-bold text-primary-50">
-                  {formatCurrency((stats as any).thisMonthRevenue || 0, displayCurrency)}
-                </p>
-                {(stats as any).revenueGrowth !== undefined && (stats as any).revenueGrowth !== 0 && (
-                  <span className={cn(
-                    'flex items-center gap-0.5 text-xs font-medium',
-                    (stats as any).revenueGrowth > 0 ? 'text-emerald-400' : 'text-rose-400'
-                  )}>
-                    {(stats as any).revenueGrowth > 0 ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
-                    {Math.abs((stats as any).revenueGrowth).toFixed(1)}%
-                  </span>
-                )}
-              </div>
+              <LargeAVITPFMetric
+                label="Revenue"
+                value={(stats as any).thisMonthRevenue || 0}
+                change={(stats as any).revenueGrowth || null}
+                currency={displayCurrency}
+                colorScheme="green"
+              />
+              {stats.yoyRevenueGrowth !== null && (
+                <div className="flex items-center gap-1 mt-2">
+                  <span className="text-[10px] text-primary-500">YoY:</span>
+                  <InlineTrend value={stats.yoyRevenueGrowth} />
+                </div>
+              )}
             </div>
 
-            {/* Gross Profit Pill */}
-            <div className={cn(
-              'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
-              'bg-primary-700/30 border-emerald-500/20 hover:border-emerald-500/40'
-            )}>
-              <p className="text-xs text-primary-400 mb-1">Gross Profit</p>
-              <div className="flex items-baseline gap-2">
-                <p className="text-lg font-bold text-primary-50">
-                  {formatCurrency((stats as any).thisMonthProfit || 0, displayCurrency)}
-                </p>
-                {(stats as any).profitGrowth !== undefined && (stats as any).profitGrowth !== 0 && (
-                  <span className={cn(
-                    'flex items-center gap-0.5 text-xs font-medium',
-                    (stats as any).profitGrowth > 0 ? 'text-emerald-400' : 'text-rose-400'
-                  )}>
-                    {(stats as any).profitGrowth > 0 ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
-                    {Math.abs((stats as any).profitGrowth).toFixed(1)}%
-                  </span>
-                )}
+            {/* Profit + Margin - Stacked */}
+            <div className="flex flex-col gap-3">
+              <div className={cn(
+                'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
+                'bg-primary-700/30 border-emerald-500/20 hover:border-emerald-500/40'
+              )}>
+                <CompactAVITPFMetric
+                  label="Gross Profit"
+                  value={(stats as any).thisMonthProfit || 0}
+                  change={(stats as any).profitGrowth || null}
+                  currency={displayCurrency}
+                  colorScheme="emerald"
+                />
+              </div>
+              <div className={cn(
+                'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
+                'bg-primary-700/30 border-teal-500/20 hover:border-teal-500/40'
+              )}>
+                <CompactAVITPFMetric
+                  label="Margin"
+                  value={stats.profitMargin}
+                  change={null}
+                  isInteger
+                  colorScheme="teal"
+                  className="[&>div>span:first-child]:after:content-['%']"
+                />
               </div>
             </div>
+          </div>
 
-            {/* Profit Margin Pill */}
+          {/* Second Row: Sales Count (large) + Avg Invoice/Customers (stacked) */}
+          <div className="flex flex-col md:flex-row gap-4 mb-6">
+            {/* Sales Count - Large */}
             <div className={cn(
-              'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
-              'bg-primary-700/30 border-teal-500/20 hover:border-teal-500/40'
-            )}>
-              <p className="text-xs text-primary-400 mb-1">Margin</p>
-              <div className="flex items-baseline gap-2">
-                <p className="text-lg font-bold text-primary-50">
-                  {stats.profitMargin.toFixed(1)}%
-                </p>
-              </div>
-            </div>
-
-            {/* Average Invoice Value Pill */}
-            <div className={cn(
-              'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
+              'flex-1 p-4 rounded-xl border backdrop-blur-sm transition-all duration-200',
               'bg-primary-700/30 border-quotla-orange/20 hover:border-quotla-orange/40'
             )}>
-              <p className="text-xs text-primary-400 mb-1">Avg Invoice</p>
-              <div className="flex items-baseline gap-2">
-                <p className="text-lg font-bold text-primary-50">
-                  {formatCurrency((stats as any).avgInvoiceValue || 0, displayCurrency)}
-                </p>
-                {(stats as any).avgInvoiceGrowth !== undefined && (stats as any).avgInvoiceGrowth !== 0 && (
-                  <span className={cn(
-                    'flex items-center gap-0.5 text-xs font-medium',
-                    (stats as any).avgInvoiceGrowth > 0 ? 'text-emerald-400' : 'text-rose-400'
-                  )}>
-                    {(stats as any).avgInvoiceGrowth > 0 ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
-                    {Math.abs((stats as any).avgInvoiceGrowth).toFixed(1)}%
-                  </span>
-                )}
+              <LargeAVITPFMetric
+                label="Sales"
+                value={(stats as any).salesCount || 0}
+                change={(stats as any).salesCountChange || null}
+                isInteger
+                colorScheme="orange"
+              />
+            </div>
+
+            {/* Avg Invoice + Customers - Stacked */}
+            <div className="flex flex-col gap-3">
+              <div className={cn(
+                'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
+                'bg-primary-700/30 border-quotla-orange/20 hover:border-quotla-orange/40'
+              )}>
+                <CompactAVITPFMetric
+                  label="Avg Invoice"
+                  value={(stats as any).avgInvoiceValue || 0}
+                  change={(stats as any).avgInvoiceGrowth || null}
+                  currency={displayCurrency}
+                  colorScheme="orange"
+                />
+              </div>
+              <div className={cn(
+                'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
+                'bg-primary-700/30 border-teal-500/20 hover:border-teal-500/40'
+              )}>
+                <CompactAVITPFMetric
+                  label="Customers"
+                  value={stats.activeCustomers}
+                  change={null}
+                  isInteger
+                  colorScheme="teal"
+                />
               </div>
             </div>
           </div>
@@ -867,6 +968,7 @@ export default function SalesPage() {
             </div>
           </div>
         </Card>
+
       </div>
 
       {/* Row 2: Operational Metrics */}

@@ -63,6 +63,20 @@ export async function POST(req: NextRequest) {
         await handleCheckoutSessionCompleted(event.data.object as Stripe.Checkout.Session);
         break;
 
+      case 'invoice.paid':
+      case 'invoice.payment_succeeded':
+        await handleInvoicePaid(event.data.object as Stripe.Invoice);
+        break;
+
+      case 'invoice.payment_failed':
+        await handleInvoicePaymentFailed(event.data.object as Stripe.Invoice);
+        break;
+
+      case 'customer.created':
+      case 'customer.updated':
+        await handleCustomerUpdated(event.data.object as Stripe.Customer);
+        break;
+
       default:
         console.log(`Unhandled event type: ${event.type}`);
     }
@@ -180,6 +194,16 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
     return;
   }
 
+  // Store customer mapping if available
+  if (session.customer) {
+    await supabase.from('stripe_customers').upsert({
+      user_id: userId,
+      stripe_customer_id: session.customer as string,
+      email: session.customer_email,
+      updated_at: new Date().toISOString(),
+    });
+  }
+
   // Handle subscription or one-time payment based on mode
   if (session.mode === 'subscription') {
     // Subscription will be handled by subscription.created event
@@ -188,4 +212,96 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
     // Handle one-time payment
     console.log('One-time payment checkout completed');
   }
+}
+
+async function handleInvoicePaid(invoice: Stripe.Invoice) {
+  console.log('Invoice paid:', invoice.id);
+
+  const customerId = invoice.customer as string;
+
+  // Get user_id from customer mapping
+  const { data: customerData } = await supabase
+    .from('stripe_customers')
+    .select('user_id')
+    .eq('stripe_customer_id', customerId)
+    .maybeSingle();
+
+  if (!customerData) {
+    console.error('No user found for customer:', customerId);
+    return;
+  }
+
+  // Upsert invoice record
+  await supabase.from('stripe_invoices').upsert({
+    user_id: customerData.user_id,
+    stripe_invoice_id: invoice.id,
+    stripe_customer_id: customerId,
+    stripe_subscription_id: invoice.subscription as string | null,
+    amount_due: invoice.amount_due,
+    amount_paid: invoice.amount_paid,
+    currency: invoice.currency,
+    status: 'paid',
+    invoice_pdf: invoice.invoice_pdf,
+    hosted_invoice_url: invoice.hosted_invoice_url,
+    period_start: new Date((invoice.period_start || 0) * 1000).toISOString(),
+    period_end: new Date((invoice.period_end || 0) * 1000).toISOString(),
+    updated_at: new Date().toISOString(),
+  });
+}
+
+async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
+  console.log('Invoice payment failed:', invoice.id);
+
+  const customerId = invoice.customer as string;
+
+  // Get user_id from customer mapping
+  const { data: customerData } = await supabase
+    .from('stripe_customers')
+    .select('user_id')
+    .eq('stripe_customer_id', customerId)
+    .maybeSingle();
+
+  if (!customerData) {
+    console.error('No user found for customer:', customerId);
+    return;
+  }
+
+  // Update invoice status
+  await supabase
+    .from('stripe_invoices')
+    .update({
+      status: 'open',
+      updated_at: new Date().toISOString(),
+    })
+    .eq('stripe_invoice_id', invoice.id);
+
+  // Optionally create a notification for the user
+  await supabase.from('notifications').insert({
+    user_id: customerData.user_id,
+    type: 'system',
+    title: 'Payment Failed',
+    message: 'Your subscription payment failed. Please update your payment method.',
+    priority: 'high',
+    action_url: '/billing',
+  });
+}
+
+async function handleCustomerUpdated(customer: Stripe.Customer) {
+  console.log('Customer updated:', customer.id);
+
+  const userId = customer.metadata.user_id;
+
+  if (!userId) {
+    // Customer might exist from before metadata was added
+    return;
+  }
+
+  // Update customer record
+  await supabase.from('stripe_customers').upsert({
+    user_id: userId,
+    stripe_customer_id: customer.id,
+    email: customer.email,
+    name: customer.name,
+    updated_at: new Date().toISOString(),
+  });
 }

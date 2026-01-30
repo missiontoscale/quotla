@@ -2,14 +2,18 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { formatCurrency } from '@/lib/utils/currency'
 import { SUBSCRIPTION_PLANS, getRemainingQuota, formatQuota, type UsageStats } from '@/lib/constants/plans'
 import { useAuth } from '@/contexts/AuthContext'
+import { useSubscription } from '@/hooks/useSubscription'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 
 export default function PricingPage() {
-  const { user, profile } = useAuth()
+  const router = useRouter()
+  const { user, profile, subscriptionPlan } = useAuth()
+  const { createCheckoutSession, isFreePlan } = useSubscription()
   const [currencyCode, setCurrencyCode] = useState<string>('USD')
   const [activeFaq, setActiveFaq] = useState<number | null>(null)
   const [usageStats, setUsageStats] = useState<UsageStats | null>(null)
@@ -72,7 +76,7 @@ export default function PricingPage() {
               setExchangeRate(rate)
               // Convert all plan prices
               const converted: Record<number, number> = {}
-              pricingPlans.forEach(plan => {
+              SUBSCRIPTION_PLANS.forEach(plan => {
                 converted[plan.priceUSD] = Number((plan.priceUSD * rate).toFixed(2))
               })
               setConvertedPrices(converted)
@@ -113,65 +117,31 @@ export default function PricingPage() {
     fetchUsageStats()
   }, [user])
 
-  // Define pricing plans matching the home page
-  const pricingPlans = [
-    {
-      name: 'Simple Start',
-      priceUSD: 1,
-      description: 'Build your financial foundation',
-      features: [
-        '1 user + accountant access',
-        'Quotla Agent - AI-powered bank feeds',
-        'Income and expenses tracking',
-        'Invoices and quotes',
-      ],
-    },
-    {
-      name: 'Essentials',
-      priceUSD: 5,
-      description: 'Save time and focus on growth',
-      features: [
-        '3 users + accountant access',
-        'Everything in Simple Start',
-        'AI-powered collaboration',
-        'Bill management',
-        'Multi-currency support',
-      ],
-    },
-    {
-      name: 'Plus',
-      priceUSD: 7,
-      description: 'Boost efficiency & profitability',
-      popular: true,
-      features: [
-        '5 users + accountant access',
-        'Everything in Essentials',
-        'Anomaly detection',
-        'Quotla Customer Agent',
-        'Inventory tracking',
-        'Budgeting & class tracking',
-      ],
-    },
-    {
-      name: 'Advanced',
-      priceUSD: 14,
-      description: 'Scale with customization',
-      features: [
-        '25 users + accountant access',
-        'Everything in Plus',
-        'Quotla Finance Agent',
-        'Project Management Agent',
-        'Custom report builder',
-        'Workflow automation',
-        'Unlimited classes & locations',
-      ],
-    },
-  ]
+  const [isUpgrading, setIsUpgrading] = useState<string | null>(null)
 
-  // Get current user's plan
-  // TODO: Add subscription_plan field to profile type
-  const currentPlanId = 'free' // Default to free for now
+  // Use SUBSCRIPTION_PLANS directly (excluding free plan for display)
+  const paidPlans = SUBSCRIPTION_PLANS.filter(p => p.priceUSD > 0)
+
+  // Get current user's plan from context
+  const currentPlanId = profile?.subscription_plan || 'free'
   const currentPlan = SUBSCRIPTION_PLANS.find(p => p.id === currentPlanId)
+
+  const handleUpgrade = async (planId: string) => {
+    if (!user) {
+      router.push('/signup')
+      return
+    }
+
+    setIsUpgrading(planId)
+    try {
+      const url = await createCheckoutSession(planId)
+      if (url) {
+        window.location.href = url
+      }
+    } finally {
+      setIsUpgrading(null)
+    }
+  }
 
   const faqs = [
     {
@@ -339,82 +309,107 @@ export default function PricingPage() {
 
       {/* Pricing Cards */}
       <section className="pb-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-4 gap-6">
-            {pricingPlans.map((plan, index) => (
-              <div
-                key={plan.name}
-                className={`relative rounded-2xl shadow-lg transition-all duration-300 hover:shadow-2xl ${
-                  plan.popular
-                    ? 'bg-gradient-to-br from-quotla-dark to-primary-800 border-2 border-quotla-orange scale-105'
-                    : 'bg-white border-2 border-quotla-dark/10 hover:border-quotla-orange/50'
-                }`}
-              >
-                {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-quotla-orange text-white px-4 py-1 rounded-full text-xs font-semibold shadow-lg shadow-quotla-orange/40">
-                      Best Value
-                    </span>
-                  </div>
-                )}
+        <div className="max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-6">
+            {paidPlans.map((plan) => {
+              const isCurrentPlan = plan.id === currentPlanId
+              const isUpgradingThis = isUpgrading === plan.id
 
-                <div className="p-6">
-                  <h3 className={`text-xl font-bold mb-2 ${plan.popular ? 'text-white' : 'text-quotla-dark'}`}>
-                    {plan.name}
-                  </h3>
-                  <div className="flex items-baseline gap-1 mb-2">
-                    <span className={`text-4xl font-bold ${plan.popular ? 'text-white' : 'text-quotla-dark'}`}>
-                      {currencyCode !== 'USD' && convertedPrices[plan.priceUSD]
-                        ? formatCurrency(convertedPrices[plan.priceUSD], currencyCode)
-                        : formatCurrency(plan.priceUSD, 'USD')}
-                    </span>
-                    <span className={`text-sm ${plan.popular ? 'text-white/70' : 'text-quotla-dark/60'}`}>
-                      /month
-                    </span>
-                  </div>
-                  {currencyCode !== 'USD' && convertedPrices[plan.priceUSD] && (
-                    <div className={`text-xs mb-2 ${plan.popular ? 'text-white/60' : 'text-quotla-dark/50'}`}>
-                      ({formatCurrency(plan.priceUSD, 'USD')} USD)
+              return (
+                <div
+                  key={plan.name}
+                  className={`relative rounded-2xl shadow-lg transition-all duration-300 hover:shadow-2xl ${
+                    plan.popular
+                      ? 'bg-gradient-to-br from-quotla-dark to-primary-800 border-2 border-quotla-orange scale-105'
+                      : 'bg-white border-2 border-quotla-dark/10 hover:border-quotla-orange/50'
+                  }`}
+                >
+                  {plan.popular && (
+                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                      <span className="bg-quotla-orange text-white px-4 py-1 rounded-full text-xs font-semibold shadow-lg shadow-quotla-orange/40">
+                        Most Popular
+                      </span>
                     </div>
                   )}
-                  <p className={`text-sm mb-6 ${plan.popular ? 'text-white/80' : 'text-quotla-dark/70'}`}>
-                    {plan.description}
-                  </p>
 
-                  <ul className="space-y-3 mb-6 text-sm">
-                    {plan.features.map((feature, featureIndex) => (
-                      <li key={featureIndex} className="flex items-start gap-2">
-                        <svg
-                          className={`w-4 h-4 flex-shrink-0 mt-0.5 ${plan.popular ? 'text-quotla-orange' : 'text-quotla-green'}`}
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                        <span className={plan.popular ? 'text-white' : 'text-quotla-dark/80'}>
-                          {feature}
+                  {isCurrentPlan && (
+                    <div className="absolute -top-3 right-4">
+                      <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                        Current Plan
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="p-6">
+                    <h3 className={`text-xl font-bold mb-2 ${plan.popular ? 'text-white' : 'text-quotla-dark'}`}>
+                      {plan.name}
+                    </h3>
+                    <div className="flex items-baseline gap-1 mb-2">
+                      <span className={`text-4xl font-bold ${plan.popular ? 'text-white' : 'text-quotla-dark'}`}>
+                        {currencyCode !== 'USD' && convertedPrices[plan.priceUSD]
+                          ? formatCurrency(convertedPrices[plan.priceUSD], currencyCode)
+                          : formatCurrency(plan.priceUSD, 'USD')}
+                      </span>
+                      <span className={`text-sm ${plan.popular ? 'text-white/70' : 'text-quotla-dark/60'}`}>
+                        /month
+                      </span>
+                    </div>
+                    {currencyCode !== 'USD' && convertedPrices[plan.priceUSD] && (
+                      <div className={`text-xs mb-4 ${plan.popular ? 'text-white/60' : 'text-quotla-dark/50'}`}>
+                        ({formatCurrency(plan.priceUSD, 'USD')} USD)
+                      </div>
+                    )}
+
+                    <ul className="space-y-3 mb-6 text-sm">
+                      {plan.features.map((feature, featureIndex) => (
+                        <li key={featureIndex} className="flex items-start gap-2">
+                          <svg
+                            className={`w-4 h-4 flex-shrink-0 mt-0.5 ${plan.popular ? 'text-quotla-orange' : 'text-quotla-green'}`}
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                          <span className={plan.popular ? 'text-white' : 'text-quotla-dark/80'}>
+                            {feature}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <button
+                      onClick={() => handleUpgrade(plan.id)}
+                      disabled={isCurrentPlan || isUpgradingThis}
+                      className={`block w-full py-2.5 rounded-xl font-semibold text-center transition-all shadow-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed ${
+                        plan.popular
+                          ? 'bg-quotla-orange text-white hover:bg-secondary-600'
+                          : 'bg-quotla-dark/10 text-quotla-dark hover:bg-quotla-dark/20'
+                      }`}
+                    >
+                      {isUpgradingThis ? (
+                        <span className="flex items-center justify-center gap-2">
+                          <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                          </svg>
+                          Processing...
                         </span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <Link
-                    href="/signup"
-                    className={`block w-full py-2.5 rounded-xl font-semibold text-center transition-all shadow-lg text-sm ${
-                      plan.popular
-                        ? 'bg-quotla-orange text-white hover:bg-secondary-600'
-                        : 'bg-quotla-dark/10 text-quotla-dark hover:bg-quotla-dark/20'
-                    }`}
-                  >
-                    {user ? `Switch to ${plan.name}` : 'Get Started'}
-                  </Link>
+                      ) : isCurrentPlan ? (
+                        'Current Plan'
+                      ) : user ? (
+                        plan.cta
+                      ) : (
+                        'Get Started'
+                      )}
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </section>

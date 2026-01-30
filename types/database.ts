@@ -27,6 +27,7 @@ export interface Database {
           avatar_url: string | null
           default_currency: string
           is_admin: boolean
+          subscription_plan: string
           created_at: string
           updated_at: string
         }
@@ -47,6 +48,7 @@ export interface Database {
           avatar_url?: string | null
           default_currency?: string
           is_admin?: boolean
+          subscription_plan?: string
           created_at?: string
           updated_at?: string
         }
@@ -67,6 +69,7 @@ export interface Database {
           avatar_url?: string | null
           default_currency?: string
           is_admin?: boolean
+          subscription_plan?: string
           created_at?: string
           updated_at?: string
         }
@@ -659,6 +662,211 @@ export interface Database {
           error_message?: string | null
           created_at?: string
           completed_at?: string | null
+        }
+      }
+      stripe_customers: {
+        Row: {
+          id: string
+          user_id: string
+          stripe_customer_id: string
+          email: string | null
+          name: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          stripe_customer_id: string
+          email?: string | null
+          name?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          stripe_customer_id?: string
+          email?: string | null
+          name?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      stripe_subscriptions: {
+        Row: {
+          id: string
+          user_id: string
+          stripe_subscription_id: string
+          stripe_customer_id: string
+          stripe_price_id: string
+          status: 'active' | 'canceled' | 'incomplete' | 'incomplete_expired' | 'past_due' | 'paused' | 'trialing' | 'unpaid'
+          current_period_start: string
+          current_period_end: string
+          cancel_at_period_end: boolean
+          canceled_at: string | null
+          ended_at: string | null
+          trial_start: string | null
+          trial_end: string | null
+          metadata: Json | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          stripe_subscription_id: string
+          stripe_customer_id: string
+          stripe_price_id: string
+          status?: 'active' | 'canceled' | 'incomplete' | 'incomplete_expired' | 'past_due' | 'paused' | 'trialing' | 'unpaid'
+          current_period_start: string
+          current_period_end: string
+          cancel_at_period_end?: boolean
+          canceled_at?: string | null
+          ended_at?: string | null
+          trial_start?: string | null
+          trial_end?: string | null
+          metadata?: Json | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          stripe_subscription_id?: string
+          stripe_customer_id?: string
+          stripe_price_id?: string
+          status?: 'active' | 'canceled' | 'incomplete' | 'incomplete_expired' | 'past_due' | 'paused' | 'trialing' | 'unpaid'
+          current_period_start?: string
+          current_period_end?: string
+          cancel_at_period_end?: boolean
+          canceled_at?: string | null
+          ended_at?: string | null
+          trial_start?: string | null
+          trial_end?: string | null
+          metadata?: Json | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      stripe_payment_intents: {
+        Row: {
+          id: string
+          user_id: string
+          stripe_payment_intent_id: string
+          amount: number
+          currency: string
+          status: 'requires_payment_method' | 'requires_confirmation' | 'requires_action' | 'processing' | 'requires_capture' | 'canceled' | 'succeeded' | 'failed'
+          invoice_id: string | null
+          metadata: Json | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          stripe_payment_intent_id: string
+          amount: number
+          currency?: string
+          status?: 'requires_payment_method' | 'requires_confirmation' | 'requires_action' | 'processing' | 'requires_capture' | 'canceled' | 'succeeded' | 'failed'
+          invoice_id?: string | null
+          metadata?: Json | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          stripe_payment_intent_id?: string
+          amount?: number
+          currency?: string
+          status?: 'requires_payment_method' | 'requires_confirmation' | 'requires_action' | 'processing' | 'requires_capture' | 'canceled' | 'succeeded' | 'failed'
+          invoice_id?: string | null
+          metadata?: Json | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      stripe_invoices: {
+        Row: {
+          id: string
+          user_id: string
+          stripe_invoice_id: string
+          stripe_customer_id: string
+          stripe_subscription_id: string | null
+          amount_due: number
+          amount_paid: number
+          currency: string
+          status: 'draft' | 'open' | 'paid' | 'uncollectible' | 'void'
+          invoice_pdf: string | null
+          hosted_invoice_url: string | null
+          period_start: string
+          period_end: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          stripe_invoice_id: string
+          stripe_customer_id: string
+          stripe_subscription_id?: string | null
+          amount_due: number
+          amount_paid?: number
+          currency?: string
+          status?: 'draft' | 'open' | 'paid' | 'uncollectible' | 'void'
+          invoice_pdf?: string | null
+          hosted_invoice_url?: string | null
+          period_start: string
+          period_end: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          stripe_invoice_id?: string
+          stripe_customer_id?: string
+          stripe_subscription_id?: string | null
+          amount_due?: number
+          amount_paid?: number
+          currency?: string
+          status?: 'draft' | 'open' | 'paid' | 'uncollectible' | 'void'
+          invoice_pdf?: string | null
+          hosted_invoice_url?: string | null
+          period_start?: string
+          period_end?: string
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      cancellation_surveys: {
+        Row: {
+          id: string
+          user_id: string
+          stripe_subscription_id: string
+          reason: string
+          feedback: string | null
+          would_recommend: number | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          stripe_subscription_id: string
+          reason: string
+          feedback?: string | null
+          would_recommend?: number | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          stripe_subscription_id?: string
+          reason?: string
+          feedback?: string | null
+          would_recommend?: number | null
+          created_at?: string
         }
       }
     }

@@ -5,7 +5,6 @@ import {
   TrendingUp,
   Package,
   Receipt,
-  Settings,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
@@ -30,7 +29,6 @@ const menuItems: MenuItem[] = [
   { id: 'sales', label: 'Sales', icon: TrendingUp, path: '/business/sales' },
   { id: 'inventory', label: 'Inventory', icon: Package, path: '/business/products' },
   { id: 'expenses', label: 'Expenses', icon: Receipt, path: '/business/expenses' },
-  { id: 'admin', label: 'Admin', icon: Settings, path: '/business/admin' },
 ];
 
 export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
@@ -43,14 +41,21 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
       }`}
     >
       <div className="p-3.5 border-b border-slate-800 flex items-center justify-between">
-        {!collapsed && (
-          <Link href="/business/dashboard" className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-gradient-to-br from-violet-400 to-purple-500 rounded-lg flex items-center justify-center">
-              <Package className="w-4.5 h-4.5 max-md:w-5 max-md:h-5 text-white" />
-            </div>
-            <span className="text-[0.97rem]">Quotla</span>
-          </Link>
-        )}
+        <Link href="/business/dashboard" className="flex items-center">
+          {collapsed ? (
+            <img
+              src="/images/logos/icons/Quotla icon off white.svg"
+              alt="Quotla"
+              className="h-7 w-7"
+            />
+          ) : (
+            <img
+              src="/images/logos/icons/Quotla full off white.svg"
+              alt="Quotla"
+              className="h-9 w-auto"
+            />
+          )}
+        </Link>
         <Button
           variant="ghost"
           size="icon"

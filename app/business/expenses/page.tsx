@@ -5,8 +5,12 @@ import { Card } from '@/components/ui/card';
 import { DataTable } from '@/components/dashboard/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Plus, DollarSign, Truck, TrendingUp, Receipt, RefreshCw, Upload, ArrowUpRight, ArrowDownRight, Calendar, Percent, BarChart3 } from 'lucide-react';
+import { Plus, Truck, Receipt, RefreshCw, Upload, BarChart3 } from 'lucide-react';
+import { AVITPFMetric, LargeAVITPFMetric, CompactAVITPFMetric } from '@/components/analytics';
 import { format, subMonths, startOfMonth, endOfMonth, eachMonthOfInterval } from 'date-fns';
+import { DateFilterProvider } from '@/contexts/DateFilterContext';
+import { useDateFilter } from '@/hooks/useDateFilter';
+import { PageDateFilter } from '@/components/filters';
 import {
   ComposedChart,
   Area,
@@ -62,8 +66,17 @@ type ExpenseStatusFilter = 'all' | 'pending' | 'approved' | 'reimbursed' | 'reje
 type VendorStatusFilter = 'all' | 'active' | 'inactive';
 
 export default function ExpensesPage() {
+  return (
+    <DateFilterProvider>
+      <ExpensesContent />
+    </DateFilterProvider>
+  )
+}
+
+function ExpensesContent() {
   const { user } = useAuth();
   const { userCurrency, displayCurrency, setDisplayCurrency, isConverted } = useDisplayCurrency();
+  const { dateRange, isFilterActive, filterArrayByDate, formattedDateRange } = useDateFilter();
   const [activeTab, setActiveTab] = useState('expenses');
 
   // Filter states
@@ -109,7 +122,7 @@ export default function ExpensesPage() {
       fetchExpenses();
       fetchVendors();
     }
-  }, [user]);
+  }, [user, dateRange]);
 
   const fetchExpenses = async () => {
     try {
@@ -122,7 +135,12 @@ export default function ExpensesPage() {
 
       if (error) throw error;
 
-      const formattedExpenses: ExpenseRow[] = (data || []).map((expense: any) => ({
+      // Apply date filter to expenses if active
+      const filteredData = isFilterActive
+        ? filterArrayByDate(data || [], (e: any) => e.expense_date)
+        : data || [];
+
+      const formattedExpenses: ExpenseRow[] = filteredData.map((expense: any) => ({
         id: expense.id,
         description: expense.description,
         vendor: expense.suppliers?.name || expense.vendor_name || 'Unknown',
@@ -134,13 +152,13 @@ export default function ExpensesPage() {
 
       setExpensesData(formattedExpenses);
 
-      // Current calculations
+      // Current calculations (using filtered data)
       const now = new Date();
       const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-      const thisMonthExpenses = (data || []).filter((e: any) => new Date(e.expense_date) >= thisMonthStart);
+      const thisMonthExpenses = filteredData.filter((e: any) => new Date(e.expense_date) >= thisMonthStart);
       const thisMonthTotal = thisMonthExpenses.reduce((sum: number, e: any) => sum + (e.amount || 0), 0);
-      const pendingCount = (data || []).filter((e: any) => e.status === 'pending').length;
-      const uniqueCategories = new Set((data || []).map((e: any) => e.category));
+      const pendingCount = filteredData.filter((e: any) => e.status === 'pending').length;
+      const uniqueCategories = new Set(filteredData.map((e: any) => e.category));
 
       // NEW: Month-over-month comparison
       const lastMonthStart = startOfMonth(subMonths(new Date(), 1));
@@ -415,9 +433,12 @@ export default function ExpensesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl text-primary-50">Expenses</h1>
-          <p className="text-primary-400 mt-1">Track expenses and manage vendors</p>
+          <p className="text-primary-400 mt-1">
+            {isFilterActive ? formattedDateRange : 'Track expenses and manage vendors'}
+          </p>
         </div>
         <div className="flex items-center gap-3">
+          <PageDateFilter />
           <div className="flex items-center gap-2">
             <Select value={displayCurrency} onValueChange={setDisplayCurrency}>
               <SelectTrigger className="w-[120px] bg-primary-700 border-primary-600 text-primary-50 h-9 text-sm">
@@ -516,67 +537,81 @@ export default function ExpensesPage() {
             </div>
           </div>
 
-          {/* Metric Pills */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-            {/* Total Expenses Pill */}
+          {/* AVITPF Metric Layout - First Row: Total Expenses (large) + This Month/Avg Daily (stacked) */}
+          <div className="flex flex-col md:flex-row gap-4 mb-6">
+            {/* Total Expenses - Large */}
             <div className={cn(
-              'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
+              'flex-1 p-4 rounded-xl border backdrop-blur-sm transition-all duration-200',
               'bg-primary-700/30 border-rose-500/20 hover:border-rose-500/40'
             )}>
-              <p className="text-xs text-primary-400 mb-1">Total Expenses</p>
-              <div className="flex items-baseline gap-2">
-                <p className="text-lg font-bold text-primary-50">
-                  {formatCurrency(stats.totalExpenses, displayCurrency)}
-                </p>
-              </div>
+              <LargeAVITPFMetric
+                label="Total Expenses"
+                value={stats.totalExpenses}
+                change={null}
+                currency={displayCurrency}
+                colorScheme="rose"
+                invertColors
+              />
             </div>
 
-            {/* This Month Pill */}
-            <div className={cn(
-              'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
-              'bg-primary-700/30 border-amber-500/20 hover:border-amber-500/40'
-            )}>
-              <p className="text-xs text-primary-400 mb-1">This Month</p>
-              <div className="flex items-baseline gap-2">
-                <p className="text-lg font-bold text-primary-50">
-                  {formatCurrency(stats.thisMonth, displayCurrency)}
-                </p>
-                {(stats as any).expensesGrowth !== undefined && (stats as any).expensesGrowth !== 0 && (
-                  <span className={cn(
-                    'flex items-center gap-0.5 text-xs font-medium',
-                    (stats as any).expensesGrowth > 0 ? 'text-rose-400' : 'text-emerald-400'
-                  )}>
-                    {(stats as any).expensesGrowth > 0 ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
-                    {Math.abs((stats as any).expensesGrowth).toFixed(1)}%
-                  </span>
-                )}
+            {/* This Month + Avg Daily - Stacked */}
+            <div className="flex flex-col gap-3">
+              <div className={cn(
+                'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
+                'bg-primary-700/30 border-amber-500/20 hover:border-amber-500/40'
+              )}>
+                <CompactAVITPFMetric
+                  label="This Month"
+                  value={stats.thisMonth}
+                  change={(stats as any).expensesGrowth || null}
+                  currency={displayCurrency}
+                  colorScheme="orange"
+                  invertColors
+                />
+              </div>
+              <div className={cn(
+                'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
+                'bg-primary-700/30 border-quotla-orange/20 hover:border-quotla-orange/40'
+              )}>
+                <CompactAVITPFMetric
+                  label="Avg Daily"
+                  value={(stats as any).avgDailyExpense || 0}
+                  change={null}
+                  currency={displayCurrency}
+                  colorScheme="orange"
+                />
               </div>
             </div>
+          </div>
 
-            {/* Avg Daily Expense Pill */}
+          {/* Second Row: Categories + Pending */}
+          <div className="flex flex-col md:flex-row gap-4 mb-6">
+            {/* Categories */}
             <div className={cn(
-              'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
-              'bg-primary-700/30 border-quotla-orange/20 hover:border-quotla-orange/40'
-            )}>
-              <p className="text-xs text-primary-400 mb-1">Avg Daily</p>
-              <div className="flex items-baseline gap-2">
-                <p className="text-lg font-bold text-primary-50">
-                  {formatCurrency((stats as any).avgDailyExpense || 0, displayCurrency)}
-                </p>
-              </div>
-            </div>
-
-            {/* Categories Pill */}
-            <div className={cn(
-              'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
+              'flex-1 p-4 rounded-xl border backdrop-blur-sm transition-all duration-200',
               'bg-primary-700/30 border-teal-500/20 hover:border-teal-500/40'
             )}>
-              <p className="text-xs text-primary-400 mb-1">Categories</p>
-              <div className="flex items-baseline gap-2">
-                <p className="text-lg font-bold text-primary-50">
-                  {stats.categories}
-                </p>
-              </div>
+              <AVITPFMetric
+                label="Categories"
+                value={stats.categories}
+                change={null}
+                isInteger
+                colorScheme="teal"
+              />
+            </div>
+
+            {/* Pending Expenses */}
+            <div className={cn(
+              'flex-1 p-4 rounded-xl border backdrop-blur-sm transition-all duration-200',
+              'bg-primary-700/30 border-amber-500/20 hover:border-amber-500/40'
+            )}>
+              <AVITPFMetric
+                label="Pending"
+                value={stats.pendingExpenses}
+                change={null}
+                isInteger
+                colorScheme="orange"
+              />
             </div>
           </div>
 

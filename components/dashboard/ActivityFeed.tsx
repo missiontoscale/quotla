@@ -11,8 +11,8 @@ import {
   Package,
   Users,
   AlertCircle,
-  CheckCircle,
-  Clock
+  Clock,
+  ChevronRight
 } from 'lucide-react'
 import { formatCurrency } from '@/lib/utils/currency'
 import { useUserCurrency } from '@/hooks/useUserCurrency'
@@ -27,7 +27,16 @@ interface ActivityItem {
   amount?: number
 }
 
-export function ActivityFeed() {
+interface ActivityFeedProps {
+  /** Maximum number of items to display. Defaults to 8. */
+  limit?: number
+  /** Show "View More" link at the bottom */
+  showViewMore?: boolean
+  /** Callback when "View More" is clicked */
+  onViewMore?: () => void
+}
+
+export function ActivityFeed({ limit = 8, showViewMore = false, onViewMore }: ActivityFeedProps) {
   const { user } = useAuth()
   const { currency } = useUserCurrency()
   const [activities, setActivities] = useState<ActivityItem[]>([])
@@ -137,7 +146,7 @@ export function ActivityFeed() {
 
       // Sort by timestamp and limit
       activityList.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-      setActivities(activityList.slice(0, 8))
+      setActivities(activityList.slice(0, limit))
     } catch (error) {
       console.error('Error fetching activities:', error)
     } finally {
@@ -242,6 +251,16 @@ export function ActivityFeed() {
 
         return <div key={activity.id}>{content}</div>
       })}
+
+      {showViewMore && (
+        <button
+          onClick={onViewMore}
+          className="w-full flex items-center justify-center gap-1 py-2 mt-2 text-sm text-slate-400 hover:text-slate-200 transition-colors rounded-lg hover:bg-slate-800/50"
+        >
+          View More
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      )}
     </div>
   )
 }

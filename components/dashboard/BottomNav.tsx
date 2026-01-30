@@ -1,6 +1,6 @@
 'use client'
 
-import { Home, TrendingUp, Package, Receipt, Settings } from 'lucide-react'
+import { Home, TrendingUp, Package, Receipt } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -16,7 +16,6 @@ const navItems: NavItem[] = [
   { id: 'sales', label: 'Sales', icon: TrendingUp, path: '/business/sales' },
   { id: 'inventory', label: 'Inventory', icon: Package, path: '/business/products' },
   { id: 'expenses', label: 'Expenses', icon: Receipt, path: '/business/expenses' },
-  { id: 'admin', label: 'Admin', icon: Settings, path: '/business/admin' },
 ]
 
 export function BottomNav() {

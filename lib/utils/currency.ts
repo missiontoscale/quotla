@@ -160,5 +160,24 @@ export function detectUserCurrency(): string {
   }
 }
 
+// Format currency with K/M abbreviations for compact display
+export function formatCompactCurrency(amount: number, currencyCode: string): string {
+  const currency = getCurrency(currencyCode)
+  const symbol = currency?.symbol || currencyCode
+
+  const absAmount = Math.abs(amount)
+  const sign = amount < 0 ? '-' : ''
+
+  if (absAmount >= 1_000_000) {
+    return `${sign}${symbol}${(absAmount / 1_000_000).toFixed(1)}M`
+  }
+  if (absAmount >= 1_000) {
+    return `${sign}${symbol}${(absAmount / 1_000).toFixed(1)}K`
+  }
+
+  // For amounts under 1000, use regular formatting
+  return formatCurrency(amount, currencyCode)
+}
+
 // Alias for formatCurrency (for backward compatibility)
 export const formatPrice = formatCurrency

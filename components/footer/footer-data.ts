@@ -14,23 +14,19 @@ export interface FooterSection {
 
 export const FOOTER_SECTIONS: FooterSection[] = [
   {
-    title: 'For Business Owners',
+    title: 'Solutions',
     links: [
       {
-        label: 'Freelancers',
-        href: '/solutions/freelancers',
+        label: 'For Business Owners',
+        href: '/for-business',
       },
       {
-        label: 'Small Business',
-        href: '/solutions/small-business',
+        label: 'For Contractors',
+        href: '/for-contractors',
       },
       {
-        label: 'Agencies',
-        href: '/solutions/agencies',
-      },
-      {
-        label: 'Consultants',
-        href: '/solutions/consultants',
+        label: 'For Small Business',
+        href: '/solutions',
       },
       {
         label: 'Pricing',
@@ -43,23 +39,19 @@ export const FOOTER_SECTIONS: FooterSection[] = [
     links: [
       {
         label: 'AI Quote Generation',
-        href: '/features/ai-quotes',
+        href: '/#features',
       },
       {
         label: 'Inventory Tracking',
-        href: '/features/inventory',
+        href: '/#features',
       },
       {
         label: 'Multi-Currency',
-        href: '/features/multi-currency',
+        href: '/#features',
       },
       {
         label: 'Client Portal',
-        href: '/features/client-portal',
-      },
-      {
-        label: 'Analytics & Reports',
-        href: '/features/analytics',
+        href: '/#features',
       },
     ],
   },
@@ -75,42 +67,8 @@ export const FOOTER_SECTIONS: FooterSection[] = [
         href: ROUTES.ABOUT,
       },
       {
-        label: 'Help Center',
-        href: '/help',
-      },
-      {
-        label: 'API Docs',
-        href: '/docs/api',
-      },
-      {
-        label: 'Community',
-        href: ROUTES.COMMUNITY,
-        authRequired: true,
-      },
-      {
-        label: 'Testimonials',
-        href: ROUTES.TESTIMONIALS,
-      },
-    ],
-  },
-  {
-    title: 'Company',
-    links: [
-      {
-        label: 'Careers',
-        href: ROUTES.CAREERS,
-      },
-      {
-        label: 'Contact Us',
-        href: '/contact',
-      },
-      {
-        label: 'Press Kit',
-        href: '/press',
-      },
-      {
-        label: 'Partners',
-        href: '/partners',
+        label: 'Contact',
+        href: ROUTES.ABOUT,
       },
     ],
   },
@@ -119,19 +77,11 @@ export const FOOTER_SECTIONS: FooterSection[] = [
     links: [
       {
         label: 'Privacy Policy',
-        href: ROUTES.PRIVACY,
+        href: '/legal',
       },
       {
         label: 'Terms of Service',
-        href: ROUTES.TERMS,
-      },
-      {
-        label: 'Cookie Policy',
-        href: '/legal/cookies',
-      },
-      {
-        label: 'Security',
-        href: '/legal/security',
+        href: '/legal',
       },
     ],
   },

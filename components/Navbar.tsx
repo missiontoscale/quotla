@@ -44,7 +44,7 @@ export default function Navbar() {
   const isAuthenticated = mounted ? !!user : false
 
   // Check if we're on Dashboard or Settings page to show Sign Out
-  const showSignOut = pathname?.startsWith('/dashboard') || pathname?.startsWith('/settings')
+  const showSignOut = pathname?.startsWith('/dashboard') || pathname?.startsWith('/business/settings')
 
   const handleSignOut = async () => {
     try {

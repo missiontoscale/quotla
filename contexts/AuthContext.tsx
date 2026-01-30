@@ -1,19 +1,24 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { User as SupabaseUser } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase/client'
 import { Profile } from '@/types'
 import { setUserCurrency } from '@/lib/utils/currency'
+import { getPlanById, SUBSCRIPTION_PLANS, type SubscriptionPlan } from '@/lib/constants/plans'
+
+const DEFAULT_PLAN = SUBSCRIPTION_PLANS[0] // Free plan
 
 interface AuthContextType {
   user: SupabaseUser | null
   profile: Profile | null
   loading: boolean
+  subscriptionPlan: SubscriptionPlan
   signUp: (email: string, password: string) => Promise<void>
   signIn: (email: string, password: string) => Promise<void>
   signOut: () => Promise<void>
   updateProfile: (updates: Partial<Profile>) => Promise<void>
+  refreshProfile: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -22,6 +27,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<SupabaseUser | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
+  const [subscriptionPlan, setSubscriptionPlan] = useState<SubscriptionPlan>(DEFAULT_PLAN)
 
   useEffect(() => {
     // Get initial session with error handling
@@ -75,6 +81,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe()
   }, [])
 
+  const updateSubscriptionPlan = useCallback((profileData: Profile | null) => {
+    if (profileData?.subscription_plan) {
+      const plan = getPlanById(profileData.subscription_plan)
+      setSubscriptionPlan(plan || DEFAULT_PLAN)
+    } else {
+      setSubscriptionPlan(DEFAULT_PLAN)
+    }
+  }, [])
+
   const loadProfile = async (userId: string) => {
     // Check cache first
     const cacheKey = `profile_${userId}`
@@ -84,10 +99,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const cachedProfile = JSON.parse(cached)
         setProfile(cachedProfile)
+        updateSubscriptionPlan(cachedProfile)
         setLoading(false)
 
         // Refresh in background
-        refreshProfile(userId, cacheKey)
+        doRefreshProfile(userId, cacheKey)
         return
       } catch (e) {
         // Invalid cache, fetch fresh
@@ -102,7 +118,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .maybeSingle()
 
     if (!error && data) {
-      setProfile(data as Profile)
+      const profileData = data as Profile
+      setProfile(profileData)
+      updateSubscriptionPlan(profileData)
       sessionStorage.setItem(cacheKey, JSON.stringify(data))
       // Sync currency to localStorage for backward compatibility
       if (data.default_currency) {
@@ -112,7 +130,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLoading(false)
   }
 
-  const refreshProfile = async (userId: string, cacheKey: string) => {
+  const doRefreshProfile = async (userId: string, cacheKey: string) => {
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -121,7 +139,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .maybeSingle()
 
       if (!error && data) {
-        setProfile(data as unknown as Profile)
+        const profileData = data as Profile
+        setProfile(profileData)
+        updateSubscriptionPlan(profileData)
         sessionStorage.setItem(cacheKey, JSON.stringify(data))
         // Sync currency to localStorage for backward compatibility
         if (data.default_currency) {
@@ -133,6 +153,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Timeout errors are expected during background refreshes
     }
   }
+
+  const refreshProfile = useCallback(async () => {
+    if (!user) return
+    const cacheKey = `profile_${user.id}`
+    await doRefreshProfile(user.id, cacheKey)
+  }, [user])
 
   const signUp = async (email: string, password: string) => {
     const { error } = await supabase.auth.signUp({
@@ -170,7 +196,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (error) throw error
 
-    setProfile((prev) => (prev ? { ...prev, ...updates } : null))
+    const updatedProfile = profile ? { ...profile, ...updates } : null
+    setProfile(updatedProfile)
+
+    // Update subscription plan if it changed
+    if (updates.subscription_plan) {
+      updateSubscriptionPlan(updatedProfile)
+    }
 
     // Sync currency to localStorage if it was updated
     if (updates.default_currency) {
@@ -184,10 +216,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user,
         profile,
         loading,
+        subscriptionPlan,
         signUp,
         signIn,
         signOut,
         updateProfile,
+        refreshProfile,
       }}
     >
       {children}
