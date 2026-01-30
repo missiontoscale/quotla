@@ -4,8 +4,8 @@ import { useState, useEffect, useMemo, useRef } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { useUserCurrency } from '@/hooks/useUserCurrency'
 import { deductStockForInvoice, restoreStockForInvoice, hasStockBeenDeducted } from '@/lib/inventory/stock-operations'
-import { FileText, User, Calendar, DollarSign, Plus, Trash2, Package, Check, ChevronsUpDown, UserPlus, Save } from 'lucide-react'
-import DownloadDropdown from '@/components/DownloadDropdown'
+import { FileText, User, Calendar, DollarSign, Plus, Trash2, Package, Check, ChevronsUpDown, UserPlus, Save, Download, X } from 'lucide-react'
+import { exportToPDF, exportToWord, exportToPNG } from '@/lib/export'
 import type { Profile, InvoiceWithItems } from '@/types'
 import {
   Dialog,
@@ -108,6 +108,9 @@ export function AddInvoiceDialog({
   const [openLineItemDropdown, setOpenLineItemDropdown] = useState<string | null>(null)
   const lineItemDropdownRefs = useRef<Record<string, HTMLDivElement | null>>({})
   const [profile, setProfile] = useState<Profile | null>(null)
+  const [showDownloadOptions, setShowDownloadOptions] = useState(false)
+  const [exporting, setExporting] = useState<string | null>(null)
+  const [isEditing, setIsEditing] = useState(false)
 
   // Track original status for stock operations on status change
   const [originalStatus, setOriginalStatus] = useState<'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled' | null>(null)
@@ -174,6 +177,8 @@ export function AddInvoiceDialog({
 
   useEffect(() => {
     if (open) {
+      // Reset editing state when dialog opens
+      setIsEditing(false)
       fetchCustomers()
       fetchInventoryItems()
       if (invoiceId) {
@@ -523,7 +528,7 @@ export function AddInvoiceDialog({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (isViewMode) return
+    if (isViewMode && !isEditing) return
 
     // Validation
     if (!formData.client_id) {
@@ -680,13 +685,131 @@ export function AddInvoiceDialog({
     }
   }
 
+  // Build export data for download functions
+  const getExportData = () => {
+    return {
+      type: 'invoice' as const,
+      data: {
+        ...formData,
+        id: invoiceId || '',
+        user_id: '',
+        created_at: '',
+        updated_at: '',
+        subtotal,
+        tax_amount: taxAmount,
+        total,
+        items: lineItems.map(item => ({
+          ...item,
+          invoice_id: invoiceId || '',
+          created_at: '',
+          sort_order: 0
+        })),
+        client: customers.find(c => c.id === formData.client_id) ? {
+          id: formData.client_id,
+          name: customers.find(c => c.id === formData.client_id)?.name || '',
+          email: null,
+          phone: null,
+          address: null,
+          city: null,
+          state: null,
+          postal_code: null,
+          country: null,
+          full_name: customers.find(c => c.id === formData.client_id)?.name || '',
+          company_name: customers.find(c => c.id === formData.client_id)?.company_name || null,
+          user_id: '',
+          is_active: true,
+          created_at: '',
+          updated_at: ''
+        } : null
+      } as InvoiceWithItems,
+      profile
+    }
+  }
+
+  const handleExport = async (format: 'pdf' | 'word' | 'png') => {
+    setExporting(format)
+    setShowDownloadOptions(false)
+
+    try {
+      const exportData = getExportData()
+
+      switch (format) {
+        case 'pdf':
+          await exportToPDF(exportData)
+          break
+        case 'word':
+          await exportToWord(exportData)
+          break
+        case 'png':
+          await exportToPNG(exportData)
+          break
+      }
+    } catch (err) {
+      console.error('Export failed:', err)
+    } finally {
+      setExporting(null)
+    }
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-slate-900 border-slate-800 text-slate-100 max-w-xl md:max-w-3xl max-h-[90vh] overflow-y-auto px-3 md:px-4">
-        <DialogHeader>
-          <DialogTitle className="text-xl">
-            {isViewMode ? 'View Invoice' : isEditMode ? 'Edit Invoice' : 'Create Invoice'}
-          </DialogTitle>
+        <DialogHeader className="sticky top-0 z-10 bg-slate-900 border-b border-slate-800 pb-3 -mx-3 md:-mx-4 px-3 md:px-4 pt-4">
+          <div className="flex items-center justify-between">
+            <DialogTitle className="text-xl">
+              {isViewMode ? 'View Invoice' : isEditMode ? 'Edit Invoice' : 'Create Invoice'}
+            </DialogTitle>
+            {isViewMode && (
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowDownloadOptions(!showDownloadOptions)}
+                  disabled={exporting !== null}
+                  className="p-2 rounded-md text-slate-400 hover:text-cyan-400 hover:bg-slate-800 transition-colors disabled:opacity-50"
+                  aria-label="Download options"
+                >
+                  <Download className="h-5 w-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onOpenChange(false)}
+                  className="p-2 rounded-md text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors"
+                  aria-label="Close"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+            )}
+          </div>
+          {/* Inline download options row */}
+          {isViewMode && showDownloadOptions && (
+            <div className="flex gap-2 mt-3 pt-3 border-t border-slate-800">
+              <button
+                type="button"
+                onClick={() => handleExport('png')}
+                disabled={exporting !== null}
+                className="flex-1 px-3 py-2 text-sm font-medium rounded-md bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition-colors disabled:opacity-50"
+              >
+                {exporting === 'png' ? 'Exporting...' : 'PNG'}
+              </button>
+              <button
+                type="button"
+                onClick={() => handleExport('pdf')}
+                disabled={exporting !== null}
+                className="flex-1 px-3 py-2 text-sm font-medium rounded-md bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition-colors disabled:opacity-50"
+              >
+                {exporting === 'pdf' ? 'Exporting...' : 'PDF'}
+              </button>
+              <button
+                type="button"
+                onClick={() => handleExport('word')}
+                disabled={exporting !== null}
+                className="flex-1 px-3 py-2 text-sm font-medium rounded-md bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition-colors disabled:opacity-50"
+              >
+                {exporting === 'word' ? 'Exporting...' : 'DOCX'}
+              </button>
+            </div>
+          )}
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 py-4">
           {error && (
@@ -705,7 +828,7 @@ export function AddInvoiceDialog({
                   value={formData.invoice_number}
                   onChange={(e) => setFormData({ ...formData, invoice_number: e.target.value })}
                   required
-                  disabled={isViewMode}
+                  disabled={isViewMode && !isEditing}
                   className="bg-slate-800 border-slate-700 h-8 text-sm"
                 />
               </div>
@@ -715,7 +838,7 @@ export function AddInvoiceDialog({
                 <Select
                   value={formData.status}
                   onValueChange={(value) => setFormData({ ...formData, status: value as any })}
-                  disabled={isViewMode}
+                  disabled={isViewMode && !isEditing}
                 >
                   <SelectTrigger className="bg-slate-800 border-slate-700 h-8 text-sm">
                     <SelectValue />
@@ -738,7 +861,7 @@ export function AddInvoiceDialog({
                 placeholder="e.g., Website Development Services"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                disabled={isViewMode}
+                disabled={isViewMode && !isEditing}
                 className="bg-slate-800 border-slate-700 h-8 text-sm"
               />
             </div>
@@ -759,7 +882,7 @@ export function AddInvoiceDialog({
                     }
                   }}
                   onFocus={() => setCustomerComboboxOpen(true)}
-                  disabled={isViewMode}
+                  disabled={isViewMode && !isEditing}
                   className="bg-slate-800 border-slate-700 h-8 text-sm pr-8"
                 />
                 <ChevronsUpDown className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50 pointer-events-none" />
@@ -824,7 +947,7 @@ export function AddInvoiceDialog({
                 )}
               </div>
               {/* Save as Customer button - shows when a temporary customer is selected */}
-              {selectedCustomer?.isTemporary && !isViewMode && (
+              {selectedCustomer?.isTemporary && (!isViewMode || isEditing) && (
                 <div className="flex items-center gap-2 p-2 bg-amber-500/10 border border-amber-500/30 rounded-lg">
                   <span className="text-xs text-amber-400 flex-1">
                     "{selectedCustomer.name}" is not saved to your customers list
@@ -856,7 +979,7 @@ export function AddInvoiceDialog({
                   value={formData.issue_date}
                   onChange={(e) => setFormData({ ...formData, issue_date: e.target.value })}
                   required
-                  disabled={isViewMode}
+                  disabled={isViewMode && !isEditing}
                   className="bg-slate-800 border-slate-700 h-8 text-sm"
                 />
               </div>
@@ -868,7 +991,7 @@ export function AddInvoiceDialog({
                   type="date"
                   value={formData.due_date}
                   onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
-                  disabled={isViewMode}
+                  disabled={isViewMode && !isEditing}
                   className="bg-slate-800 border-slate-700 h-8 text-sm"
                 />
               </div>
@@ -907,7 +1030,7 @@ export function AddInvoiceDialog({
                               }
                             }}
                             onFocus={() => setOpenLineItemDropdown(item.id)}
-                            disabled={isViewMode}
+                            disabled={isViewMode && !isEditing}
                             className="bg-slate-800 border-slate-700 h-8 text-sm pr-8"
                           />
                           <ChevronsUpDown className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50 pointer-events-none" />
@@ -980,7 +1103,7 @@ export function AddInvoiceDialog({
                           step="1"
                           value={item.quantity}
                           onChange={(e) => updateLineItem(item.id, 'quantity', parseFloat(e.target.value) || 1)}
-                          disabled={isViewMode}
+                          disabled={isViewMode && !isEditing}
                           className="bg-slate-800 border-slate-700 h-8 text-sm"
                         />
                       </div>
@@ -992,7 +1115,7 @@ export function AddInvoiceDialog({
                           step="0.01"
                           value={item.unit_price}
                           onChange={(e) => updateLineItem(item.id, 'unit_price', parseFloat(e.target.value) || 0)}
-                          disabled={isViewMode}
+                          disabled={isViewMode && !isEditing}
                           className="bg-slate-800 border-slate-700 h-8 text-sm"
                         />
                       </div>
@@ -1004,7 +1127,7 @@ export function AddInvoiceDialog({
                       </div>
                       <div className="col-span-1 space-y-1">
                         {index === 0 && <Label className="text-xs">&nbsp;</Label>}
-                        {!isViewMode && lineItems.length > 1 && (
+                        {(!isViewMode || isEditing) && lineItems.length > 1 && (
                           <Button
                             type="button"
                             variant="ghost"
@@ -1018,7 +1141,7 @@ export function AddInvoiceDialog({
                       </div>
                     </div>
                     {/* Save to Inventory button - shows for custom items with description and price */}
-                    {item.isCustomItem && !item.savedToInventory && item.description && item.unit_price > 0 && !isViewMode && (
+                    {item.isCustomItem && !item.savedToInventory && item.description && item.unit_price > 0 && (!isViewMode || isEditing) && (
                       <div className="flex items-center gap-2 p-2 bg-amber-500/10 border border-amber-500/30 rounded-lg ml-0 sm:ml-0">
                         <span className="text-xs text-amber-400 flex-1">
                           "{item.description}" is not in your inventory
@@ -1040,7 +1163,7 @@ export function AddInvoiceDialog({
                 )
               })}
 
-              {!isViewMode && (
+              {(!isViewMode || isEditing) && (
                 <Button
                   type="button"
                   variant="ghost"
@@ -1063,7 +1186,7 @@ export function AddInvoiceDialog({
                 <Select
                   value={formData.currency}
                   onValueChange={(value) => setFormData({ ...formData, currency: value })}
-                  disabled={isViewMode}
+                  disabled={isViewMode && !isEditing}
                 >
                   <SelectTrigger className="bg-slate-800 border-slate-700 h-8 text-sm">
                     <SelectValue />
@@ -1088,7 +1211,7 @@ export function AddInvoiceDialog({
                   step="0.1"
                   value={formData.tax_rate}
                   onChange={(e) => setFormData({ ...formData, tax_rate: parseFloat(e.target.value) || 0 })}
-                  disabled={isViewMode}
+                  disabled={isViewMode && !isEditing}
                   className="bg-slate-800 border-slate-700 h-8 text-sm"
                 />
               </div>
@@ -1128,7 +1251,7 @@ export function AddInvoiceDialog({
                 placeholder="Any additional notes for the customer..."
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                disabled={isViewMode}
+                disabled={isViewMode && !isEditing}
                 className="bg-slate-800 border-slate-700 min-h-16 text-sm"
                 rows={2}
               />
@@ -1141,7 +1264,7 @@ export function AddInvoiceDialog({
                 placeholder="e.g., Payment due within 30 days..."
                 value={formData.payment_terms}
                 onChange={(e) => setFormData({ ...formData, payment_terms: e.target.value })}
-                disabled={isViewMode}
+                disabled={isViewMode && !isEditing}
                 className="bg-slate-800 border-slate-700 min-h-16 text-sm"
                 rows={2}
               />
@@ -1149,66 +1272,41 @@ export function AddInvoiceDialog({
           </FormSection>
 
           <DialogFooter className="gap-2 pt-4 flex-col sm:flex-row">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              className="border-slate-700 text-slate-300 hover:bg-slate-800 text-sm h-9"
-            >
-              {isViewMode ? 'Close' : 'Cancel'}
-            </Button>
-            {isViewMode && invoiceId && (
-              <div className="flex-1 flex justify-center sm:justify-start">
-                <DownloadDropdown
-                  type="invoice"
-                  data={{
-                    ...formData,
-                    id: invoiceId,
-                    user_id: '',
-                    created_at: '',
-                    updated_at: '',
-                    subtotal,
-                    tax_amount: taxAmount,
-                    total,
-                    items: lineItems.map(item => ({
-                      ...item,
-                      invoice_id: invoiceId,
-                      created_at: '',
-                      sort_order: 0
-                    })),
-                    client: customers.find(c => c.id === formData.client_id) ? {
-                      id: formData.client_id,
-                      name: customers.find(c => c.id === formData.client_id)?.name || '',
-                      email: null,
-                      phone: null,
-                      address: null,
-                      city: null,
-                      state: null,
-                      postal_code: null,
-                      country: null,
-                      full_name: customers.find(c => c.id === formData.client_id)?.name || '',
-                      company_name: customers.find(c => c.id === formData.client_id)?.company_name || null,
-                      user_id: '',
-                      is_active: true,
-                      created_at: '',
-                      updated_at: ''
-                    } : null
-                  } as InvoiceWithItems}
-                  profile={profile}
-                />
-              </div>
-            )}
-            {!isViewMode && (
+            {isViewMode && !isEditing ? (
               <Button
-                type="submit"
-                disabled={loading}
+                type="button"
+                onClick={() => setIsEditing(true)}
                 className="bg-cyan-500 hover:bg-cyan-600 text-white text-sm h-9"
               >
-                {loading
-                  ? (isEditMode ? 'Updating...' : 'Creating...')
-                  : (isEditMode ? 'Update Invoice' : 'Create Invoice')
-                }
+                Edit Invoice
               </Button>
+            ) : (
+              <>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    if (isViewMode && isEditing) {
+                      setIsEditing(false)
+                    } else {
+                      onOpenChange(false)
+                    }
+                  }}
+                  className="border-slate-700 text-slate-300 hover:bg-slate-800 text-sm h-9"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="bg-cyan-500 hover:bg-cyan-600 text-white text-sm h-9"
+                >
+                  {loading
+                    ? ((isEditMode || isEditing) ? 'Updating...' : 'Creating...')
+                    : ((isEditMode || isEditing) ? 'Update Invoice' : 'Create Invoice')
+                  }
+                </Button>
+              </>
             )}
           </DialogFooter>
         </form>

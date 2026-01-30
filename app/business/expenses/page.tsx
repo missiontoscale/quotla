@@ -39,6 +39,7 @@ import {
 import {
   dashboardColors as colors,
   dashboardComponents as components,
+  dashboardSpacing as spacing,
   cn
 } from '@/hooks/use-dashboard-theme';
 import { DataTableSkeleton } from '@/components/dashboard/DataTableSkeleton';
@@ -431,65 +432,71 @@ function ExpensesContent() {
   ];
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className={cn(spacing.page, "max-w-[1400px] mx-auto px-3 md:px-4")}>
+      {/* Header */}
+      <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-3xl text-primary-50">Expenses</h1>
-          <p className="text-primary-400 mt-1">
+          <h1 className="text-2xl md:text-3xl text-primary-50">Expenses</h1>
+          <p className="text-primary-400 mt-1 text-sm">
             {isFilterActive ? formattedDateRange : 'Track expenses and manage vendors'}
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <PageDateFilter />
-          <div className="flex items-center gap-2">
-            <Select value={displayCurrency} onValueChange={setDisplayCurrency}>
-              <SelectTrigger className="w-[120px] bg-primary-700 border-primary-600 text-primary-50 h-9 text-sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-quotla-dark border-primary-600">
-                {CURRENCIES.map((curr) => (
-                  <SelectItem key={curr.code} value={curr.code}>
-                    {curr.symbol} {curr.code}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {isConverted && (
-              <div className="flex items-center gap-1 text-xs text-amber-400">
-                <RefreshCw className="w-3 h-3" />
-                <span>Converted</span>
-              </div>
-            )}
-          </div>
+        {/* Primary Actions */}
+        <div className="flex items-center gap-2">
           {activeTab === 'expenses' ? (
-            <div className="flex items-center gap-2">
+            <>
               <Button
                 variant="outline"
                 onClick={() => setBankImportModalOpen(true)}
-                className="border-quotla-green text-quotla-green hover:bg-quotla-green/10"
+                className="border-quotla-green text-quotla-green hover:bg-quotla-green/10 h-9 px-3 sm:px-4"
               >
-                <Upload className="w-4 h-4 mr-2" />
-                Import Statement
+                <Upload className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Import Statement</span>
               </Button>
               <Button
                 onClick={() => setAddExpenseDialogOpen(true)}
-                className="bg-quotla-orange hover:bg-secondary-400 text-white"
+                className="bg-quotla-orange hover:bg-secondary-400 text-white h-9 px-4"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Add Expense
               </Button>
-            </div>
+            </>
           ) : (
             <Button
               onClick={() => setAddVendorDialogOpen(true)}
-              className="bg-quotla-orange hover:bg-secondary-400 text-white"
+              className="bg-quotla-orange hover:bg-secondary-400 text-white h-9 px-4"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Vendor
             </Button>
           )}
         </div>
-      </div>
+      </header>
+
+      {/* Filters */}
+      <section className="flex flex-wrap items-center gap-2 mt-6">
+        <PageDateFilter />
+        <div className="flex items-center gap-2">
+          <Select value={displayCurrency} onValueChange={setDisplayCurrency}>
+            <SelectTrigger className="w-[100px] sm:w-[120px] bg-primary-700 border-primary-600 text-primary-50 h-9 text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-quotla-dark border-primary-600">
+              {CURRENCIES.map((curr) => (
+                <SelectItem key={curr.code} value={curr.code} className="min-h-[44px] sm:min-h-0">
+                  {curr.symbol} {curr.code}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {isConverted && (
+            <div className="flex items-center gap-1 text-xs text-amber-400">
+              <RefreshCw className="w-3 h-3" />
+              <span className="hidden sm:inline">Converted</span>
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* Dialogs */}
       <AddExpenseDialog
@@ -545,11 +552,11 @@ function ExpensesContent() {
           </div>
 
           {/* AVITPF Metric Layout - First Row: Total Expenses (large) + This Month/Avg Daily (stacked) */}
-          <div className="flex flex-col md:flex-row gap-4 mb-6">
-            {/* Total Expenses - Large */}
+          <div className="mb-6">
+            {/* Mobile Layout - Single Card */}
             <div className={cn(
-              'flex-1 p-4 rounded-xl border backdrop-blur-sm transition-all duration-200',
-              'bg-primary-700/30 border-rose-500/20 hover:border-rose-500/40'
+              'md:hidden p-4 rounded-xl border backdrop-blur-sm',
+              'bg-primary-700/30 border-rose-500/20'
             )}>
               <LargeAVITPFMetric
                 label="Total Expenses"
@@ -559,44 +566,86 @@ function ExpensesContent() {
                 colorScheme="rose"
                 invertColors
               />
+              <div className="grid grid-cols-2 gap-3 mt-4">
+                <div className={cn(
+                  'p-4 rounded-lg border backdrop-blur-sm',
+                  'bg-primary-800/30 border-amber-500/20'
+                )}>
+                  <CompactAVITPFMetric
+                    label="This Month"
+                    value={stats.thisMonth}
+                    change={(stats as any).expensesGrowth || null}
+                    currency={displayCurrency}
+                    colorScheme="orange"
+                    invertColors
+                  />
+                </div>
+                <div className={cn(
+                  'p-4 rounded-lg border backdrop-blur-sm',
+                  'bg-primary-800/30 border-quotla-orange/20'
+                )}>
+                  <CompactAVITPFMetric
+                    label="Avg Daily"
+                    value={(stats as any).avgDailyExpense || 0}
+                    change={null}
+                    currency={displayCurrency}
+                    colorScheme="orange"
+                  />
+                </div>
+              </div>
             </div>
 
-            {/* This Month + Avg Daily - Stacked */}
-            <div className="flex flex-col gap-3">
+            {/* Desktop Layout - Two Columns */}
+            <div className="hidden md:grid md:grid-cols-2 gap-4">
               <div className={cn(
-                'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
-                'bg-primary-700/30 border-amber-500/20 hover:border-amber-500/40'
+                'p-4 rounded-xl border backdrop-blur-sm',
+                'bg-primary-700/30 border-rose-500/20'
               )}>
-                <CompactAVITPFMetric
-                  label="This Month"
-                  value={stats.thisMonth}
-                  change={(stats as any).expensesGrowth || null}
+                <LargeAVITPFMetric
+                  label="Total Expenses"
+                  value={stats.totalExpenses}
+                  change={null}
                   currency={displayCurrency}
-                  colorScheme="orange"
+                  colorScheme="rose"
                   invertColors
                 />
               </div>
-              <div className={cn(
-                'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
-                'bg-primary-700/30 border-quotla-orange/20 hover:border-quotla-orange/40'
-              )}>
-                <CompactAVITPFMetric
-                  label="Avg Daily"
-                  value={(stats as any).avgDailyExpense || 0}
-                  change={null}
-                  currency={displayCurrency}
-                  colorScheme="orange"
-                />
+              <div className="grid grid-cols-2 gap-3">
+                <div className={cn(
+                  'p-4 rounded-xl border backdrop-blur-sm',
+                  'bg-primary-700/30 border-amber-500/20'
+                )}>
+                  <CompactAVITPFMetric
+                    label="This Month"
+                    value={stats.thisMonth}
+                    change={(stats as any).expensesGrowth || null}
+                    currency={displayCurrency}
+                    colorScheme="orange"
+                    invertColors
+                  />
+                </div>
+                <div className={cn(
+                  'p-4 rounded-xl border backdrop-blur-sm',
+                  'bg-primary-700/30 border-quotla-orange/20'
+                )}>
+                  <CompactAVITPFMetric
+                    label="Avg Daily"
+                    value={(stats as any).avgDailyExpense || 0}
+                    change={null}
+                    currency={displayCurrency}
+                    colorScheme="orange"
+                  />
+                </div>
               </div>
             </div>
           </div>
 
           {/* Second Row: Categories + Pending */}
-          <div className="flex flex-col md:flex-row gap-4 mb-6">
-            {/* Categories */}
+          <div className="mb-6">
+            {/* Mobile Layout - Single Card */}
             <div className={cn(
-              'flex-1 p-4 rounded-xl border backdrop-blur-sm transition-all duration-200',
-              'bg-primary-700/30 border-teal-500/20 hover:border-teal-500/40'
+              'md:hidden p-4 rounded-xl border backdrop-blur-sm',
+              'bg-primary-700/30 border-teal-500/20'
             )}>
               <AVITPFMetric
                 label="Categories"
@@ -605,20 +654,48 @@ function ExpensesContent() {
                 isInteger
                 colorScheme="teal"
               />
+              <div className="grid grid-cols-1 gap-3 mt-4">
+                <div className={cn(
+                  'p-4 rounded-lg border backdrop-blur-sm',
+                  'bg-primary-800/30 border-amber-500/20'
+                )}>
+                  <AVITPFMetric
+                    label="Pending"
+                    value={stats.pendingExpenses}
+                    change={null}
+                    isInteger
+                    colorScheme="orange"
+                  />
+                </div>
+              </div>
             </div>
 
-            {/* Pending Expenses */}
-            <div className={cn(
-              'flex-1 p-4 rounded-xl border backdrop-blur-sm transition-all duration-200',
-              'bg-primary-700/30 border-amber-500/20 hover:border-amber-500/40'
-            )}>
-              <AVITPFMetric
-                label="Pending"
-                value={stats.pendingExpenses}
-                change={null}
-                isInteger
-                colorScheme="orange"
-              />
+            {/* Desktop Layout - Two Columns */}
+            <div className="hidden md:grid md:grid-cols-2 gap-4">
+              <div className={cn(
+                'p-4 rounded-xl border backdrop-blur-sm',
+                'bg-primary-700/30 border-teal-500/20'
+              )}>
+                <AVITPFMetric
+                  label="Categories"
+                  value={stats.categories}
+                  change={null}
+                  isInteger
+                  colorScheme="teal"
+                />
+              </div>
+              <div className={cn(
+                'p-4 rounded-xl border backdrop-blur-sm',
+                'bg-primary-700/30 border-amber-500/20'
+              )}>
+                <AVITPFMetric
+                  label="Pending"
+                  value={stats.pendingExpenses}
+                  change={null}
+                  isInteger
+                  colorScheme="orange"
+                />
+              </div>
             </div>
           </div>
 

@@ -107,7 +107,7 @@ export function PageDateFilter({
           variant="ghost"
           size="sm"
           onClick={clearDateRange}
-          className="h-8 px-2 text-primary-400 hover:text-primary-100 hover:bg-primary-700"
+          className="h-11 sm:h-8 w-11 sm:w-auto px-2 text-primary-400 hover:text-primary-100 hover:bg-primary-700"
           title="Clear date filter"
         >
           <X className="w-4 h-4" />

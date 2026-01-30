@@ -29,6 +29,7 @@ import { AICreateModal } from '@/components/modals/AICreateModal'
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed'
 import { OnboardingProgress } from '@/components/dashboard/OnboardingProgress'
 import { CalendarWidget } from '@/components/dashboard/CalendarWidget'
+import { MetricsCardSkeleton } from '@/components/dashboard/MetricsCardSkeleton'
 import { formatCurrency, formatCompactCurrency } from '@/lib/utils/currency'
 import { useUserCurrency } from '@/hooks/useUserCurrency'
 import {
@@ -414,10 +415,9 @@ function DashboardContent() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="relative">
-          <div className={cn(components.spinner, 'h-12 w-12')} />
-        </div>
+      <div className="space-y-4 max-w-[1400px] mx-auto px-3 md:px-4">
+        <MetricsCardSkeleton />
+        <MetricsCardSkeleton />
       </div>
     )
   }

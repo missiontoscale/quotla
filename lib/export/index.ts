@@ -43,52 +43,52 @@ export async function exportToPDF(exportData: ExportData): Promise<void> {
     : (data as InvoiceWithItems).invoice_number
   const items = data.items
 
-  // Add a subtle background color to the header area
+  // Add a subtle background color to the header area (increased height for better spacing)
   doc.setFillColor(248, 250, 252)
-  doc.rect(0, 0, 210, 45, 'F')
+  doc.rect(0, 0, 210, 55, 'F')
 
   // Main title - centered and prominent
   doc.setFontSize(32)
   doc.setFont('helvetica', 'bold')
   doc.setTextColor(26, 26, 26)
   const titleWidth = doc.getTextWidth(documentTitle)
-  doc.text(documentTitle, (210 - titleWidth) / 2, 20)
+  doc.text(documentTitle, (210 - titleWidth) / 2, 28)
 
-  // Document info section
+  // Document info section (increased vertical spacing)
   doc.setFontSize(11)
   doc.setFont('helvetica', 'bold')
   doc.setTextColor(100, 100, 100)
-  doc.text(`${documentTitle} Number:`, 20, 55)
+  doc.text(`${documentTitle} Number:`, 20, 70)
   doc.setFont('helvetica', 'normal')
-  doc.text(documentNumber, 70, 55)
+  doc.text(documentNumber, 70, 70)
 
   doc.setFont('helvetica', 'bold')
-  doc.text('Date:', 20, 62)
+  doc.text('Date:', 20, 78)
   doc.setFont('helvetica', 'normal')
   const issueDate = format(new Date(isQuote
     ? (data as QuoteWithItems).issue_date
     : (data as InvoiceWithItems).issue_date), 'MMM dd, yyyy')
-  doc.text(issueDate, 70, 62)
+  doc.text(issueDate, 70, 78)
 
-  // Client info - Bill To section
+  // Client info - Bill To section (increased top margin)
   doc.setFontSize(13)
   doc.setFont('helvetica', 'bold')
   doc.setTextColor(0, 0, 0)
   const billLabel = isQuote ? 'To:' : 'Bill To:'
-  doc.text(billLabel, 20, 80)
+  doc.text(billLabel, 20, 98)
 
   if (data.client) {
     doc.setFontSize(12)
     doc.setFont('helvetica', 'bold')
-    doc.text(data.client.name, 20, 88)
+    doc.text(data.client.full_name, 20, 108)
 
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(10)
-    let clientY = 94
+    let clientY = 115
 
     if (data.client.address) {
       doc.text(data.client.address, 20, clientY)
-      clientY += 5
+      clientY += 6
     }
 
     const cityLine = `${data.client.city || ''}, ${data.client.country || ''}`.trim().replace(/^,\s*|,\s*$/g, '')
@@ -106,7 +106,7 @@ export async function exportToPDF(exportData: ExportData): Promise<void> {
   ])
 
   autoTable(doc, {
-    startY: 115,
+    startY: 140,
     head: [['Description', 'Quantity', 'Unit Price', 'Amount']],
     body: tableData,
     theme: 'grid',
@@ -116,11 +116,11 @@ export async function exportToPDF(exportData: ExportData): Promise<void> {
       fontStyle: 'bold',
       fontSize: 11,
       halign: 'left',
-      cellPadding: 4,
+      cellPadding: 6,
     },
     bodyStyles: {
       fontSize: 10,
-      cellPadding: 4,
+      cellPadding: 6,
     },
     columnStyles: {
       0: { cellWidth: 90, halign: 'left' },
@@ -134,8 +134,8 @@ export async function exportToPDF(exportData: ExportData): Promise<void> {
     margin: { left: 20, right: 20 },
   })
 
-  // Totals section with clean alignment
-  const finalY = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 15
+  // Totals section with clean alignment (increased spacing from table)
+  const finalY = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 20
 
   const totalsX = 130
   const valuesX = 190
@@ -152,31 +152,31 @@ export async function exportToPDF(exportData: ExportData): Promise<void> {
     { align: 'right' }
   )
 
-  doc.text(`Tax (${(data.tax_rate * 100).toFixed(0)}%):`, totalsX, finalY + 7)
+  doc.text(`Tax (${(data.tax_rate * 100).toFixed(0)}%):`, totalsX, finalY + 9)
   doc.text(
     `${getCurrencySymbol(data.currency)} ${data.tax_amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
     valuesX,
-    finalY + 7,
+    finalY + 9,
     { align: 'right' }
   )
 
   // Add line separator before total
   doc.setLineWidth(0.5)
   doc.setDrawColor(0, 0, 0)
-  doc.line(totalsX, finalY + 12, valuesX, finalY + 12)
+  doc.line(totalsX, finalY + 16, valuesX, finalY + 16)
 
   doc.setFontSize(14)
   doc.setFont('helvetica', 'bold')
-  doc.text('TOTAL:', totalsX, finalY + 22)
+  doc.text('TOTAL:', totalsX, finalY + 26)
   doc.text(
     `${getCurrencySymbol(data.currency)} ${data.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
     valuesX,
-    finalY + 22,
+    finalY + 26,
     { align: 'right' }
   )
 
-  // Notes section
-  let notesY = finalY + 35
+  // Notes section (increased spacing from totals)
+  let notesY = finalY + 45
   if (data.notes) {
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(11)
@@ -230,7 +230,7 @@ export async function exportToWord(exportData: ExportData): Promise<void> {
       {
         properties: {},
         children: [
-          // Header - centered title
+          // Header - centered title (increased bottom margin)
           new Paragraph({
             children: [
               new TextRun({
@@ -241,10 +241,10 @@ export async function exportToWord(exportData: ExportData): Promise<void> {
               }),
             ],
             alignment: AlignmentType.CENTER,
-            spacing: { after: 200 },
+            spacing: { after: 400 },
           }),
 
-          // Document info
+          // Document info (improved spacing)
           new Paragraph({
             children: [
               new TextRun({
@@ -257,7 +257,7 @@ export async function exportToWord(exportData: ExportData): Promise<void> {
                 size: 22,
               }),
             ],
-            spacing: { after: 100 },
+            spacing: { after: 120 },
           }),
           new Paragraph({
             children: [
@@ -271,10 +271,10 @@ export async function exportToWord(exportData: ExportData): Promise<void> {
                 size: 22,
               }),
             ],
-            spacing: { after: 200 },
+            spacing: { after: 350 },
           }),
 
-          // Client info
+          // Client info (improved spacing)
           new Paragraph({
             children: [
               new TextRun({
@@ -283,17 +283,19 @@ export async function exportToWord(exportData: ExportData): Promise<void> {
                 size: 26,
               }),
             ],
-            spacing: { after: 100 },
+            spacing: { after: 120 },
           }),
           ...(data.client
             ? [
                 new Paragraph({
-                  children: [new TextRun({ text: data.client.name, bold: true, size: 24 })],
+                  children: [new TextRun({ text: data.client.full_name, bold: true, size: 24 })],
+                  spacing: { after: 60 },
                 }),
                 ...(data.client.address
                   ? [
                       new Paragraph({
                         children: [new TextRun({ text: data.client.address, size: 22 })],
+                        spacing: { after: 60 },
                       }),
                     ]
                   : []),
@@ -304,12 +306,12 @@ export async function exportToWord(exportData: ExportData): Promise<void> {
                       size: 22,
                     }),
                   ],
-                  spacing: { after: 300 },
+                  spacing: { after: 400 },
                 }),
               ]
-            : [new Paragraph({ text: '', spacing: { after: 300 } })]),
+            : [new Paragraph({ text: '', spacing: { after: 400 } })]),
 
-          // Items table
+          // Items table (with cell padding)
           new Table({
             width: { size: 100, type: WidthType.PERCENTAGE },
             rows: [
@@ -329,6 +331,7 @@ export async function exportToWord(exportData: ExportData): Promise<void> {
                     ],
                     shading: { fill: '666666' },
                     width: { size: 50, type: WidthType.PERCENTAGE },
+                    margins: { top: 80, bottom: 80, left: 100, right: 100 },
                   }),
                   new TableCell({
                     children: [
@@ -345,6 +348,7 @@ export async function exportToWord(exportData: ExportData): Promise<void> {
                     ],
                     shading: { fill: '666666' },
                     width: { size: 15, type: WidthType.PERCENTAGE },
+                    margins: { top: 80, bottom: 80, left: 100, right: 100 },
                   }),
                   new TableCell({
                     children: [
@@ -361,6 +365,7 @@ export async function exportToWord(exportData: ExportData): Promise<void> {
                     ],
                     shading: { fill: '666666' },
                     width: { size: 17.5, type: WidthType.PERCENTAGE },
+                    margins: { top: 80, bottom: 80, left: 100, right: 100 },
                   }),
                   new TableCell({
                     children: [
@@ -377,6 +382,7 @@ export async function exportToWord(exportData: ExportData): Promise<void> {
                     ],
                     shading: { fill: '666666' },
                     width: { size: 17.5, type: WidthType.PERCENTAGE },
+                    margins: { top: 80, bottom: 80, left: 100, right: 100 },
                   }),
                 ],
               }),
@@ -387,6 +393,7 @@ export async function exportToWord(exportData: ExportData): Promise<void> {
                       new TableCell({
                         children: [new Paragraph({ text: item.description })],
                         shading: index % 2 === 0 ? { fill: 'FAFAFA' } : undefined,
+                        margins: { top: 60, bottom: 60, left: 100, right: 100 },
                       }),
                       new TableCell({
                         children: [
@@ -396,6 +403,7 @@ export async function exportToWord(exportData: ExportData): Promise<void> {
                           }),
                         ],
                         shading: index % 2 === 0 ? { fill: 'FAFAFA' } : undefined,
+                        margins: { top: 60, bottom: 60, left: 100, right: 100 },
                       }),
                       new TableCell({
                         children: [
@@ -405,6 +413,7 @@ export async function exportToWord(exportData: ExportData): Promise<void> {
                           }),
                         ],
                         shading: index % 2 === 0 ? { fill: 'FAFAFA' } : undefined,
+                        margins: { top: 60, bottom: 60, left: 100, right: 100 },
                       }),
                       new TableCell({
                         children: [
@@ -414,15 +423,16 @@ export async function exportToWord(exportData: ExportData): Promise<void> {
                           }),
                         ],
                         shading: index % 2 === 0 ? { fill: 'FAFAFA' } : undefined,
+                        margins: { top: 60, bottom: 60, left: 100, right: 100 },
                       }),
                     ],
                   })
               ),
             ],
           }),
-          new Paragraph({ text: '', spacing: { after: 200 } }),
+          new Paragraph({ text: '', spacing: { after: 300 } }),
 
-          // Totals
+          // Totals (improved spacing)
           new Paragraph({
             children: [
               new TextRun({
@@ -431,6 +441,7 @@ export async function exportToWord(exportData: ExportData): Promise<void> {
               }),
             ],
             alignment: AlignmentType.RIGHT,
+            spacing: { after: 80 },
           }),
           new Paragraph({
             children: [
@@ -440,8 +451,8 @@ export async function exportToWord(exportData: ExportData): Promise<void> {
               }),
             ],
             alignment: AlignmentType.RIGHT,
+            spacing: { after: 150 },
           }),
-          new Paragraph({ text: '', spacing: { after: 100 } }),
           new Paragraph({
             children: [
               new TextRun({
@@ -451,34 +462,35 @@ export async function exportToWord(exportData: ExportData): Promise<void> {
               }),
             ],
             alignment: AlignmentType.RIGHT,
-            spacing: { after: 300 },
+            spacing: { after: 450 },
           }),
 
-          // Notes
+          // Notes (improved spacing)
           ...(data.notes
             ? [
                 new Paragraph({
                   children: [new TextRun({ text: 'Notes:', bold: true, size: 22, color: '666666' })],
-                  spacing: { after: 100 },
+                  spacing: { before: 100, after: 120 },
                 }),
                 new Paragraph({
                   children: [new TextRun({ text: data.notes, size: 20 })],
-                  spacing: { after: 200 },
+                  spacing: { after: 300 },
                 }),
               ]
             : []),
 
-          // Terms
+          // Terms (improved spacing)
           ...(isQuote && (data as QuoteWithItems).terms
             ? [
                 new Paragraph({
                   children: [
                     new TextRun({ text: 'Terms & Conditions:', bold: true, size: 22, color: '666666' }),
                   ],
-                  spacing: { after: 100 },
+                  spacing: { before: 100, after: 120 },
                 }),
                 new Paragraph({
                   children: [new TextRun({ text: (data as QuoteWithItems).terms!, size: 20 })],
+                  spacing: { after: 200 },
                 }),
               ]
             : []),
@@ -486,10 +498,11 @@ export async function exportToWord(exportData: ExportData): Promise<void> {
             ? [
                 new Paragraph({
                   children: [new TextRun({ text: 'Payment Terms:', bold: true, size: 22, color: '666666' })],
-                  spacing: { after: 100 },
+                  spacing: { before: 100, after: 120 },
                 }),
                 new Paragraph({
                   children: [new TextRun({ text: (data as InvoiceWithItems).payment_terms!, size: 20 })],
+                  spacing: { after: 200 },
                 }),
               ]
             : []),
@@ -523,80 +536,81 @@ export async function exportToPNG(exportData: ExportData): Promise<void> {
     ? (data as QuoteWithItems).quote_number
     : (data as InvoiceWithItems).invoice_number
 
-  // Create a temporary div to render the document
+  // Create a temporary div to render the document (increased padding)
   const tempDiv = document.createElement('div')
   tempDiv.style.width = '800px'
-  tempDiv.style.padding = '40px'
+  tempDiv.style.padding = '60px'
   tempDiv.style.backgroundColor = '#ffffff'
   tempDiv.style.fontFamily = 'Arial, sans-serif'
   tempDiv.style.color = '#000000'
+  tempDiv.style.lineHeight = '1.5'
 
   const issueDate = format(new Date(data.issue_date), 'MMM dd, yyyy')
 
   tempDiv.innerHTML = `
-    <div style="text-align: center; margin-bottom: 40px;">
+    <div style="text-align: center; margin-bottom: 50px;">
       <h1 style="font-size: 42px; font-weight: bold; color: #1a1a1a; margin: 0;">${documentTitle}</h1>
     </div>
 
-    <div style="margin-bottom: 30px;">
-      <p style="margin: 5px 0;"><strong>${documentTitle} Number:</strong> ${documentNumber}</p>
-      <p style="margin: 5px 0;"><strong>Date:</strong> ${issueDate}</p>
+    <div style="margin-bottom: 40px;">
+      <p style="margin: 8px 0; line-height: 1.6;"><strong>${documentTitle} Number:</strong> ${documentNumber}</p>
+      <p style="margin: 8px 0; line-height: 1.6;"><strong>Date:</strong> ${issueDate}</p>
     </div>
 
-    <div style="margin-bottom: 30px;">
-      <h3 style="font-size: 18px; margin-bottom: 10px;">${isQuote ? 'To:' : 'Bill To:'}</h3>
+    <div style="margin-bottom: 40px;">
+      <h3 style="font-size: 18px; margin-bottom: 12px;">${isQuote ? 'To:' : 'Bill To:'}</h3>
       ${data.client ? `
-        <p style="margin: 5px 0; font-weight: bold;">${data.client.name}</p>
-        ${data.client.address ? `<p style="margin: 5px 0;">${data.client.address}</p>` : ''}
-        <p style="margin: 5px 0;">${data.client.city || ''}, ${data.client.country || ''}</p>
+        <p style="margin: 6px 0; font-weight: bold; line-height: 1.6;">${data.client.full_name}</p>
+        ${data.client.address ? `<p style="margin: 6px 0; line-height: 1.6;">${data.client.address}</p>` : ''}
+        <p style="margin: 6px 0; line-height: 1.6;">${data.client.city || ''}, ${data.client.country || ''}</p>
       ` : ''}
     </div>
 
-    <div style="margin-bottom: 30px;">
-      <h3 style="font-size: 16px; margin-bottom: 10px;">Items:</h3>
-      <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+    <div style="margin-bottom: 40px;">
+      <table style="width: 100%; border-collapse: separate; border-spacing: 0; margin-bottom: 20px;">
         <thead>
           <tr style="background-color: #666666; color: white;">
-            <th style="padding: 10px; text-align: left; border: 1px solid #ccc;">Description</th>
-            <th style="padding: 10px; text-align: right; border: 1px solid #ccc;">Qty</th>
-            <th style="padding: 10px; text-align: right; border: 1px solid #ccc;">Unit Price</th>
-            <th style="padding: 10px; text-align: right; border: 1px solid #ccc;">Amount</th>
+            <th style="padding: 12px 14px; text-align: left; border: 1px solid #ccc;">Description</th>
+            <th style="padding: 12px 14px; text-align: right; border: 1px solid #ccc;">Qty</th>
+            <th style="padding: 12px 14px; text-align: right; border: 1px solid #ccc;">Unit Price</th>
+            <th style="padding: 12px 14px; text-align: right; border: 1px solid #ccc;">Amount</th>
           </tr>
         </thead>
         <tbody>
           ${data.items.map((item, index) => `
             <tr style="background-color: ${index % 2 === 0 ? '#fafafa' : '#ffffff'};">
-              <td style="padding: 10px; border: 1px solid #ccc;">${item.description}</td>
-              <td style="padding: 10px; text-align: right; border: 1px solid #ccc;">${item.quantity}</td>
-              <td style="padding: 10px; text-align: right; border: 1px solid #ccc;">${getCurrencySymbol(data.currency)} ${item.unit_price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-              <td style="padding: 10px; text-align: right; border: 1px solid #ccc;">${getCurrencySymbol(data.currency)} ${item.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+              <td style="padding: 12px 14px; border: 1px solid #ccc; line-height: 1.5;">${item.description}</td>
+              <td style="padding: 12px 14px; text-align: right; border: 1px solid #ccc;">${item.quantity}</td>
+              <td style="padding: 12px 14px; text-align: right; border: 1px solid #ccc;">${getCurrencySymbol(data.currency)} ${item.unit_price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+              <td style="padding: 12px 14px; text-align: right; border: 1px solid #ccc;">${getCurrencySymbol(data.currency)} ${item.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
             </tr>
           `).join('')}
         </tbody>
       </table>
     </div>
 
-    <div style="text-align: right; margin-bottom: 30px;">
-      <p style="margin: 5px 0; font-size: 14px;"><strong>Subtotal:</strong> ${getCurrencySymbol(data.currency)} ${data.subtotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-      <p style="margin: 5px 0; font-size: 14px;"><strong>Tax (${(data.tax_rate * 100).toFixed(0)}%):</strong> ${getCurrencySymbol(data.currency)} ${data.tax_amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-      <p style="margin: 10px 0 0 0; font-size: 18px; font-weight: bold;"><strong>TOTAL:</strong> ${getCurrencySymbol(data.currency)} ${data.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+    <div style="text-align: right; margin-bottom: 40px; padding-right: 10px;">
+      <p style="margin: 8px 0; font-size: 14px; line-height: 1.6;"><strong>Subtotal:</strong> ${getCurrencySymbol(data.currency)} ${data.subtotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+      <p style="margin: 8px 0; font-size: 14px; line-height: 1.6;"><strong>Tax (${(data.tax_rate * 100).toFixed(0)}%):</strong> ${getCurrencySymbol(data.currency)} ${data.tax_amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+      <hr style="border: none; border-top: 1px solid #ccc; margin: 12px 0; width: 200px; margin-left: auto;" />
+      <p style="margin: 12px 0 0 0; font-size: 18px; font-weight: bold;"><strong>TOTAL:</strong> ${getCurrencySymbol(data.currency)} ${data.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
     </div>
 
     ${data.notes ? `
-      <div style="margin-bottom: 20px;">
-        <h4 style="color: #666666; margin-bottom: 5px;">Notes:</h4>
-        <p style="margin: 5px 0;">${data.notes}</p>
+      <div style="margin-bottom: 30px;">
+        <h4 style="color: #666666; margin-bottom: 8px;">Notes:</h4>
+        <p style="margin: 6px 0; line-height: 1.6;">${data.notes}</p>
       </div>
     ` : ''}
 
     ${(isQuote && (data as QuoteWithItems).terms) || (!isQuote && (data as InvoiceWithItems).payment_terms) ? `
-      <div style="margin-bottom: 20px;">
-        <h4 style="color: #666666; margin-bottom: 5px;">${isQuote ? 'Terms & Conditions:' : 'Payment Terms:'}</h4>
-        <p style="margin: 5px 0;">${isQuote ? (data as QuoteWithItems).terms : (data as InvoiceWithItems).payment_terms}</p>
+      <div style="margin-bottom: 30px;">
+        <h4 style="color: #666666; margin-bottom: 8px;">${isQuote ? 'Terms & Conditions:' : 'Payment Terms:'}</h4>
+        <p style="margin: 6px 0; line-height: 1.6;">${isQuote ? (data as QuoteWithItems).terms : (data as InvoiceWithItems).payment_terms}</p>
       </div>
     ` : ''}
 
-    <div style="text-align: center; margin-top: 40px;">
+    <div style="text-align: center; margin-top: 50px;">
       <p style="font-size: 12px; color: #999999;">Generated with Quotla</p>
     </div>
   `
@@ -639,7 +653,7 @@ export function exportToJSON(exportData: ExportData): void {
     title: data.title,
     client: data.client
       ? {
-          name: data.client.name,
+          name: data.client.full_name,
           email: data.client.email,
           phone: data.client.phone,
           address: data.client.address,

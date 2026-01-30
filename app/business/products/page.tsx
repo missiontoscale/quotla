@@ -21,6 +21,7 @@ import {
   Trophy
 } from 'lucide-react';
 import { AVITPFMetric, LargeAVITPFMetric, CompactAVITPFMetric } from '@/components/analytics';
+import { MetricsCardSkeleton } from '@/components/dashboard/MetricsCardSkeleton';
 import { format, subMonths, startOfMonth, endOfMonth, eachMonthOfInterval, differenceInDays } from 'date-fns';
 import { DateFilterProvider } from '@/contexts/DateFilterContext';
 import { useDateFilter } from '@/hooks/useDateFilter';
@@ -54,6 +55,7 @@ import {
 import {
   dashboardColors as colors,
   dashboardComponents as components,
+  dashboardSpacing as spacing,
   cn
 } from '@/hooks/use-dashboard-theme';
 
@@ -629,57 +631,58 @@ function ProductsContent() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="relative">
-          <div className={cn(components.spinner, 'h-16 w-16')} />
-        </div>
+      <div className={cn(spacing.page, "max-w-[1400px] mx-auto px-3 md:px-4")}>
+        <MetricsCardSkeleton />
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className={cn(spacing.page, "max-w-[1400px] mx-auto px-3 md:px-4")}>
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-3xl text-primary-50">Products & Inventory</h1>
-          <p className="text-primary-400 mt-1">
+          <h1 className="text-2xl md:text-3xl text-primary-50">Products & Inventory</h1>
+          <p className="text-primary-400 mt-1 text-sm">
             {isFilterActive ? formattedDateRange : 'Manage your products and track stock movements'}
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <PageDateFilter />
-          <div className="flex items-center gap-2">
-            <Select value={displayCurrency} onValueChange={setDisplayCurrency}>
-              <SelectTrigger className="w-[120px] bg-primary-700 border-primary-600 text-primary-50 h-9 text-sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-quotla-dark border-primary-600">
-                {CURRENCIES.map((curr) => (
-                  <SelectItem key={curr.code} value={curr.code}>
-                    {curr.symbol} {curr.code}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {isConverted && (
-              <div className="flex items-center gap-1 text-xs text-amber-400">
-                <RefreshCw className="w-3 h-3" />
-                <span>Converted</span>
-              </div>
-            )}
-          </div>
-          {activeTab === 'products' && (
-            <Button
-              onClick={() => setAddDialogOpen(true)}
-              className="bg-quotla-orange hover:bg-secondary-400 text-white"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Product
-            </Button>
+        {/* Primary Action */}
+        {activeTab === 'products' && (
+          <Button
+            onClick={() => setAddDialogOpen(true)}
+            className="bg-quotla-orange hover:bg-secondary-400 text-white h-9 px-4 w-full sm:w-auto"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add Product
+          </Button>
+        )}
+      </header>
+
+      {/* Filters */}
+      <section className="flex flex-wrap items-center gap-2 mt-6">
+        <PageDateFilter />
+        <div className="flex items-center gap-2">
+          <Select value={displayCurrency} onValueChange={setDisplayCurrency}>
+            <SelectTrigger className="w-[100px] sm:w-[120px] bg-primary-700 border-primary-600 text-primary-50 h-9 text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-quotla-dark border-primary-600">
+              {CURRENCIES.map((curr) => (
+                <SelectItem key={curr.code} value={curr.code} className="min-h-[44px] sm:min-h-0">
+                  {curr.symbol} {curr.code}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {isConverted && (
+            <div className="flex items-center gap-1 text-xs text-amber-400">
+              <RefreshCw className="w-3 h-3" />
+              <span className="hidden sm:inline">Converted</span>
+            </div>
           )}
         </div>
-      </div>
+      </section>
 
       {/* Dialogs */}
       <AddProductDialog
@@ -782,11 +785,11 @@ function ProductsContent() {
           </div>
 
           {/* AVITPF Metric Layout - First Row: Inventory Value (large) + Turnover/Stock Age (stacked) */}
-          <div className="flex flex-col md:flex-row gap-4 mb-6">
-            {/* Inventory Value - Large */}
+          <div className="mb-6">
+            {/* Mobile Layout - Single Card */}
             <div className={cn(
-              'flex-1 p-4 rounded-xl border backdrop-blur-sm transition-all duration-200',
-              'bg-primary-700/30 border-quotla-green/20 hover:border-quotla-green/40'
+              'md:hidden p-4 rounded-xl border backdrop-blur-sm',
+              'bg-primary-700/30 border-quotla-green/20'
             )}>
               <LargeAVITPFMetric
                 label="Inventory Value"
@@ -795,45 +798,87 @@ function ProductsContent() {
                 currency={displayCurrency}
                 colorScheme="green"
               />
+              <div className="grid grid-cols-2 gap-3 mt-4">
+                <div className={cn(
+                  'p-4 rounded-lg border backdrop-blur-sm',
+                  'bg-primary-800/30 border-emerald-500/20'
+                )}>
+                  <CompactAVITPFMetric
+                    label="Turnover Rate"
+                    value={Number(((stats as any).inventoryTurnover || 0).toFixed(1))}
+                    change={null}
+                    isInteger
+                    colorScheme="emerald"
+                    className="[&>div>span:first-child]:after:content-['x']"
+                  />
+                </div>
+                <div className={cn(
+                  'p-4 rounded-lg border backdrop-blur-sm',
+                  'bg-primary-800/30 border-amber-500/20'
+                )}>
+                  <CompactAVITPFMetric
+                    label="Avg Stock Age"
+                    value={(stats as any).avgStockAge || 0}
+                    change={null}
+                    isInteger
+                    colorScheme="orange"
+                    className="[&>div>span:first-child]:after:content-['_days']"
+                  />
+                </div>
+              </div>
             </div>
 
-            {/* Turnover + Stock Age - Stacked */}
-            <div className="flex flex-col gap-3">
+            {/* Desktop Layout - Two Columns */}
+            <div className="hidden md:grid md:grid-cols-2 gap-4">
               <div className={cn(
-                'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
-                'bg-primary-700/30 border-emerald-500/20 hover:border-emerald-500/40'
+                'p-4 rounded-xl border backdrop-blur-sm',
+                'bg-primary-700/30 border-quotla-green/20'
               )}>
-                <CompactAVITPFMetric
-                  label="Turnover Rate"
-                  value={Number(((stats as any).inventoryTurnover || 0).toFixed(1))}
+                <LargeAVITPFMetric
+                  label="Inventory Value"
+                  value={stats.totalValue}
                   change={null}
-                  isInteger
-                  colorScheme="emerald"
-                  className="[&>div>span:first-child]:after:content-['x']"
+                  currency={displayCurrency}
+                  colorScheme="green"
                 />
               </div>
-              <div className={cn(
-                'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
-                'bg-primary-700/30 border-amber-500/20 hover:border-amber-500/40'
-              )}>
-                <CompactAVITPFMetric
-                  label="Avg Stock Age"
-                  value={(stats as any).avgStockAge || 0}
-                  change={null}
-                  isInteger
-                  colorScheme="orange"
-                  className="[&>div>span:first-child]:after:content-['_days']"
-                />
+              <div className="grid grid-cols-2 gap-3">
+                <div className={cn(
+                  'p-4 rounded-xl border backdrop-blur-sm',
+                  'bg-primary-700/30 border-emerald-500/20'
+                )}>
+                  <CompactAVITPFMetric
+                    label="Turnover Rate"
+                    value={Number(((stats as any).inventoryTurnover || 0).toFixed(1))}
+                    change={null}
+                    isInteger
+                    colorScheme="emerald"
+                    className="[&>div>span:first-child]:after:content-['x']"
+                  />
+                </div>
+                <div className={cn(
+                  'p-4 rounded-xl border backdrop-blur-sm',
+                  'bg-primary-700/30 border-amber-500/20'
+                )}>
+                  <CompactAVITPFMetric
+                    label="Avg Stock Age"
+                    value={(stats as any).avgStockAge || 0}
+                    change={null}
+                    isInteger
+                    colorScheme="orange"
+                    className="[&>div>span:first-child]:after:content-['_days']"
+                  />
+                </div>
               </div>
             </div>
           </div>
 
           {/* Second Row: Total Stock (large) + Stock In/Out (stacked) */}
-          <div className="flex flex-col md:flex-row gap-4 mb-6">
-            {/* Total Stock - Large */}
+          <div className="mb-6">
+            {/* Mobile Layout - Single Card */}
             <div className={cn(
-              'flex-1 p-4 rounded-xl border backdrop-blur-sm transition-all duration-200',
-              'bg-primary-700/30 border-quotla-orange/20 hover:border-quotla-orange/40'
+              'md:hidden p-4 rounded-xl border backdrop-blur-sm',
+              'bg-primary-700/30 border-quotla-orange/20'
             )}>
               <LargeAVITPFMetric
                 label="Total Products"
@@ -845,33 +890,76 @@ function ProductsContent() {
               <div className="mt-2 text-xs text-primary-400">
                 {stats.inStock} in stock • {stats.lowStock} low • {stats.outOfStock} out
               </div>
+              <div className="grid grid-cols-2 gap-3 mt-4">
+                <div className={cn(
+                  'p-4 rounded-lg border backdrop-blur-sm',
+                  'bg-primary-800/30 border-emerald-500/20'
+                )}>
+                  <CompactAVITPFMetric
+                    label="Stock In Today"
+                    value={stats.stockInToday}
+                    change={null}
+                    isInteger
+                    colorScheme="emerald"
+                  />
+                </div>
+                <div className={cn(
+                  'p-4 rounded-lg border backdrop-blur-sm',
+                  'bg-primary-800/30 border-rose-500/20'
+                )}>
+                  <CompactAVITPFMetric
+                    label="Stock Out Today"
+                    value={stats.stockOutToday}
+                    change={null}
+                    isInteger
+                    colorScheme="rose"
+                  />
+                </div>
+              </div>
             </div>
 
-            {/* Stock In/Out + Deadstock - Stacked */}
-            <div className="flex flex-col gap-3">
+            {/* Desktop Layout - Two Columns */}
+            <div className="hidden md:grid md:grid-cols-2 gap-4">
               <div className={cn(
-                'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
-                'bg-primary-700/30 border-emerald-500/20 hover:border-emerald-500/40'
+                'p-4 rounded-xl border backdrop-blur-sm',
+                'bg-primary-700/30 border-quotla-orange/20'
               )}>
-                <CompactAVITPFMetric
-                  label="Stock In Today"
-                  value={stats.stockInToday}
+                <LargeAVITPFMetric
+                  label="Total Products"
+                  value={stats.total}
                   change={null}
                   isInteger
-                  colorScheme="emerald"
+                  colorScheme="orange"
                 />
+                <div className="mt-2 text-xs text-primary-400">
+                  {stats.inStock} in stock • {stats.lowStock} low • {stats.outOfStock} out
+                </div>
               </div>
-              <div className={cn(
-                'p-3 rounded-xl border backdrop-blur-sm transition-all duration-200',
-                'bg-primary-700/30 border-rose-500/20 hover:border-rose-500/40'
-              )}>
-                <CompactAVITPFMetric
-                  label="Stock Out Today"
-                  value={stats.stockOutToday}
-                  change={null}
-                  isInteger
-                  colorScheme="rose"
-                />
+              <div className="grid grid-cols-2 gap-3">
+                <div className={cn(
+                  'p-4 rounded-xl border backdrop-blur-sm',
+                  'bg-primary-700/30 border-emerald-500/20'
+                )}>
+                  <CompactAVITPFMetric
+                    label="Stock In Today"
+                    value={stats.stockInToday}
+                    change={null}
+                    isInteger
+                    colorScheme="emerald"
+                  />
+                </div>
+                <div className={cn(
+                  'p-4 rounded-xl border backdrop-blur-sm',
+                  'bg-primary-700/30 border-rose-500/20'
+                )}>
+                  <CompactAVITPFMetric
+                    label="Stock Out Today"
+                    value={stats.stockOutToday}
+                    change={null}
+                    isInteger
+                    colorScheme="rose"
+                  />
+                </div>
               </div>
             </div>
           </div>
