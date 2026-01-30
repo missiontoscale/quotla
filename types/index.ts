@@ -6,6 +6,8 @@ export type Customer = Database['public']['Tables']['customers']['Row']
 export type Client = Customer
 export type Quote = Database['public']['Tables']['quotes']['Row']
 export type QuoteItem = Database['public']['Tables']['quote_items']['Row']
+export type Invoice = Database['public']['Tables']['invoices']['Row']
+export type InvoiceItem = Database['public']['Tables']['invoice_items']['Row']
 export type BlogPost = Database['public']['Tables']['blog_posts']['Row']
 export type BlogComment = Database['public']['Tables']['blog_comments']['Row']
 export type NewsletterSubscriber = Database['public']['Tables']['newsletter_subscribers']['Row']
@@ -21,6 +23,13 @@ export type SubscriptionStatus = StripeSubscription['status']
 
 export interface QuoteWithItems extends Quote {
   items: QuoteItem[]
+  customer?: Customer | null
+  /** @deprecated Use customer instead */
+  client?: Customer | null
+}
+
+export interface InvoiceWithItems extends Invoice {
+  items: InvoiceItem[]
   customer?: Customer | null
   /** @deprecated Use customer instead */
   client?: Customer | null

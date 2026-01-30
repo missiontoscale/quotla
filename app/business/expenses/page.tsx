@@ -41,6 +41,8 @@ import {
   dashboardComponents as components,
   cn
 } from '@/hooks/use-dashboard-theme';
+import { DataTableSkeleton } from '@/components/dashboard/DataTableSkeleton';
+import { MetricsCardSkeleton, SmallMetricCardSkeleton } from '@/components/dashboard/MetricsCardSkeleton';
 
 interface ExpenseRow {
   id: string;
@@ -523,6 +525,11 @@ function ExpensesContent() {
       {/* Enhanced Expense Metrics */}
 
       {/* Row 1: Expense Overview Card (Full-width) */}
+      {loading ? (
+        <div className="mb-4">
+          <MetricsCardSkeleton />
+        </div>
+      ) : (
       <div className="mb-4">
         <Card className={cn(
           'p-6 border shadow-lg',
@@ -667,8 +674,15 @@ function ExpensesContent() {
           </div>
         </Card>
       </div>
+      )}
 
       {/* Row 2: Category & Status Breakdown */}
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <SmallMetricCardSkeleton />
+          <SmallMetricCardSkeleton />
+        </div>
+      ) : (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         {/* Top Categories Card */}
         <Card className="bg-quotla-dark/90 border-primary-600 p-5">
@@ -730,31 +744,38 @@ function ExpensesContent() {
           </div>
         </Card>
       </div>
+      )}
 
       {/* Row 3: Vendors Card (Enhanced) */}
-      <div className="mb-4">
-        <Card className="bg-quotla-dark/90 border-primary-600 p-5">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-quotla-green/15 rounded-xl flex items-center justify-center">
-              <Truck className="w-5 h-5 text-quotla-green" />
+      {loading ? (
+        <div className="mb-4">
+          <SmallMetricCardSkeleton />
+        </div>
+      ) : (
+        <div className="mb-4">
+          <Card className="bg-quotla-dark/90 border-primary-600 p-5">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-quotla-green/15 rounded-xl flex items-center justify-center">
+                <Truck className="w-5 h-5 text-quotla-green" />
+              </div>
+              <div>
+                <p className="text-xs text-primary-400 uppercase tracking-wider">Vendors</p>
+                <p className="text-2xl font-bold text-primary-50">{stats.activeVendors} active</p>
+              </div>
             </div>
-            <div>
-              <p className="text-xs text-primary-400 uppercase tracking-wider">Vendors</p>
-              <p className="text-2xl font-bold text-primary-50">{stats.activeVendors} active</p>
+            <div className="flex items-center justify-between pt-3 border-t border-primary-600">
+              <div>
+                <p className="text-xs text-primary-400">Total Vendors</p>
+                <p className="text-sm font-medium text-primary-200">{stats.totalVendors}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-xs text-primary-400">Network</p>
+                <p className="text-sm font-medium text-quotla-green">Active</p>
+              </div>
             </div>
-          </div>
-          <div className="flex items-center justify-between pt-3 border-t border-primary-600">
-            <div>
-              <p className="text-xs text-primary-400">Total Vendors</p>
-              <p className="text-sm font-medium text-primary-200">{stats.totalVendors}</p>
-            </div>
-            <div className="text-right">
-              <p className="text-xs text-primary-400">Network</p>
-              <p className="text-sm font-medium text-quotla-green">Active</p>
-            </div>
-          </div>
-        </Card>
-      </div>
+          </Card>
+        </div>
+      )}
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -768,52 +789,60 @@ function ExpensesContent() {
         </TabsList>
 
         <TabsContent value="expenses" className="mt-6">
-          <DataTable
-            columns={expenseColumns}
-            data={filteredExpenses}
-            searchPlaceholder="Search expenses..."
-            onView={handleViewExpense}
-            onEdit={handleEditExpense}
-            onDelete={handleDeleteExpense}
-            filters={
-              <div className="flex gap-2">
-                <FilterSelect
-                  options={expenseStatusOptions}
-                  value={expenseStatusFilter}
-                  onChange={(v) => setExpenseStatusFilter(v as ExpenseStatusFilter)}
-                  placeholder="Status"
-                  allLabel="All Status"
-                />
-                <FilterSelect
-                  options={expenseCategories}
-                  value={expenseCategoryFilter}
-                  onChange={setExpenseCategoryFilter}
-                  placeholder="Category"
-                  allLabel="All Categories"
-                />
-              </div>
-            }
-          />
+          {loading ? (
+            <DataTableSkeleton columns={6} rows={5} showSearch={true} showFilters={true} />
+          ) : (
+            <DataTable
+              columns={expenseColumns}
+              data={filteredExpenses}
+              searchPlaceholder="Search expenses..."
+              onView={handleViewExpense}
+              onEdit={handleEditExpense}
+              onDelete={handleDeleteExpense}
+              filters={
+                <div className="flex gap-2">
+                  <FilterSelect
+                    options={expenseStatusOptions}
+                    value={expenseStatusFilter}
+                    onChange={(v) => setExpenseStatusFilter(v as ExpenseStatusFilter)}
+                    placeholder="Status"
+                    allLabel="All Status"
+                  />
+                  <FilterSelect
+                    options={expenseCategories}
+                    value={expenseCategoryFilter}
+                    onChange={setExpenseCategoryFilter}
+                    placeholder="Category"
+                    allLabel="All Categories"
+                  />
+                </div>
+              }
+            />
+          )}
         </TabsContent>
 
         <TabsContent value="vendors" className="mt-6">
-          <DataTable
-            columns={vendorColumns}
-            data={filteredVendors}
-            searchPlaceholder="Search vendors..."
-            onView={handleViewVendor}
-            onEdit={handleEditVendor}
-            onDelete={handleDeleteVendor}
-            filters={
-              <FilterSelect
-                options={vendorStatusOptions}
-                value={vendorStatusFilter}
-                onChange={(v) => setVendorStatusFilter(v as VendorStatusFilter)}
-                placeholder="Status"
-                allLabel="All Status"
-              />
-            }
-          />
+          {loading ? (
+            <DataTableSkeleton columns={6} rows={5} showSearch={true} showFilters={true} />
+          ) : (
+            <DataTable
+              columns={vendorColumns}
+              data={filteredVendors}
+              searchPlaceholder="Search vendors..."
+              onView={handleViewVendor}
+              onEdit={handleEditVendor}
+              onDelete={handleDeleteVendor}
+              filters={
+                <FilterSelect
+                  options={vendorStatusOptions}
+                  value={vendorStatusFilter}
+                  onChange={(v) => setVendorStatusFilter(v as VendorStatusFilter)}
+                  placeholder="Status"
+                  allLabel="All Status"
+                />
+              }
+            />
+          )}
         </TabsContent>
       </Tabs>
     </div>

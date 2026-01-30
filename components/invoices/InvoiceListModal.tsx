@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useRef, useEffect } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -9,8 +10,11 @@ import {
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { DataTable } from '@/components/dashboard/DataTable'
-import { Plus } from 'lucide-react'
+import { Plus, Download } from 'lucide-react'
 import { formatCurrency } from '@/lib/utils/currency'
+import { supabase } from '@/lib/supabase/client'
+import { exportToPDF, exportToWord, exportToPNG, exportToJSON } from '@/lib/export'
+import type { Profile, InvoiceWithItems, InvoiceItem } from '@/types'
 
 interface InvoiceRow {
   id: string
@@ -44,6 +48,100 @@ export function InvoiceListModal({
   onDelete,
   onAddInvoice,
 }: InvoiceListModalProps) {
+  const [downloadingInvoiceId, setDownloadingInvoiceId] = useState<string | null>(null)
+  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setOpenDropdownId(null)
+      }
+    }
+
+    if (openDropdownId) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [openDropdownId])
+
+  const handleDownload = async (invoiceId: string, format: 'pdf' | 'word' | 'png' | 'json') => {
+    setDownloadingInvoiceId(invoiceId)
+    setOpenDropdownId(null)
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      // Fetch profile
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single()
+
+      // Fetch invoice with items
+      const { data: invoiceData } = await supabase
+        .from('invoices')
+        .select('*')
+        .eq('id', invoiceId)
+        .single()
+
+      const { data: itemsData } = await supabase
+        .from('invoice_items')
+        .select('*')
+        .eq('invoice_id', invoiceId)
+        .order('sort_order')
+
+      // Fetch customer data if client_id exists
+      let customerData = null
+      if (invoiceData?.client_id) {
+        const { data } = await supabase
+          .from('customers')
+          .select('*')
+          .eq('id', invoiceData.client_id)
+          .single()
+        customerData = data
+      }
+
+      if (invoiceData && itemsData) {
+        const invoiceWithItems: InvoiceWithItems = {
+          ...invoiceData,
+          items: itemsData as InvoiceItem[],
+          client: customerData
+        }
+
+        const exportData = {
+          type: 'invoice' as const,
+          data: invoiceWithItems,
+          profile: profileData
+        }
+
+        switch (format) {
+          case 'pdf':
+            await exportToPDF(exportData)
+            break
+          case 'word':
+            await exportToWord(exportData)
+            break
+          case 'png':
+            await exportToPNG(exportData)
+            break
+          case 'json':
+            exportToJSON(exportData)
+            break
+        }
+      }
+    } catch (err) {
+      console.error('Error downloading invoice:', err)
+    } finally {
+      setDownloadingInvoiceId(null)
+    }
+  }
+
   const invoiceColumns = [
     { key: 'invoice_number', label: 'Invoice #' },
     { key: 'client_name', label: 'Customer' },
@@ -86,11 +184,78 @@ export function InvoiceListModal({
       render: (value: string | null) =>
         value ? new Date(value).toLocaleDateString() : '-',
     },
+    {
+      key: 'actions',
+      label: '',
+      render: (value: any, row: InvoiceRow) => (
+        <div className="relative" ref={openDropdownId === row.id ? dropdownRef : null}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={(e) => {
+              e.stopPropagation()
+              setOpenDropdownId(openDropdownId === row.id ? null : row.id)
+            }}
+            disabled={downloadingInvoiceId === row.id}
+            className="text-slate-400 hover:text-cyan-400 hover:bg-slate-800 h-11 w-11 md:h-7 md:w-7"
+            title="Download"
+          >
+            <Download className="w-4 h-4" />
+          </Button>
+          {openDropdownId === row.id && (
+            <div className="absolute right-0 bottom-full mb-2 md:bottom-auto md:top-full md:mt-2 w-48 rounded-md shadow-lg bg-slate-800 ring-1 ring-slate-700 z-50">
+              <div className="py-1" role="menu">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleDownload(row.id, 'pdf')
+                  }}
+                  className="block w-full text-left px-4 py-2 text-sm text-slate-300 hover:bg-slate-700"
+                  role="menuitem"
+                >
+                  📄 PDF Document
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleDownload(row.id, 'word')
+                  }}
+                  className="block w-full text-left px-4 py-2 text-sm text-slate-300 hover:bg-slate-700"
+                  role="menuitem"
+                >
+                  📝 Word Document
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleDownload(row.id, 'png')
+                  }}
+                  className="block w-full text-left px-4 py-2 text-sm text-slate-300 hover:bg-slate-700"
+                  role="menuitem"
+                >
+                  🖼️ PNG Image
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleDownload(row.id, 'json')
+                  }}
+                  className="block w-full text-left px-4 py-2 text-sm text-slate-300 hover:bg-slate-700"
+                  role="menuitem"
+                >
+                  📋 JSON Data
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      ),
+    },
   ]
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-slate-900 border-slate-800 text-slate-100 max-w-5xl max-h-[85vh] overflow-hidden flex flex-col">
+      <DialogContent className="bg-slate-900 border-slate-800 text-slate-100 max-w-2xl md:max-w-5xl max-h-[85vh] overflow-hidden flex flex-col px-3 md:px-4">
         <DialogHeader className="flex-shrink-0">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-xl">

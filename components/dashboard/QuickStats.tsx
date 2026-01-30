@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { DollarSign, FileText, Clock, TrendingUp } from 'lucide-react'
 import { formatCurrency } from '@/lib/utils/currency'
 import { useUserCurrency } from '@/hooks/useUserCurrency'
+import { QuickStatsSkeleton } from './QuickStatsSkeleton'
 
 interface QuickStatsData {
   todayRevenue: number
@@ -41,11 +42,13 @@ export function QuickStats() {
       const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1)
       const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0)
 
-      // Fetch invoices
+      // Fetch invoices - pre-filter by relevant statuses to reduce data transfer
+      // Only need 'paid' (for revenue), 'sent' (pending), and 'overdue' statuses
       const { data: invoices } = await supabase
         .from('invoices')
         .select('status, total, issue_date, updated_at')
         .eq('user_id', user.id)
+        .in('status', ['paid', 'sent', 'overdue'])
 
       if (invoices) {
         // Today's revenue (invoices marked paid today)
@@ -90,13 +93,7 @@ export function QuickStats() {
   }
 
   if (loading) {
-    return (
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        {[...Array(4)].map((_, i) => (
-          <div key={i} className="h-16 bg-slate-800/50 rounded-lg animate-pulse" />
-        ))}
-      </div>
-    )
+    return <QuickStatsSkeleton />
   }
 
   return (

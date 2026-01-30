@@ -171,13 +171,13 @@ export function DataTable({
         <div className="flex items-center gap-2 text-[0.81rem] text-slate-400">
           <span className="hidden sm:inline">Show</span>
           <Select value={String(pageSize)} onValueChange={(value) => setPageSize(Number(value))}>
-            <SelectTrigger className="w-18 h-8 text-[0.81rem] bg-slate-800 border-slate-700 text-slate-300">
+            <SelectTrigger className="w-18 h-11 sm:h-8 text-[0.81rem] bg-slate-800 border-slate-700 text-slate-300">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-slate-900 border-slate-800">
-              <SelectItem value="10">10</SelectItem>
-              <SelectItem value="25">25</SelectItem>
-              <SelectItem value="50">50</SelectItem>
+              <SelectItem value="10" className="min-h-[44px] sm:min-h-0">10</SelectItem>
+              <SelectItem value="25" className="min-h-[44px] sm:min-h-0">25</SelectItem>
+              <SelectItem value="50" className="min-h-[44px] sm:min-h-0">50</SelectItem>
             </SelectContent>
           </Select>
           <span className="text-[0.81rem]">
@@ -191,7 +191,7 @@ export function DataTable({
             size="sm"
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             disabled={currentPage === 1}
-            className="border-slate-700 text-slate-300 hover:bg-slate-800 disabled:opacity-50 text-[0.72rem] h-8 px-3"
+            className="border-slate-700 text-slate-300 hover:bg-slate-800 disabled:opacity-50 text-[0.72rem] h-11 sm:h-8 px-4 sm:px-3"
           >
             <span className="hidden sm:inline">Previous</span>
             <span className="sm:hidden">Prev</span>
@@ -224,7 +224,7 @@ export function DataTable({
             size="sm"
             onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
             disabled={currentPage === totalPages}
-            className="border-slate-700 text-slate-300 hover:bg-slate-800 disabled:opacity-50 text-[0.72rem] h-8 px-3"
+            className="border-slate-700 text-slate-300 hover:bg-slate-800 disabled:opacity-50 text-[0.72rem] h-11 sm:h-8 px-4 sm:px-3"
           >
             Next
           </Button>

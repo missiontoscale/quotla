@@ -5,6 +5,8 @@ import { supabase } from '@/lib/supabase/client'
 import { useUserCurrency } from '@/hooks/useUserCurrency'
 import { deductStockForInvoice, restoreStockForInvoice, hasStockBeenDeducted } from '@/lib/inventory/stock-operations'
 import { FileText, User, Calendar, DollarSign, Plus, Trash2, Package, Check, ChevronsUpDown, UserPlus, Save } from 'lucide-react'
+import DownloadDropdown from '@/components/DownloadDropdown'
+import type { Profile, InvoiceWithItems } from '@/types'
 import {
   Dialog,
   DialogContent,
@@ -105,6 +107,7 @@ export function AddInvoiceDialog({
   const [lineItemSearchValues, setLineItemSearchValues] = useState<Record<string, string>>({})
   const [openLineItemDropdown, setOpenLineItemDropdown] = useState<string | null>(null)
   const lineItemDropdownRefs = useRef<Record<string, HTMLDivElement | null>>({})
+  const [profile, setProfile] = useState<Profile | null>(null)
 
   // Track original status for stock operations on status change
   const [originalStatus, setOriginalStatus] = useState<'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled' | null>(null)
@@ -178,8 +181,30 @@ export function AddInvoiceDialog({
       } else {
         resetForm()
       }
+      // Fetch profile when opening in view mode
+      if (mode === 'view') {
+        fetchProfile()
+      }
     }
-  }, [open, invoiceId])
+  }, [open, invoiceId, mode])
+
+  const fetchProfile = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single()
+
+      if (error) throw error
+      setProfile(data)
+    } catch (err) {
+      console.error('Error fetching profile:', err)
+    }
+  }
 
   const resetForm = () => {
     setFormData({
@@ -657,7 +682,7 @@ export function AddInvoiceDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-slate-900 border-slate-800 text-slate-100 max-w-3xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-slate-900 border-slate-800 text-slate-100 max-w-xl md:max-w-3xl max-h-[90vh] overflow-y-auto px-3 md:px-4">
         <DialogHeader>
           <DialogTitle className="text-xl">
             {isViewMode ? 'View Invoice' : isEditMode ? 'Edit Invoice' : 'Create Invoice'}
@@ -1123,7 +1148,7 @@ export function AddInvoiceDialog({
             </div>
           </FormSection>
 
-          <DialogFooter className="gap-2 pt-4">
+          <DialogFooter className="gap-2 pt-4 flex-col sm:flex-row">
             <Button
               type="button"
               variant="outline"
@@ -1132,6 +1157,47 @@ export function AddInvoiceDialog({
             >
               {isViewMode ? 'Close' : 'Cancel'}
             </Button>
+            {isViewMode && invoiceId && (
+              <div className="flex-1 flex justify-center sm:justify-start">
+                <DownloadDropdown
+                  type="invoice"
+                  data={{
+                    ...formData,
+                    id: invoiceId,
+                    user_id: '',
+                    created_at: '',
+                    updated_at: '',
+                    subtotal,
+                    tax_amount: taxAmount,
+                    total,
+                    items: lineItems.map(item => ({
+                      ...item,
+                      invoice_id: invoiceId,
+                      created_at: '',
+                      sort_order: 0
+                    })),
+                    client: customers.find(c => c.id === formData.client_id) ? {
+                      id: formData.client_id,
+                      name: customers.find(c => c.id === formData.client_id)?.name || '',
+                      email: null,
+                      phone: null,
+                      address: null,
+                      city: null,
+                      state: null,
+                      postal_code: null,
+                      country: null,
+                      full_name: customers.find(c => c.id === formData.client_id)?.name || '',
+                      company_name: customers.find(c => c.id === formData.client_id)?.company_name || null,
+                      user_id: '',
+                      is_active: true,
+                      created_at: '',
+                      updated_at: ''
+                    } : null
+                  } as InvoiceWithItems}
+                  profile={profile}
+                />
+              </div>
+            )}
             {!isViewMode && (
               <Button
                 type="submit"

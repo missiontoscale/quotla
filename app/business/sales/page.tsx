@@ -35,6 +35,8 @@ import { CustomerListModal } from '@/components/customers/CustomerListModal';
 import { AddInvoiceDialog } from '@/components/invoices/AddInvoiceDialog';
 import { InvoiceListModal } from '@/components/invoices/InvoiceListModal';
 import { BankImportModal } from '@/components/bank-import/BankImportModal';
+import { DataTableSkeleton } from '@/components/dashboard/DataTableSkeleton';
+import { MetricsCardSkeleton, SmallMetricCardSkeleton } from '@/components/dashboard/MetricsCardSkeleton';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDisplayCurrency } from '@/hooks/useUserCurrency';
@@ -113,6 +115,7 @@ function SalesContent() {
   // Data state
   const [customers, setCustomers] = useState<CustomerRow[]>([]);
   const [invoices, setInvoices] = useState<InvoiceRow[]>([]);
+  const [rawInvoicesData, setRawInvoicesData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Stats
@@ -148,11 +151,13 @@ function SalesContent() {
 
   const fetchData = async () => {
     setLoading(true);
-    await Promise.all([fetchCustomers(), fetchInvoices()]);
+    // Fetch invoices first, then use that data for customer earnings calculation
+    const invoicesData = await fetchInvoices();
+    await fetchCustomers(invoicesData);
     setLoading(false);
   };
 
-  const fetchCustomers = async () => {
+  const fetchCustomers = async (invoicesDataParam?: any[]) => {
     try {
       const { data: customersData, error: customersError } = await supabase
         .from('customers')
@@ -162,11 +167,8 @@ function SalesContent() {
 
       if (customersError) throw customersError;
 
-      // Fetch invoices to calculate earnings
-      const { data: invoicesData } = await supabase
-        .from('invoices')
-        .select('client_id, status, total')
-        .eq('user_id', user?.id);
+      // Use passed invoice data or fallback to stored data (eliminates duplicate query)
+      const invoicesData = invoicesDataParam || rawInvoicesData;
 
       // Calculate stats per customer
       const customerStats: Record<string, { totalEarnings: number }> = {};
@@ -209,9 +211,9 @@ function SalesContent() {
     }
   };
 
-  const fetchInvoices = async () => {
+  const fetchInvoices = async (): Promise<any[]> => {
     try {
-      // Fetch invoices first
+      // Fetch invoices once - this data is reused for customer earnings calculation
       const { data: invoicesData, error: invoicesError } = await supabase
         .from('invoices')
         .select('*')
@@ -219,6 +221,9 @@ function SalesContent() {
         .order('created_at', { ascending: false });
 
       if (invoicesError) throw invoicesError;
+
+      // Store raw data for reuse (eliminates duplicate query in fetchCustomers)
+      setRawInvoicesData(invoicesData || []);
 
       // Fetch customer names separately to avoid FK cache issues
       const clientIds = (invoicesData || [])
@@ -550,11 +555,14 @@ function SalesContent() {
         lastMonthSalesCount,
         salesCountChange
       } as any));
+
+      return invoicesData || [];
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message :
         (typeof error === 'object' && error !== null && 'message' in error) ? String((error as { message: unknown }).message) :
         'Unknown error';
       console.error('Error fetching invoices:', errorMessage, error);
+      return [];
     }
   };
 
@@ -789,6 +797,11 @@ function SalesContent() {
       />
 
       {/* Enhanced Sales Metrics - Row 1: Sales Performance Overview */}
+      {loading ? (
+        <div className="mb-4">
+          <MetricsCardSkeleton />
+        </div>
+      ) : (
       <div className="mb-4">
         <Card className={cn(
           'p-6 border shadow-lg',
@@ -970,113 +983,129 @@ function SalesContent() {
         </Card>
 
       </div>
+      )}
 
       {/* Row 2: Operational Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        {/* Pending Invoices Card */}
-        <Card className="bg-quotla-dark/90 border-primary-600 p-5">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-quotla-orange/10 rounded-xl flex items-center justify-center">
-              <Clock className="w-5 h-5 text-quotla-orange" />
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <SmallMetricCardSkeleton />
+          <SmallMetricCardSkeleton />
+          <SmallMetricCardSkeleton />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          {/* Pending Invoices Card */}
+          <Card className="bg-quotla-dark/90 border-primary-600 p-5">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-quotla-orange/10 rounded-xl flex items-center justify-center">
+                <Clock className="w-5 h-5 text-quotla-orange" />
+              </div>
+              <div>
+                <p className="text-xs text-primary-400 uppercase tracking-wider">Pending Invoices</p>
+                <p className="text-2xl font-bold text-primary-50">{stats.pendingInvoices}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-xs text-primary-400 uppercase tracking-wider">Pending Invoices</p>
-              <p className="text-2xl font-bold text-primary-50">{stats.pendingInvoices}</p>
+            <div className="pt-3 border-t border-primary-600">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-primary-400">Outstanding Amount</span>
+                <span className="text-sm font-semibold text-rose-400">
+                  {formatCurrency(stats.outstanding, displayCurrency)}
+                </span>
+              </div>
             </div>
-          </div>
-          <div className="pt-3 border-t border-primary-600">
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-primary-400">Outstanding Amount</span>
-              <span className="text-sm font-semibold text-rose-400">
-                {formatCurrency(stats.outstanding, displayCurrency)}
-              </span>
-            </div>
-          </div>
-        </Card>
+          </Card>
 
-        {/* Days Sales Outstanding (DSO) Card */}
-        <Card className="bg-quotla-dark/90 border-primary-600 p-5">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center">
-              <Target className="w-5 h-5 text-amber-400" />
+          {/* Days Sales Outstanding (DSO) Card */}
+          <Card className="bg-quotla-dark/90 border-primary-600 p-5">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center">
+                <Target className="w-5 h-5 text-amber-400" />
+              </div>
+              <div>
+                <p className="text-xs text-primary-400 uppercase tracking-wider">Days Sales Outstanding</p>
+                <p className="text-2xl font-bold text-primary-50">{((stats as any).dso || 0).toFixed(0)} days</p>
+              </div>
             </div>
-            <div>
-              <p className="text-xs text-primary-400 uppercase tracking-wider">Days Sales Outstanding</p>
-              <p className="text-2xl font-bold text-primary-50">{((stats as any).dso || 0).toFixed(0)} days</p>
+            <div className="pt-3 border-t border-primary-600">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-primary-400">Industry Benchmark</span>
+                <span className="text-sm font-medium text-primary-200">30-45 days</span>
+              </div>
             </div>
-          </div>
-          <div className="pt-3 border-t border-primary-600">
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-primary-400">Industry Benchmark</span>
-              <span className="text-sm font-medium text-primary-200">30-45 days</span>
-            </div>
-          </div>
-        </Card>
+          </Card>
 
-        {/* Conversion Rate Card */}
-        <Card className="bg-quotla-dark/90 border-primary-600 p-5">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center">
-              <TrendingUp className="w-5 h-5 text-emerald-400" />
+          {/* Conversion Rate Card */}
+          <Card className="bg-quotla-dark/90 border-primary-600 p-5">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center">
+                <TrendingUp className="w-5 h-5 text-emerald-400" />
+              </div>
+              <div>
+                <p className="text-xs text-primary-400 uppercase tracking-wider">Conversion Rate</p>
+                <p className="text-2xl font-bold text-primary-50">{((stats as any).conversionRate || 0).toFixed(1)}%</p>
+              </div>
             </div>
-            <div>
-              <p className="text-xs text-primary-400 uppercase tracking-wider">Conversion Rate</p>
-              <p className="text-2xl font-bold text-primary-50">{((stats as any).conversionRate || 0).toFixed(1)}%</p>
+            <div className="pt-3 border-t border-primary-600">
+              <div className="w-full bg-primary-700 rounded-full h-2 overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-500"
+                  style={{ width: `${Math.min((stats as any).conversionRate || 0, 100)}%` }}
+                />
+              </div>
             </div>
-          </div>
-          <div className="pt-3 border-t border-primary-600">
-            <div className="w-full bg-primary-700 rounded-full h-2 overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-500"
-                style={{ width: `${Math.min((stats as any).conversionRate || 0, 100)}%` }}
-              />
-            </div>
-          </div>
-        </Card>
-      </div>
+          </Card>
+        </div>
+      )}
 
       {/* Row 3: Customer Insights */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        {/* Active Customers Card */}
-        <Card className="bg-quotla-dark/90 border-primary-600 p-5">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-quotla-green/15 rounded-xl flex items-center justify-center">
-              <Users className="w-5 h-5 text-quotla-green" />
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <SmallMetricCardSkeleton />
+          <SmallMetricCardSkeleton />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          {/* Active Customers Card */}
+          <Card className="bg-quotla-dark/90 border-primary-600 p-5">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-quotla-green/15 rounded-xl flex items-center justify-center">
+                <Users className="w-5 h-5 text-quotla-green" />
+              </div>
+              <div>
+                <p className="text-xs text-primary-400 uppercase tracking-wider">Active Customers</p>
+                <p className="text-2xl font-bold text-primary-50">{stats.activeCustomers}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-xs text-primary-400 uppercase tracking-wider">Active Customers</p>
-              <p className="text-2xl font-bold text-primary-50">{stats.activeCustomers}</p>
+            <div className="pt-3 border-t border-primary-600">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-primary-400">Total Customers</span>
+                <span className="text-sm font-medium text-primary-200">{customers.length}</span>
+              </div>
             </div>
-          </div>
-          <div className="pt-3 border-t border-primary-600">
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-primary-400">Total Customers</span>
-              <span className="text-sm font-medium text-primary-200">{customers.length}</span>
-            </div>
-          </div>
-        </Card>
+          </Card>
 
-        {/* Customer Value Card */}
-        <Card className="bg-quotla-dark/90 border-primary-600 p-5">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-teal-500/10 rounded-xl flex items-center justify-center">
-              <DollarSign className="w-5 h-5 text-teal-400" />
+          {/* Customer Value Card */}
+          <Card className="bg-quotla-dark/90 border-primary-600 p-5">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-teal-500/10 rounded-xl flex items-center justify-center">
+                <DollarSign className="w-5 h-5 text-teal-400" />
+              </div>
+              <div>
+                <p className="text-xs text-primary-400 uppercase tracking-wider">Avg Customer Value</p>
+                <p className="text-2xl font-bold text-primary-50">
+                  {formatCurrency(stats.activeCustomers > 0 ? stats.totalRevenue / stats.activeCustomers : 0, displayCurrency)}
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-xs text-primary-400 uppercase tracking-wider">Avg Customer Value</p>
-              <p className="text-2xl font-bold text-primary-50">
-                {formatCurrency(stats.activeCustomers > 0 ? stats.totalRevenue / stats.activeCustomers : 0, displayCurrency)}
-              </p>
+            <div className="pt-3 border-t border-primary-600">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-primary-400">Lifetime Value</span>
+                <span className="text-sm font-medium text-teal-400">Per Customer</span>
+              </div>
             </div>
-          </div>
-          <div className="pt-3 border-t border-primary-600">
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-primary-400">Lifetime Value</span>
-              <span className="text-sm font-medium text-teal-400">Per Customer</span>
-            </div>
-          </div>
-        </Card>
-      </div>
+          </Card>
+        </div>
+      )}
 
       {/* Two-Pane Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -1101,14 +1130,18 @@ function SalesContent() {
               </SelectContent>
             </Select>
           </div>
-          <DataTable
-            columns={invoiceColumns}
-            data={filteredInvoices}
-            searchPlaceholder="Search invoices..."
-            onView={handleViewInvoice}
-            onEdit={handleEditInvoice}
-            onDelete={handleDeleteInvoice}
-          />
+          {loading ? (
+            <DataTableSkeleton columns={6} rows={5} showSearch={true} />
+          ) : (
+            <DataTable
+              columns={invoiceColumns}
+              data={filteredInvoices}
+              searchPlaceholder="Search invoices..."
+              onView={handleViewInvoice}
+              onEdit={handleEditInvoice}
+              onDelete={handleDeleteInvoice}
+            />
+          )}
         </div>
 
         {/* Right Pane - Customers Preview */}
@@ -1125,7 +1158,20 @@ function SalesContent() {
           </div>
 
           <div className="space-y-2 max-h-[400px] overflow-y-auto">
-            {customers.length === 0 ? (
+            {loading ? (
+              // Customer list skeleton
+              <div className="space-y-2 animate-pulse">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="flex items-center gap-3 p-3 bg-primary-700/30 rounded-lg">
+                    <div className="w-10 h-10 bg-primary-600/50 rounded-full" />
+                    <div className="flex-1">
+                      <div className="h-4 w-24 bg-primary-600/50 rounded mb-2" />
+                      <div className="h-3 w-16 bg-primary-600/50 rounded" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : customers.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-sm text-primary-400">No customers yet</p>
                 <Button
