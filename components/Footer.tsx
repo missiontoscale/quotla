@@ -90,7 +90,7 @@ export default function Footer() {
                 </h3>
                 <ul className="space-y-3 text-sm">
                   {visibleLinks.map((link) => (
-                    <li key={link.href}>
+                    <li key={`${section.title}-${link.label}`}>
                       <FooterLink href={link.href}>{link.label}</FooterLink>
                     </li>
                   ))}

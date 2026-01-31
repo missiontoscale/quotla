@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo, useRef } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { useUserCurrency } from '@/hooks/useUserCurrency'
 import { deductStockForInvoice, restoreStockForInvoice, hasStockBeenDeducted } from '@/lib/inventory/stock-operations'
-import { FileText, User, Calendar, DollarSign, Plus, Trash2, Package, Check, ChevronsUpDown, UserPlus, Save, Download, X } from 'lucide-react'
+import { FileText, User, Calendar, DollarSign, Plus, Trash2, Package, Check, ChevronsUpDown, UserPlus, Save, Download, X, Loader2 } from 'lucide-react'
 import { exportToPDF, exportToWord, exportToPNG } from '@/lib/export'
 import type { Profile, InvoiceWithItems } from '@/types'
 import {
@@ -111,6 +111,7 @@ export function AddInvoiceDialog({
   const [showDownloadOptions, setShowDownloadOptions] = useState(false)
   const [exporting, setExporting] = useState<string | null>(null)
   const [isEditing, setIsEditing] = useState(false)
+  const [isConverting, setIsConverting] = useState(false)
 
   // Track original status for stock operations on status change
   const [originalStatus, setOriginalStatus] = useState<'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled' | null>(null)
@@ -524,6 +525,48 @@ export function AddInvoiceDialog({
         amount: item.quantity * inventoryItem.unit_price,
       }
     }))
+  }
+
+  const handleCurrencyChange = async (newCurrency: string) => {
+    const oldCurrency = formData.currency
+    if (oldCurrency === newCurrency) return
+
+    // If there are no line items with prices, just update the currency
+    const hasItemsWithPrices = lineItems.some(item => item.unit_price > 0)
+    if (!hasItemsWithPrices) {
+      setFormData({ ...formData, currency: newCurrency })
+      return
+    }
+
+    setIsConverting(true)
+    try {
+      const response = await fetch('/api/currency/convert', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: 1, from: oldCurrency, to: newCurrency }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch exchange rate')
+      }
+
+      const data = await response.json()
+      const rate = data.convertedAmount // Since amount is 1, convertedAmount is the rate
+
+      // Convert all line item prices
+      setLineItems(items => items.map(item => ({
+        ...item,
+        unit_price: Math.round(item.unit_price * rate * 100) / 100,
+        amount: Math.round(item.quantity * item.unit_price * rate * 100) / 100,
+      })))
+
+      setFormData({ ...formData, currency: newCurrency })
+    } catch (err) {
+      console.error('Currency conversion failed:', err)
+      setError('Failed to convert currency. Please try again.')
+    } finally {
+      setIsConverting(false)
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -1183,22 +1226,29 @@ export function AddInvoiceDialog({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="currency" className="text-xs">Currency</Label>
-                <Select
-                  value={formData.currency}
-                  onValueChange={(value) => setFormData({ ...formData, currency: value })}
-                  disabled={isViewMode && !isEditing}
-                >
-                  <SelectTrigger className="bg-slate-800 border-slate-700 h-8 text-sm">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-slate-900 border-slate-800 max-h-60">
-                    {CURRENCIES.map((curr) => (
-                      <SelectItem key={curr.code} value={curr.code}>
-                        {curr.symbol} {curr.code} - {curr.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="relative">
+                  <Select
+                    value={formData.currency}
+                    onValueChange={handleCurrencyChange}
+                    disabled={(isViewMode && !isEditing) || isConverting}
+                  >
+                    <SelectTrigger className="bg-slate-800 border-slate-700 h-8 text-sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-slate-900 border-slate-800 max-h-60">
+                      {CURRENCIES.map((curr) => (
+                        <SelectItem key={curr.code} value={curr.code}>
+                          {curr.symbol} {curr.code} - {curr.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {isConverting && (
+                    <div className="absolute right-8 top-1/2 -translate-y-1/2">
+                      <Loader2 className="h-4 w-4 animate-spin text-cyan-400" />
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="space-y-2">

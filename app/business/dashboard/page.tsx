@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase/client'
 import { useAuth } from '@/contexts/AuthContext'
+import { useModal } from '@/contexts/ModalContext'
 import { format, subMonths, startOfMonth, endOfMonth, eachMonthOfInterval } from 'date-fns'
 import {
   analyzeTrend,
@@ -110,6 +111,7 @@ export default function DashboardPage() {
 function DashboardContent() {
   const { user, profile } = useAuth()
   const { currency } = useUserCurrency()
+  const { openInvoiceModal, openCustomerModal, openProductModal, openExpenseModal } = useModal()
   const [loading, setLoading] = useState(true)
   const [showAICreate, setShowAICreate] = useState(false)
   const [chartMode, setChartMode] = useState<'revenue' | 'volume'>('revenue')
@@ -857,27 +859,27 @@ function DashboardContent() {
         ================================================================ */}
         <section aria-labelledby="quick-actions">
           <h2 id="quick-actions" className="sr-only">Quick Actions</h2>
-          <div className="flex flex-wrap gap-2 justify-center">
-            <Link href="/business/sales">
-              <Button variant="outline" size="sm" className="gap-2 text-xs">
-                <FileText className="w-3.5 h-3.5" /> New Invoice
-              </Button>
-            </Link>
-            <Link href="/business/sales">
-              <Button variant="outline" size="sm" className="gap-2 text-xs">
-                <Users className="w-3.5 h-3.5" /> Add Customer
-              </Button>
-            </Link>
-            <Link href="/business/products">
-              <Button variant="outline" size="sm" className="gap-2 text-xs">
-                <Package className="w-3.5 h-3.5" /> Add Product
-              </Button>
-            </Link>
-            <Link href="/business/expenses">
-              <Button variant="outline" size="sm" className="gap-2 text-xs">
-                <Receipt className="w-3.5 h-3.5" /> New Expense
-              </Button>
-            </Link>
+          <div className="grid grid-cols-4 gap-1.5 md:flex md:flex-wrap md:gap-2 md:justify-center">
+            <Button variant="outline" size="sm" className="gap-1 md:gap-2 text-xs w-full" onClick={() => openInvoiceModal()}>
+              <FileText className="w-3.5 h-3.5" />
+              <span className="md:hidden">Invoice</span>
+              <span className="hidden md:inline">New Invoice</span>
+            </Button>
+            <Button variant="outline" size="sm" className="gap-1 md:gap-2 text-xs w-full" onClick={() => openCustomerModal()}>
+              <Users className="w-3.5 h-3.5" />
+              <span className="md:hidden">Customer</span>
+              <span className="hidden md:inline">Add Customer</span>
+            </Button>
+            <Button variant="outline" size="sm" className="gap-1 md:gap-2 text-xs w-full" onClick={() => openProductModal()}>
+              <Package className="w-3.5 h-3.5" />
+              <span className="md:hidden">Product</span>
+              <span className="hidden md:inline">Add Product</span>
+            </Button>
+            <Button variant="outline" size="sm" className="gap-1 md:gap-2 text-xs w-full" onClick={() => openExpenseModal()}>
+              <Receipt className="w-3.5 h-3.5" />
+              <span className="md:hidden">Expense</span>
+              <span className="hidden md:inline">New Expense</span>
+            </Button>
           </div>
         </section>
 

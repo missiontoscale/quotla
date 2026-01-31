@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, ReactNode } from 'react'
 
-type ModalType = 'customer' | 'vendor' | 'expense' | 'product'
+type ModalType = 'customer' | 'vendor' | 'expense' | 'product' | 'invoice'
 
 interface ModalState {
   type: ModalType | null
@@ -16,6 +16,7 @@ interface ModalContextType {
   modalState: ModalState
 
   // Open modals
+  openInvoiceModal: (itemId?: string, mode?: 'create' | 'edit') => void
   openCustomerModal: (itemId?: string, mode?: 'create' | 'edit') => void
   openVendorModal: (itemId?: string, mode?: 'create' | 'edit') => void
   openExpenseModal: (itemId?: string, mode?: 'create' | 'edit') => void
@@ -37,6 +38,15 @@ export function ModalProvider({ children }: { children: ReactNode }) {
     isOpen: false,
   })
   const [successCallback, setSuccessCallback] = useState<() => void>(() => () => {})
+
+  const openInvoiceModal = (itemId?: string, mode: 'create' | 'edit' = 'create') => {
+    setModalState({
+      type: 'invoice',
+      isOpen: true,
+      itemId,
+      mode,
+    })
+  }
 
   const openCustomerModal = (itemId?: string, mode: 'create' | 'edit' = 'create') => {
     setModalState({
@@ -93,6 +103,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
     <ModalContext.Provider
       value={{
         modalState,
+        openInvoiceModal,
         openCustomerModal,
         openVendorModal,
         openExpenseModal,

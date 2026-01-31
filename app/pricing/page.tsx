@@ -14,85 +14,8 @@ export default function PricingPage() {
   const router = useRouter()
   const { user, profile, subscriptionPlan } = useAuth()
   const { createCheckoutSession, isFreePlan } = useSubscription()
-  const [currencyCode, setCurrencyCode] = useState<string>('USD')
   const [activeFaq, setActiveFaq] = useState<number | null>(null)
   const [usageStats, setUsageStats] = useState<UsageStats | null>(null)
-  const [convertedPrices, setConvertedPrices] = useState<Record<number, number>>({})
-  const [isLoadingCurrency, setIsLoadingCurrency] = useState(true)
-  const [exchangeRate, setExchangeRate] = useState<number>(1)
-
-  // Detect user's location and currency
-  useEffect(() => {
-    const detectCurrency = async () => {
-      setIsLoadingCurrency(true)
-      try {
-        // Check if user has a cached location (24-hour cache)
-        const cached = localStorage.getItem('userLocation')
-        let detectedCurrency = 'USD'
-
-        if (cached) {
-          const data = JSON.parse(cached)
-          const cacheAge = Date.now() - (data.timestamp || 0)
-          const CACHE_DURATION = 24 * 60 * 60 * 1000 // 24 hours
-
-          if (cacheAge < CACHE_DURATION && data.currency) {
-            detectedCurrency = data.currency
-          } else {
-            // Cache expired, fetch new location
-            const response = await fetch('/api/geolocation')
-            if (response.ok) {
-              const locationData = await response.json()
-              detectedCurrency = locationData.currency || 'USD'
-              // Cache the new location
-              localStorage.setItem('userLocation', JSON.stringify({
-                ...locationData,
-                timestamp: Date.now(),
-              }))
-            }
-          }
-        } else {
-          // No cache, fetch location
-          const response = await fetch('/api/geolocation')
-          if (response.ok) {
-            const locationData = await response.json()
-            detectedCurrency = locationData.currency || 'USD'
-            // Cache the location
-            localStorage.setItem('userLocation', JSON.stringify({
-              ...locationData,
-              timestamp: Date.now(),
-            }))
-          }
-        }
-
-        setCurrencyCode(detectedCurrency)
-
-        // If not USD, fetch exchange rates and convert prices
-        if (detectedCurrency !== 'USD') {
-          const ratesResponse = await fetch(`/api/currency/convert?base=USD`)
-          if (ratesResponse.ok) {
-            const ratesData = await ratesResponse.json()
-            const rate = ratesData.rates[detectedCurrency]
-            if (rate) {
-              setExchangeRate(rate)
-              // Convert all plan prices
-              const converted: Record<number, number> = {}
-              SUBSCRIPTION_PLANS.forEach(plan => {
-                converted[plan.priceUSD] = Number((plan.priceUSD * rate).toFixed(2))
-              })
-              setConvertedPrices(converted)
-            }
-          }
-        }
-      } catch (error) {
-        console.error('Failed to detect currency:', error)
-        setCurrencyCode('USD')
-      } finally {
-        setIsLoadingCurrency(false)
-      }
-    }
-
-    detectCurrency()
-  }, [])
 
   // Fetch usage stats for authenticated users
   useEffect(() => {
@@ -190,19 +113,9 @@ export default function PricingPage() {
           <p className="font-sans text-xl text-primary-300 mb-4 leading-relaxed">
             Choose the plan that's right for your business
           </p>
-          {isLoadingCurrency ? (
-            <p className="text-sm text-primary-400">
-              Detecting your location...
-            </p>
-          ) : currencyCode !== 'USD' ? (
-            <p className="text-sm text-primary-400">
-              Prices shown in {currencyCode} (converted from USD at rate: {exchangeRate.toFixed(4)})
-            </p>
-          ) : (
-            <p className="text-sm text-primary-400">
-              All prices in USD. Subscription billing in USD.
-            </p>
-          )}
+          <p className="text-sm text-primary-400">
+            All prices in USD. Subscription billing in USD.
+          </p>
         </div>
       </section>
 
@@ -344,21 +257,14 @@ export default function PricingPage() {
                     <h3 className={`text-xl font-bold mb-2 ${plan.popular ? 'text-white' : 'text-quotla-dark'}`}>
                       {plan.name}
                     </h3>
-                    <div className="flex items-baseline gap-1 mb-2">
+                    <div className="flex items-baseline gap-1 mb-4">
                       <span className={`text-4xl font-bold ${plan.popular ? 'text-white' : 'text-quotla-dark'}`}>
-                        {currencyCode !== 'USD' && convertedPrices[plan.priceUSD]
-                          ? formatCurrency(convertedPrices[plan.priceUSD], currencyCode)
-                          : formatCurrency(plan.priceUSD, 'USD')}
+                        {formatCurrency(plan.priceUSD, 'USD')}
                       </span>
                       <span className={`text-sm ${plan.popular ? 'text-white/70' : 'text-quotla-dark/60'}`}>
                         /month
                       </span>
                     </div>
-                    {currencyCode !== 'USD' && convertedPrices[plan.priceUSD] && (
-                      <div className={`text-xs mb-4 ${plan.popular ? 'text-white/60' : 'text-quotla-dark/50'}`}>
-                        ({formatCurrency(plan.priceUSD, 'USD')} USD)
-                      </div>
-                    )}
 
                     <ul className="space-y-3 mb-6 text-sm">
                       {plan.features.map((feature, featureIndex) => (

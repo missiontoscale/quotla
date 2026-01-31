@@ -39,10 +39,10 @@ export function TopBar() {
           <User className="w-4 h-4 text-white" />
         </div>
         <div className="flex flex-col">
-          <span className="text-[0.72rem] text-slate-100 font-medium capitalize">
+          <span className="text-[0.79rem] text-slate-100 font-medium capitalize">
             {greeting}, {userName}
           </span>
-          <span className="text-[0.65rem] text-slate-400">
+          <span className="text-[0.675rem] text-slate-400">
             {format(new Date(), 'EEE, MMM d')}
           </span>
         </div>
