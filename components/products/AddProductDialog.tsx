@@ -111,7 +111,7 @@ export function AddProductDialog({
           low_stock_threshold: data.low_stock_threshold || 10,
         })
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error loading product:', err)
       setError('Unable to load product. Please try again.')
     } finally {
@@ -125,6 +125,12 @@ export function AddProductDialog({
     e.preventDefault()
     setLoading(true)
     setError(null)
+
+    if (!formData.name.trim()) {
+      setError('Product name is required.')
+      setLoading(false)
+      return
+    }
 
     try {
       const { data: { user } } = await supabase.auth.getUser()
@@ -212,7 +218,7 @@ export function AddProductDialog({
 
       onSuccess()
       onOpenChange(false)
-    } catch (err) {
+    } catch (err: any) {
       console.error(`Error ${productId ? 'updating' : 'creating'} product:`, err)
       setError(`Unable to ${productId ? 'update' : 'create'} product. Please try again.`)
     } finally {

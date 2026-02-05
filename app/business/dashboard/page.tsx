@@ -111,7 +111,7 @@ export default function DashboardPage() {
 function DashboardContent() {
   const { user, profile } = useAuth()
   const { currency } = useUserCurrency()
-  const { openInvoiceModal, openCustomerModal, openProductModal, openExpenseModal } = useModal()
+  const { openInvoiceModal, openCustomerModal, openProductModal, openExpenseModal, setOnSuccess } = useModal()
   const [loading, setLoading] = useState(true)
   const [showAICreate, setShowAICreate] = useState(false)
   const [chartMode, setChartMode] = useState<'revenue' | 'volume'>('revenue')
@@ -860,22 +860,22 @@ function DashboardContent() {
         <section aria-labelledby="quick-actions">
           <h2 id="quick-actions" className="sr-only">Quick Actions</h2>
           <div className="grid grid-cols-4 gap-1.5 md:flex md:flex-wrap md:gap-2 md:justify-center">
-            <Button variant="outline" size="sm" className="gap-1 md:gap-2 text-xs w-full" onClick={() => openInvoiceModal()}>
+            <Button variant="outline" size="sm" className="gap-1 md:gap-2 text-xs w-full" onClick={() => { setOnSuccess(() => loadData()); openInvoiceModal() }}>
               <FileText className="w-3.5 h-3.5" />
               <span className="md:hidden">Invoice</span>
               <span className="hidden md:inline">New Invoice</span>
             </Button>
-            <Button variant="outline" size="sm" className="gap-1 md:gap-2 text-xs w-full" onClick={() => openCustomerModal()}>
+            <Button variant="outline" size="sm" className="gap-1 md:gap-2 text-xs w-full" onClick={() => { setOnSuccess(() => loadData()); openCustomerModal() }}>
               <Users className="w-3.5 h-3.5" />
               <span className="md:hidden">Customer</span>
               <span className="hidden md:inline">Add Customer</span>
             </Button>
-            <Button variant="outline" size="sm" className="gap-1 md:gap-2 text-xs w-full" onClick={() => openProductModal()}>
+            <Button variant="outline" size="sm" className="gap-1 md:gap-2 text-xs w-full" onClick={() => { setOnSuccess(() => loadData()); openProductModal() }}>
               <Package className="w-3.5 h-3.5" />
               <span className="md:hidden">Product</span>
               <span className="hidden md:inline">Add Product</span>
             </Button>
-            <Button variant="outline" size="sm" className="gap-1 md:gap-2 text-xs w-full" onClick={() => openExpenseModal()}>
+            <Button variant="outline" size="sm" className="gap-1 md:gap-2 text-xs w-full" onClick={() => { setOnSuccess(() => loadData()); openExpenseModal() }}>
               <Receipt className="w-3.5 h-3.5" />
               <span className="md:hidden">Expense</span>
               <span className="hidden md:inline">New Expense</span>

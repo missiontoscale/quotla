@@ -10,6 +10,7 @@ import {
   TextRun,
   AlignmentType,
   WidthType,
+  BorderStyle,
   Packer,
 } from 'docx'
 import { saveAs } from 'file-saver'
@@ -70,30 +71,70 @@ export async function exportToPDF(exportData: ExportData): Promise<void> {
     : (data as InvoiceWithItems).issue_date), 'MMM dd, yyyy')
   doc.text(issueDate, 70, 78)
 
-  // Client info - Bill To section (increased top margin)
+  // From (seller) info section
+  if (profile) {
+    doc.setFontSize(13)
+    doc.setFont('helvetica', 'bold')
+    doc.setTextColor(0, 0, 0)
+    doc.text('From:', 20, 98)
+
+    doc.setFontSize(12)
+    doc.setFont('helvetica', 'bold')
+    let fromY = 108
+    if (profile.company_name) {
+      doc.text(profile.company_name, 20, fromY)
+      fromY += 7
+    }
+
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(10)
+    if (profile.address) {
+      doc.text(profile.address, 20, fromY)
+      fromY += 6
+    }
+    const fromCityLine = [profile.city, profile.state, profile.postal_code].filter(Boolean).join(', ')
+    if (fromCityLine) {
+      doc.text(fromCityLine, 20, fromY)
+      fromY += 6
+    }
+    if (profile.country) {
+      doc.text(profile.country, 20, fromY)
+      fromY += 6
+    }
+    if (profile.phone) {
+      doc.text(`Phone: ${profile.phone}`, 20, fromY)
+      fromY += 6
+    }
+    if (profile.tax_id) {
+      doc.text(`Tax ID: ${profile.tax_id}`, 20, fromY)
+    }
+  }
+
+  // Client info - Bill To section
+  const billToX = 120
   doc.setFontSize(13)
   doc.setFont('helvetica', 'bold')
   doc.setTextColor(0, 0, 0)
   const billLabel = isQuote ? 'To:' : 'Bill To:'
-  doc.text(billLabel, 20, 98)
+  doc.text(billLabel, billToX, 98)
 
   if (data.client) {
     doc.setFontSize(12)
     doc.setFont('helvetica', 'bold')
-    doc.text(data.client.full_name, 20, 108)
+    doc.text(data.client.full_name, billToX, 108)
 
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(10)
     let clientY = 115
 
     if (data.client.address) {
-      doc.text(data.client.address, 20, clientY)
+      doc.text(data.client.address, billToX, clientY)
       clientY += 6
     }
 
     const cityLine = `${data.client.city || ''}, ${data.client.country || ''}`.trim().replace(/^,\s*|,\s*$/g, '')
     if (cityLine) {
-      doc.text(cityLine, 20, clientY)
+      doc.text(cityLine, billToX, clientY)
     }
   }
 
@@ -274,42 +315,80 @@ export async function exportToWord(exportData: ExportData): Promise<void> {
             spacing: { after: 350 },
           }),
 
-          // Client info (improved spacing)
-          new Paragraph({
-            children: [
-              new TextRun({
-                text: isQuote ? 'To:' : 'Bill To:',
-                bold: true,
-                size: 26,
+          // From / Bill To two-column table
+          new Table({
+            width: { size: 100, type: WidthType.PERCENTAGE },
+            rows: [
+              new TableRow({
+                children: [
+                  // From (seller) column
+                  new TableCell({
+                    children: [
+                      new Paragraph({
+                        children: [new TextRun({ text: 'From:', bold: true, size: 26 })],
+                        spacing: { after: 120 },
+                      }),
+                      ...(profile
+                        ? [
+                            ...(profile.company_name
+                              ? [new Paragraph({ children: [new TextRun({ text: profile.company_name, bold: true, size: 24 })], spacing: { after: 60 } })]
+                              : []),
+                            ...(profile.address
+                              ? [new Paragraph({ children: [new TextRun({ text: profile.address, size: 22 })], spacing: { after: 60 } })]
+                              : []),
+                            ...([profile.city, profile.state, profile.postal_code].filter(Boolean).join(', ')
+                              ? [new Paragraph({ children: [new TextRun({ text: [profile.city, profile.state, profile.postal_code].filter(Boolean).join(', '), size: 22 })], spacing: { after: 60 } })]
+                              : []),
+                            ...(profile.country
+                              ? [new Paragraph({ children: [new TextRun({ text: profile.country, size: 22 })], spacing: { after: 60 } })]
+                              : []),
+                            ...(profile.phone
+                              ? [new Paragraph({ children: [new TextRun({ text: `Phone: ${profile.phone}`, size: 22 })], spacing: { after: 60 } })]
+                              : []),
+                            ...(profile.tax_id
+                              ? [new Paragraph({ children: [new TextRun({ text: `Tax ID: ${profile.tax_id}`, size: 22 })], spacing: { after: 60 } })]
+                              : []),
+                          ]
+                        : [new Paragraph({ text: '' })]),
+                    ],
+                    width: { size: 50, type: WidthType.PERCENTAGE },
+                    borders: { top: { size: 0, style: BorderStyle.NONE }, bottom: { size: 0, style: BorderStyle.NONE }, left: { size: 0, style: BorderStyle.NONE }, right: { size: 0, style: BorderStyle.NONE } },
+                  }),
+                  // Bill To (client) column
+                  new TableCell({
+                    children: [
+                      new Paragraph({
+                        children: [new TextRun({ text: isQuote ? 'To:' : 'Bill To:', bold: true, size: 26 })],
+                        spacing: { after: 120 },
+                      }),
+                      ...(data.client
+                        ? [
+                            new Paragraph({
+                              children: [new TextRun({ text: data.client.full_name, bold: true, size: 24 })],
+                              spacing: { after: 60 },
+                            }),
+                            ...(data.client.address
+                              ? [new Paragraph({ children: [new TextRun({ text: data.client.address, size: 22 })], spacing: { after: 60 } })]
+                              : []),
+                            new Paragraph({
+                              children: [
+                                new TextRun({
+                                  text: `${data.client.city || ''}, ${data.client.country || ''}`.trim().replace(/^,\s*|,\s*$/g, ''),
+                                  size: 22,
+                                }),
+                              ],
+                            }),
+                          ]
+                        : [new Paragraph({ text: '' })]),
+                    ],
+                    width: { size: 50, type: WidthType.PERCENTAGE },
+                    borders: { top: { size: 0, style: BorderStyle.NONE }, bottom: { size: 0, style: BorderStyle.NONE }, left: { size: 0, style: BorderStyle.NONE }, right: { size: 0, style: BorderStyle.NONE } },
+                  }),
+                ],
               }),
             ],
-            spacing: { after: 120 },
           }),
-          ...(data.client
-            ? [
-                new Paragraph({
-                  children: [new TextRun({ text: data.client.full_name, bold: true, size: 24 })],
-                  spacing: { after: 60 },
-                }),
-                ...(data.client.address
-                  ? [
-                      new Paragraph({
-                        children: [new TextRun({ text: data.client.address, size: 22 })],
-                        spacing: { after: 60 },
-                      }),
-                    ]
-                  : []),
-                new Paragraph({
-                  children: [
-                    new TextRun({
-                      text: `${data.client.city || ''}, ${data.client.country || ''}`.trim().replace(/^,\s*|,\s*$/g, ''),
-                      size: 22,
-                    }),
-                  ],
-                  spacing: { after: 400 },
-                }),
-              ]
-            : [new Paragraph({ text: '', spacing: { after: 400 } })]),
+          new Paragraph({ text: '', spacing: { after: 400 } }),
 
           // Items table (with cell padding)
           new Table({
@@ -529,7 +608,7 @@ export async function exportToWord(exportData: ExportData): Promise<void> {
 }
 
 export async function exportToPNG(exportData: ExportData): Promise<void> {
-  const { type, data } = exportData
+  const { type, data, profile } = exportData
   const isQuote = type === 'quote'
   const documentTitle = isQuote ? 'QUOTATION' : 'INVOICE'
   const documentNumber = isQuote
@@ -557,13 +636,26 @@ export async function exportToPNG(exportData: ExportData): Promise<void> {
       <p style="margin: 8px 0; line-height: 1.6;"><strong>Date:</strong> ${issueDate}</p>
     </div>
 
-    <div style="margin-bottom: 40px;">
-      <h3 style="font-size: 18px; margin-bottom: 12px;">${isQuote ? 'To:' : 'Bill To:'}</h3>
-      ${data.client ? `
-        <p style="margin: 6px 0; font-weight: bold; line-height: 1.6;">${data.client.full_name}</p>
-        ${data.client.address ? `<p style="margin: 6px 0; line-height: 1.6;">${data.client.address}</p>` : ''}
-        <p style="margin: 6px 0; line-height: 1.6;">${data.client.city || ''}, ${data.client.country || ''}</p>
-      ` : ''}
+    <div style="display: flex; margin-bottom: 40px; gap: 40px;">
+      <div style="flex: 1;">
+        <h3 style="font-size: 18px; margin-bottom: 12px;">From:</h3>
+        ${profile ? `
+          ${profile.company_name ? `<p style="margin: 6px 0; font-weight: bold; line-height: 1.6;">${profile.company_name}</p>` : ''}
+          ${profile.address ? `<p style="margin: 6px 0; line-height: 1.6;">${profile.address}</p>` : ''}
+          ${[profile.city, profile.state, profile.postal_code].filter(Boolean).join(', ') ? `<p style="margin: 6px 0; line-height: 1.6;">${[profile.city, profile.state, profile.postal_code].filter(Boolean).join(', ')}</p>` : ''}
+          ${profile.country ? `<p style="margin: 6px 0; line-height: 1.6;">${profile.country}</p>` : ''}
+          ${profile.phone ? `<p style="margin: 6px 0; line-height: 1.6;">Phone: ${profile.phone}</p>` : ''}
+          ${profile.tax_id ? `<p style="margin: 6px 0; line-height: 1.6;">Tax ID: ${profile.tax_id}</p>` : ''}
+        ` : ''}
+      </div>
+      <div style="flex: 1;">
+        <h3 style="font-size: 18px; margin-bottom: 12px;">${isQuote ? 'To:' : 'Bill To:'}</h3>
+        ${data.client ? `
+          <p style="margin: 6px 0; font-weight: bold; line-height: 1.6;">${data.client.full_name}</p>
+          ${data.client.address ? `<p style="margin: 6px 0; line-height: 1.6;">${data.client.address}</p>` : ''}
+          <p style="margin: 6px 0; line-height: 1.6;">${data.client.city || ''}, ${data.client.country || ''}</p>
+        ` : ''}
+      </div>
     </div>
 
     <div style="margin-bottom: 40px;">

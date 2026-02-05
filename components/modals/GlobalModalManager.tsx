@@ -5,6 +5,7 @@ import { AddCustomerDialog } from '@/components/customers/AddCustomerDialog'
 import { AddVendorDialog } from '@/components/expenses/AddVendorDialog'
 import { AddExpenseDialog } from '@/components/expenses/AddExpenseDialog'
 import { AddProductDialog } from '@/components/products/AddProductDialog'
+import { AddInvoiceDialog } from '@/components/invoices/AddInvoiceDialog'
 
 /**
  * GlobalModalManager
@@ -55,6 +56,15 @@ export function GlobalModalManager() {
         onOpenChange={closeModal}
         onSuccess={onSuccess}
         productId={modalState.itemId}
+        mode={modalState.mode}
+      />
+
+      {/* Invoice Modal */}
+      <AddInvoiceDialog
+        open={modalState.isOpen && modalState.type === 'invoice'}
+        onOpenChange={closeModal}
+        onSuccess={onSuccess}
+        invoiceId={modalState.itemId}
         mode={modalState.mode}
       />
     </>

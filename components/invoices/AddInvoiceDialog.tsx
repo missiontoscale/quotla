@@ -31,6 +31,16 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { FormSection } from '@/components/ui/form-section'
 import { formatCurrency, CURRENCIES } from '@/lib/utils/currency'
 
@@ -112,6 +122,8 @@ export function AddInvoiceDialog({
   const [exporting, setExporting] = useState<string | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [isConverting, setIsConverting] = useState(false)
+  const [showNoCustomerConfirm, setShowNoCustomerConfirm] = useState(false)
+  const customerInputRef = useRef<HTMLInputElement>(null)
 
   // Track original status for stock operations on status change
   const [originalStatus, setOriginalStatus] = useState<'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled' | null>(null)
@@ -569,17 +581,7 @@ export function AddInvoiceDialog({
     }
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (isViewMode && !isEditing) return
-
-    // Validation
-    if (!formData.client_id) {
-      setError('Please select a customer')
-      return
-    }
-
-
+  const performSubmit = async () => {
     const validItems = lineItems.filter(item => item.description && item.quantity > 0)
     if (validItems.length === 0) {
       setError('Please add at least one line item with a description')
@@ -726,6 +728,33 @@ export function AddInvoiceDialog({
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (isViewMode && !isEditing) return
+
+    if (!formData.client_id) {
+      setShowNoCustomerConfirm(true)
+      return
+    }
+
+    await performSubmit()
+  }
+
+  const handleConfirmNoCustomer = () => {
+    setShowNoCustomerConfirm(false)
+    performSubmit()
+  }
+
+  const handleCancelNoCustomer = () => {
+    setShowNoCustomerConfirm(false)
+    // Scroll to and focus the customer input, then open the dropdown
+    customerInputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    setTimeout(() => {
+      customerInputRef.current?.focus()
+      setCustomerComboboxOpen(true)
+    }, 300)
   }
 
   // Build export data for download functions
@@ -916,6 +945,7 @@ export function AddInvoiceDialog({
               <Label htmlFor="customer" className="text-xs">Select Customer *</Label>
               <div className="relative" ref={customerDropdownRef}>
                 <Input
+                  ref={customerInputRef}
                   placeholder="Search or add a customer..."
                   value={customerSearchValue || selectedCustomerDisplay || ''}
                   onChange={(e) => {
@@ -1361,6 +1391,34 @@ export function AddInvoiceDialog({
           </DialogFooter>
         </form>
       </DialogContent>
+
+      {/* Confirmation modal for creating invoice without customer */}
+      <AlertDialog open={showNoCustomerConfirm} onOpenChange={setShowNoCustomerConfirm}>
+        <AlertDialogContent className="border-slate-700 bg-slate-800">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-slate-200">
+              No customer selected
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-400">
+              Are you sure you want to create this invoice without a customer?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              onClick={handleCancelNoCustomer}
+              className="border-slate-600 bg-slate-700 text-slate-200 hover:bg-slate-600"
+            >
+              No, select a customer
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmNoCustomer}
+              className="bg-cyan-600 text-white hover:bg-cyan-700"
+            >
+              Yes, continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   )
 }
