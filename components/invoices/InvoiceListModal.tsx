@@ -148,19 +148,20 @@ export function InvoiceListModal({
     { key: 'title', label: 'Title' },
     {
       key: 'status',
-      label: 'Status',
+      label: '',
       render: (value: string) => {
-        const statusColors: Record<string, string> = {
-          draft: 'bg-slate-500/20 text-slate-400',
-          sent: 'bg-blue-500/20 text-blue-400',
-          paid: 'bg-emerald-500/20 text-emerald-400',
-          overdue: 'bg-rose-500/20 text-rose-400',
-          cancelled: 'bg-slate-600/20 text-slate-500',
+        const dotColors: Record<string, string> = {
+          draft: 'bg-slate-400',
+          sent: 'bg-blue-400',
+          paid: 'bg-emerald-400',
+          overdue: 'bg-rose-400',
+          cancelled: 'bg-slate-500',
         }
         return (
-          <Badge className={statusColors[value] || statusColors.draft}>
-            {value}
-          </Badge>
+          <span
+            className={`w-2.5 h-2.5 rounded-full inline-block ${dotColors[value] || dotColors.draft}`}
+            title={value}
+          />
         )
       },
     },
@@ -273,7 +274,21 @@ export function InvoiceListModal({
             </Button>
           </div>
         </DialogHeader>
-        <div className="flex-1 overflow-y-auto mt-4">
+        <div className="flex flex-wrap items-center gap-3 mt-3 px-1">
+          {[
+            { label: 'Draft', color: 'bg-slate-400' },
+            { label: 'Sent', color: 'bg-blue-400' },
+            { label: 'Paid', color: 'bg-emerald-400' },
+            { label: 'Overdue', color: 'bg-rose-400' },
+            { label: 'Cancelled', color: 'bg-slate-500' },
+          ].map((s) => (
+            <div key={s.label} className="flex items-center gap-1.5">
+              <span className={`w-2 h-2 rounded-full ${s.color}`} />
+              <span className="text-xs text-slate-400">{s.label}</span>
+            </div>
+          ))}
+        </div>
+        <div className="flex-1 overflow-y-auto mt-2">
           <DataTable
             columns={invoiceColumns}
             data={invoices}
