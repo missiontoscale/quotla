@@ -584,7 +584,7 @@ export function AddInvoiceDialog({
   const performSubmit = async () => {
     const validItems = lineItems.filter(item => item.description && item.quantity > 0)
     if (validItems.length === 0) {
-      setError('Please add at least one line item with a description')
+      setError('Please add an item')
       return
     }
 
@@ -884,12 +884,6 @@ export function AddInvoiceDialog({
           )}
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 py-4">
-          {error && (
-            <div className="bg-rose-500/10 border border-rose-500/50 rounded-lg p-3">
-              <p className="text-sm text-rose-400">{error}</p>
-            </div>
-          )}
-
           {/* Customer & Invoice Info - Most important, at top */}
           <FormSection title="Invoice Details" icon={FileText} description="Basic invoice information">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1093,9 +1087,9 @@ export function AddInvoiceDialog({
                             value={searchValue || item.description}
                             onChange={(e) => {
                               setLineItemSearchValues(prev => ({ ...prev, [item.id]: e.target.value }))
-                              // If they're typing, clear the linked inventory item
+                              // Update description and clear inventory link if typing
+                              updateLineItem(item.id, 'description', e.target.value)
                               if (item.inventory_item_id && e.target.value !== item.description) {
-                                updateLineItem(item.id, 'description', e.target.value)
                                 updateLineItem(item.id, 'inventory_item_id', undefined)
                                 setLineItems(items => items.map(i =>
                                   i.id === item.id ? { ...i, isCustomItem: true, savedToInventory: false } : i
@@ -1215,9 +1209,9 @@ export function AddInvoiceDialog({
                     </div>
                     {/* Save to Inventory button - shows for custom items with description and price */}
                     {item.isCustomItem && !item.savedToInventory && item.description && item.unit_price > 0 && (!isViewMode || isEditing) && (
-                      <div className="flex items-center gap-2 p-2 bg-amber-500/10 border border-amber-500/30 rounded-lg ml-0 sm:ml-0">
-                        <span className="text-xs text-amber-400 flex-1">
-                          "{item.description}" is not in your inventory
+                      <div className="flex items-center gap-2 p-2 bg-slate-800/50 border border-slate-700 rounded-lg ml-0 sm:ml-0">
+                        <span className="text-xs text-slate-400 flex-1">
+                          Save "{item.description}" to inventory?
                         </span>
                         <Button
                           type="button"
@@ -1225,7 +1219,7 @@ export function AddInvoiceDialog({
                           size="sm"
                           onClick={() => saveLineItemToInventory(item.id)}
                           disabled={savingItemId === item.id}
-                          className="text-xs h-7 text-amber-400 hover:text-amber-300 hover:bg-amber-500/20"
+                          className="text-xs h-7 text-slate-300 hover:text-slate-200 hover:bg-slate-700"
                         >
                           <Save className="mr-1 h-3 w-3" />
                           {savingItemId === item.id ? 'Saving...' : 'Save to Inventory'}
@@ -1350,6 +1344,12 @@ export function AddInvoiceDialog({
               />
             </div>
           </FormSection>
+
+          {error && (
+            <div className="bg-rose-500/10 border border-rose-500/50 rounded-lg p-3">
+              <p className="text-sm text-rose-400">{error}</p>
+            </div>
+          )}
 
           <DialogFooter className="gap-2 pt-4 flex-col sm:flex-row">
             {isViewMode && !isEditing ? (
