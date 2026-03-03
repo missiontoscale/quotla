@@ -128,7 +128,7 @@ export default function AboutPage() {
 
               <div className="space-y-4 text-lg text-quotla-dark/80 leading-relaxed">
                 <p className="font-semibold text-quotla-dark">
-                  We've been in your shoes—the late nights, endless admin, and soul-crushing paperwork.
+                  We've been in your shoesthe late nights, endless admin, and soul-crushing paperwork.
                 </p>
 
                 <p>

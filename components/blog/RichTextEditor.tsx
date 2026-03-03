@@ -112,7 +112,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     ],
     [
       { icon: '"', label: 'Quote', action: formatQuote },
-      { icon: '—', label: 'Horizontal Rule', action: formatHR },
+      { icon: '', label: 'Horizontal Rule', action: formatHR },
     ],
   ]
 

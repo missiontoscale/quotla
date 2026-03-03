@@ -92,7 +92,7 @@ export default function BusinessOwnerFeatures() {
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-quotla-orange via-secondary-400 to-quotla-light">your business smarter</span>
           </h2>
           <p className="text-xl text-quotla-light/70 max-w-3xl mx-auto">
-            From expenses to inventory, profitability to time tracking—all the tools you need in one platform
+            From expenses to inventory, profitability to time trackingall the tools you need in one platform
           </p>
         </div>
 

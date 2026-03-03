@@ -116,7 +116,7 @@ export default function ForBusinessPage() {
               </h1>
 
               <p className="text-2xl text-quotla-dark/70 leading-relaxed max-w-xl">
-                Everything you need to manage quotes, invoices, clients, and inventory—all in one powerful platform.
+                Everything you need to manage quotes, invoices, clients, and inventoryall in one powerful platform.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 pt-4">

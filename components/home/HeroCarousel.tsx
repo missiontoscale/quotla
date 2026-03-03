@@ -50,7 +50,7 @@ const carouselSlides = [
     badgeColor: 'bg-quotla-orange/15 border-quotla-orange/30',
     title: 'AI that understands your business',
     subtitle: 'Natural language meets powerful automation',
-    description: 'Simply describe what you need in plain English. Our AI handles quotes, invoices, pricing, and more—automatically.',
+    description: 'Simply describe what you need in plain English. Our AI handles quotes, invoices, pricing, and moreautomatically.',
     features: [
       { stat: 'AI', text: 'quote generation' },
       { stat: 'Smart', text: 'pricing' },

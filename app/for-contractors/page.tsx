@@ -250,7 +250,7 @@ export default function ForContractorsPage() {
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-quotla-orange to-quotla-green">contractor toolkit</span>
             </h2>
             <p className="text-xl text-quotla-light/70 max-w-3xl mx-auto">
-              Quick access to everything you need—from quote to payment
+              Quick access to everything you needfrom quote to payment
             </p>
           </div>
 

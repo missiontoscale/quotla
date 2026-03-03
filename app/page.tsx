@@ -536,7 +536,7 @@ export default function HomePage() {
                 </h2>
 
                 <p className="text-xl text-quotla-light/80 leading-relaxed">
-                  We've walked in your shoes. The late nights, the client calls, the never-ending admin work. Quotla was born from that struggle—a tool to give you back your most precious resource: time.
+                  We've walked in your shoes. The late nights, the client calls, the never-ending admin work. Quotla was born from that strugglea tool to give you back your most precious resource: time.
                 </p>
 
                 {/* Quote card */}
