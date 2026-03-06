@@ -47,8 +47,8 @@ import { cn } from '@/lib/utils'
 
 const STEPS = [
   { label: 'Client' },
-  { label: 'Details' },
   { label: 'Items' },
+  { label: 'Details' },
   { label: 'Review' },
 ]
 
@@ -209,10 +209,7 @@ export function AddInvoiceDialog({
       } else {
         resetForm()
       }
-      // Fetch profile when opening in view mode
-      if (mode === 'view') {
-        fetchProfile()
-      }
+      fetchProfile()
     }
   }, [open, invoiceId, mode])
 
@@ -1044,8 +1041,8 @@ export function AddInvoiceDialog({
           </FormSection>
           )}
 
-          {/* Step 1: Details */}
-          {currentStep === 1 && (
+          {/* Step 2: Details */}
+          {currentStep === 2 && (
           <>
           <FormSection title="Invoice Details" icon={FileText} description="Basic invoice information">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1060,42 +1057,19 @@ export function AddInvoiceDialog({
                   className="bg-slate-800 border-slate-700 h-8 text-sm"
                 />
               </div>
-
               <div className="space-y-2">
-                <Label htmlFor="status" className="text-xs">Status</Label>
-                <Select
-                  value={formData.status}
-                  onValueChange={(value) => setFormData({ ...formData, status: value as any })}
+                <Label htmlFor="title" className="text-xs">Title (optional)</Label>
+                <Input
+                  id="title"
+                  placeholder="e.g., Website Development Services"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   disabled={isViewMode && !isEditing}
-                >
-                  <SelectTrigger className="bg-slate-800 border-slate-700 h-8 text-sm">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-slate-900 border-slate-800">
-                    <SelectItem value="draft">Draft</SelectItem>
-                    <SelectItem value="sent">Sent</SelectItem>
-                    <SelectItem value="paid">Paid</SelectItem>
-                    <SelectItem value="overdue">Overdue</SelectItem>
-                    <SelectItem value="cancelled">Cancelled</SelectItem>
-                  </SelectContent>
-                </Select>
+                  className="bg-slate-800 border-slate-700 h-8 text-sm"
+                />
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="title" className="text-xs">Title (optional)</Label>
-              <Input
-                id="title"
-                placeholder="e.g., Website Development Services"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                disabled={isViewMode && !isEditing}
-                className="bg-slate-800 border-slate-700 h-8 text-sm"
-              />
-            </div>
-          </FormSection>
-
-          <FormSection title="Dates" icon={Calendar} description="Issue and due dates">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="issue-date" className="text-xs">Issue Date *</Label>
@@ -1109,7 +1083,6 @@ export function AddInvoiceDialog({
                   className="bg-slate-800 border-slate-700 h-8 text-sm"
                 />
               </div>
-
               <div className="space-y-2">
                 <Label htmlFor="due-date" className="text-xs">Due Date</Label>
                 <Input
@@ -1122,12 +1095,88 @@ export function AddInvoiceDialog({
                 />
               </div>
             </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="currency" className="text-xs">Currency</Label>
+                <div className="relative">
+                  <Select
+                    value={formData.currency}
+                    onValueChange={handleCurrencyChange}
+                    disabled={(isViewMode && !isEditing) || isConverting}
+                  >
+                    <SelectTrigger className="bg-slate-800 border-slate-700 h-8 text-sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-slate-900 border-slate-800 max-h-60">
+                      {CURRENCIES.map((curr) => (
+                        <SelectItem key={curr.code} value={curr.code}>
+                          {curr.symbol} {curr.code} - {curr.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {isConverting && (
+                    <div className="absolute right-8 top-1/2 -translate-y-1/2">
+                      <Loader2 className="h-4 w-4 animate-spin text-cyan-400" />
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="tax-rate" className="text-xs">Tax Rate (%)</Label>
+                <Input
+                  id="tax-rate"
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  value={formData.tax_rate}
+                  onChange={(e) => setFormData({ ...formData, tax_rate: parseFloat(e.target.value) || 0 })}
+                  disabled={isViewMode && !isEditing}
+                  className="bg-slate-800 border-slate-700 h-8 text-sm"
+                />
+              </div>
+            </div>
+          </FormSection>
+
+          <FormSection
+            title="Notes & Terms"
+            icon={Calendar}
+            description="Additional information"
+            collapsible
+            defaultOpen={false}
+          >
+            <div className="space-y-2">
+              <Label htmlFor="notes" className="text-xs">Notes (optional)</Label>
+              <Textarea
+                id="notes"
+                placeholder="Any additional notes for the customer..."
+                value={formData.notes}
+                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                disabled={isViewMode && !isEditing}
+                className="bg-slate-800 border-slate-700 min-h-16 text-sm"
+                rows={2}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="payment-terms" className="text-xs">Payment Terms (optional)</Label>
+              <Textarea
+                id="payment-terms"
+                placeholder="e.g., Payment due within 30 days..."
+                value={formData.payment_terms}
+                onChange={(e) => setFormData({ ...formData, payment_terms: e.target.value })}
+                disabled={isViewMode && !isEditing}
+                className="bg-slate-800 border-slate-700 min-h-16 text-sm"
+                rows={2}
+              />
+            </div>
           </FormSection>
           </>
           )}
 
-          {/* Step 2: Items */}
-          {currentStep === 2 && (
+          {/* Step 1: Items */}
+          {currentStep === 1 && (
           <FormSection title="Line Items" icon={Package} description="Products or services being invoiced">
             <div className="space-y-3">
               {lineItems.map((item, index) => {
@@ -1306,106 +1355,124 @@ export function AddInvoiceDialog({
           </FormSection>
           )}
 
-          {/* Step 3: Review */}
+          {/* Step 3: Review & Save */}
           {currentStep === 3 && (
-          <>
-          <FormSection title="Totals" icon={DollarSign} description="Currency and tax settings">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="currency" className="text-xs">Currency</Label>
-                <div className="relative">
+          <div className="space-y-4">
+            {/* Invoice header summary */}
+            <div className="p-4 bg-slate-800/50 border border-slate-700 rounded-lg space-y-3">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-[10px] text-slate-400 uppercase tracking-wide">Invoice</p>
+                  <p className="font-semibold text-slate-100">{formData.invoice_number}</p>
+                  {formData.title && <p className="text-sm text-slate-300 mt-0.5">{formData.title}</p>}
+                </div>
+                <div className="text-right">
+                  <p className="text-[10px] text-slate-400 uppercase tracking-wide">Bill To</p>
+                  <p className="text-sm text-slate-200">{selectedCustomerDisplay || <span className="text-slate-500 italic">No customer</span>}</p>
+                </div>
+              </div>
+              <div className="flex gap-6 text-sm">
+                <div>
+                  <p className="text-[10px] text-slate-400 uppercase tracking-wide">Issue Date</p>
+                  <p className="text-slate-200">{formData.issue_date}</p>
+                </div>
+                {formData.due_date && (
+                  <div>
+                    <p className="text-[10px] text-slate-400 uppercase tracking-wide">Due Date</p>
+                    <p className="text-slate-200">{formData.due_date}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Line items table */}
+            <div className="border border-slate-700 rounded-lg overflow-hidden">
+              <table className="w-full text-sm">
+                <thead className="bg-slate-800">
+                  <tr>
+                    <th className="text-left px-3 py-2 text-[10px] text-slate-400 font-medium uppercase tracking-wide">Description</th>
+                    <th className="text-right px-3 py-2 text-[10px] text-slate-400 font-medium uppercase tracking-wide">Qty</th>
+                    <th className="text-right px-3 py-2 text-[10px] text-slate-400 font-medium uppercase tracking-wide">Price</th>
+                    <th className="text-right px-3 py-2 text-[10px] text-slate-400 font-medium uppercase tracking-wide">Amount</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800">
+                  {lineItems.filter(i => i.description).map(item => (
+                    <tr key={item.id}>
+                      <td className="px-3 py-2 text-slate-200">{item.description}</td>
+                      <td className="px-3 py-2 text-right text-slate-300">{item.quantity}</td>
+                      <td className="px-3 py-2 text-right text-slate-300">{formatCurrency(item.unit_price, formData.currency)}</td>
+                      <td className="px-3 py-2 text-right text-slate-200">{formatCurrency(item.amount, formData.currency)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <div className="px-3 py-3 bg-slate-800/30 border-t border-slate-700 space-y-1.5">
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-400">Subtotal</span>
+                  <span className="text-slate-200">{formatCurrency(subtotal, formData.currency)}</span>
+                </div>
+                {formData.tax_rate > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-400">Tax ({formData.tax_rate}%)</span>
+                    <span className="text-slate-200">{formatCurrency(taxAmount, formData.currency)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between font-semibold pt-1.5 border-t border-slate-700">
+                  <span className="text-slate-200">Total</span>
+                  <span className="text-emerald-400">{formatCurrency(total, formData.currency)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Status + Export row */}
+            <div className="flex flex-wrap items-end gap-3">
+              {(!isViewMode || isEditing) && (
+                <div className="flex-1 space-y-1.5 min-w-32">
+                  <Label className="text-xs">Status</Label>
                   <Select
-                    value={formData.currency}
-                    onValueChange={handleCurrencyChange}
-                    disabled={(isViewMode && !isEditing) || isConverting}
+                    value={formData.status}
+                    onValueChange={(value) => setFormData({ ...formData, status: value as InvoiceFormData['status'] })}
                   >
                     <SelectTrigger className="bg-slate-800 border-slate-700 h-8 text-sm">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-900 border-slate-800 max-h-60">
-                      {CURRENCIES.map((curr) => (
-                        <SelectItem key={curr.code} value={curr.code}>
-                          {curr.symbol} {curr.code} - {curr.name}
-                        </SelectItem>
-                      ))}
+                    <SelectContent className="bg-slate-900 border-slate-800">
+                      <SelectItem value="draft">Draft</SelectItem>
+                      <SelectItem value="sent">Sent</SelectItem>
+                      <SelectItem value="paid">Paid</SelectItem>
+                      <SelectItem value="overdue">Overdue</SelectItem>
+                      <SelectItem value="cancelled">Cancelled</SelectItem>
                     </SelectContent>
                   </Select>
-                  {isConverting && (
-                    <div className="absolute right-8 top-1/2 -translate-y-1/2">
-                      <Loader2 className="h-4 w-4 animate-spin text-cyan-400" />
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="tax-rate" className="text-xs">Tax Rate (%)</Label>
-                <Input
-                  id="tax-rate"
-                  type="number"
-                  min="0"
-                  max="100"
-                  step="0.1"
-                  value={formData.tax_rate}
-                  onChange={(e) => setFormData({ ...formData, tax_rate: parseFloat(e.target.value) || 0 })}
-                  disabled={isViewMode && !isEditing}
-                  className="bg-slate-800 border-slate-700 h-8 text-sm"
-                />
-              </div>
-            </div>
-
-            <div className="mt-4 p-3 bg-slate-800/50 rounded-lg space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-slate-400">Subtotal</span>
-                <span className="text-slate-200">{formatCurrency(subtotal, formData.currency)}</span>
-              </div>
-              {formData.tax_rate > 0 && (
-                <div className="flex justify-between text-sm">
-                  <span className="text-slate-400">Tax ({formData.tax_rate}%)</span>
-                  <span className="text-slate-200">{formatCurrency(taxAmount, formData.currency)}</span>
                 </div>
               )}
-              <div className="flex justify-between text-base font-medium border-t border-slate-700 pt-2">
-                <span className="text-slate-200">Total</span>
-                <span className="text-emerald-400">{formatCurrency(total, formData.currency)}</span>
+              <div className="flex gap-2 shrink-0">
+                <p className="text-[10px] text-slate-400 uppercase tracking-wide w-full mb-1 hidden">Export</p>
+                {(['png', 'pdf', 'word'] as const).map(fmt => (
+                  <button
+                    key={fmt}
+                    type="button"
+                    onClick={() => handleExport(fmt)}
+                    disabled={exporting !== null}
+                    className="px-3 py-1.5 text-xs font-medium rounded-md bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition-colors disabled:opacity-50 uppercase flex items-center gap-1.5"
+                  >
+                    {exporting === fmt
+                      ? <Loader2 className="h-3 w-3 animate-spin" />
+                      : fmt === 'word' ? 'DOCX' : fmt.toUpperCase()
+                    }
+                  </button>
+                ))}
               </div>
             </div>
-          </FormSection>
 
-          <FormSection
-            title="Notes & Terms"
-            icon={FileText}
-            description="Additional information"
-            collapsible
-            defaultOpen={false}
-          >
-            <div className="space-y-2">
-              <Label htmlFor="notes" className="text-xs">Notes (optional)</Label>
-              <Textarea
-                id="notes"
-                placeholder="Any additional notes for the customer..."
-                value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                disabled={isViewMode && !isEditing}
-                className="bg-slate-800 border-slate-700 min-h-16 text-sm"
-                rows={2}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="payment-terms" className="text-xs">Payment Terms (optional)</Label>
-              <Textarea
-                id="payment-terms"
-                placeholder="e.g., Payment due within 30 days..."
-                value={formData.payment_terms}
-                onChange={(e) => setFormData({ ...formData, payment_terms: e.target.value })}
-                disabled={isViewMode && !isEditing}
-                className="bg-slate-800 border-slate-700 min-h-16 text-sm"
-                rows={2}
-              />
-            </div>
-          </FormSection>
-          </>
+            {formData.notes && (
+              <div className="p-3 bg-slate-800/30 border border-slate-700 rounded-lg">
+                <p className="text-[10px] text-slate-400 uppercase tracking-wide mb-1">Notes</p>
+                <p className="text-sm text-slate-300 whitespace-pre-wrap">{formData.notes}</p>
+              </div>
+            )}
+          </div>
           )}
 
           {error && (
