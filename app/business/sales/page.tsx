@@ -68,7 +68,10 @@ interface InvoiceRow {
   client_id: string | null;
   title: string;
   status: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
+  subtotal: number;
+  tax_amount: number;
   total: number;
+  currency: string;
   issue_date: string;
   due_date: string | null;
 }
