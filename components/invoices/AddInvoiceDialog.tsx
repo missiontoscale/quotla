@@ -43,6 +43,14 @@ import {
 } from '@/components/ui/alert-dialog'
 import { FormSection } from '@/components/ui/form-section'
 import { formatCurrency, CURRENCIES } from '@/lib/utils/currency'
+import { cn } from '@/lib/utils'
+
+const STEPS = [
+  { label: 'Client' },
+  { label: 'Details' },
+  { label: 'Items' },
+  { label: 'Review' },
+]
 
 interface LineItem {
   id: string
@@ -105,6 +113,7 @@ export function AddInvoiceDialog({
   mode = 'create'
 }: AddInvoiceDialogProps) {
   const { currency: userCurrency } = useUserCurrency()
+  const [currentStep, setCurrentStep] = useState(0)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [customers, setCustomers] = useState<Customer[]>([])
@@ -190,8 +199,9 @@ export function AddInvoiceDialog({
 
   useEffect(() => {
     if (open) {
-      // Reset editing state when dialog opens
+      // Reset editing state and wizard step when dialog opens
       setIsEditing(false)
+      setCurrentStep(0)
       fetchCustomers()
       fetchInventoryItems()
       if (invoiceId) {
@@ -853,6 +863,53 @@ export function AddInvoiceDialog({
               </div>
             )}
           </div>
+          {/* Wizard progress bar */}
+          <div className="flex items-center mt-4">
+            {STEPS.map((step, index) => (
+              <div key={step.label} className="flex items-center flex-1 last:flex-none">
+                <button
+                  type="button"
+                  onClick={() => {
+                    // In view mode (not editing), allow free navigation
+                    // In create/edit mode, only allow going back
+                    if (isViewMode && !isEditing) {
+                      setCurrentStep(index)
+                    } else if (index < currentStep) {
+                      setCurrentStep(index)
+                    }
+                  }}
+                  className={cn(
+                    'flex flex-col items-center gap-1 group shrink-0',
+                    index <= currentStep ? 'cursor-pointer' : 'cursor-default'
+                  )}
+                >
+                  <div className={cn(
+                    'w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold border-2 transition-colors',
+                    index < currentStep
+                      ? 'bg-cyan-500 border-cyan-500 text-white'
+                      : index === currentStep
+                        ? 'bg-transparent border-cyan-400 text-cyan-400'
+                        : 'bg-transparent border-slate-700 text-slate-500'
+                  )}>
+                    {index < currentStep ? <Check className="h-3.5 w-3.5" /> : index + 1}
+                  </div>
+                  <span className={cn(
+                    'text-[10px] font-medium whitespace-nowrap',
+                    index < currentStep ? 'text-cyan-400' : index === currentStep ? 'text-slate-200' : 'text-slate-500'
+                  )}>
+                    {step.label}
+                  </span>
+                </button>
+                {index < STEPS.length - 1 && (
+                  <div className={cn(
+                    'flex-1 h-0.5 mx-1 mb-4 transition-colors',
+                    index < currentStep ? 'bg-cyan-500' : 'bg-slate-700'
+                  )} />
+                )}
+              </div>
+            ))}
+          </div>
+
           {/* Inline download options row */}
           {isViewMode && showDownloadOptions && (
             <div className="flex gap-2 mt-3 pt-3 border-t border-slate-800">
@@ -884,56 +941,8 @@ export function AddInvoiceDialog({
           )}
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 py-4">
-          {/* Customer & Invoice Info - Most important, at top */}
-          <FormSection title="Invoice Details" icon={FileText} description="Basic invoice information">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="invoice-number" className="text-xs">Invoice Number *</Label>
-                <Input
-                  id="invoice-number"
-                  value={formData.invoice_number}
-                  onChange={(e) => setFormData({ ...formData, invoice_number: e.target.value })}
-                  required
-                  disabled={isViewMode && !isEditing}
-                  className="bg-slate-800 border-slate-700 h-8 text-sm"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="status" className="text-xs">Status</Label>
-                <Select
-                  value={formData.status}
-                  onValueChange={(value) => setFormData({ ...formData, status: value as any })}
-                  disabled={isViewMode && !isEditing}
-                >
-                  <SelectTrigger className="bg-slate-800 border-slate-700 h-8 text-sm">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-slate-900 border-slate-800">
-                    <SelectItem value="draft">Draft</SelectItem>
-                    <SelectItem value="sent">Sent</SelectItem>
-                    <SelectItem value="paid">Paid</SelectItem>
-                    <SelectItem value="overdue">Overdue</SelectItem>
-                    <SelectItem value="cancelled">Cancelled</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="title" className="text-xs">Title (optional)</Label>
-              <Input
-                id="title"
-                placeholder="e.g., Website Development Services"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                disabled={isViewMode && !isEditing}
-                className="bg-slate-800 border-slate-700 h-8 text-sm"
-              />
-            </div>
-          </FormSection>
-
-          {/* Customer Selection */}
+          {/* Step 0: Client */}
+          {currentStep === 0 && (
           <FormSection title="Customer" icon={User} description="Who is this invoice for?">
             <div className="space-y-2">
               <Label htmlFor="customer" className="text-xs">Select Customer *</Label>
@@ -1013,7 +1022,6 @@ export function AddInvoiceDialog({
                   </div>
                 )}
               </div>
-              {/* Save as Customer button - shows when a temporary customer is selected */}
               {selectedCustomer?.isTemporary && (!isViewMode || isEditing) && (
                 <div className="flex items-center gap-2 p-2 bg-amber-500/10 border border-amber-500/30 rounded-lg">
                   <span className="text-xs text-amber-400 flex-1">
@@ -1034,8 +1042,59 @@ export function AddInvoiceDialog({
               )}
             </div>
           </FormSection>
+          )}
 
-          {/* Dates */}
+          {/* Step 1: Details */}
+          {currentStep === 1 && (
+          <>
+          <FormSection title="Invoice Details" icon={FileText} description="Basic invoice information">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="invoice-number" className="text-xs">Invoice Number *</Label>
+                <Input
+                  id="invoice-number"
+                  value={formData.invoice_number}
+                  onChange={(e) => setFormData({ ...formData, invoice_number: e.target.value })}
+                  required
+                  disabled={isViewMode && !isEditing}
+                  className="bg-slate-800 border-slate-700 h-8 text-sm"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="status" className="text-xs">Status</Label>
+                <Select
+                  value={formData.status}
+                  onValueChange={(value) => setFormData({ ...formData, status: value as any })}
+                  disabled={isViewMode && !isEditing}
+                >
+                  <SelectTrigger className="bg-slate-800 border-slate-700 h-8 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-900 border-slate-800">
+                    <SelectItem value="draft">Draft</SelectItem>
+                    <SelectItem value="sent">Sent</SelectItem>
+                    <SelectItem value="paid">Paid</SelectItem>
+                    <SelectItem value="overdue">Overdue</SelectItem>
+                    <SelectItem value="cancelled">Cancelled</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="title" className="text-xs">Title (optional)</Label>
+              <Input
+                id="title"
+                placeholder="e.g., Website Development Services"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                disabled={isViewMode && !isEditing}
+                className="bg-slate-800 border-slate-700 h-8 text-sm"
+              />
+            </div>
+          </FormSection>
+
           <FormSection title="Dates" icon={Calendar} description="Issue and due dates">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -1064,8 +1123,11 @@ export function AddInvoiceDialog({
               </div>
             </div>
           </FormSection>
+          </>
+          )}
 
-          {/* Line Items */}
+          {/* Step 2: Items */}
+          {currentStep === 2 && (
           <FormSection title="Line Items" icon={Package} description="Products or services being invoiced">
             <div className="space-y-3">
               {lineItems.map((item, index) => {
@@ -1087,7 +1149,6 @@ export function AddInvoiceDialog({
                             value={searchValue || item.description}
                             onChange={(e) => {
                               setLineItemSearchValues(prev => ({ ...prev, [item.id]: e.target.value }))
-                              // Update description and clear inventory link if typing
                               updateLineItem(item.id, 'description', e.target.value)
                               if (item.inventory_item_id && e.target.value !== item.description) {
                                 updateLineItem(item.id, 'inventory_item_id', undefined)
@@ -1207,7 +1268,6 @@ export function AddInvoiceDialog({
                         )}
                       </div>
                     </div>
-                    {/* Save to Inventory button - shows for custom items with description and price */}
                     {item.isCustomItem && !item.savedToInventory && item.description && item.unit_price > 0 && (!isViewMode || isEditing) && (
                       <div className="flex items-center gap-2 p-2 bg-slate-800/50 border border-slate-700 rounded-lg ml-0 sm:ml-0">
                         <span className="text-xs text-slate-400 flex-1">
@@ -1244,8 +1304,11 @@ export function AddInvoiceDialog({
               )}
             </div>
           </FormSection>
+          )}
 
-          {/* Pricing & Totals */}
+          {/* Step 3: Review */}
+          {currentStep === 3 && (
+          <>
           <FormSection title="Totals" icon={DollarSign} description="Currency and tax settings">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -1291,7 +1354,6 @@ export function AddInvoiceDialog({
               </div>
             </div>
 
-            {/* Totals Summary */}
             <div className="mt-4 p-3 bg-slate-800/50 rounded-lg space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-slate-400">Subtotal</span>
@@ -1310,7 +1372,6 @@ export function AddInvoiceDialog({
             </div>
           </FormSection>
 
-          {/* Notes & Terms - Collapsible, less important */}
           <FormSection
             title="Notes & Terms"
             icon={FileText}
@@ -1344,6 +1405,8 @@ export function AddInvoiceDialog({
               />
             </div>
           </FormSection>
+          </>
+          )}
 
           {error && (
             <div className="bg-rose-500/10 border border-rose-500/50 rounded-lg p-3">
@@ -1351,23 +1414,16 @@ export function AddInvoiceDialog({
             </div>
           )}
 
-          <DialogFooter className="gap-2 pt-4 flex-col sm:flex-row">
-            {isViewMode && !isEditing ? (
-              <Button
-                type="button"
-                onClick={() => setIsEditing(true)}
-                className="bg-cyan-500 hover:bg-cyan-600 text-white text-sm h-9"
-              >
-                Edit Invoice
-              </Button>
-            ) : (
-              <>
+          <DialogFooter className="gap-2 pt-4">
+            <div className="flex items-center justify-between w-full gap-2 flex-wrap">
+              {(!isViewMode || isEditing) && (
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => {
                     if (isViewMode && isEditing) {
                       setIsEditing(false)
+                      setCurrentStep(0)
                     } else {
                       onOpenChange(false)
                     }
@@ -1376,18 +1432,48 @@ export function AddInvoiceDialog({
                 >
                   Cancel
                 </Button>
-                <Button
-                  type="submit"
-                  disabled={loading}
-                  className="bg-cyan-500 hover:bg-cyan-600 text-white text-sm h-9"
-                >
-                  {loading
-                    ? ((isEditMode || isEditing) ? 'Updating...' : 'Creating...')
-                    : ((isEditMode || isEditing) ? 'Update Invoice' : 'Create Invoice')
-                  }
-                </Button>
-              </>
-            )}
+              )}
+              <div className="flex gap-2 ml-auto">
+                {currentStep > 0 && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setCurrentStep(s => s - 1)}
+                    className="border-slate-700 text-slate-300 hover:bg-slate-800 text-sm h-9"
+                  >
+                    Back
+                  </Button>
+                )}
+                {currentStep < STEPS.length - 1 ? (
+                  <Button
+                    type="button"
+                    onClick={() => setCurrentStep(s => s + 1)}
+                    className="bg-cyan-500 hover:bg-cyan-600 text-white text-sm h-9"
+                  >
+                    Next
+                  </Button>
+                ) : isViewMode && !isEditing ? (
+                  <Button
+                    type="button"
+                    onClick={() => setIsEditing(true)}
+                    className="bg-cyan-500 hover:bg-cyan-600 text-white text-sm h-9"
+                  >
+                    Edit Invoice
+                  </Button>
+                ) : (
+                  <Button
+                    type="submit"
+                    disabled={loading}
+                    className="bg-cyan-500 hover:bg-cyan-600 text-white text-sm h-9"
+                  >
+                    {loading
+                      ? ((isEditMode || isEditing) ? 'Updating...' : 'Creating...')
+                      : ((isEditMode || isEditing) ? 'Update Invoice' : 'Create Invoice')
+                    }
+                  </Button>
+                )}
+              </div>
+            </div>
           </DialogFooter>
         </form>
       </DialogContent>
