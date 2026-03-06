@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card';
 import { DataTable } from '@/components/dashboard/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Plus, Users, DollarSign, Clock, RefreshCw, ChevronRight, Receipt, Upload, TrendingUp, Target } from 'lucide-react';
+import { Plus, Users, DollarSign, Clock, RefreshCw, ChevronRight, Receipt, Upload, TrendingUp, Target, Download } from 'lucide-react';
 import { format, subMonths, startOfMonth, endOfMonth, eachMonthOfInterval } from 'date-fns';
 import {
   getYoYDateRange,
@@ -49,6 +49,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { exportToCSV, exportToXLSX } from '@/lib/export/csv';
 
 interface CustomerRow {
   id: string;
@@ -260,7 +261,10 @@ function SalesContent() {
           client_id: inv.client_id,
           title: inv.title || '-',
           status: inv.status,
+          subtotal: inv.subtotal || 0,
+          tax_amount: inv.tax_amount || 0,
           total: inv.total,
+          currency: inv.currency || 'USD',
           issue_date: inv.issue_date,
           due_date: inv.due_date,
         };
@@ -663,6 +667,29 @@ function SalesContent() {
   const handleAddInvoiceFromModal = () => {
     setInvoiceListModalOpen(false);
     setAddInvoiceOpen(true);
+  };
+
+  const buildExportRows = () =>
+    filteredInvoices.map((inv) => ({
+      date: inv.issue_date,
+      invoice_number: inv.invoice_number,
+      client: inv.client_name,
+      items_summary: inv.title,
+      subtotal: inv.subtotal,
+      tax: inv.tax_amount,
+      total: inv.total,
+      status: inv.status,
+      currency: inv.currency,
+    }));
+
+  const handleExportCSV = () => {
+    const period = isFilterActive ? formattedDateRange.replace(/\s*[-–]\s*/g, '_to_').replace(/\//g, '-') : 'all';
+    exportToCSV(buildExportRows(), `invoices_${period}`);
+  };
+
+  const handleExportXLSX = () => {
+    const period = isFilterActive ? formattedDateRange.replace(/\s*[-–]\s*/g, '_to_').replace(/\//g, '-') : 'all';
+    exportToXLSX(buildExportRows(), `invoices_${period}`);
   };
 
   const invoiceColumns = [
@@ -1212,19 +1239,43 @@ function SalesContent() {
               <Receipt className="w-5 h-5 text-quotla-orange" />
               Invoices
             </h2>
-            <Select value={invoiceFilter} onValueChange={(v) => setInvoiceFilter(v as InvoiceFilter)}>
-              <SelectTrigger className="w-[140px] bg-primary-700 border-quotla-orange/20 text-primary-50 h-9 text-sm">
-                <SelectValue placeholder="Filter" />
-              </SelectTrigger>
-              <SelectContent className="bg-quotla-dark border-primary-600">
-                <SelectItem value="all">All Invoices</SelectItem>
-                <SelectItem value="draft">Draft</SelectItem>
-                <SelectItem value="sent">Sent</SelectItem>
-                <SelectItem value="paid">Paid</SelectItem>
-                <SelectItem value="overdue">Overdue</SelectItem>
-                <SelectItem value="cancelled">Cancelled</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleExportCSV}
+                disabled={filteredInvoices.length === 0}
+                className="border-primary-600 text-primary-300 hover:text-primary-50 hover:border-primary-400 h-9 px-3"
+                title="Download CSV"
+              >
+                <Download className="w-4 h-4 mr-1" />
+                <span className="hidden sm:inline">CSV</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleExportXLSX}
+                disabled={filteredInvoices.length === 0}
+                className="border-primary-600 text-primary-300 hover:text-primary-50 hover:border-primary-400 h-9 px-3"
+                title="Download XLSX"
+              >
+                <Download className="w-4 h-4 mr-1" />
+                <span className="hidden sm:inline">XLSX</span>
+              </Button>
+              <Select value={invoiceFilter} onValueChange={(v) => setInvoiceFilter(v as InvoiceFilter)}>
+                <SelectTrigger className="w-[140px] bg-primary-700 border-quotla-orange/20 text-primary-50 h-9 text-sm">
+                  <SelectValue placeholder="Filter" />
+                </SelectTrigger>
+                <SelectContent className="bg-quotla-dark border-primary-600">
+                  <SelectItem value="all">All Invoices</SelectItem>
+                  <SelectItem value="draft">Draft</SelectItem>
+                  <SelectItem value="sent">Sent</SelectItem>
+                  <SelectItem value="paid">Paid</SelectItem>
+                  <SelectItem value="overdue">Overdue</SelectItem>
+                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           {loading ? (
             <DataTableSkeleton columns={6} rows={5} showSearch={true} />

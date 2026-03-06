@@ -11,7 +11,8 @@ import {
   detectBusinessAnomalies,
 } from '@/lib/analytics'
 import type { TrendAnalysisResult, BusinessMetricAnomaly } from '@/lib/analytics'
-import { AlertsBanner, AVITPFMetric, LargeAVITPFMetric, CompactAVITPFMetric } from '@/components/analytics'
+import { InsightsBanner, TrendIndicatorFromResult } from '@/components/analytics'
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion'
 import {
   Package,
   AlertCircle,
@@ -20,12 +21,10 @@ import {
   Sparkles,
   Clock,
   ChevronRight,
-  Wallet,
   Receipt
 } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { AICreateModal } from '@/components/modals/AICreateModal'
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed'
 import { OnboardingProgress } from '@/components/dashboard/OnboardingProgress'
@@ -33,17 +32,7 @@ import { CalendarWidget } from '@/components/dashboard/CalendarWidget'
 import { MetricsCardSkeleton } from '@/components/dashboard/MetricsCardSkeleton'
 import { formatCurrency, formatCompactCurrency } from '@/lib/utils/currency'
 import { useUserCurrency } from '@/hooks/useUserCurrency'
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  ComposedChart,
-  Line,
-  Legend
-} from 'recharts'
+
 import {
   dashboardColors as colors,
   dashboardComponents as components,
@@ -114,7 +103,7 @@ function DashboardContent() {
   const { openInvoiceModal, openCustomerModal, openProductModal, openExpenseModal, setOnSuccess } = useModal()
   const [loading, setLoading] = useState(true)
   const [showAICreate, setShowAICreate] = useState(false)
-  const [chartMode, setChartMode] = useState<'revenue' | 'volume'>('revenue')
+  const [topClient, setTopClient] = useState<{ name: string; revenue: number } | null>(null)
   const [stats, setStats] = useState<DashboardStats>({
     totalRevenue: 0,
     monthlyRevenue: 0,
@@ -172,7 +161,7 @@ function DashboardContent() {
         // Invoice data with more details
         supabase
           .from('invoices')
-          .select('id, total, status, issue_date, due_date')
+          .select('id, total, status, issue_date, due_date, client_id')
           .eq('user_id', user.id),
         // Customer data with creation date
         supabase
@@ -348,7 +337,32 @@ function DashboardContent() {
       })
       setAnomalies(detectedAnomalies)
 
-      setStats({
+      // Compute top client by total paid revenue
+      const clientRevMap: Record<string, number> = {}
+      paidInvoices.forEach((inv: any) => {
+        if (inv.client_id) {
+          clientRevMap[inv.client_id] = (clientRevMap[inv.client_id] || 0) + (inv.total || 0)
+        }
+      })
+      let topClientId = '', topClientRev = 0
+      Object.entries(clientRevMap).forEach(([id, rev]) => {
+        if (rev > topClientRev) { topClientId = id; topClientRev = rev }
+      })
+      if (topClientId) {
+        const { data: topClientData } = await supabase
+          .from('customers')
+          .select('full_name, company_name')
+          .eq('id', topClientId)
+          .single()
+        if (topClientData) {
+          setTopClient({
+            name: (topClientData as any).company_name || (topClientData as any).full_name || 'Unknown',
+            revenue: topClientRev,
+          })
+        }
+      }
+
+            setStats({
         totalRevenue,
         monthlyRevenue,
         lastMonthRevenue,
@@ -401,19 +415,6 @@ function DashboardContent() {
   const handleDismissAllAnomalies = () => {
     setDismissedAnomalyIds(new Set(anomalies.map(a => a.id)))
   }
-
-  // Calculate month-over-month growth for expenses and profit
-  const lastMonthExpenses = monthlyData[monthlyData.length - 2]?.expenses || 0
-  const currentMonthExpenses = monthlyData[monthlyData.length - 1]?.expenses || 0
-  const expensesGrowth = lastMonthExpenses > 0
-    ? ((currentMonthExpenses - lastMonthExpenses) / lastMonthExpenses) * 100
-    : 0
-
-  const lastMonthProfit = monthlyData[monthlyData.length - 2]?.profit || 0
-  const currentMonthProfit = monthlyData[monthlyData.length - 1]?.profit || 0
-  const profitGrowth = lastMonthProfit > 0
-    ? ((currentMonthProfit - lastMonthProfit) / lastMonthProfit) * 100
-    : 0
 
   if (loading) {
     return (
@@ -504,354 +505,74 @@ function DashboardContent() {
         {/* ================================================================
             OVERVIEW PANE - AVITPF Metrics with Toggle Chart
         ================================================================ */}
-        <section aria-labelledby="overview-metrics">
-          <h2 id="overview-metrics" className="sr-only">Overview Metrics</h2>
-
-          {/* Overview Card */}
-          <Card className={cn(
-            'p-6 border shadow-lg',
-            'bg-gradient-to-br from-quotla-dark/95 to-primary-800/50',
-            'border-quotla-green/20 hover:border-quotla-green/40 transition-all duration-300',
-            'shadow-quotla-dark/50'
-          )}>
-            {/* Header */}
-            <div className="flex items-start justify-between mb-5">
-              <p className={cn('text-xs font-medium uppercase tracking-wider', colors.text.muted)}>OVERVIEW</p>
-              <Link href="/business/sales" className="text-xs text-quotla-orange hover:text-secondary-400 flex items-center gap-1 transition-colors">
-                View Sales <ChevronRight className="w-3 h-3" />
-              </Link>
-            </div>
-
-            {/* Mobile Layout - True 2-column grid */}
-            <div className="md:hidden grid grid-cols-2 gap-3 mb-6">
-              {/* Left Column - Revenue, Profit, Expenses */}
-              <div className="space-y-3">
-                <div className={cn(
-                  'p-3 rounded-lg border backdrop-blur-sm',
-                  'bg-primary-700/30 border-quotla-green/20'
-                )}>
-                  <CompactAVITPFMetric
-                    label="Revenue"
-                    value={stats.monthlyRevenue}
-                    change={stats.revenueGrowth}
-                    currency={currency}
-                    colorScheme="green"
-                  />
-                </div>
-                <div className={cn(
-                  'p-3 rounded-lg border backdrop-blur-sm',
-                  'bg-primary-700/30 border-emerald-500/20'
-                )}>
-                  <CompactAVITPFMetric
-                    label="Profit"
-                    value={currentMonthProfit}
-                    change={profitGrowth}
-                    currency={currency}
-                    colorScheme="emerald"
-                  />
-                </div>
-                <div className={cn(
-                  'p-3 rounded-lg border backdrop-blur-sm',
-                  'bg-primary-700/30 border-rose-500/20'
-                )}>
-                  <CompactAVITPFMetric
-                    label="Expenses"
-                    value={currentMonthExpenses}
-                    change={expensesGrowth}
-                    currency={currency}
-                    colorScheme="rose"
-                    invertColors
-                  />
-                </div>
-              </div>
-
-              {/* Right Column - Sales, Customers, Stock */}
-              <div className="space-y-3">
-                <div className={cn(
-                  'p-3 rounded-lg border backdrop-blur-sm',
-                  'bg-primary-700/30 border-quotla-orange/20'
-                )}>
-                  <CompactAVITPFMetric
-                    label="Sales"
-                    value={stats.salesCount}
-                    change={stats.salesCount - stats.lastMonthSalesCount}
-                    isInteger
-                    colorScheme="orange"
-                  />
-                </div>
-                <div className={cn(
-                  'p-3 rounded-lg border backdrop-blur-sm',
-                  'bg-primary-700/30 border-teal-500/20'
-                )}>
-                  <CompactAVITPFMetric
-                    label="Customers"
-                    value={stats.totalCustomers}
-                    change={stats.newCustomersThisMonth - stats.lastMonthCustomers}
-                    isInteger
-                    colorScheme="teal"
-                  />
-                </div>
-                <div className={cn(
-                  'p-3 rounded-lg border backdrop-blur-sm',
-                  'bg-primary-700/30 border-emerald-500/20'
-                )}>
-                  <CompactAVITPFMetric
-                    label="Stock"
-                    value={stats.stockQuantity}
-                    change={stats.stockQuantity - stats.lastMonthStockQuantity}
-                    isInteger
-                    colorScheme="emerald"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Desktop Layout - First Row: Revenue + Profit/Expenses */}
-            <div className="hidden md:block mb-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className={cn(
-                  'p-4 rounded-xl border backdrop-blur-sm',
-                  'bg-primary-700/30 border-quotla-green/20'
-                )}>
-                  <LargeAVITPFMetric
-                    label="Revenue"
-                    value={stats.monthlyRevenue}
-                    change={stats.revenueGrowth}
-                    currency={currency}
-                    colorScheme="green"
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className={cn(
-                    'p-3 rounded-xl border backdrop-blur-sm',
-                    'bg-primary-700/30 border-emerald-500/20'
-                  )}>
-                    <CompactAVITPFMetric
-                      label="Profit"
-                      value={currentMonthProfit}
-                      change={profitGrowth}
-                      currency={currency}
-                      colorScheme="emerald"
-                    />
+        {/* ================================================================
+            BUSINESS INSIGHTS - Collapsible accordion overview
+        ================================================================ */}
+        <section aria-labelledby="business-insights">
+          <h2 id="business-insights" className="sr-only">Business Insights</h2>
+          <Accordion type="single" collapsible defaultValue="insights">
+            <Card className={cn(
+              'overflow-hidden border',
+              'bg-gradient-to-br from-quotla-dark/95 to-primary-800/50',
+              'border-quotla-green/20 hover:border-quotla-green/40 transition-all duration-300'
+            )}>
+              <AccordionItem value="insights" className="border-none">
+                <AccordionTrigger className="px-5 py-4 hover:no-underline [&>svg]:text-primary-400">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-quotla-orange" />
+                    <span className={components.heading.card}>Business Insights</span>
                   </div>
-                  <div className={cn(
-                    'p-3 rounded-xl border backdrop-blur-sm',
-                    'bg-primary-700/30 border-rose-500/20'
-                  )}>
-                    <CompactAVITPFMetric
-                      label="Expenses"
-                      value={currentMonthExpenses}
-                      change={expensesGrowth}
-                      currency={currency}
-                      colorScheme="rose"
-                      invertColors
-                    />
+                </AccordionTrigger>
+                <AccordionContent className="px-0 pb-0">
+                  <div className="px-5 pb-5 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {/* Revenue Trend */}
+                    <div className="p-3 rounded-xl border bg-quotla-green/10 border-quotla-green/20">
+                      <p className={cn(components.heading.tiny, 'mb-1.5')}>Revenue Trend</p>
+                      <p className="text-xl font-semibold text-primary-50">
+                        {formatCompactCurrency(stats.monthlyRevenue, currency)}
+                      </p>
+                      {revenueTrend && <TrendIndicatorFromResult result={revenueTrend} size="sm" className="mt-1" />}
+                    </div>
+
+                    {/* Top Client */}
+                    <div className="p-3 rounded-xl border bg-quotla-orange/10 border-quotla-orange/20">
+                      <p className={cn(components.heading.tiny, 'mb-1.5')}>Top Client</p>
+                      <p className="text-sm font-semibold text-primary-50 truncate">
+                        {topClient?.name ?? '—'}
+                      </p>
+                      {topClient && (
+                        <p className="text-xs text-primary-400 mt-0.5">
+                          {formatCompactCurrency(topClient.revenue, currency)}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Outstanding */}
+                    <Link href="/business/sales">
+                      <div className={cn(
+                        'p-3 rounded-xl border h-full transition-colors cursor-pointer',
+                        stats.overdueAmount > 0
+                          ? 'bg-rose-950/20 border-rose-500/20 hover:border-rose-500/40'
+                          : 'bg-primary-700/30 border-primary-600/30 hover:border-primary-600/50'
+                      )}>
+                        <p className={cn(components.heading.tiny, 'mb-1.5')}>Outstanding</p>
+                        <p className={cn(
+                          'text-xl font-semibold',
+                          stats.overdueAmount > 0 ? 'text-rose-400' : 'text-primary-100'
+                        )}>
+                          {formatCompactCurrency(stats.pendingAmount + stats.overdueAmount, currency)}
+                        </p>
+                        <p className="text-xs text-primary-400 mt-0.5">
+                          {stats.pendingInvoices + stats.overdueInvoices} invoice
+                          {(stats.pendingInvoices + stats.overdueInvoices) !== 1 ? 's' : ''} pending
+                        </p>
+                      </div>
+                    </Link>
                   </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Desktop Layout - Second Row: Sales + Customers/Stock */}
-            <div className="hidden md:block mb-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div className={cn(
-                  'p-4 rounded-xl border backdrop-blur-sm',
-                  'bg-primary-700/30 border-quotla-orange/20'
-                )}>
-                  <LargeAVITPFMetric
-                    label="Sales"
-                    value={stats.salesCount}
-                    change={stats.salesCount - stats.lastMonthSalesCount}
-                    isInteger
-                    colorScheme="orange"
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className={cn(
-                    'p-3 rounded-xl border backdrop-blur-sm',
-                    'bg-primary-700/30 border-teal-500/20'
-                  )}>
-                    <CompactAVITPFMetric
-                      label="Customers"
-                      value={stats.totalCustomers}
-                      change={stats.newCustomersThisMonth - stats.lastMonthCustomers}
-                      isInteger
-                      colorScheme="teal"
-                    />
-                  </div>
-                  <div className={cn(
-                    'p-3 rounded-xl border backdrop-blur-sm',
-                    'bg-primary-700/30 border-emerald-500/20'
-                  )}>
-                    <CompactAVITPFMetric
-                      label="Stock"
-                      value={stats.stockQuantity}
-                      change={stats.stockQuantity - stats.lastMonthStockQuantity}
-                      isInteger
-                      colorScheme="emerald"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Third Row: Toggle Chart */}
-            <div className="mb-4">
-              <div className="flex justify-center mb-4">
-                <ToggleGroup
-                  type="single"
-                  value={chartMode}
-                  onValueChange={(value) => value && setChartMode(value as 'revenue' | 'volume')}
-                  className="bg-primary-700/50 rounded-lg p-1"
-                >
-                  <ToggleGroupItem
-                    value="revenue"
-                    className="text-xs px-6 py-1.5 rounded-md data-[state=on]:bg-primary-600 data-[state=on]:text-primary-50"
-                  >
-                    Revenue
-                  </ToggleGroupItem>
-                  <ToggleGroupItem
-                    value="volume"
-                    className="text-xs px-6 py-1.5 rounded-md data-[state=on]:bg-primary-600 data-[state=on]:text-primary-50"
-                  >
-                    Volume
-                  </ToggleGroupItem>
-                </ToggleGroup>
-              </div>
-
-              <div className="h-[200px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  {chartMode === 'revenue' ? (
-                    <ComposedChart data={monthlyData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
-                      <defs>
-                        <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#445642" stopOpacity={0.5}/>
-                          <stop offset="95%" stopColor="#445642" stopOpacity={0.05}/>
-                        </linearGradient>
-                      </defs>
-                      <XAxis
-                        dataKey="month"
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fill: '#8a8a66', fontSize: 11 }}
-                      />
-                      <YAxis
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fill: '#8a8a66', fontSize: 11 }}
-                        tickFormatter={(value) => {
-                          if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`
-                          if (value >= 1000) return `${(value / 1000).toFixed(0)}K`
-                          return value
-                        }}
-                      />
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: '#0e1616',
-                          border: '1px solid #445642',
-                          borderRadius: '8px',
-                          fontSize: '12px',
-                          color: '#fffad6'
-                        }}
-                        formatter={(value: number, name: string) => {
-                          const labels: Record<string, string> = {
-                            revenue: 'Revenue',
-                            expenses: 'Expenses',
-                            profit: 'Profit'
-                          }
-                          return [formatCurrency(value, currency), labels[name] || name]
-                        }}
-                      />
-                      <Legend
-                        wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
-                        formatter={(value) => {
-                          const labels: Record<string, string> = {
-                            revenue: 'Revenue',
-                            expenses: 'Expenses',
-                            profit: 'Profit'
-                          }
-                          return labels[value] || value
-                        }}
-                      />
-                      <Area
-                        type="monotone"
-                        dataKey="revenue"
-                        stroke="#445642"
-                        strokeWidth={2}
-                        fill="url(#revenueGradient)"
-                        name="revenue"
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="expenses"
-                        stroke="#ef4444"
-                        strokeWidth={2}
-                        strokeDasharray="5 5"
-                        dot={{ fill: '#ef4444', r: 3 }}
-                        name="expenses"
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="profit"
-                        stroke="#10b981"
-                        strokeWidth={2}
-                        dot={{ fill: '#10b981', r: 3 }}
-                        name="profit"
-                      />
-                    </ComposedChart>
-                  ) : (
-                    <AreaChart data={monthlyData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
-                      <defs>
-                        <linearGradient id="volumeGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#f97316" stopOpacity={0.5}/>
-                          <stop offset="95%" stopColor="#f97316" stopOpacity={0.05}/>
-                        </linearGradient>
-                      </defs>
-                      <XAxis
-                        dataKey="month"
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fill: '#8a8a66', fontSize: 11 }}
-                      />
-                      <YAxis
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fill: '#8a8a66', fontSize: 11 }}
-                        tickFormatter={(value) => {
-                          if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`
-                          if (value >= 1000) return `${(value / 1000).toFixed(0)}K`
-                          return value
-                        }}
-                      />
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: '#0e1616',
-                          border: '1px solid #f97316',
-                          borderRadius: '8px',
-                          fontSize: '12px',
-                          color: '#fffad6'
-                        }}
-                        formatter={(value: number) => [value.toLocaleString(), 'Units Sold']}
-                      />
-                      <Legend
-                        wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
-                        formatter={() => 'Units Sold'}
-                      />
-                      <Area
-                        type="monotone"
-                        dataKey="unitsSold"
-                        stroke="#f97316"
-                        strokeWidth={2}
-                        fill="url(#volumeGradient)"
-                        name="unitsSold"
-                      />
-                    </AreaChart>
-                  )}
-                </ResponsiveContainer>
-              </div>
-            </div>
-          </Card>
-
+                </AccordionContent>
+              </AccordionItem>
+            </Card>
+          </Accordion>
         </section>
 
         {/* ================================================================
@@ -962,17 +683,14 @@ function DashboardContent() {
 
           {/* Right Column - Sidebar widgets (1/3 width) */}
           <aside className="space-y-6">
-            {/* Anomaly Alerts - Surface detected anomalies */}
-            {visibleAnomalies.length > 0 && (
-              <AlertsBanner
-                anomalies={visibleAnomalies}
-                onDismiss={handleDismissAnomaly}
-                onDismissAll={handleDismissAllAnomalies}
-                maxVisible={3}
-                collapsible
-                defaultExpanded={visibleAnomalies.some(a => a.severity === 'critical')}
-              />
-            )}
+            {/* Anomaly Insights */}
+            <InsightsBanner
+              anomalies={visibleAnomalies}
+              onDismiss={handleDismissAnomaly}
+              onDismissAll={handleDismissAllAnomalies}
+              maxVisible={3}
+              defaultExpanded={visibleAnomalies.some(a => a.severity === 'critical')}
+            />
 
             {/* Onboarding - Contextual guidance */}
             <OnboardingProgress />

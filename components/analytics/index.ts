@@ -17,7 +17,11 @@ export {
 // YoY Charts
 export { YoYChart, CompactYoYChart } from './YoYChart'
 
-// Anomaly Detection Components
+// Insights Banner (unified anomaly + insights display)
+export { InsightsBanner } from './InsightsBanner'
+export type { InsightsBannerProps } from './InsightsBanner'
+
+// Anomaly Detection Components (legacy re-exports)
 export { AlertsBanner, CompactAlertsBanner } from './AlertsBanner'
 export {
   AnomalyDot,
