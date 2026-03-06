@@ -449,7 +449,7 @@ function DashboardContent() {
               <Link href="/business/sales">
                 <Card className={cn(
                   'p-4 border transition-all cursor-pointer group',
-                  'bg-gradient-to-br from-rose-950/30 to-slate-900/50',
+                  'bg-gradient-to-br from-rose-950/30 to-quotla-dark/50',
                   'border-rose-500/20 hover:border-rose-500/40'
                 )}>
                   <div className="flex items-center justify-between">
@@ -476,7 +476,7 @@ function DashboardContent() {
               <Link href="/business/products">
                 <Card className={cn(
                   'p-4 border transition-all cursor-pointer group',
-                  'bg-gradient-to-br from-amber-950/30 to-slate-900/50',
+                  'bg-gradient-to-br from-amber-950/30 to-quotla-dark/50',
                   'border-amber-500/20 hover:border-amber-500/40'
                 )}>
                   <div className="flex items-center justify-between">
@@ -702,17 +702,17 @@ function DashboardContent() {
                   type="single"
                   value={chartMode}
                   onValueChange={(value) => value && setChartMode(value as 'revenue' | 'volume')}
-                  className="bg-slate-800/50 rounded-lg p-1"
+                  className="bg-primary-700/50 rounded-lg p-1"
                 >
                   <ToggleGroupItem
                     value="revenue"
-                    className="text-xs px-6 py-1.5 rounded-md data-[state=on]:bg-slate-700 data-[state=on]:text-white"
+                    className="text-xs px-6 py-1.5 rounded-md data-[state=on]:bg-primary-600 data-[state=on]:text-primary-50"
                   >
                     Revenue
                   </ToggleGroupItem>
                   <ToggleGroupItem
                     value="volume"
-                    className="text-xs px-6 py-1.5 rounded-md data-[state=on]:bg-slate-700 data-[state=on]:text-white"
+                    className="text-xs px-6 py-1.5 rounded-md data-[state=on]:bg-primary-600 data-[state=on]:text-primary-50"
                   >
                     Volume
                   </ToggleGroupItem>

@@ -8,6 +8,7 @@ import {
   TableRow,
   TableCell,
   TextRun,
+  ImageRun,
   AlignmentType,
   WidthType,
   BorderStyle,
@@ -21,6 +22,26 @@ interface ExportData {
   type: 'quote' | 'invoice'
   data: QuoteWithItems | InvoiceWithItems
   profile: Profile | null
+}
+
+async function fetchLogoData(url: string): Promise<{ dataUrl: string; format: 'PNG' | 'JPEG'; arrayBuffer: ArrayBuffer } | null> {
+  try {
+    const response = await fetch(url)
+    if (!response.ok) return null
+    const arrayBuffer = await response.arrayBuffer()
+    const contentType = response.headers.get('content-type') || 'image/png'
+    const format: 'PNG' | 'JPEG' = contentType.includes('png') ? 'PNG' : 'JPEG'
+    const blob = new Blob([arrayBuffer], { type: contentType })
+    const dataUrl = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve(reader.result as string)
+      reader.onerror = reject
+      reader.readAsDataURL(blob)
+    })
+    return { dataUrl, format, arrayBuffer }
+  } catch {
+    return null
+  }
 }
 
 const getCurrencySymbol = (code: string) => {
@@ -47,6 +68,14 @@ export async function exportToPDF(exportData: ExportData): Promise<void> {
   // Add a subtle background color to the header area (increased height for better spacing)
   doc.setFillColor(248, 250, 252)
   doc.rect(0, 0, 210, 55, 'F')
+
+  // Logo (top-left of header)
+  if (profile?.logo_url) {
+    const logoData = await fetchLogoData(profile.logo_url)
+    if (logoData) {
+      doc.addImage(logoData.dataUrl, logoData.format, 15, 10, 25, 25)
+    }
+  }
 
   // Main title - centered and prominent
   doc.setFontSize(32)
@@ -266,11 +295,28 @@ export async function exportToWord(exportData: ExportData): Promise<void> {
     : (data as InvoiceWithItems).invoice_number
   const items = data.items
 
+  const logoData = profile?.logo_url ? await fetchLogoData(profile.logo_url) : null
+
   const doc = new Document({
     sections: [
       {
         properties: {},
         children: [
+          // Logo (if available)
+          ...(logoData
+            ? [
+                new Paragraph({
+                  children: [
+                    new ImageRun({
+                      data: logoData.arrayBuffer,
+                      transformation: { width: 80, height: 80 },
+                    }),
+                  ],
+                  spacing: { after: 200 },
+                }),
+              ]
+            : []),
+
           // Header - centered title (increased bottom margin)
           new Paragraph({
             children: [

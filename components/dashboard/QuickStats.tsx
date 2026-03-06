@@ -98,42 +98,42 @@ export function QuickStats() {
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-      <div className="flex items-center gap-3 p-3 bg-slate-800/30 border border-slate-700/50 rounded-lg">
-        <div className="w-9 h-9 bg-emerald-500/10 rounded-lg flex items-center justify-center">
+      <div className="flex items-center gap-3 p-3 bg-primary-700/30 border border-primary-600/50 rounded-lg">
+        <div className="w-9 h-9 bg-quotla-green/15 rounded-lg flex items-center justify-center">
           <DollarSign className="w-4 h-4 text-emerald-400" />
         </div>
         <div>
-          <p className="text-[0.68rem] text-slate-500 uppercase tracking-wider">Today</p>
-          <p className="text-sm font-semibold text-slate-100">{formatCurrency(stats.todayRevenue, currency)}</p>
+          <p className="text-[0.68rem] text-primary-400 uppercase tracking-wider">Today</p>
+          <p className="text-sm font-semibold text-primary-100">{formatCurrency(stats.todayRevenue, currency)}</p>
         </div>
       </div>
 
-      <div className="flex items-center gap-3 p-3 bg-slate-800/30 border border-slate-700/50 rounded-lg">
-        <div className="w-9 h-9 bg-amber-500/10 rounded-lg flex items-center justify-center">
-          <FileText className="w-4 h-4 text-amber-400" />
+      <div className="flex items-center gap-3 p-3 bg-primary-700/30 border border-primary-600/50 rounded-lg">
+        <div className="w-9 h-9 bg-primary-500/10 rounded-lg flex items-center justify-center">
+          <FileText className="w-4 h-4 text-primary-300" />
         </div>
         <div>
-          <p className="text-[0.68rem] text-slate-500 uppercase tracking-wider">Pending</p>
-          <p className="text-sm font-semibold text-slate-100">{stats.pendingInvoices} invoices</p>
+          <p className="text-[0.68rem] text-primary-400 uppercase tracking-wider">Pending</p>
+          <p className="text-sm font-semibold text-primary-100">{stats.pendingInvoices} invoices</p>
         </div>
       </div>
 
-      <div className="flex items-center gap-3 p-3 bg-slate-800/30 border border-slate-700/50 rounded-lg">
-        <div className="w-9 h-9 bg-rose-500/10 rounded-lg flex items-center justify-center">
-          <Clock className="w-4 h-4 text-rose-400" />
+      <div className="flex items-center gap-3 p-3 bg-primary-700/30 border border-primary-600/50 rounded-lg">
+        <div className="w-9 h-9 bg-quotla-orange/10 rounded-lg flex items-center justify-center">
+          <Clock className="w-4 h-4 text-quotla-orange" />
         </div>
         <div>
-          <p className="text-[0.68rem] text-slate-500 uppercase tracking-wider">Overdue</p>
-          <p className="text-sm font-semibold text-slate-100">{stats.overdueInvoices} invoices</p>
+          <p className="text-[0.68rem] text-primary-400 uppercase tracking-wider">Overdue</p>
+          <p className="text-sm font-semibold text-primary-100">{stats.overdueInvoices} invoices</p>
         </div>
       </div>
 
-      <div className="flex items-center gap-3 p-3 bg-slate-800/30 border border-slate-700/50 rounded-lg">
-        <div className="w-9 h-9 bg-cyan-500/10 rounded-lg flex items-center justify-center">
-          <TrendingUp className="w-4 h-4 text-cyan-400" />
+      <div className="flex items-center gap-3 p-3 bg-primary-700/30 border border-primary-600/50 rounded-lg">
+        <div className="w-9 h-9 bg-quotla-green/15 rounded-lg flex items-center justify-center">
+          <TrendingUp className="w-4 h-4 text-emerald-400" />
         </div>
         <div>
-          <p className="text-[0.68rem] text-slate-500 uppercase tracking-wider">This Month</p>
+          <p className="text-[0.68rem] text-primary-400 uppercase tracking-wider">This Month</p>
           <p className={`text-sm font-semibold ${stats.monthlyGrowth >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
             {stats.monthlyGrowth >= 0 ? '+' : ''}{stats.monthlyGrowth.toFixed(1)}%
           </p>

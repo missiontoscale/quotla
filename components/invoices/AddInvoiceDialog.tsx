@@ -174,7 +174,7 @@ export function AddInvoiceDialog({
     currency: userCurrency || 'NGN',
     tax_rate: 0,
     notes: '',
-    payment_terms: 'Payment due within 30 days of invoice date.',
+    payment_terms: '',
   })
 
   const [lineItems, setLineItems] = useState<LineItem[]>([
@@ -242,7 +242,7 @@ export function AddInvoiceDialog({
       currency: userCurrency || 'NGN',
       tax_rate: 0,
       notes: '',
-      payment_terms: 'Payment due within 30 days of invoice date.',
+      payment_terms: '',
     })
     setLineItems([
       { id: crypto.randomUUID(), description: '', quantity: 1, unit_price: 0, amount: 0 }
@@ -1472,6 +1472,14 @@ export function AddInvoiceDialog({
                 <p className="text-sm text-slate-300 whitespace-pre-wrap">{formData.notes}</p>
               </div>
             )}
+
+            <div className="p-3 bg-slate-800/30 border border-slate-700 rounded-lg">
+              <p className="text-[10px] text-slate-400 uppercase tracking-wide mb-1">Payment Terms</p>
+              {formData.payment_terms
+                ? <p className="text-sm text-slate-300 whitespace-pre-wrap">{formData.payment_terms}</p>
+                : <p className="text-sm text-slate-500 italic">No payment terms set</p>
+              }
+            </div>
           </div>
           )}
 
