@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { useUserCurrency } from '@/hooks/useUserCurrency'
-import { Package, DollarSign, Warehouse } from 'lucide-react'
+import { Package, DollarSign, Warehouse, Plus, Minus } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -339,33 +339,73 @@ export function AddProductDialog({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="stock" className="text-xs">Initial Stock *</Label>
-                    <Input
-                      id="stock"
-                      type="number"
-                      placeholder="1"
-                      value={formData.stock}
-                      onChange={(e) => {
-                        const raw = e.target.value
-                        setFormData({ ...formData, stock: raw === '' ? 0 : parseInt(raw) || 0 })
-                      }}
-                      required
-                      className="bg-primary-700 border-primary-600 h-8 text-sm"
-                    />
+                    <div className="flex items-center gap-0">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 rounded-r-none border border-r-0 border-primary-600 bg-primary-700 text-primary-200 hover:bg-primary-600"
+                        onClick={() => setFormData({ ...formData, stock: Math.max(0, (formData.stock || 0) - 1) })}
+                      >
+                        <Minus className="h-3 w-3" />
+                      </Button>
+                      <Input
+                        id="stock"
+                        type="number"
+                        placeholder="1"
+                        value={formData.stock}
+                        onChange={(e) => {
+                          const raw = e.target.value
+                          setFormData({ ...formData, stock: raw === '' ? 0 : parseInt(raw) || 0 })
+                        }}
+                        required
+                        className="bg-primary-700 border-primary-600 h-8 w-20 text-sm text-center rounded-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 rounded-l-none border border-l-0 border-primary-600 bg-primary-700 text-primary-200 hover:bg-primary-600"
+                        onClick={() => setFormData({ ...formData, stock: (formData.stock || 0) + 1 })}
+                      >
+                        <Plus className="h-3 w-3" />
+                      </Button>
+                    </div>
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="low-stock" className="text-xs">Low Stock Alert (optional)</Label>
-                    <Input
-                      id="low-stock"
-                      type="number"
-                      placeholder="10"
-                      value={formData.low_stock_threshold}
-                      onChange={(e) => {
-                        const raw = e.target.value
-                        setFormData({ ...formData, low_stock_threshold: raw === '' ? 0 : parseInt(raw) || 0 })
-                      }}
-                      className="bg-primary-700 border-primary-600 h-8 text-sm"
-                    />
+                    <div className="flex items-center gap-0">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 rounded-r-none border border-r-0 border-primary-600 bg-primary-700 text-primary-200 hover:bg-primary-600"
+                        onClick={() => setFormData({ ...formData, low_stock_threshold: Math.max(0, (formData.low_stock_threshold || 0) - 1) })}
+                      >
+                        <Minus className="h-3 w-3" />
+                      </Button>
+                      <Input
+                        id="low-stock"
+                        type="number"
+                        placeholder="10"
+                        value={formData.low_stock_threshold}
+                        onChange={(e) => {
+                          const raw = e.target.value
+                          setFormData({ ...formData, low_stock_threshold: raw === '' ? 0 : parseInt(raw) || 0 })
+                        }}
+                        className="bg-primary-700 border-primary-600 h-8 w-20 text-sm text-center rounded-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 rounded-l-none border border-l-0 border-primary-600 bg-primary-700 text-primary-200 hover:bg-primary-600"
+                        onClick={() => setFormData({ ...formData, low_stock_threshold: (formData.low_stock_threshold || 0) + 1 })}
+                      >
+                        <Plus className="h-3 w-3" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </FieldGroup>
@@ -374,17 +414,37 @@ export function AddProductDialog({
             {productId && (
               <div className="space-y-2">
                 <Label htmlFor="low-stock" className="text-xs">Low Stock Alert (optional)</Label>
-                <Input
-                  id="low-stock"
-                  type="number"
-                  placeholder="10"
-                  value={formData.low_stock_threshold}
-                  onChange={(e) => {
-                    const raw = e.target.value
-                    setFormData({ ...formData, low_stock_threshold: raw === '' ? 0 : parseInt(raw) || 0 })
-                  }}
-                    className="bg-primary-700 border-primary-600 h-8 text-sm"
-                />
+                <div className="flex items-center gap-0">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-r-none border border-r-0 border-primary-600 bg-primary-700 text-primary-200 hover:bg-primary-600"
+                    onClick={() => setFormData({ ...formData, low_stock_threshold: Math.max(0, (formData.low_stock_threshold || 0) - 1) })}
+                  >
+                    <Minus className="h-3 w-3" />
+                  </Button>
+                  <Input
+                    id="low-stock"
+                    type="number"
+                    placeholder="10"
+                    value={formData.low_stock_threshold}
+                    onChange={(e) => {
+                      const raw = e.target.value
+                      setFormData({ ...formData, low_stock_threshold: raw === '' ? 0 : parseInt(raw) || 0 })
+                    }}
+                    className="bg-primary-700 border-primary-600 h-8 w-20 text-sm text-center rounded-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-l-none border border-l-0 border-primary-600 bg-primary-700 text-primary-200 hover:bg-primary-600"
+                    onClick={() => setFormData({ ...formData, low_stock_threshold: (formData.low_stock_threshold || 0) + 1 })}
+                  >
+                    <Plus className="h-3 w-3" />
+                  </Button>
+                </div>
                 <p className="text-xs text-primary-400 mt-1">
                   Current Stock: {formData.stock} (Stock changes are tracked separately)
                 </p>

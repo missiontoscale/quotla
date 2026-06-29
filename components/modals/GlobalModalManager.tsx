@@ -29,7 +29,7 @@ export function GlobalModalManager() {
         onOpenChange={closeModal}
         onSuccess={onSuccess}
         customerId={modalState.itemId}
-        mode={modalState.mode}
+        mode={modalState.mode === 'view' ? 'edit' : modalState.mode}
       />
 
       {/* Vendor Modal */}
@@ -38,7 +38,7 @@ export function GlobalModalManager() {
         onOpenChange={closeModal}
         onSuccess={onSuccess}
         vendorId={modalState.itemId}
-        mode={modalState.mode}
+        mode={modalState.mode === 'view' ? 'edit' : modalState.mode}
       />
 
       {/* Expense Modal */}
@@ -47,7 +47,7 @@ export function GlobalModalManager() {
         onOpenChange={closeModal}
         onSuccess={onSuccess}
         expenseId={modalState.itemId}
-        mode={modalState.mode}
+        mode={modalState.mode === 'view' ? 'edit' : modalState.mode}
       />
 
       {/* Product Modal */}
@@ -56,7 +56,7 @@ export function GlobalModalManager() {
         onOpenChange={closeModal}
         onSuccess={onSuccess}
         productId={modalState.itemId}
-        mode={modalState.mode}
+        mode={modalState.mode === 'view' ? 'edit' : modalState.mode}
       />
 
       {/* Invoice Modal */}

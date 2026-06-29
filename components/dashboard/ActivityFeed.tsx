@@ -25,6 +25,7 @@ interface ActivityItem {
   timestamp: string
   link?: string
   amount?: number
+  invoiceId?: string
 }
 
 interface ActivityFeedProps {
@@ -34,9 +35,11 @@ interface ActivityFeedProps {
   showViewMore?: boolean
   /** Callback when "View More" is clicked */
   onViewMore?: () => void
+  /** Callback when an invoice activity item is clicked */
+  onInvoiceClick?: (invoiceId: string) => void
 }
 
-export function ActivityFeed({ limit = 8, showViewMore = false, onViewMore }: ActivityFeedProps) {
+export function ActivityFeed({ limit = 8, showViewMore = false, onViewMore, onInvoiceClick }: ActivityFeedProps) {
   const { user } = useAuth()
   const { currency } = useUserCurrency()
   const [activities, setActivities] = useState<ActivityItem[]>([])
@@ -72,7 +75,8 @@ export function ActivityFeed({ limit = 8, showViewMore = false, onViewMore }: Ac
               description: `Invoice #${inv.invoice_number} from ${clientName}`,
               timestamp: inv.updated_at,
               link: `/business/sales`,
-              amount: inv.total
+              amount: inv.total,
+              invoiceId: inv.id
             })
           } else if (inv.status === 'overdue') {
             activityList.push({
@@ -82,7 +86,8 @@ export function ActivityFeed({ limit = 8, showViewMore = false, onViewMore }: Ac
               description: `Invoice #${inv.invoice_number} for ${clientName}`,
               timestamp: inv.updated_at,
               link: `/business/sales`,
-              amount: inv.total
+              amount: inv.total,
+              invoiceId: inv.id
             })
           } else if (inv.status === 'sent') {
             activityList.push({
@@ -92,7 +97,8 @@ export function ActivityFeed({ limit = 8, showViewMore = false, onViewMore }: Ac
               description: `Invoice #${inv.invoice_number} to ${clientName}`,
               timestamp: inv.updated_at,
               link: `/business/sales`,
-              amount: inv.total
+              amount: inv.total,
+              invoiceId: inv.id
             })
           } else if (inv.status === 'draft') {
             activityList.push({
@@ -102,7 +108,8 @@ export function ActivityFeed({ limit = 8, showViewMore = false, onViewMore }: Ac
               description: `Invoice #${inv.invoice_number} for ${clientName}`,
               timestamp: inv.created_at,
               link: `/business/sales`,
-              amount: inv.total
+              amount: inv.total,
+              invoiceId: inv.id
             })
           }
         })
@@ -231,6 +238,8 @@ export function ActivityFeed({ limit = 8, showViewMore = false, onViewMore }: Ac
   return (
     <div className="space-y-1">
       {activities.map((activity) => {
+        const isInvoiceType = activity.type.startsWith('invoice_')
+
         const content = (
           <div className="flex gap-3 p-2 rounded-lg hover:bg-primary-700/50 transition-colors group">
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center border flex-shrink-0 ${getIconBg(activity.type)}`}>
@@ -252,6 +261,19 @@ export function ActivityFeed({ limit = 8, showViewMore = false, onViewMore }: Ac
             </div>
           </div>
         )
+
+        if (isInvoiceType && activity.invoiceId && onInvoiceClick) {
+          return (
+            <button
+              key={activity.id}
+              type="button"
+              className="w-full text-left"
+              onClick={() => onInvoiceClick(activity.invoiceId!)}
+            >
+              {content}
+            </button>
+          )
+        }
 
         if (activity.link) {
           return (

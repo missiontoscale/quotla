@@ -20,7 +20,11 @@ interface DueItem {
   isOverdue: boolean
 }
 
-export function CalendarWidget() {
+interface CalendarWidgetProps {
+  onInvoiceClick?: (invoiceId: string) => void
+}
+
+export function CalendarWidget({ onInvoiceClick }: CalendarWidgetProps) {
   const { user } = useAuth()
   const { currency } = useUserCurrency()
   const [dueItems, setDueItems] = useState<DueItem[]>([])
@@ -117,33 +121,54 @@ export function CalendarWidget() {
       )}
 
       <div className="space-y-1">
-        {dueItems.slice(0, 5).map((item) => (
-          <Link
-            key={item.id}
-            href="/business/sales"
-            className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-primary-700/50 transition-colors group"
-          >
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 border ${
-              item.isOverdue
-                ? 'bg-rose-500/10 border-rose-500/20'
-                : 'bg-primary-700/50 border-primary-600/50'
-            }`}>
-              <FileText className={`w-4 h-4 ${item.isOverdue ? 'text-rose-400' : 'text-primary-400'}`} />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between gap-2">
-                <p className="text-sm font-medium text-primary-100 truncate">#{item.number}</p>
-                <span className={`text-xs font-medium ${getDueDateColor(item.dueDate, item.isOverdue)}`}>
-                  {formatDueDate(item.dueDate)}
-                </span>
+        {dueItems.slice(0, 5).map((item) => {
+          const itemContent = (
+            <div className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-primary-700/50 transition-colors group">
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 border ${
+                item.isOverdue
+                  ? 'bg-rose-500/10 border-rose-500/20'
+                  : 'bg-primary-700/50 border-primary-600/50'
+              }`}>
+                <FileText className={`w-4 h-4 ${item.isOverdue ? 'text-rose-400' : 'text-primary-400'}`} />
               </div>
-              <div className="flex items-center justify-between gap-2">
-                <p className="text-xs text-primary-500 truncate">{item.clientName}</p>
-                <span className="text-xs text-primary-400">{formatCurrency(item.amount, currency)}</span>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-sm font-medium text-primary-100 truncate">#{item.number}</p>
+                  <span className={`text-xs font-medium ${getDueDateColor(item.dueDate, item.isOverdue)}`}>
+                    {formatDueDate(item.dueDate)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-xs text-primary-500 truncate">{item.clientName}</p>
+                  <span className="text-xs text-primary-400">{formatCurrency(item.amount, currency)}</span>
+                </div>
               </div>
             </div>
-          </Link>
-        ))}
+          )
+
+          if (onInvoiceClick) {
+            return (
+              <button
+                key={item.id}
+                type="button"
+                className="w-full text-left"
+                onClick={() => onInvoiceClick(item.id)}
+              >
+                {itemContent}
+              </button>
+            )
+          }
+
+          return (
+            <Link
+              key={item.id}
+              href="/business/sales"
+              className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-primary-700/50 transition-colors group"
+            >
+              {itemContent}
+            </Link>
+          )
+        })}
       </div>
 
       {dueItems.length > 5 && (

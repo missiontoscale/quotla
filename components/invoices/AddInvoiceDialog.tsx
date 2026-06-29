@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo, useRef } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { useUserCurrency } from '@/hooks/useUserCurrency'
 import { deductStockForInvoice, restoreStockForInvoice, hasStockBeenDeducted } from '@/lib/inventory/stock-operations'
-import { FileText, User, Calendar, DollarSign, Plus, Trash2, Package, Check, ChevronsUpDown, UserPlus, Save, Download, X, Loader2 } from 'lucide-react'
+import { FileText, User, Calendar, DollarSign, Plus, Minus, Trash2, Package, Check, ChevronsUpDown, UserPlus, Save, Download, X, Loader2 } from 'lucide-react'
 import { exportToPDF, exportToWord, exportToPNG } from '@/lib/export'
 import type { Profile, InvoiceWithItems } from '@/types'
 import {
@@ -1281,18 +1281,40 @@ export function AddInvoiceDialog({
                       </div>
                       <div className="col-span-4 sm:col-span-2 space-y-1">
                         {index === 0 && <Label className="text-xs">Qty</Label>}
-                        <Input
-                          type="number"
-                          min="1"
-                          step="1"
-                          value={item.quantity}
-                          onChange={(e) => {
-                            const raw = e.target.value
-                            updateLineItem(item.id, 'quantity', raw === '' ? 1 : parseFloat(raw))
-                          }}
-                          disabled={isViewMode && !isEditing}
-                          className="bg-primary-700/80 border-primary-600/80 h-8 text-sm"
-                        />
+                        <div className="flex items-center gap-0">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 rounded-r-none border border-r-0 border-primary-600/80 bg-primary-700/80 text-primary-200 hover:bg-primary-600 disabled:opacity-30"
+                            disabled={isViewMode && !isEditing}
+                            onClick={() => updateLineItem(item.id, 'quantity', Math.max(1, (item.quantity || 1) - 1))}
+                          >
+                            <Minus className="h-3 w-3" />
+                          </Button>
+                          <Input
+                            type="number"
+                            min="1"
+                            step="1"
+                            value={item.quantity}
+                            onChange={(e) => {
+                              const raw = e.target.value
+                              updateLineItem(item.id, 'quantity', raw === '' ? 1 : parseFloat(raw))
+                            }}
+                            disabled={isViewMode && !isEditing}
+                            className="bg-primary-700/80 border-primary-600/80 h-8 w-16 text-sm text-center rounded-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 rounded-l-none border border-l-0 border-primary-600/80 bg-primary-700/80 text-primary-200 hover:bg-primary-600 disabled:opacity-30"
+                            disabled={isViewMode && !isEditing}
+                            onClick={() => updateLineItem(item.id, 'quantity', (item.quantity || 1) + 1)}
+                          >
+                            <Plus className="h-3 w-3" />
+                          </Button>
+                        </div>
                       </div>
                       <div className="col-span-4 sm:col-span-2 space-y-1">
                         {index === 0 && <Label className="text-xs">Price</Label>}

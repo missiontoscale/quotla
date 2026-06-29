@@ -103,6 +103,11 @@ export default function InlineInventoryCreator({ isOpen, onClose, onItemCreated,
     }
   }
 
+  const adjustField = (field: string, delta: number) => {
+    const current = parseInt(formData[field as keyof typeof formData] as string) || 0
+    setFormData({ ...formData, [field]: String(Math.max(0, current + delta)) })
+  }
+
   if (!isOpen) return null
 
   return (
@@ -282,30 +287,62 @@ export default function InlineInventoryCreator({ isOpen, onClose, onItemCreated,
                     <label htmlFor="quantity_on_hand" className="block text-xs text-primary-400">
                       Initial Qty
                     </label>
-                    <input
-                      type="number"
-                      id="quantity_on_hand"
-                      name="quantity_on_hand"
-                      min="0"
-                      className="w-full px-2.5 py-2 bg-primary-800 border border-primary-600 rounded text-primary-50 placeholder-primary-500 focus:ring-1 focus:ring-quotla-orange focus:border-quotla-orange text-sm"
-                      value={formData.quantity_on_hand}
-                      onChange={handleChange}
-                    />
+                    <div className="flex items-center gap-0">
+                      <button
+                        type="button"
+                        className="h-8 w-8 rounded-l border border-r-0 border-primary-600 bg-primary-800 text-primary-200 hover:bg-primary-700 flex items-center justify-center text-sm"
+                        onClick={() => adjustField('quantity_on_hand', -1)}
+                      >
+                        −
+                      </button>
+                      <input
+                        type="number"
+                        id="quantity_on_hand"
+                        name="quantity_on_hand"
+                        min="0"
+                        className="h-8 w-14 bg-primary-800 border border-primary-600 text-primary-50 text-sm text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:ring-0 focus:border-primary-600"
+                        value={formData.quantity_on_hand}
+                        onChange={handleChange}
+                      />
+                      <button
+                        type="button"
+                        className="h-8 w-8 rounded-r border border-l-0 border-primary-600 bg-primary-800 text-primary-200 hover:bg-primary-700 flex items-center justify-center text-sm"
+                        onClick={() => adjustField('quantity_on_hand', 1)}
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
 
                   <div className="space-y-1">
                     <label htmlFor="low_stock_threshold" className="block text-xs text-primary-400">
                       Low Stock
                     </label>
-                    <input
-                      type="number"
-                      id="low_stock_threshold"
-                      name="low_stock_threshold"
-                      min="0"
-                      className="w-full px-2.5 py-2 bg-primary-800 border border-primary-600 rounded text-primary-50 placeholder-primary-500 focus:ring-1 focus:ring-quotla-orange focus:border-quotla-orange text-sm"
-                      value={formData.low_stock_threshold}
-                      onChange={handleChange}
-                    />
+                    <div className="flex items-center gap-0">
+                      <button
+                        type="button"
+                        className="h-8 w-8 rounded-l border border-r-0 border-primary-600 bg-primary-800 text-primary-200 hover:bg-primary-700 flex items-center justify-center text-sm"
+                        onClick={() => adjustField('low_stock_threshold', -1)}
+                      >
+                        −
+                      </button>
+                      <input
+                        type="number"
+                        id="low_stock_threshold"
+                        name="low_stock_threshold"
+                        min="0"
+                        className="h-8 w-14 bg-primary-800 border border-primary-600 text-primary-50 text-sm text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:ring-0 focus:border-primary-600"
+                        value={formData.low_stock_threshold}
+                        onChange={handleChange}
+                      />
+                      <button
+                        type="button"
+                        className="h-8 w-8 rounded-r border border-l-0 border-primary-600 bg-primary-800 text-primary-200 hover:bg-primary-700 flex items-center justify-center text-sm"
+                        onClick={() => adjustField('low_stock_threshold', 1)}
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}

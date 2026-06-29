@@ -8,7 +8,7 @@ interface ModalState {
   type: ModalType | null
   isOpen: boolean
   itemId?: string
-  mode?: 'create' | 'edit'
+  mode?: 'create' | 'edit' | 'view'
 }
 
 interface ModalContextType {
@@ -16,11 +16,11 @@ interface ModalContextType {
   modalState: ModalState
 
   // Open modals
-  openInvoiceModal: (itemId?: string, mode?: 'create' | 'edit') => void
-  openCustomerModal: (itemId?: string, mode?: 'create' | 'edit') => void
-  openVendorModal: (itemId?: string, mode?: 'create' | 'edit') => void
-  openExpenseModal: (itemId?: string, mode?: 'create' | 'edit') => void
-  openProductModal: (itemId?: string, mode?: 'create' | 'edit') => void
+  openInvoiceModal: (itemId?: string, mode?: 'create' | 'edit' | 'view') => void
+  openCustomerModal: (itemId?: string, mode?: 'create' | 'edit' | 'view') => void
+  openVendorModal: (itemId?: string, mode?: 'create' | 'edit' | 'view') => void
+  openExpenseModal: (itemId?: string, mode?: 'create' | 'edit' | 'view') => void
+  openProductModal: (itemId?: string, mode?: 'create' | 'edit' | 'view') => void
 
   // Close modal
   closeModal: () => void
@@ -39,7 +39,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
   })
   const [successCallback, setSuccessCallback] = useState<() => void>(() => () => {})
 
-  const openInvoiceModal = (itemId?: string, mode: 'create' | 'edit' = 'create') => {
+  const openInvoiceModal = (itemId?: string, mode: 'create' | 'edit' | 'view' = 'create') => {
     setModalState({
       type: 'invoice',
       isOpen: true,
@@ -48,7 +48,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
     })
   }
 
-  const openCustomerModal = (itemId?: string, mode: 'create' | 'edit' = 'create') => {
+  const openCustomerModal = (itemId?: string, mode: 'create' | 'edit' | 'view' = 'create') => {
     setModalState({
       type: 'customer',
       isOpen: true,
@@ -57,7 +57,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
     })
   }
 
-  const openVendorModal = (itemId?: string, mode: 'create' | 'edit' = 'create') => {
+  const openVendorModal = (itemId?: string, mode: 'create' | 'edit' | 'view' = 'create') => {
     setModalState({
       type: 'vendor',
       isOpen: true,
@@ -66,7 +66,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
     })
   }
 
-  const openExpenseModal = (itemId?: string, mode: 'create' | 'edit' = 'create') => {
+  const openExpenseModal = (itemId?: string, mode: 'create' | 'edit' | 'view' = 'create') => {
     setModalState({
       type: 'expense',
       isOpen: true,
@@ -75,7 +75,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
     })
   }
 
-  const openProductModal = (itemId?: string, mode: 'create' | 'edit' = 'create') => {
+  const openProductModal = (itemId?: string, mode: 'create' | 'edit' | 'view' = 'create') => {
     setModalState({
       type: 'product',
       isOpen: true,

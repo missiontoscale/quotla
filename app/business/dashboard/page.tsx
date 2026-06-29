@@ -618,7 +618,7 @@ function DashboardContent() {
                   View More <ChevronRight className="w-3 h-3" />
                 </Link>
               </div>
-              <ActivityFeed key={refreshTrigger} limit={3} />
+              <ActivityFeed key={refreshTrigger} limit={3} onInvoiceClick={(id) => { setOnSuccess(() => loadData()); openInvoiceModal(id, 'view') }} />
             </Card>
 
             {/* Low Stock Details - Contextual drill-down */}
@@ -689,7 +689,7 @@ function DashboardContent() {
               <div className="flex items-center justify-between mb-4">
                 <h2 className={components.heading.card}>Upcoming Due Dates</h2>
               </div>
-              <CalendarWidget key={refreshTrigger} />
+              <CalendarWidget key={refreshTrigger} onInvoiceClick={(id) => { setOnSuccess(() => loadData()); openInvoiceModal(id, 'view') }} />
             </Card>
           </aside>
         </div>

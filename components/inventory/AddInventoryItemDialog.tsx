@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Plus, Minus } from 'lucide-react'
 
 interface AddInventoryItemDialogProps {
   open: boolean
@@ -269,47 +270,107 @@ export function AddInventoryItemDialog({ open, onOpenChange, onSuccess }: AddInv
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="quantity" className="text-xs">Initial Stock</Label>
-                <Input
-                  id="quantity"
-                  type="number"
-                  placeholder="1"
-                  value={formData.quantity_on_hand}
-                  onChange={(e) => {
-                    const raw = e.target.value
-                    setFormData({ ...formData, quantity_on_hand: raw === '' ? 1 : parseInt(raw) || 1 })
-                  }}
-                  className="bg-primary-700 border-primary-600 h-8 text-sm"
-                />
+                <div className="flex items-center gap-0">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-r-none border border-r-0 border-primary-600 bg-primary-700 text-primary-200 hover:bg-primary-600"
+                    onClick={() => setFormData({ ...formData, quantity_on_hand: Math.max(0, (formData.quantity_on_hand || 1) - 1) })}
+                  >
+                    <Minus className="h-3 w-3" />
+                  </Button>
+                  <Input
+                    id="quantity"
+                    type="number"
+                    placeholder="1"
+                    value={formData.quantity_on_hand}
+                    onChange={(e) => {
+                      const raw = e.target.value
+                      setFormData({ ...formData, quantity_on_hand: raw === '' ? 1 : parseInt(raw) || 1 })
+                    }}
+                    className="bg-primary-700 border-primary-600 h-8 w-16 text-sm text-center rounded-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-l-none border border-l-0 border-primary-600 bg-primary-700 text-primary-200 hover:bg-primary-600"
+                    onClick={() => setFormData({ ...formData, quantity_on_hand: (formData.quantity_on_hand || 1) + 1 })}
+                  >
+                    <Plus className="h-3 w-3" />
+                  </Button>
+                </div>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="low-stock" className="text-xs">Low Stock Alert</Label>
-                <Input
-                  id="low-stock"
-                  type="number"
-                  placeholder="10"
-                  value={formData.low_stock_threshold}
-                  onChange={(e) => {
-                    const raw = e.target.value
-                    setFormData({ ...formData, low_stock_threshold: raw === '' ? 0 : parseInt(raw) || 0 })
-                  }}
-                  className="bg-primary-700 border-primary-600 h-8 text-sm"
-                />
+                <div className="flex items-center gap-0">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-r-none border border-r-0 border-primary-600 bg-primary-700 text-primary-200 hover:bg-primary-600"
+                    onClick={() => setFormData({ ...formData, low_stock_threshold: Math.max(0, (formData.low_stock_threshold || 0) - 1) })}
+                  >
+                    <Minus className="h-3 w-3" />
+                  </Button>
+                  <Input
+                    id="low-stock"
+                    type="number"
+                    placeholder="10"
+                    value={formData.low_stock_threshold}
+                    onChange={(e) => {
+                      const raw = e.target.value
+                      setFormData({ ...formData, low_stock_threshold: raw === '' ? 0 : parseInt(raw) || 0 })
+                    }}
+                    className="bg-primary-700 border-primary-600 h-8 w-16 text-sm text-center rounded-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-l-none border border-l-0 border-primary-600 bg-primary-700 text-primary-200 hover:bg-primary-600"
+                    onClick={() => setFormData({ ...formData, low_stock_threshold: (formData.low_stock_threshold || 0) + 1 })}
+                  >
+                    <Plus className="h-3 w-3" />
+                  </Button>
+                </div>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="reorder-qty" className="text-xs">Reorder Quantity</Label>
-                <Input
-                  id="reorder-qty"
-                  type="number"
-                  placeholder="50"
-                  value={formData.reorder_quantity}
-                  onChange={(e) => {
-                    const raw = e.target.value
-                    setFormData({ ...formData, reorder_quantity: raw === '' ? 50 : parseInt(raw) || 50 })
-                  }}
-                  className="bg-primary-700 border-primary-600 h-8 text-sm"
-                />
+                <div className="flex items-center gap-0">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-r-none border border-r-0 border-primary-600 bg-primary-700 text-primary-200 hover:bg-primary-600"
+                    onClick={() => setFormData({ ...formData, reorder_quantity: Math.max(0, (formData.reorder_quantity || 50) - 1) })}
+                  >
+                    <Minus className="h-3 w-3" />
+                  </Button>
+                  <Input
+                    id="reorder-qty"
+                    type="number"
+                    placeholder="50"
+                    value={formData.reorder_quantity}
+                    onChange={(e) => {
+                      const raw = e.target.value
+                      setFormData({ ...formData, reorder_quantity: raw === '' ? 50 : parseInt(raw) || 50 })
+                    }}
+                    className="bg-primary-700 border-primary-600 h-8 w-16 text-sm text-center rounded-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-l-none border border-l-0 border-primary-600 bg-primary-700 text-primary-200 hover:bg-primary-600"
+                    onClick={() => setFormData({ ...formData, reorder_quantity: (formData.reorder_quantity || 50) + 1 })}
+                  >
+                    <Plus className="h-3 w-3" />
+                  </Button>
+                </div>
               </div>
             </div>
           )}

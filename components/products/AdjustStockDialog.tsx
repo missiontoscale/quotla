@@ -213,18 +213,38 @@ export function AdjustStockDialog({
             <Label htmlFor="quantity" className="text-xs text-primary-400">
               {adjustmentType === 'set' ? 'New Quantity' : 'Quantity'}
             </Label>
-            <Input
-              id="quantity"
-              type="number"
-              min="0"
-              value={quantity}
-              onChange={(e) => {
-                const raw = e.target.value
-                setQuantity(raw === '' ? 1 : Math.max(0, parseInt(raw) || 1))
-              }}
-              className="bg-primary-700 border-primary-600 h-10 text-lg font-medium"
-              placeholder="1"
-            />
+            <div className="flex items-center gap-0">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-10 w-10 rounded-r-none border border-r-0 border-primary-600 bg-primary-700 text-primary-200 hover:bg-primary-600"
+                onClick={() => setQuantity(Math.max(0, quantity - 1))}
+              >
+                <Minus className="h-4 w-4" />
+              </Button>
+              <Input
+                id="quantity"
+                type="number"
+                min="0"
+                value={quantity}
+                onChange={(e) => {
+                  const raw = e.target.value
+                  setQuantity(raw === '' ? 1 : Math.max(0, parseInt(raw) || 1))
+                }}
+                className="bg-primary-700 border-primary-600 h-10 w-24 text-lg font-medium text-center rounded-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                placeholder="1"
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-10 w-10 rounded-l-none border border-l-0 border-primary-600 bg-primary-700 text-primary-200 hover:bg-primary-600"
+                onClick={() => setQuantity(quantity + 1)}
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
 
           {quantity > 0 && (
