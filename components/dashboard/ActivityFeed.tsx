@@ -167,7 +167,7 @@ export function ActivityFeed({ limit = 8, showViewMore = false, onViewMore }: Ac
   const getIcon = (type: ActivityItem['type']) => {
     switch (type) {
       case 'invoice_paid':
-        return <DollarSign className="w-4 h-4 text-emerald-400" />
+        return <DollarSign className="w-4 h-4 text-quotla-green" />
       case 'invoice_created':
       case 'invoice_sent':
         return <FileText className="w-4 h-4 text-quotla-orange" />
@@ -185,7 +185,7 @@ export function ActivityFeed({ limit = 8, showViewMore = false, onViewMore }: Ac
   const getIconBg = (type: ActivityItem['type']) => {
     switch (type) {
       case 'invoice_paid':
-        return 'bg-emerald-500/10 border-emerald-500/20'
+        return 'bg-quotla-green/10 border-quotla-green/20'
       case 'invoice_created':
       case 'invoice_sent':
         return 'bg-quotla-orange/10 border-quotla-orange/20'
@@ -240,7 +240,7 @@ export function ActivityFeed({ limit = 8, showViewMore = false, onViewMore }: Ac
               <div className="flex items-center justify-between gap-2">
                 <p className="text-sm font-medium text-primary-100 truncate">{activity.title}</p>
                 {activity.amount && (
-                  <span className={`text-xs font-medium ${activity.type === 'invoice_paid' ? 'text-emerald-400' : 'text-primary-400'}`}>
+                  <span className={`text-xs font-medium ${activity.type === 'invoice_paid' ? 'text-quotla-green' : 'text-primary-400'}`}>
                     {formatCurrency(activity.amount, currency)}
                   </span>
                 )}

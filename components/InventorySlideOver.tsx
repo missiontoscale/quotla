@@ -161,7 +161,7 @@ export default function InventorySlideOver({ isOpen, onClose }: InventorySlideOv
           {/* Items List */}
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-none h-12 w-12 border-4 border-cyan-500 border-t-transparent"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-2 border-primary-600 border-t-quotla-orange"></div>
             </div>
           ) : filteredItems.length === 0 ? (
             <div className="text-center py-12 bg-primary-800/50 border-2 border-primary-600 rounded-none">
@@ -215,7 +215,7 @@ export default function InventorySlideOver({ isOpen, onClose }: InventorySlideOv
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-lg font-black text-cyan-400">
+                        <div className="text-lg font-black text-quotla-orange">
                           {formatCurrency(item.unit_price, item.currency || userCurrency)}
                         </div>
                         {item.track_inventory && (
@@ -276,7 +276,7 @@ export default function InventorySlideOver({ isOpen, onClose }: InventorySlideOv
               </div>
               <div className="p-4 bg-primary-800 border border-primary-600 rounded-none">
                 <div className="text-xs text-primary-500 uppercase tracking-wide mb-1">Total Value</div>
-                <div className="text-2xl font-black text-cyan-400">
+                <div className="text-2xl font-black text-quotla-orange">
                   {formatCurrency(
                     filteredItems.reduce((sum, item) => sum + item.quantity_on_hand * item.cost_price, 0),
                     filteredItems[0]?.currency || userCurrency

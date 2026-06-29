@@ -31,9 +31,9 @@ const statusConfig = {
   },
   paid: {
     icon: CheckCircle,
-    color: 'text-emerald-400',
-    accent: 'border-l-emerald-400/70',
-    amount: 'text-emerald-400',
+    color: 'text-quotla-green',
+    accent: 'border-l-quotla-green/70',
+    amount: 'text-quotla-green',
   },
   overdue: {
     icon: AlertCircle,

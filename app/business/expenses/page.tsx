@@ -395,7 +395,7 @@ function ExpensesContent() {
       render: (value: string) => {
         const statusColors: Record<string, string> = {
           pending: 'bg-amber-500/20 text-amber-400',
-          approved: 'bg-emerald-500/20 text-emerald-400',
+          approved: 'bg-quotla-green/20 text-quotla-green',
           reimbursed: 'bg-quotla-orange/20 text-quotla-orange',
           rejected: 'bg-rose-500/20 text-rose-400',
         };
@@ -419,7 +419,7 @@ function ExpensesContent() {
       label: 'Status',
       render: (value: string) => {
         const statusColors: Record<string, string> = {
-          active: 'bg-quotla-green/20 text-emerald-400',
+          active: 'bg-quotla-green/20 text-quotla-green',
           inactive: 'bg-primary-600/20 text-primary-400',
         };
         return (
@@ -788,13 +788,13 @@ function ExpensesContent() {
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-primary-400">Approved</span>
-              <span className="text-sm font-medium text-emerald-400">
+              <span className="text-sm font-medium text-quotla-green">
                 {((stats as any).statusBreakdown?.approved || 0)}
               </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-primary-400">Reimbursed</span>
-              <span className="text-sm font-medium text-teal-400">
+              <span className="text-sm font-medium text-quotla-orange">
                 {((stats as any).statusBreakdown?.reimbursed || 0)}
               </span>
             </div>

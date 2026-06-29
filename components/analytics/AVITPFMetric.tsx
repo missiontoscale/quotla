@@ -71,16 +71,16 @@ const colorSchemeMap = {
     value: 'text-orange-50',
   },
   emerald: {
-    label: 'text-emerald-400',
-    value: 'text-emerald-50',
+    label: 'text-quotla-green',
+    value: 'text-quotla-green',
   },
   rose: {
     label: 'text-rose-400',
     value: 'text-rose-50',
   },
   teal: {
-    label: 'text-teal-400',
-    value: 'text-teal-50',
+    label: 'text-quotla-orange',
+    value: 'text-quotla-orange',
   },
 }
 
@@ -128,7 +128,7 @@ export function AVITPFMetric({
       ? changeDirection === 'down'
       : changeDirection === 'up'
 
-    return isPositive ? 'text-emerald-400' : 'text-rose-400'
+    return isPositive ? 'text-quotla-green' : 'text-rose-400'
   }, [changeDirection, invertColors])
 
   // Format the value

@@ -169,7 +169,7 @@ export function InvoiceListModal({
       key: 'total',
       label: 'Total',
       render: (value: number) => (
-        <span className="text-emerald-400">
+        <span className="text-quotla-green">
           {formatCurrency(value || 0, currency)}
         </span>
       ),

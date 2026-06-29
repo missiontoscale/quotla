@@ -49,9 +49,9 @@ const colorMap: Record<NotificationType, { icon: string; bg: string; border: str
     border: 'border-amber-500/20'
   },
   invoice_paid: {
-    icon: 'text-emerald-400',
-    bg: 'bg-emerald-500/10',
-    border: 'border-emerald-500/20'
+    icon: 'text-quotla-green',
+    bg: 'bg-quotla-green/10',
+    border: 'border-quotla-green/20'
   },
   invoice_overdue: {
     icon: 'text-rose-400',
@@ -64,14 +64,14 @@ const colorMap: Record<NotificationType, { icon: string; bg: string; border: str
     border: 'border-quotla-orange/20'
   },
   payment_received: {
-    icon: 'text-emerald-400',
-    bg: 'bg-emerald-500/10',
-    border: 'border-emerald-500/20'
+    icon: 'text-quotla-green',
+    bg: 'bg-quotla-green/10',
+    border: 'border-quotla-green/20'
   },
   quote_accepted: {
-    icon: 'text-emerald-400',
-    bg: 'bg-emerald-500/10',
-    border: 'border-emerald-500/20'
+    icon: 'text-quotla-green',
+    bg: 'bg-quotla-green/10',
+    border: 'border-quotla-green/20'
   },
   quote_rejected: {
     icon: 'text-rose-400',
@@ -147,7 +147,7 @@ function NotificationItem({
                     e.stopPropagation()
                     onMarkAsRead(notification.id)
                   }}
-                  className="p-1 rounded hover:bg-primary-600 text-primary-400 hover:text-emerald-400 transition-colors"
+                  className="p-1 rounded hover:bg-primary-600 text-primary-400 hover:text-quotla-green transition-colors"
                   title="Mark as read"
                 >
                   <Check className="w-3.5 h-3.5" />

@@ -479,7 +479,7 @@ function ProductsContent() {
 
   const getMovementTypeInfo = (type: string) => {
     const types: Record<string, { color: string, icon: any, label: string }> = {
-      purchase: { color: 'bg-emerald-500/20 text-emerald-400', icon: ArrowDown, label: 'Purchase' },
+      purchase: { color: 'bg-quotla-green/20 text-quotla-green', icon: ArrowDown, label: 'Purchase' },
       sale: { color: 'bg-rose-500/20 text-rose-400', icon: ArrowUp, label: 'Sale' },
       adjustment: { color: 'bg-amber-500/20 text-amber-400', icon: RefreshCw, label: 'Adjustment' },
       return: { color: 'bg-quotla-orange/20 text-quotla-orange', icon: Undo, label: 'Return' },
@@ -554,7 +554,7 @@ function ProductsContent() {
       label: 'Status',
       render: (value: string) => {
         const statusConfig = {
-          'in-stock': { color: 'bg-emerald-500/20 text-emerald-400', icon: CheckCircle2 },
+          'in-stock': { color: 'bg-quotla-green/20 text-quotla-green', icon: CheckCircle2 },
           'low-stock': { color: 'bg-amber-500/20 text-amber-400', icon: AlertTriangle },
           'out-of-stock': { color: 'bg-rose-500/20 text-rose-400', icon: XCircle },
         };
@@ -610,7 +610,7 @@ function ProductsContent() {
       key: 'quantity_change',
       label: 'Quantity',
       render: (value: number) => (
-        <span className={value > 0 ? 'text-emerald-400' : 'text-rose-400'}>
+        <span className={value > 0 ? 'text-quotla-green' : 'text-rose-400'}>
           {value > 0 ? '+' : ''}{value}
         </span>
       ),
@@ -741,7 +741,7 @@ function ProductsContent() {
 
           <div className="grid grid-cols-3 gap-2 text-xs">
             <div className="flex items-center gap-1">
-              <CheckCircle2 className="w-3 h-3 text-emerald-500" />
+               <CheckCircle2 className="w-3 h-3 text-quotla-green" />
               <span className="text-primary-400">In Stock:</span>
               <span className="font-medium text-primary-200">{stats.inStock}</span>
             </div>
@@ -1058,7 +1058,7 @@ function ProductsContent() {
             <div className="flex items-center justify-between pt-3 border-t border-primary-600">
               <div>
                 <p className="text-xs text-primary-400">Profit</p>
-                <p className="text-sm font-semibold text-emerald-400">{formatCurrency(stats.topPerformer.profit, displayCurrency)}</p>
+                <p className="text-sm font-semibold text-quotla-green">{formatCurrency(stats.topPerformer.profit, displayCurrency)}</p>
               </div>
               <div className="text-right">
                 <p className="text-xs text-primary-400">Units Sold</p>
@@ -1071,8 +1071,8 @@ function ProductsContent() {
         {/* Stock In Today Card */}
         <Card className="bg-quotla-dark/90 border-primary-600 p-5">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center">
-              <ArrowDown className="w-5 h-5 text-emerald-400" />
+            <div className="w-10 h-10 bg-quotla-green/10 rounded-xl flex items-center justify-center">
+              <ArrowDown className="w-5 h-5 text-quotla-green" />
             </div>
             <div>
               <p className="text-xs text-primary-400 uppercase tracking-wider">Stock In Today</p>

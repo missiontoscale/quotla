@@ -157,23 +157,23 @@ export function OnboardingProgress() {
               href={step.link}
               className={`flex items-center gap-3 p-2.5 rounded-lg transition-all ${
                 step.completed
-                  ? 'bg-emerald-500/5 border border-emerald-500/10'
+                  ? 'bg-quotla-green/5 border border-quotla-green/10'
                   : 'bg-primary-700/30 border border-primary-600/30 hover:border-primary-500/50'
               }`}
             >
               <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
                 step.completed
-                  ? 'bg-emerald-500/20'
+                  ? 'bg-quotla-green/20'
                   : 'bg-primary-600/50'
               }`}>
                 {step.completed ? (
-                  <Check className="w-4 h-4 text-emerald-400" />
+                  <Check className="w-4 h-4 text-quotla-green" />
                 ) : (
                   <Icon className="w-4 h-4 text-primary-400" />
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <p className={`text-sm font-medium ${step.completed ? 'text-emerald-400' : 'text-primary-100'}`}>
+                <p className={`text-sm font-medium ${step.completed ? 'text-quotla-green' : 'text-primary-100'}`}>
                   {step.title}
                 </p>
                 <p className="text-xs text-primary-500 truncate">{step.description}</p>

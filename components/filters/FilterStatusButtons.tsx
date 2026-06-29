@@ -14,7 +14,7 @@ interface FilterStatusButtonsProps {
 const colorClasses: Record<string, string> = {
   slate: 'bg-primary-500/20 text-primary-200',
   blue: 'bg-quotla-orange/20 text-quotla-orange',
-  emerald: 'bg-emerald-500/20 text-emerald-400',
+  emerald: 'bg-quotla-green/20 text-quotla-green',
   amber: 'bg-amber-500/20 text-amber-400',
   rose: 'bg-rose-500/20 text-rose-400',
 }

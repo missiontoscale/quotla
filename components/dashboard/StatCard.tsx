@@ -10,9 +10,9 @@ interface StatCardProps {
   iconColor?: string;
 }
 
-export function StatCard({ title, value, change, changeType = 'neutral', icon: Icon, iconColor = 'from-quotla-green to-emerald-500' }: StatCardProps) {
+export function StatCard({ title, value, change, changeType = 'neutral', icon: Icon, iconColor = 'from-quotla-green to-secondary-600' }: StatCardProps) {
   const changeColors = {
-    positive: 'text-emerald-400',
+    positive: 'text-quotla-green',
     negative: 'text-rose-400',
     neutral: 'text-primary-400',
   };

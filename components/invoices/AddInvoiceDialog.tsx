@@ -1433,7 +1433,7 @@ export function AddInvoiceDialog({
                 )}
                 <div className="flex justify-between font-semibold pt-1.5 border-t border-primary-600/80">
                   <span className="text-primary-100">Total</span>
-                  <span className="text-emerald-400">{formatCurrency(total, formData.currency)}</span>
+                  <span className="text-quotla-green">{formatCurrency(total, formData.currency)}</span>
                 </div>
               </div>
             </div>

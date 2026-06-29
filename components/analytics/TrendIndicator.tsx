@@ -96,7 +96,7 @@ export function TrendIndicator({
       : direction === 'up'
 
     return isPositive
-      ? { text: 'text-emerald-400', bg: 'bg-emerald-500/10' }
+      ? { text: 'text-quotla-green', bg: 'bg-quotla-green/10' }
       : { text: 'text-rose-400', bg: 'bg-rose-500/10' }
   }, [direction, invertColors])
 
@@ -186,7 +186,7 @@ export function InlineTrend({
     <span
       className={cn(
         'flex items-center gap-0.5 text-xs font-medium',
-        isPositive ? 'text-emerald-400' : 'text-rose-400',
+        isPositive ? 'text-quotla-green' : 'text-rose-400',
         className
       )}
     >
@@ -225,14 +225,14 @@ export function TrendBadge({
     direction === 'flat'
       ? 'bg-primary-600/20 border-primary-600/30'
       : isPositive
-        ? 'bg-emerald-500/10 border-emerald-500/20'
+        ? 'bg-quotla-green/10 border-quotla-green/20'
         : 'bg-rose-500/10 border-rose-500/20'
 
   const textColor =
     direction === 'flat'
       ? 'text-primary-400'
       : isPositive
-        ? 'text-emerald-400'
+        ? 'text-quotla-green'
         : 'text-rose-400'
 
   return (

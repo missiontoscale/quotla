@@ -319,7 +319,7 @@ export function AnomalyTooltipContent({ anomaly, formatValue }: AnomalyTooltipPr
         <p>Expected: {format(anomaly.expectedValue)}</p>
         <p
           className={cn(
-            anomaly.deviation > 0 ? 'text-emerald-400' : 'text-rose-400'
+            anomaly.deviation > 0 ? 'text-quotla-green' : 'text-rose-400'
           )}
         >
           Deviation: {anomaly.deviation > 0 ? '+' : ''}

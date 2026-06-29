@@ -49,8 +49,8 @@ const severityStyles: Record<
   info: {
     bg: 'bg-quotla-green/15',
     border: 'border-quotla-green/30',
-    icon: 'text-emerald-400',
-    badge: 'bg-quotla-green/20 text-emerald-300',
+    icon: 'text-quotla-green',
+    badge: 'bg-quotla-green/20 text-quotla-green',
   },
   warning: {
     bg: 'bg-amber-950/30',
@@ -151,7 +151,7 @@ function AlertItem({ anomaly, onDismiss }: AlertItemProps) {
           </span>
           <span>
             Deviation:{' '}
-            <span className={cn(anomaly.deviation > 0 ? 'text-emerald-400' : 'text-rose-400')}>
+            <span className={cn(anomaly.deviation > 0 ? 'text-quotla-green' : 'text-rose-400')}>
               {anomaly.deviation > 0 ? '+' : ''}{anomaly.deviation.toFixed(1)}%
             </span>
           </span>

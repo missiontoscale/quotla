@@ -756,7 +756,7 @@ function SalesContent() {
         const statusColors: Record<string, string> = {
           draft: 'bg-primary-600/20 text-primary-400',
           sent: 'bg-quotla-orange/20 text-quotla-orange',
-          paid: 'bg-quotla-green/20 text-emerald-400',
+          paid: 'bg-quotla-green/20 text-quotla-green',
           overdue: 'bg-rose-500/20 text-rose-400',
           cancelled: 'bg-primary-700/20 text-primary-400'
         };
@@ -1199,8 +1199,8 @@ function SalesContent() {
           {/* Conversion Rate Card */}
           <Card className="bg-quotla-dark/90 border-primary-600 p-5">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-emerald-400" />
+              <div className="w-10 h-10 bg-quotla-green/10 rounded-xl flex items-center justify-center">
+                <TrendingUp className="w-5 h-5 text-quotla-green" />
               </div>
               <div>
                 <p className="text-xs text-primary-400 uppercase tracking-wider">Conversion Rate</p>
@@ -1249,8 +1249,8 @@ function SalesContent() {
           {/* Customer Value Card */}
           <Card className="bg-quotla-dark/90 border-primary-600 p-5">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-teal-500/10 rounded-xl flex items-center justify-center">
-                <DollarSign className="w-5 h-5 text-teal-400" />
+              <div className="w-10 h-10 bg-quotla-orange/10 rounded-xl flex items-center justify-center">
+                <DollarSign className="w-5 h-5 text-quotla-orange" />
               </div>
               <div>
                 <p className="text-xs text-primary-400 uppercase tracking-wider">Avg Customer Value</p>
@@ -1262,7 +1262,7 @@ function SalesContent() {
             <div className="pt-3 border-t border-primary-600">
               <div className="flex items-center justify-between">
                 <span className="text-xs text-primary-400">Lifetime Value</span>
-                <span className="text-sm font-medium text-teal-400">Per Customer</span>
+                <span className="text-sm font-medium text-quotla-orange">Per Customer</span>
               </div>
             </div>
           </Card>

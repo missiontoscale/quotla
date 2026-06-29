@@ -56,7 +56,7 @@ export function CustomerListModal({
       label: 'Status',
       render: (value: string) => {
         const statusColors: Record<string, string> = {
-          active: 'bg-emerald-500/20 text-emerald-400',
+          active: 'bg-quotla-green/20 text-quotla-green',
           inactive: 'bg-primary-400/20 text-primary-400',
         }
         return (
@@ -79,7 +79,7 @@ export function CustomerListModal({
       key: 'totalEarnings',
       label: 'Total Earnings',
       render: (value: number) => (
-        <span className="text-emerald-400">
+        <span className="text-quotla-green">
           {formatCurrency(value || 0, currency)}
         </span>
       ),
