@@ -9,9 +9,9 @@ interface FieldGroupProps {
 
 function FieldGroup({ children, label, className }: FieldGroupProps) {
   return (
-    <div className={cn("bg-slate-800/30 rounded-lg p-3 space-y-3", className)}>
+    <div className={cn("bg-primary-700/30 rounded-lg p-3 space-y-3", className)}>
       {label && (
-        <span className="text-xs font-medium text-slate-400">{label}</span>
+        <span className="text-xs font-medium text-primary-400">{label}</span>
       )}
       {children}
     </div>

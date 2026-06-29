@@ -109,7 +109,7 @@ export function FilterCombobox({
                       className={cn(
                         'mr-2 h-4 w-4',
                         value === option.id
-                          ? 'opacity-100 text-cyan-400'
+                          ? 'opacity-100 text-quotla-orange'
                           : 'opacity-0'
                       )}
                     />

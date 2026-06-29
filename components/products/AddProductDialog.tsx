@@ -228,7 +228,7 @@ export function AddProductDialog({
 
   return (
     <Dialog open={open} onOpenChange={(newOpen) => { if (!loading) onOpenChange(newOpen) }}>
-      <DialogContent className="bg-slate-900 border-slate-800 text-slate-100 max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-primary-800 border-primary-600 text-primary-50 max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl">
             {isEditMode ? 'Edit Product' : 'Add New Product'}
@@ -250,7 +250,7 @@ export function AddProductDialog({
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
-                className="bg-slate-800 border-slate-700 h-8 text-sm"
+                className="bg-primary-700 border-primary-600 h-8 text-sm"
               />
             </div>
 
@@ -263,7 +263,7 @@ export function AddProductDialog({
                   value={formData.sku}
                   onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
                   required
-                    className="bg-slate-800 border-slate-700 h-8 text-sm"
+                    className="bg-primary-700 border-primary-600 h-8 text-sm"
                 />
               </div>
 
@@ -275,7 +275,7 @@ export function AddProductDialog({
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                   required
-                    className="bg-slate-800 border-slate-700 h-8 text-sm"
+                    className="bg-primary-700 border-primary-600 h-8 text-sm"
                 />
               </div>
             </div>
@@ -287,7 +287,7 @@ export function AddProductDialog({
                 placeholder="Product description"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="bg-slate-800 border-slate-700 min-h-20 text-sm"
+                className="bg-primary-700 border-primary-600 min-h-20 text-sm"
                 rows={3}
               />
             </div>
@@ -309,7 +309,7 @@ export function AddProductDialog({
                       setFormData({ ...formData, cost_price: raw === '' ? 0 : parseFloat(raw) })
                     }}
                     required
-                        className="bg-slate-800 border-slate-700 h-8 text-sm"
+                        className="bg-primary-700 border-primary-600 h-8 text-sm"
                   />
                 </div>
 
@@ -326,7 +326,7 @@ export function AddProductDialog({
                       setFormData({ ...formData, price: raw === '' ? 0 : parseFloat(raw) })
                     }}
                     required
-                        className="bg-slate-800 border-slate-700 h-8 text-sm"
+                        className="bg-primary-700 border-primary-600 h-8 text-sm"
                   />
                 </div>
               </div>
@@ -349,7 +349,7 @@ export function AddProductDialog({
                         setFormData({ ...formData, stock: raw === '' ? 0 : parseInt(raw) || 0 })
                       }}
                       required
-                      className="bg-slate-800 border-slate-700 h-8 text-sm"
+                      className="bg-primary-700 border-primary-600 h-8 text-sm"
                     />
                   </div>
 
@@ -364,7 +364,7 @@ export function AddProductDialog({
                         const raw = e.target.value
                         setFormData({ ...formData, low_stock_threshold: raw === '' ? 0 : parseInt(raw) || 0 })
                       }}
-                      className="bg-slate-800 border-slate-700 h-8 text-sm"
+                      className="bg-primary-700 border-primary-600 h-8 text-sm"
                     />
                   </div>
                 </div>
@@ -383,9 +383,9 @@ export function AddProductDialog({
                     const raw = e.target.value
                     setFormData({ ...formData, low_stock_threshold: raw === '' ? 0 : parseInt(raw) || 0 })
                   }}
-                    className="bg-slate-800 border-slate-700 h-8 text-sm"
+                    className="bg-primary-700 border-primary-600 h-8 text-sm"
                 />
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-xs text-primary-400 mt-1">
                   Current Stock: {formData.stock} (Stock changes are tracked separately)
                 </p>
               </div>
@@ -397,14 +397,14 @@ export function AddProductDialog({
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              className="border-slate-700 text-slate-300 hover:bg-slate-800 text-sm h-9"
+              className="border-primary-600 text-primary-300 hover:bg-primary-700 text-sm h-9"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={loading}
-              className="bg-cyan-500 hover:bg-cyan-600 text-white text-sm h-9"
+              className="bg-quotla-orange hover:bg-secondary-500 text-white text-sm h-9"
             >
               {loading
                 ? (isEditMode ? 'Updating...' : 'Adding...')

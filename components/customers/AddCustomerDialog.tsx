@@ -373,7 +373,7 @@ export function AddCustomerDialog({
             <Button
               type="submit"
               disabled={loading}
-              className="bg-cyan-500 hover:bg-cyan-600 text-white text-sm h-9"
+              className="bg-quotla-orange hover:bg-secondary-500 text-white text-sm h-9"
             >
               {loading
                 ? (isEditMode ? 'Updating...' : 'Adding...')

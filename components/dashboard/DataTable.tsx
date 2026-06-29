@@ -66,7 +66,7 @@ export function DataTable({
   return (
     <div className="space-y-3.5">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div className="relative flex-1 max-w-md">
+        <div className="relative flex-1 max-w-full sm:max-w-md">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-primary-400" />
           <Input
             placeholder={searchPlaceholder}

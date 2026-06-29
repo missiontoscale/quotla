@@ -59,9 +59,9 @@ const colorMap: Record<NotificationType, { icon: string; bg: string; border: str
     border: 'border-rose-500/20'
   },
   new_order: {
-    icon: 'text-blue-400',
-    bg: 'bg-blue-500/10',
-    border: 'border-blue-500/20'
+    icon: 'text-quotla-orange',
+    bg: 'bg-quotla-orange/10',
+    border: 'border-quotla-orange/20'
   },
   payment_received: {
     icon: 'text-emerald-400',
@@ -79,9 +79,9 @@ const colorMap: Record<NotificationType, { icon: string; bg: string; border: str
     border: 'border-rose-500/20'
   },
   system: {
-    icon: 'text-slate-400',
-    bg: 'bg-slate-500/10',
-    border: 'border-slate-500/20'
+    icon: 'text-primary-400',
+    bg: 'bg-primary-500/10',
+    border: 'border-primary-500/20'
   }
 }
 
@@ -104,8 +104,8 @@ function NotificationItem({
     <div
       className={cn(
         'group relative px-4 py-3 transition-all duration-200',
-        !notification.is_read && 'bg-slate-800/50',
-        'hover:bg-slate-800/80'
+        !notification.is_read && 'bg-primary-700/50',
+        'hover:bg-primary-700/80'
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -130,7 +130,7 @@ function NotificationItem({
           <div className="flex items-start justify-between gap-2">
             <h4 className={cn(
               'text-[0.81rem] font-medium truncate',
-              notification.is_read ? 'text-slate-300' : 'text-slate-100'
+              notification.is_read ? 'text-primary-300' : 'text-primary-100'
             )}>
               {notification.title}
             </h4>
@@ -147,7 +147,7 @@ function NotificationItem({
                     e.stopPropagation()
                     onMarkAsRead(notification.id)
                   }}
-                  className="p-1 rounded hover:bg-slate-700 text-slate-400 hover:text-emerald-400 transition-colors"
+                  className="p-1 rounded hover:bg-primary-600 text-primary-400 hover:text-emerald-400 transition-colors"
                   title="Mark as read"
                 >
                   <Check className="w-3.5 h-3.5" />
@@ -159,7 +159,7 @@ function NotificationItem({
                   e.stopPropagation()
                   onDelete(notification.id)
                 }}
-                className="p-1 rounded hover:bg-slate-700 text-slate-400 hover:text-rose-400 transition-colors"
+                className="p-1 rounded hover:bg-primary-600 text-primary-400 hover:text-rose-400 transition-colors"
                 title="Delete"
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -169,13 +169,13 @@ function NotificationItem({
 
           <p className={cn(
             'text-[0.75rem] mt-0.5 line-clamp-2',
-            notification.is_read ? 'text-slate-500' : 'text-slate-400'
+            notification.is_read ? 'text-primary-500' : 'text-primary-400'
           )}>
             {notification.message}
           </p>
 
           <div className="flex items-center gap-2 mt-1.5">
-            <span className="text-[0.68rem] text-slate-500">
+            <span className="text-[0.68rem] text-primary-500">
               {timeAgo}
             </span>
             {notification.action_url && (
@@ -224,7 +224,7 @@ export function NotificationCenter() {
         <Button
           variant="ghost"
           size="icon"
-          className="relative text-slate-400 hover:text-slate-100 h-9 w-9"
+          className="relative text-primary-400 hover:text-primary-100 h-9 w-9"
         >
           <Bell className="w-4.5 h-4.5" />
           {unreadCount > 0 && (
@@ -237,13 +237,13 @@ export function NotificationCenter() {
 
       <DropdownMenuContent
         align="end"
-        className="w-[360px] sm:w-[400px] p-0 bg-slate-900 border-slate-800 shadow-2xl"
+        className="w-[360px] sm:w-[400px] p-0 bg-primary-800 border-primary-600 shadow-2xl"
         sideOffset={8}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-800">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-primary-600">
           <div className="flex items-center gap-2">
-            <h3 className="text-[0.9rem] font-semibold text-slate-100">Notifications</h3>
+            <h3 className="text-[0.9rem] font-semibold text-primary-50">Notifications</h3>
             {unreadCount > 0 && (
               <span className="px-1.5 py-0.5 text-[0.68rem] font-medium bg-quotla-orange/20 text-quotla-orange rounded">
                 {unreadCount} new

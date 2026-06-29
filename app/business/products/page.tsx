@@ -482,9 +482,9 @@ function ProductsContent() {
       purchase: { color: 'bg-emerald-500/20 text-emerald-400', icon: ArrowDown, label: 'Purchase' },
       sale: { color: 'bg-rose-500/20 text-rose-400', icon: ArrowUp, label: 'Sale' },
       adjustment: { color: 'bg-amber-500/20 text-amber-400', icon: RefreshCw, label: 'Adjustment' },
-      return: { color: 'bg-blue-500/20 text-blue-400', icon: Undo, label: 'Return' },
+      return: { color: 'bg-quotla-orange/20 text-quotla-orange', icon: Undo, label: 'Return' },
       damage: { color: 'bg-red-500/20 text-red-400', icon: AlertCircle, label: 'Damage' },
-      transfer: { color: 'bg-violet-500/20 text-violet-400', icon: ArrowLeftRight, label: 'Transfer' },
+      transfer: { color: 'bg-quotla-orange/20 text-quotla-orange', icon: ArrowLeftRight, label: 'Transfer' },
     };
     return types[type] || types['adjustment'];
   };
@@ -967,7 +967,7 @@ function ProductsContent() {
           {/* Stock Movement Trend Chart */}
           <div className="h-[200px] mt-2">
             <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={monthlyStockData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+              <ComposedChart data={monthlyStockData} margin={{ top: 5, right: 5, left: -30, bottom: 0 }}>
                 <XAxis
                   dataKey="month"
                   axisLine={false}

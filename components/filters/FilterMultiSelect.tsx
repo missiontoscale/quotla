@@ -93,7 +93,7 @@ export function FilterMultiSelect({
           <span className="truncate flex-1 text-left">{displayText}</span>
           <div className="flex items-center gap-1 ml-2 shrink-0">
             {selectedOptions.length > 0 && (
-              <span className="bg-cyan-500/20 text-cyan-400 text-xs px-1.5 py-0.5 rounded">
+              <span className="bg-quotla-orange/20 text-quotla-orange text-xs px-1.5 py-0.5 rounded">
                 {selectedOptions.length}
               </span>
             )}
@@ -126,7 +126,7 @@ export function FilterMultiSelect({
                     >
                       <Checkbox
                         checked={isSelected}
-                        className="border-primary-600 data-[state=checked]:bg-cyan-500 data-[state=checked]:border-cyan-500"
+                        className="border-primary-600 data-[state=checked]:bg-quotla-orange data-[state=checked]:border-quotla-orange"
                       />
                       <span className="truncate">{option.label}</span>
                     </CommandItem>

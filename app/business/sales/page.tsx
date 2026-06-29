@@ -1078,7 +1078,7 @@ function SalesContent() {
           {/* 6-Month Trend Chart */}
           <div className="h-[200px] mt-2">
             <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={monthlySalesData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+              <ComposedChart data={monthlySalesData} margin={{ top: 5, right: 5, left: -30, bottom: 0 }}>
                 <defs>
                   <linearGradient id="salesRevenueGradient" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#445642" stopOpacity={0.5}/>

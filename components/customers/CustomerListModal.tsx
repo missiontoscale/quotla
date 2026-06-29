@@ -99,7 +99,7 @@ export function CustomerListModal({
             </DialogTitle>
             <Button
               onClick={onAddCustomer}
-              className="bg-cyan-500 hover:bg-cyan-600 text-white"
+              className="bg-quotla-orange hover:bg-secondary-500 text-white"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Customer

@@ -25,9 +25,9 @@ const statusConfig = {
   },
   sent: {
     icon: Send,
-    color: 'text-blue-400',
-    accent: 'border-l-blue-400/50',
-    amount: 'text-blue-300',
+    color: 'text-quotla-orange',
+    accent: 'border-l-quotla-orange/50',
+    amount: 'text-quotla-orange',
   },
   paid: {
     icon: CheckCircle,

@@ -170,11 +170,11 @@ export function ActivityFeed({ limit = 8, showViewMore = false, onViewMore }: Ac
         return <DollarSign className="w-4 h-4 text-emerald-400" />
       case 'invoice_created':
       case 'invoice_sent':
-        return <FileText className="w-4 h-4 text-blue-400" />
+        return <FileText className="w-4 h-4 text-quotla-orange" />
       case 'invoice_overdue':
         return <AlertCircle className="w-4 h-4 text-rose-400" />
       case 'customer_added':
-        return <Users className="w-4 h-4 text-cyan-400" />
+        return <Users className="w-4 h-4 text-quotla-orange" />
       case 'low_stock':
         return <Package className="w-4 h-4 text-amber-400" />
       default:
@@ -188,11 +188,11 @@ export function ActivityFeed({ limit = 8, showViewMore = false, onViewMore }: Ac
         return 'bg-emerald-500/10 border-emerald-500/20'
       case 'invoice_created':
       case 'invoice_sent':
-        return 'bg-blue-500/10 border-blue-500/20'
+        return 'bg-quotla-orange/10 border-quotla-orange/20'
       case 'invoice_overdue':
         return 'bg-rose-500/10 border-rose-500/20'
       case 'customer_added':
-        return 'bg-cyan-500/10 border-cyan-500/20'
+        return 'bg-quotla-orange/10 border-quotla-orange/20'
       case 'low_stock':
         return 'bg-amber-500/10 border-amber-500/20'
       default:

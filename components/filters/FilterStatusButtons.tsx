@@ -13,11 +13,10 @@ interface FilterStatusButtonsProps {
 
 const colorClasses: Record<string, string> = {
   slate: 'bg-primary-500/20 text-primary-200',
-  blue: 'bg-blue-500/20 text-blue-400',
+  blue: 'bg-quotla-orange/20 text-quotla-orange',
   emerald: 'bg-emerald-500/20 text-emerald-400',
   amber: 'bg-amber-500/20 text-amber-400',
   rose: 'bg-rose-500/20 text-rose-400',
-  cyan: 'bg-cyan-500/20 text-cyan-400',
 }
 
 export function FilterStatusButtons({
@@ -35,7 +34,7 @@ export function FilterStatusButtons({
     <div className="flex gap-1 bg-primary-700/50 p-1 rounded-lg overflow-x-auto scrollbar-hide">
       {allOptions.map((option) => {
         const isActive = value === option.value
-        const activeColor = option.color ? colorClasses[option.color] : colorClasses.cyan
+        const activeColor = option.color ? colorClasses[option.color] : colorClasses.blue
 
         return (
           <button

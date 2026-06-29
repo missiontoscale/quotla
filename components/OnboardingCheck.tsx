@@ -71,7 +71,7 @@ export default function OnboardingCheck({ children }: { children: React.ReactNod
   // Show loading state while checking
   if (loading || checking) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-slate-950">
+      <div className="flex items-center justify-center min-h-screen bg-quotla-dark">
         <div className="relative">
           <div className="animate-spin rounded-full h-16 w-16 border-4 border-orange-500 border-t-transparent"></div>
           <div className="absolute inset-0 animate-ping rounded-full h-16 w-16 border-2 border-orange-300 opacity-20"></div>

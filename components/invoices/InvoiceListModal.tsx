@@ -152,7 +152,7 @@ export function InvoiceListModal({
       render: (value: string) => {
         const dotColors: Record<string, string> = {
           draft: 'bg-primary-400',
-          sent: 'bg-blue-400',
+          sent: 'bg-quotla-orange',
           paid: 'bg-emerald-400',
           overdue: 'bg-rose-400',
           cancelled: 'bg-primary-500',
@@ -278,7 +278,7 @@ export function InvoiceListModal({
         <div className="flex flex-wrap items-center gap-3 mt-3 px-1">
           {[
             { label: 'Draft', color: 'bg-primary-400' },
-            { label: 'Sent', color: 'bg-blue-400' },
+            { label: 'Sent', color: 'bg-quotla-orange' },
             { label: 'Paid', color: 'bg-emerald-400' },
             { label: 'Overdue', color: 'bg-rose-400' },
             { label: 'Cancelled', color: 'bg-primary-500' },

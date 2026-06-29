@@ -157,13 +157,13 @@ export function FilterDateRange({
                 row: 'flex w-full mt-2',
                 cell: 'h-9 w-9 text-center text-sm p-0 relative focus-within:relative focus-within:z-20',
                 day: 'h-9 w-9 p-0 font-normal text-primary-50 hover:bg-primary-600 rounded-md min-h-[44px] sm:min-h-0',
-                day_selected: 'bg-cyan-500 text-white hover:bg-cyan-600',
+                day_selected: 'bg-quotla-orange text-white hover:bg-secondary-500',
                 day_today: 'bg-primary-600 text-primary-50',
                 day_outside: 'text-primary-500',
                 day_disabled: 'text-primary-500 opacity-50',
-                day_range_middle: 'bg-cyan-500/20 text-cyan-100',
-                day_range_start: 'bg-cyan-500 text-white rounded-l-md',
-                day_range_end: 'bg-cyan-500 text-white rounded-r-md',
+                day_range_middle: 'bg-quotla-orange/20 text-quotla-orange',
+                day_range_start: 'bg-quotla-orange text-white rounded-l-md',
+                day_range_end: 'bg-quotla-orange text-white rounded-r-md',
               }}
             />
           </div>

@@ -31,18 +31,18 @@ function FormSection({
 }: FormSectionProps) {
   const headerContent = (
     <div className="flex items-center gap-2">
-      {Icon && <Icon className="h-4 w-4 text-slate-400" />}
+      {Icon && <Icon className="h-4 w-4 text-primary-400" />}
       <div className="flex-1">
-        <h3 className="text-sm font-medium text-slate-200">{title}</h3>
+        <h3 className="text-sm font-medium text-primary-200">{title}</h3>
         {description && (
-          <p className="text-xs text-slate-400 mt-0.5">{description}</p>
+          <p className="text-xs text-primary-400 mt-0.5">{description}</p>
         )}
       </div>
     </div>
   );
 
   const sectionStyles = cn(
-    "bg-slate-800/50 border border-slate-700 rounded-lg p-4",
+    "bg-primary-700/50 border border-primary-600 rounded-lg p-4",
     className
   );
 
@@ -53,7 +53,7 @@ function FormSection({
           <CollapsibleTrigger className="w-full">
             <div className="flex items-center justify-between">
               {headerContent}
-              <ChevronDown className="h-4 w-4 text-slate-400 transition-transform duration-200 [[data-state=closed]_&]:-rotate-90" />
+              <ChevronDown className="h-4 w-4 text-primary-400 transition-transform duration-200 [[data-state=closed]_&]:-rotate-90" />
             </div>
           </CollapsibleTrigger>
           <CollapsibleContent>

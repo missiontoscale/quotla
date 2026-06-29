@@ -139,10 +139,10 @@ export function AdjustStockDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-slate-900 border-slate-800 text-slate-100 max-w-md">
+      <DialogContent className="bg-primary-800 border-primary-600 text-primary-50 max-w-md">
         <DialogHeader>
           <DialogTitle className="text-lg flex items-center gap-2">
-            <Package className="w-5 h-5 text-cyan-400" />
+            <Package className="w-5 h-5 text-quotla-orange" />
             Adjust Stock
           </DialogTitle>
         </DialogHeader>
@@ -154,19 +154,19 @@ export function AdjustStockDialog({
             </div>
           )}
 
-          <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
-            <p className="text-sm text-slate-400">Product</p>
-            <p className="text-slate-100 font-medium">{product.name}</p>
-            <p className="text-xs text-slate-500 mt-0.5">SKU: {product.sku}</p>
+          <div className="bg-primary-700/50 rounded-lg p-3 border border-primary-600">
+            <p className="text-sm text-primary-400">Product</p>
+            <p className="text-primary-50 font-medium">{product.name}</p>
+            <p className="text-xs text-primary-500 mt-0.5">SKU: {product.sku}</p>
           </div>
 
-          <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
-            <p className="text-sm text-slate-400">Current Stock</p>
-            <p className="text-2xl font-bold text-slate-100">{product.stock} <span className="text-sm font-normal text-slate-400">units</span></p>
+          <div className="bg-primary-700/50 rounded-lg p-3 border border-primary-600">
+            <p className="text-sm text-primary-400">Current Stock</p>
+            <p className="text-2xl font-bold text-primary-50">{product.stock} <span className="text-sm font-normal text-primary-400">units</span></p>
           </div>
 
           <div className="space-y-2">
-            <Label className="text-xs text-slate-400">Adjustment Type</Label>
+            <Label className="text-xs text-primary-400">Adjustment Type</Label>
             <div className="grid grid-cols-3 gap-2">
               <Button
                 type="button"
@@ -174,7 +174,7 @@ export function AdjustStockDialog({
                 onClick={() => setAdjustmentType('add')}
                 className={adjustmentType === 'add'
                   ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                  : 'border-slate-700 text-slate-300 hover:bg-slate-800'
+                  : 'border-primary-600 text-primary-300 hover:bg-primary-700'
                 }
                 size="sm"
               >
@@ -187,7 +187,7 @@ export function AdjustStockDialog({
                 onClick={() => setAdjustmentType('remove')}
                 className={adjustmentType === 'remove'
                   ? 'bg-rose-600 hover:bg-rose-700 text-white'
-                  : 'border-slate-700 text-slate-300 hover:bg-slate-800'
+                  : 'border-primary-600 text-primary-300 hover:bg-primary-700'
                 }
                 size="sm"
               >
@@ -199,8 +199,8 @@ export function AdjustStockDialog({
                 variant={adjustmentType === 'set' ? 'default' : 'outline'}
                 onClick={() => setAdjustmentType('set')}
                 className={adjustmentType === 'set'
-                  ? 'bg-cyan-600 hover:bg-cyan-700 text-white'
-                  : 'border-slate-700 text-slate-300 hover:bg-slate-800'
+                  ? 'bg-quotla-orange hover:bg-secondary-500 text-white'
+                  : 'border-primary-600 text-primary-300 hover:bg-primary-700'
                 }
                 size="sm"
               >
@@ -210,7 +210,7 @@ export function AdjustStockDialog({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="quantity" className="text-xs text-slate-400">
+            <Label htmlFor="quantity" className="text-xs text-primary-400">
               {adjustmentType === 'set' ? 'New Quantity' : 'Quantity'}
             </Label>
             <Input
@@ -222,26 +222,26 @@ export function AdjustStockDialog({
                 const raw = e.target.value
                 setQuantity(raw === '' ? 1 : Math.max(0, parseInt(raw) || 1))
               }}
-              className="bg-slate-800 border-slate-700 h-10 text-lg font-medium"
+              className="bg-primary-700 border-primary-600 h-10 text-lg font-medium"
               placeholder="1"
             />
           </div>
 
           {quantity > 0 && (
-            <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
-              <p className="text-sm text-slate-400">New Stock Level</p>
-              <p className="text-2xl font-bold text-cyan-400">{getNewQuantity()} <span className="text-sm font-normal text-slate-400">units</span></p>
+            <div className="bg-primary-700/50 rounded-lg p-3 border border-primary-600">
+              <p className="text-sm text-primary-400">New Stock Level</p>
+              <p className="text-2xl font-bold text-quotla-orange">{getNewQuantity()} <span className="text-sm font-normal text-primary-400">units</span></p>
             </div>
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="notes" className="text-xs text-slate-400">Notes (optional)</Label>
+            <Label htmlFor="notes" className="text-xs text-primary-400">Notes (optional)</Label>
             <Textarea
               id="notes"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Reason for adjustment..."
-              className="bg-slate-800 border-slate-700 min-h-16 text-sm"
+              className="bg-primary-700 border-primary-600 min-h-16 text-sm"
               rows={2}
             />
           </div>
@@ -251,14 +251,14 @@ export function AdjustStockDialog({
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              className="border-slate-700 text-slate-300 hover:bg-slate-800 text-sm h-9"
+              className="border-primary-600 text-primary-300 hover:bg-primary-700 text-sm h-9"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={loading || quantity === 0}
-              className="bg-cyan-500 hover:bg-cyan-600 text-white text-sm h-9"
+              className="bg-quotla-orange hover:bg-secondary-500 text-white text-sm h-9"
             >
               {loading ? 'Updating...' : 'Update Stock'}
             </Button>

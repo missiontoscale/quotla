@@ -65,7 +65,7 @@ export default function DownloadDropdown({ type, data, profile }: DownloadDropdo
       <button
         onClick={() => setIsOpen(!isOpen)}
         disabled={exporting !== null}
-        className="inline-flex items-center justify-center gap-2 px-4 py-2 min-h-[44px] md:min-h-0 md:py-2 text-sm font-medium text-cyan-400 hover:text-cyan-300 hover:bg-primary-700 rounded-md transition-colors disabled:opacity-50"
+        className="inline-flex items-center justify-center gap-2 px-4 py-2 min-h-[44px] md:min-h-0 md:py-2 text-sm font-medium text-quotla-orange hover:text-secondary-400 hover:bg-primary-700 rounded-md transition-colors disabled:opacity-50"
       >
         <Download className="w-4 h-4" />
         {exporting ? 'Exporting...' : 'Download'}
