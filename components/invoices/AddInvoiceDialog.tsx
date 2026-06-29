@@ -849,20 +849,20 @@ export function AddInvoiceDialog({
                     type="button"
                     variant="outline"
                     onClick={() => setIsEditing(true)}
-                    className="border-quotla-orange text-quotla-orange hover:bg-quotla-orange/10 h-9 gap-1.5"
+                    className="border-quotla-orange text-quotla-orange hover:bg-quotla-orange/10 h-9 w-9 p-0"
+                    title="Edit"
                   >
                     <Edit className="h-4 w-4" />
-                    Edit
                   </Button>
                 )}
                 <Button
                   type="button"
                   onClick={() => handleExport('pdf')}
                   disabled={exporting !== null}
-                  className="bg-quotla-orange hover:bg-secondary-500 text-white text-sm h-9 gap-1.5"
+                  className="bg-quotla-orange hover:bg-secondary-500 text-white text-sm h-9 w-9 p-0"
+                  title="Download PDF"
                 >
                   <Download className="h-4 w-4" />
-                  {exporting === 'pdf' ? 'Downloading...' : 'Download PDF'}
                 </Button>
                 <button
                   type="button"
