@@ -1,0 +1,56 @@
+# QUOTLA — Website Sitemap
+
+## Public Pages (No Auth Required)
+/                  → Landing page (hero, features, FAQ)
+/about             → About Quotla
+/pricing           → Pricing plans (Free, Starter, Professional, Enterprise)
+/for-business      → For business page
+/for-contractors   → For contractors page
+/login             → Login page
+/signup            → Signup page
+/legal             → Legal / privacy policy
+
+## Authenticated Pages
+/onboarding                → Onboarding wizard (new user setup)
+/business/dashboard        → Main business dashboard (home)
+/business/sales            → Sales & invoices management
+/business/products         → Products & inventory management
+/business/expenses         → Expenses & vendors management
+/business/settings         → Business settings
+/business/api-docs         → API documentation & schema reference
+
+## API Routes
+/api/account/delete         → Account deletion
+/api/currency/convert       → Currency conversion
+/api/geolocation            → Geolocation
+/api/inventory/low-stock-alerts → Low stock alerts
+/api/profitability          → Profitability analysis
+/api/project-costs          → Project cost tracking
+/api/storage/setup          → Storage setup
+/api/time-tracking          → Time tracking
+/api/time-tracking/[id]     → Individual time entry
+
+## Auth Routes
+/auth/callback              → Supabase auth callback
+
+## Business Navigation (Sidebar / BottomNav)
+Dashboard  → /business/dashboard
+Sales      → /business/sales
+Inventory  → /business/products
+Expenses   → /business/expenses
+Settings   → /business/settings
+
+## Data Flow
+Next.js Page → API Route → Supabase (PostgreSQL)
+              ↓
+         Client-side state (React useState/useEffect)
+              ↓
+         Recharts (charts), shadcn/ui (components), Tailwind (styling)
+
+## Page Count
+Public pages:         8
+Authenticated pages:  7
+API routes:           9
+Auth callbacks:       1
+Total page URLs:     15
+Total routes:        25

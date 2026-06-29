@@ -12,4 +12,4 @@ Disallow: /reset-password
 Disallow: /verify-email
 
 # Sitemap
-Sitemap: https://quotla.app/sitemap.xml
+Sitemap: https://quotla.netlify.app/sitemap.xml

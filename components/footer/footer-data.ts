@@ -25,10 +25,6 @@ export const FOOTER_SECTIONS: FooterSection[] = [
         href: '/for-contractors',
       },
       {
-        label: 'For Small Business',
-        href: '/solutions',
-      },
-      {
         label: 'Pricing',
         href: ROUTES.PRICING,
       },

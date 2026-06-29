@@ -23,7 +23,6 @@ export const ROUTES = {
   // Protected pages
   DASHBOARD: '/business/dashboard',
   SETTINGS: '/business/settings',
-  ADMIN: '/admin',
   ADVISOR: '/advisor',
 
   // Quotes

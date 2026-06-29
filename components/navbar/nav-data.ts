@@ -43,16 +43,7 @@ export const GUEST_NAV_LINKS: NavLink[] = [
         href: '/for-contractors',
         description: 'Built for freelancers and independent pros'
       },
-      {
-        label: 'For Small Business',
-        href: '/solutions',
-        description: 'Scale your operations efficiently'
-      },
-      {
-        label: 'For Agencies',
-        href: '/solutions',
-        description: 'Manage multiple clients seamlessly'
-      },
+
     ]
   },
   {
