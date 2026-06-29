@@ -99,50 +99,6 @@ export function sanitizeHtml(html: string): string {
     .replace(/javascript:/gi, '')
 }
 
-// Enhanced rate limiting for AI endpoints (expensive operations)
-export const AI_RATE_LIMITS = {
-  // AI generation endpoints - 10 requests per hour per user
-  ai_generate: { maxRequests: 10, windowMinutes: 60 },
-  ai_quote: { maxRequests: 20, windowMinutes: 60 },
-  ai_invoice: { maxRequests: 20, windowMinutes: 60 },
-  ai_transcribe: { maxRequests: 5, windowMinutes: 60 },
-
-  // Other sensitive endpoints
-  account_delete: { maxRequests: 3, windowMinutes: 1440 }, // 3 per day
-  blog_comment: { maxRequests: 5, windowMinutes: 60 },
-  newsletter_subscribe: { maxRequests: 3, windowMinutes: 60 },
-} as const
-
-export async function enforceRateLimit(
-  identifier: string,
-  action: keyof typeof AI_RATE_LIMITS
-): Promise<RateLimitResult> {
-  const config = AI_RATE_LIMITS[action]
-  return checkRateLimit(identifier, action, config.maxRequests, config.windowMinutes)
-}
-
-// Helper to create rate limit response
-export function createRateLimitResponse(result: RateLimitResult) {
-  return new Response(
-    JSON.stringify({
-      error: 'Rate limit exceeded',
-      message: `Too many requests. Please try again after ${result.resetAt.toISOString()}`,
-      resetAt: result.resetAt.toISOString(),
-    }),
-    {
-      status: 429,
-      headers: {
-        'Content-Type': 'application/json',
-        'X-RateLimit-Remaining': result.remaining.toString(),
-        'X-RateLimit-Reset': result.resetAt.getTime().toString(),
-        'Retry-After': Math.ceil(
-          (result.resetAt.getTime() - Date.now()) / 1000
-        ).toString(),
-      },
-    }
-  )
-}
-
 // Validate request authentication
 export async function validateAuth(request: Request): Promise<{
   authenticated: boolean

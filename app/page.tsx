@@ -1,180 +1,19 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase/client'
 import Footer from '@/components/Footer'
-import LoadingSpinner from '@/components/LoadingSpinner'
 import Navbar from '@/components/Navbar'
 import HeroCarousel from '@/components/home/HeroCarousel'
 import PricingSection from '@/components/home/PricingSection'
-import { detectUserCurrency, formatPrice } from '@/lib/utils/currency'
 import BusinessOwnerFeatures from '@/components/home/BusinessOwnerFeatures'
 
 export default function HomePage() {
-  const [checkingAuth, setCheckingAuth] = useState(true)
   const [openFaq, setOpenFaq] = useState<number | null>(0)
-  const [chatMessages, setChatMessages] = useState<Array<{role: string, content: string}>>([])
-  const [chatInput, setChatInput] = useState('')
-  const [chatLoading, setChatLoading] = useState(false)
-  const [promptCount, setPromptCount] = useState(0)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [placeholderText, setPlaceholderText] = useState('')
-  const [placeholderPhraseIndex, setPlaceholderPhraseIndex] = useState(0)
-  const [isPlaceholderDeleting, setIsPlaceholderDeleting] = useState(false)
-  const [currencyCode, setCurrencyCode] = useState('NGN')
-  const [isLoadingCurrency, setIsLoadingCurrency] = useState(true)
-
-  const placeholderPhrases = [
-    'Create a professional quote...',
-    'Generate an invoice...',
-    'Help me price my services...',
-    'Ask about quotes and invoices...',
-    'How can I help your business today?...',
-    'Draft a quote for a new client...',
-    'Calculate project pricing...',
-    'What are best practices for invoicing?...',
-    'Help me with my freelance business...',
-    'Create a detailed estimate...',
-    'Price my consulting services...',
-    'Generate a client proposal...'
-  ]
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      setIsAuthenticated(!!session)
-      setCheckingAuth(false)
-    }
-    checkAuth()
-  }, [])
-
-  // Detect user's location and set currency with live rates
-  useEffect(() => {
-    const loadCurrency = async () => {
-      setIsLoadingCurrency(true)
-      const detected = await detectUserCurrency()
-      setCurrencyCode(detected)
-      setIsLoadingCurrency(false)
-    }
-
-    loadCurrency()
-  }, [])
-
-  // Typing animation for chat input placeholder
-  useEffect(() => {
-    // Only show typing animation when chat is empty
-    if (chatMessages.length > 0) {
-      setPlaceholderText('')
-      return
-    }
-
-    const currentPhrase = placeholderPhrases[placeholderPhraseIndex]
-    const typingSpeed = isPlaceholderDeleting ? 30 : 80
-    const pauseBeforeDelete = 2000
-
-    const timeout = setTimeout(() => {
-      if (!isPlaceholderDeleting && placeholderText === currentPhrase) {
-        setTimeout(() => setIsPlaceholderDeleting(true), pauseBeforeDelete)
-      } else if (isPlaceholderDeleting && placeholderText === '') {
-        setIsPlaceholderDeleting(false)
-        setPlaceholderPhraseIndex((prev) => (prev + 1) % placeholderPhrases.length)
-      } else if (isPlaceholderDeleting) {
-        setPlaceholderText(currentPhrase.substring(0, placeholderText.length - 1))
-      } else {
-        setPlaceholderText(currentPhrase.substring(0, placeholderText.length + 1))
-      }
-    }, typingSpeed)
-
-    return () => clearTimeout(timeout)
-  }, [placeholderText, isPlaceholderDeleting, placeholderPhraseIndex, chatMessages.length, placeholderPhrases])
-
-  const handleChatSend = async () => {
-    if (!chatInput.trim() || chatLoading) return
-
-    // Limit to 2 prompts for non-authenticated users
-    if (!isAuthenticated && promptCount >= 2) {
-      const updatedMessages = [...chatMessages,
-        { role: 'user', content: chatInput },
-        { role: 'assistant', content: 'You\'ve reached the free limit of 2 questions. Create a free account to continue chatting with unlimited access to Quotla AI!' }
-      ]
-      setChatMessages(updatedMessages)
-      setChatInput('')
-
-      // Save to localStorage before redirecting
-      localStorage.setItem('quotla_chat_history', JSON.stringify(updatedMessages))
-      localStorage.setItem('quotla_redirect_after_auth', 'true')
-      return
-    }
-
-    const userMessage = chatInput
-    setChatInput('')
-    const newUserMessage = { role: 'user', content: userMessage }
-    setChatMessages(prev => [...prev, newUserMessage])
-    setChatLoading(true)
-    setPromptCount(prev => prev + 1)
-
-    try {
-      // Get last 5 messages for context (10 total with user/assistant pairs)
-      const recentMessages = chatMessages.slice(-10).map(m => ({
-        role: m.role,
-        content: m.content
-      }))
-
-      const response = await fetch('/api/ai/generate', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          prompt: userMessage,
-          history: recentMessages
-        }),
-      })
-
-      if (!response.ok) {
-        // Try to parse JSON error, but handle HTML responses gracefully
-        let errorMessage = 'Failed to generate response'
-        try {
-          const data = await response.json()
-          errorMessage = data.error || errorMessage
-        } catch (e) {
-          // Response wasn't JSON (likely an HTML error page)
-          errorMessage = `Server error (${response.status})`
-        }
-        throw new Error(errorMessage)
-      }
-
-      const data = await response.json()
-
-      const updatedMessages = [...chatMessages, newUserMessage, { role: 'assistant', content: data.description }]
-      setChatMessages(updatedMessages)
-
-      // Save to localStorage for non-authenticated users
-      if (!isAuthenticated) {
-        localStorage.setItem('quotla_chat_history', JSON.stringify(updatedMessages))
-      }
-    } catch (error) {
-      const errorText = error instanceof Error ? error.message : 'Sorry, I encountered an error. Please try again.'
-      const errorMessage = { role: 'assistant', content: errorText }
-      const updatedMessages = [...chatMessages, newUserMessage, errorMessage]
-      setChatMessages(updatedMessages)
-
-      // Save to localStorage for non-authenticated users
-      if (!isAuthenticated) {
-        localStorage.setItem('quotla_chat_history', JSON.stringify(updatedMessages))
-      }
-    } finally {
-      setChatLoading(false)
-    }
-  }
-
-  if (checkingAuth) {
-    return <LoadingSpinner />
-  }
 
   const features = [
     {
-      title: "AI Quote Generation",
+      title: "Quote Generation",
       description: "Create professional quotes with line items, pricing, and terms in seconds using natural language.",
       icon: (
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -284,7 +123,7 @@ export default function HomePage() {
       {/* Main Content */}
       <main id="main-content" className="overflow-hidden">
         {/* Hero Carousel Section */}
-        <HeroCarousel typingText="" />
+        <HeroCarousel />
 
 
         {/* Story Section 1: The Problem - Simplified with dark background */}
@@ -600,16 +439,12 @@ export default function HomePage() {
             <div className="space-y-4">
               {[
                 {
-                  question: "How does Quotla's AI work?",
-                  answer: "Quotla Agent uses advanced AI to understand your business needs in plain language. Simply describe what you need - like 'Create a quote for website design with 3 pages and hosting' - and our AI generates a professional, itemized quote in seconds."
-                },
-                {
                   question: "Do I need technical skills to use Quotla?",
                   answer: "Not at all! Quotla is designed to be intuitive. If you can describe your services in everyday language, you can use Quotla. No templates to learn, no complicated forms to fill out."
                 },
                 {
                   question: "Can I customize the quotes and invoices?",
-                  answer: "Absolutely! While our AI creates quotes instantly, you have complete control to edit, customize, and brand every document. Add your logo, adjust pricing, modify terms - everything is fully editable."
+                  answer: "Absolutely! You have complete control to edit, customize, and brand every document. Add your logo, adjust pricing, modify terms - everything is fully editable."
                 },
                 {
                   question: "What currencies does Quotla support?",
@@ -621,7 +456,7 @@ export default function HomePage() {
                 },
                 {
                   question: "Can I try Quotla for free?",
-                  answer: "Yes! Our free plan includes 2 AI questions, basic quote creation, and PDF export. No credit card required. Upgrade anytime for unlimited access to all features."
+                  answer: "Yes! Our free plan includes basic quote and invoice creation, and PDF export. No credit card required. Upgrade anytime for unlimited access to all features."
                 }
               ].map((faq, idx) => (
                 <div key={idx} className="group bg-quotla-light/5 backdrop-blur-sm rounded-2xl border-2 border-quotla-light/10 overflow-hidden transition-all duration-500 hover:border-quotla-orange hover:bg-quotla-light/10">

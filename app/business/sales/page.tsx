@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card';
 import { DataTable } from '@/components/dashboard/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Plus, Users, DollarSign, Clock, RefreshCw, ChevronRight, Receipt, Upload, TrendingUp, Target, Download } from 'lucide-react';
+import { Plus, Users, DollarSign, Clock, RefreshCw, ChevronRight, Receipt, TrendingUp, Target, Download } from 'lucide-react';
 import { format, subMonths, startOfMonth, endOfMonth, eachMonthOfInterval } from 'date-fns';
 import {
   getYoYDateRange,
@@ -34,7 +34,7 @@ import { CustomerPreviewCard } from '@/components/customers/CustomerPreviewCard'
 import { CustomerListModal } from '@/components/customers/CustomerListModal';
 import { AddInvoiceDialog } from '@/components/invoices/AddInvoiceDialog';
 import { InvoiceListModal } from '@/components/invoices/InvoiceListModal';
-import { BankImportModal } from '@/components/bank-import/BankImportModal';
+
 import { DataTableSkeleton } from '@/components/dashboard/DataTableSkeleton';
 import { MetricsCardSkeleton, SmallMetricCardSkeleton } from '@/components/dashboard/MetricsCardSkeleton';
 import { supabase } from '@/lib/supabase/client';
@@ -114,7 +114,7 @@ function SalesContent() {
   const [invoiceListModalOpen, setInvoiceListModalOpen] = useState(false);
 
   // Bank import modal state
-  const [bankImportModalOpen, setBankImportModalOpen] = useState(false);
+
 
   // Data state
   const [customers, setCustomers] = useState<CustomerRow[]>([]);
@@ -739,14 +739,6 @@ function SalesContent() {
         {/* Primary Actions */}
         <div className="flex items-center gap-2">
           <Button
-            variant="outline"
-            onClick={() => setBankImportModalOpen(true)}
-            className="border-quotla-green text-quotla-green hover:bg-quotla-green/10 h-9 px-3 sm:px-4"
-          >
-            <Upload className="w-4 h-4 sm:mr-2" />
-            <span className="hidden sm:inline">Import Statement</span>
-          </Button>
-          <Button
             onClick={() => setAddInvoiceOpen(true)}
             className="bg-quotla-orange hover:bg-secondary-400 text-white h-9 px-4"
           >
@@ -826,12 +818,6 @@ function SalesContent() {
         onDelete={handleDeleteInvoice as any}
         onAddInvoice={handleAddInvoiceFromModal}
       />
-      <BankImportModal
-        open={bankImportModalOpen}
-        onOpenChange={setBankImportModalOpen}
-        onSuccess={fetchInvoices}
-      />
-
       {/* Enhanced Sales Metrics - Row 1: Sales Performance Overview */}
       {loading ? (
         <div className="mb-4">

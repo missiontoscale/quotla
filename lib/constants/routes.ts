@@ -14,7 +14,6 @@ export const ROUTES = {
   // Public pages
   HOME: '/',
   ABOUT: '/about',
-  BLOG: '/blog',
   PRICING: '/pricing',
 
   // Auth pages
@@ -64,26 +63,6 @@ export const ROUTES = {
 } as const
 
 export const API_ROUTES = {
-  // AI endpoints
-  AI: {
-    GENERATE: '/api/ai/generate',
-    GENERATE_QUOTE: '/api/ai/generate-quote',
-    TRANSCRIBE: '/api/ai/transcribe',
-  },
-
-  // Export endpoints
-  EXPORT: {
-    PDF: '/api/export/pdf',
-    PNG: '/api/export/png',
-    DOCX: '/api/export/docx',
-  },
-
-  // Blog endpoints
-  BLOG: {
-    MARKDOWN: '/api/blog/markdown',
-    POSTS: '/api/blog/posts',
-  },
-
   // Auth endpoints (if needed)
   AUTH: {
     LOGIN: '/api/auth/login',

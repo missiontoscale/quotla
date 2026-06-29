@@ -46,10 +46,7 @@ export async function POST(request: NextRequest) {
     // 3. Delete customers
     await supabaseAdmin.from('customers').delete().eq('user_id', userId)
 
-    // 4. Delete blog comments
-    await supabaseAdmin.from('blog_comments').delete().eq('user_id', userId)
-
-    // 5. Delete profile
+    // 4. Delete profile
     await supabaseAdmin.from('profiles').delete().eq('id', userId)
 
     // 6. Delete auth user

@@ -7,7 +7,6 @@
  * import { useChatHistory, useTypingAnimation, useAuthRequired } from '@/hooks'
  */
 
-export { useChatHistory, default as useChatHistoryDefault } from './useChatHistory'
 export { useTypingAnimation, default as useTypingAnimationDefault } from './useTypingAnimation'
 export { useAuthRequired, default as useAuthRequiredDefault } from './useAuthRequired'
 export { useGreeting, default as useGreetingDefault } from './useGreeting'

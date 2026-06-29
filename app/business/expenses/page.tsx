@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card';
 import { DataTable } from '@/components/dashboard/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Plus, Truck, Receipt, RefreshCw, Upload, BarChart3 } from 'lucide-react';
+import { Plus, Truck, Receipt, RefreshCw, BarChart3 } from 'lucide-react';
 import { AVITPFMetric, LargeAVITPFMetric, CompactAVITPFMetric } from '@/components/analytics';
 import { format, subMonths, startOfMonth, endOfMonth, eachMonthOfInterval } from 'date-fns';
 import { DateFilterProvider } from '@/contexts/DateFilterContext';
@@ -23,7 +23,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FilterSelect } from '@/components/filters';
 import { AddExpenseDialog } from '@/components/expenses/AddExpenseDialog';
 import { AddVendorDialog } from '@/components/expenses/AddVendorDialog';
-import { BankImportModal } from '@/components/bank-import/BankImportModal';
+
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDisplayCurrency } from '@/hooks/useUserCurrency';
@@ -100,7 +100,7 @@ function ExpensesContent() {
   const [vendorDialogMode, setVendorDialogMode] = useState<'create' | 'edit'>('create');
 
   // Bank import modal state
-  const [bankImportModalOpen, setBankImportModalOpen] = useState(false);
+
 
   // Data state
   const [expensesData, setExpensesData] = useState<ExpenseRow[]>([]);
@@ -446,14 +446,6 @@ function ExpensesContent() {
           {activeTab === 'expenses' ? (
             <>
               <Button
-                variant="outline"
-                onClick={() => setBankImportModalOpen(true)}
-                className="border-quotla-green text-quotla-green hover:bg-quotla-green/10 h-9 px-3 sm:px-4"
-              >
-                <Upload className="w-4 h-4 sm:mr-2" />
-                <span className="hidden sm:inline">Import Statement</span>
-              </Button>
-              <Button
                 onClick={() => setAddExpenseDialogOpen(true)}
                 className="bg-quotla-orange hover:bg-secondary-400 text-white h-9 px-4"
               >
@@ -523,12 +515,6 @@ function ExpensesContent() {
         vendorId={selectedVendorId}
         mode={vendorDialogMode}
       />
-      <BankImportModal
-        open={bankImportModalOpen}
-        onOpenChange={setBankImportModalOpen}
-        onSuccess={fetchExpenses}
-      />
-
       {/* Enhanced Expense Metrics */}
 
       {/* Row 1: Expense Overview Card (Full-width) */}

@@ -57,7 +57,7 @@ export function ActivityFeed({ limit = 8, showViewMore = false, onViewMore }: Ac
         .from('invoices')
         .select('id, invoice_number, status, total, created_at, updated_at, client_id, customers:client_id(full_name, company_name)')
         .eq('user_id', user.id)
-        .order('updated_at', { ascending: false })
+        .order('created_at', { ascending: false })
         .limit(10)
 
       if (invoices) {
@@ -91,6 +91,16 @@ export function ActivityFeed({ limit = 8, showViewMore = false, onViewMore }: Ac
               title: 'Invoice sent',
               description: `Invoice #${inv.invoice_number} to ${clientName}`,
               timestamp: inv.updated_at,
+              link: `/business/sales`,
+              amount: inv.total
+            })
+          } else if (inv.status === 'draft') {
+            activityList.push({
+              id: `inv-created-${inv.id}`,
+              type: 'invoice_created',
+              title: 'Invoice created',
+              description: `Invoice #${inv.invoice_number} for ${clientName}`,
+              timestamp: inv.created_at,
               link: `/business/sales`,
               amount: inv.total
             })
@@ -158,6 +168,7 @@ export function ActivityFeed({ limit = 8, showViewMore = false, onViewMore }: Ac
     switch (type) {
       case 'invoice_paid':
         return <DollarSign className="w-4 h-4 text-emerald-400" />
+      case 'invoice_created':
       case 'invoice_sent':
         return <FileText className="w-4 h-4 text-blue-400" />
       case 'invoice_overdue':
@@ -175,6 +186,7 @@ export function ActivityFeed({ limit = 8, showViewMore = false, onViewMore }: Ac
     switch (type) {
       case 'invoice_paid':
         return 'bg-emerald-500/10 border-emerald-500/20'
+      case 'invoice_created':
       case 'invoice_sent':
         return 'bg-blue-500/10 border-blue-500/20'
       case 'invoice_overdue':

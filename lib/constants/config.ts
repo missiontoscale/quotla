@@ -12,14 +12,6 @@
 export const APP_VERSION = '3.0.0' as const
 
 export const LIMITS = {
-  // Chat and AI limits
-  CHAT_HISTORY_LIMIT: 25,
-  CHAT_MESSAGE_CONTEXT: 10,
-  RECENT_MESSAGES_DISPLAY: 10,
-
-  // Free tier limits
-  FREE_PROMPTS: 2,
-
   // File upload limits
   MAX_FILE_SIZE: 2 * 1024 * 1024, // 2MB in bytes
   MAX_FILE_SIZE_LABEL: '2MB',
@@ -66,7 +58,6 @@ export const FILE_TYPES = {
 
 export const STORAGE_KEYS = {
   // localStorage keys
-  CHAT_HISTORY: 'quotla_chat_history',
   REDIRECT_AFTER_AUTH: 'quotla_redirect_after_auth',
   THEME: 'theme',
   USER_PREFERENCES: 'quotla_user_preferences',
@@ -111,13 +102,6 @@ export const STATUS_TYPES = {
     COMPLETED: 'completed',
     LOST: 'lost',
   },
-} as const
-
-// Voice recording settings
-export const VOICE_SETTINGS = {
-  MAX_RECORDING_DURATION: 60000, // 60 seconds in milliseconds
-  SAMPLE_RATE: 44100,
-  MIME_TYPE: 'audio/webm',
 } as const
 
 // Export formats

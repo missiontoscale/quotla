@@ -90,11 +90,6 @@ export const GUEST_NAV_LINKS: NavLink[] = [
     hasDropdown: true,
     dropdownItems: [
       {
-        label: 'Blog',
-        href: ROUTES.BLOG,
-        description: 'Tips, guides, and insights'
-      },
-      {
         label: 'About Us',
         href: ROUTES.ABOUT,
         description: 'Our story and mission'
@@ -161,11 +156,6 @@ export const AUTH_NAV_LINKS: NavLink[] = [
     authRequired: true,
     hasDropdown: true,
     dropdownItems: [
-      {
-        label: 'Blog',
-        href: ROUTES.BLOG,
-        description: 'Tips & best practices'
-      },
       {
         label: 'Community',
         href: ROUTES.COMMUNITY,

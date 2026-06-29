@@ -1,17 +1,10 @@
 export interface UsageStats {
-  aiQuotesUsed: number
   manualQuotesUsed: number
   manualInvoicesUsed: number
   period: string
 }
 
 export interface QuotaInfo {
-  aiQuotes: {
-    used: number
-    total: number
-    remaining: number
-    percentage: number
-  }
   quotes: {
     used: number
     total: number
@@ -34,7 +27,6 @@ export interface SubscriptionPlan {
   features: string[]
   cta: string
   limits: {
-    aiQuotes: number
     quotes: number
     invoices: number
   }
@@ -56,7 +48,6 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     priceUSD: 0,
     tier: 'free',
     features: [
-      '3 AI-generated quotes per month',
       '5 manual quotes',
       '3 manual invoices',
       'Basic templates',
@@ -64,7 +55,6 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     ],
     cta: 'Get Started',
     limits: {
-      aiQuotes: 3,
       quotes: 5,
       invoices: 3,
     },
@@ -81,7 +71,6 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     priceUSD: 1,
     tier: 'starter',
     features: [
-      '10 AI-generated quotes per month',
       '25 manual quotes',
       '15 manual invoices',
       'Basic templates',
@@ -90,7 +79,6 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     ],
     cta: 'Start for $1',
     limits: {
-      aiQuotes: 10,
       quotes: 25,
       invoices: 15,
     },
@@ -108,7 +96,6 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     tier: 'essentials',
     popular: true,
     features: [
-      '50 AI-generated quotes per month',
       'Unlimited manual quotes',
       'Unlimited invoices',
       'Premium templates',
@@ -119,7 +106,6 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     ],
     cta: 'Get Essentials',
     limits: {
-      aiQuotes: 50,
       quotes: Infinity,
       invoices: Infinity,
     },
@@ -136,7 +122,6 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     priceUSD: 19,
     tier: 'pro',
     features: [
-      'Unlimited AI-generated quotes',
       'Unlimited manual quotes',
       'Unlimited invoices',
       'All premium templates',
@@ -149,7 +134,6 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     ],
     cta: 'Go Pro',
     limits: {
-      aiQuotes: Infinity,
       quotes: Infinity,
       invoices: Infinity,
     },
@@ -191,27 +175,13 @@ export function getRemainingQuota(
   const plan = SUBSCRIPTION_PLANS.find((p) => p.id === planId)
   if (!plan) return null
 
-  const aiQuotesUsed = usageStats.aiQuotesUsed
   const quotesUsed = usageStats.manualQuotesUsed
   const invoicesUsed = usageStats.manualInvoicesUsed
 
-  const aiQuotesTotal = plan.limits.aiQuotes
   const quotesTotal = plan.limits.quotes
   const invoicesTotal = plan.limits.invoices
 
   return {
-    aiQuotes: {
-      used: aiQuotesUsed,
-      total: aiQuotesTotal,
-      remaining:
-        aiQuotesTotal === Infinity
-          ? Infinity
-          : Math.max(0, aiQuotesTotal - aiQuotesUsed),
-      percentage:
-        aiQuotesTotal === Infinity
-          ? 0
-          : (aiQuotesUsed / aiQuotesTotal) * 100,
-    },
     quotes: {
       used: quotesUsed,
       total: quotesTotal,

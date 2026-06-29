@@ -108,7 +108,7 @@ export default function InlineInventoryCreator({ isOpen, onClose, onItemCreated,
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4" aria-labelledby="modal-title" role="dialog" aria-modal="true">
       {/* Background overlay */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => { if (!loading) onClose() }}></div>
 
       {/* Modal panel */}
       <div className="relative w-full max-w-md max-h-[90vh] flex flex-col bg-slate-900 rounded-lg shadow-xl border border-slate-700">

@@ -100,24 +100,10 @@ export default function Footer() {
           })}
         </div>
 
-        {/* Bottom Section - Newsletter + Copyright */}
+        {/* Bottom Section - Copyright */}
         <div className="flex flex-col lg:flex-row justify-between items-center gap-6 pt-8 border-t border-quotla-light/10">
-          {/* Newsletter Signup */}
-          <div className="w-full lg:w-auto">
-            <div className="flex flex-col sm:flex-row gap-3 items-center">
-              <input
-                type="email"
-                placeholder="Enter your email for updates"
-                className="px-4 py-2.5 rounded-lg bg-quotla-light/5 border border-quotla-light/10 text-quotla-light placeholder:text-quotla-light/40 focus:outline-none focus:border-quotla-orange transition-colors w-full sm:w-64"
-              />
-              <button className="px-6 py-2.5 rounded-lg bg-gradient-to-r from-quotla-orange to-secondary-600 text-white font-semibold hover:from-secondary-600 hover:to-quotla-orange transition-all shadow-lg hover:scale-105 w-full sm:w-auto">
-                Subscribe
-              </button>
-            </div>
-          </div>
-
           {/* Copyright */}
-          <div className="text-center lg:text-right">
+          <div className="text-center lg:text-right w-full">
             <p className="text-sm text-quotla-light/50">
               &copy; {new Date().getFullYear()} Quotla. All rights reserved.
             </p>

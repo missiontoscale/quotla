@@ -59,10 +59,6 @@ export const FOOTER_SECTIONS: FooterSection[] = [
     title: 'Resources',
     links: [
       {
-        label: 'Blog',
-        href: ROUTES.BLOG,
-      },
-      {
         label: 'About Us',
         href: ROUTES.ABOUT,
       },

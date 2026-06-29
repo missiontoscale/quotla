@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
 interface HeroCarouselProps {
-  typingText: string
 }
 
 const carouselSlides = [
@@ -12,7 +11,7 @@ const carouselSlides = [
     id: 'freelancers',
     badge: 'FOR FREELANCERS & CONSULTANTS',
     badgeColor: 'bg-quotla-orange/15 border-quotla-orange/30',
-    title: 'Get paid faster with AI-powered quotes',
+    title: 'Get paid faster with smart quotes',
     subtitle: 'Focus on your expertise, not paperwork',
     description: 'Create professional quotes in minutes, track payments effortlessly, and spend more time doing what you love.',
     features: [
@@ -57,14 +56,14 @@ const carouselSlides = [
       { stat: 'Auto', text: 'conversion' }
     ],
     ctaPrimary: 'Try AI Free',
-    ctaSecondary: 'See AI in Action',
+    ctaSecondary: 'See How It Works',
     gradient: 'from-quotla-orange via-secondary-400 to-quotla-light',
     primaryBtnBg: 'bg-quotla-orange hover:bg-secondary-600',
     primaryBtnShadow: 'shadow-quotla-orange/30 hover:shadow-quotla-orange/50'
   }
 ]
 
-export default function HeroCarousel({ typingText }: HeroCarouselProps) {
+export default function HeroCarousel({}: HeroCarouselProps) {
   const [currentSlide, setCurrentSlide] = useState(0)
 
   // Auto-rotate carousel every 12 seconds
@@ -243,7 +242,7 @@ export default function HeroCarousel({ typingText }: HeroCarouselProps) {
               </div>
 
               <div className="absolute -bottom-6 -left-6 px-4 py-2 bg-quotla-green rounded-xl shadow-lg animate-float" style={{animationDelay: '3s'}}>
-                <div className="text-quotla-light text-sm font-bold">AI-Powered</div>
+                <div className="text-quotla-light text-sm font-bold">Quote-Powered</div>
               </div>
             </div>
           </div>

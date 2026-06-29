@@ -24,7 +24,6 @@ export default function PricingPage() {
         // TODO: Implement actual API call when backend is ready
         // For now, use mock data
         const mockStats: UsageStats = {
-          aiQuotesUsed: 0,
           manualQuotesUsed: 0,
           manualInvoicesUsed: 0,
           period: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
@@ -147,33 +146,17 @@ export default function PricingPage() {
 
                     return (
                       <>
-                        {/* AI Quotes */}
+                        {/* Quotes */}
                         <div>
                           <div className="flex justify-between text-sm mb-2">
-                            <span className="text-primary-200">AI Quotes</span>
-                            <span className="font-medium text-quotla-light">
-                              {formatQuota(quotaInfo.aiQuotes.used, quotaInfo.aiQuotes.total)}
-                            </span>
-                          </div>
-                          <div className="w-full bg-primary-600 rounded-full h-2">
-                            <div
-                              className="bg-quotla-orange h-2 rounded-full transition-all"
-                              style={{ width: `${Math.min(quotaInfo.aiQuotes.percentage, 100)}%` }}
-                            />
-                          </div>
-                        </div>
-
-                        {/* Manual Quotes */}
-                        <div>
-                          <div className="flex justify-between text-sm mb-2">
-                            <span className="text-primary-200">Manual Quotes</span>
+                            <span className="text-primary-200">Quotes</span>
                             <span className="font-medium text-quotla-light">
                               {formatQuota(quotaInfo.quotes.used, quotaInfo.quotes.total)}
                             </span>
                           </div>
                           <div className="w-full bg-primary-600 rounded-full h-2">
                             <div
-                              className="bg-green-600 h-2 rounded-full transition-all"
+                              className="bg-quotla-orange h-2 rounded-full transition-all"
                               style={{ width: `${Math.min(quotaInfo.quotes.percentage, 100)}%` }}
                             />
                           </div>
@@ -189,7 +172,7 @@ export default function PricingPage() {
                           </div>
                           <div className="w-full bg-primary-600 rounded-full h-2">
                             <div
-                              className="bg-quotla-orange h-2 rounded-full transition-all"
+                              className="bg-green-600 h-2 rounded-full transition-all"
                               style={{ width: `${Math.min(quotaInfo.invoices.percentage, 100)}%` }}
                             />
                           </div>
