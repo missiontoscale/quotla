@@ -50,6 +50,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { exportToCSV, exportToXLSX } from '@/lib/export/csv';
+import { exportToPDF } from '@/lib/export';
+import type { InvoiceWithItems, InvoiceItem, Profile } from '@/types';
 
 interface CustomerRow {
   id: string;
@@ -669,6 +671,57 @@ function SalesContent() {
     setAddInvoiceOpen(true);
   };
 
+  const handleDownloadInvoice = async (row: InvoiceRow) => {
+    try {
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (!currentUser) return;
+
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', currentUser.id)
+        .single();
+
+      const { data: invoiceData } = await supabase
+        .from('invoices')
+        .select('*')
+        .eq('id', row.id)
+        .single();
+
+      const { data: itemsData } = await supabase
+        .from('invoice_items')
+        .select('*')
+        .eq('invoice_id', row.id)
+        .order('sort_order');
+
+      let customerData = null;
+      if (row.client_id) {
+        const { data } = await supabase
+          .from('customers')
+          .select('*')
+          .eq('id', row.client_id)
+          .single();
+        customerData = data;
+      }
+
+      if (invoiceData && itemsData) {
+        const invoiceWithItems: InvoiceWithItems = {
+          ...invoiceData,
+          items: itemsData as InvoiceItem[],
+          client: customerData,
+        };
+
+        await exportToPDF({
+          type: 'invoice',
+          data: invoiceWithItems,
+          profile: profileData as Profile | null,
+        });
+      }
+    } catch (err) {
+      console.error('Error downloading invoice:', err);
+    }
+  };
+
   const buildExportRows = () =>
     filteredInvoices.map((inv) => ({
       date: inv.issue_date,
@@ -1273,6 +1326,7 @@ function SalesContent() {
               onView={handleViewInvoice}
               onEdit={handleEditInvoice}
               onDelete={handleDeleteInvoice}
+              onDownload={handleDownloadInvoice}
             />
           )}
         </div>

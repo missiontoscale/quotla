@@ -1,5 +1,5 @@
 import { useState, ReactNode } from 'react';
-import { Search, Edit, Trash2, X } from 'lucide-react';
+import { Search, Edit, Trash2, Download, X } from 'lucide-react';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import {
@@ -27,6 +27,7 @@ interface Column {
 interface DataTableProps {
   columns: Column[];
   data: any[];
+  onDownload?: (row: any) => void;
   onEdit?: (row: any) => void;
   onDelete?: (row: any) => void;
   onView?: (row: any) => void;
@@ -38,6 +39,7 @@ interface DataTableProps {
 export function DataTable({
   columns,
   data,
+  onDownload,
   onEdit,
   onDelete,
   onView,
@@ -100,8 +102,8 @@ export function DataTable({
                     {column.label}
                   </TableHead>
                 ))}
-                {(onEdit || onDelete) && (
-                  <TableHead className="text-primary-400 text-right text-[0.72rem] py-3 max-md:hidden w-20"></TableHead>
+                {(onDownload || onEdit || onDelete) && (
+                  <TableHead className="text-primary-400 text-right text-[0.72rem] py-3 max-md:hidden w-24"></TableHead>
                 )}
               </TableRow>
             </TableHeader>
@@ -109,7 +111,7 @@ export function DataTable({
               {paginatedData.map((row, index) => (
                 <TableRow
                   key={index}
-                  className="border-primary-600 hover:bg-primary-700/50 md:cursor-default cursor-pointer"
+                  className="border-primary-600 hover:bg-primary-700/50 md:cursor-default cursor-pointer group"
                   onClick={() => {
                     if (window.innerWidth < 768) {
                       if (onView) {
@@ -125,9 +127,23 @@ export function DataTable({
                       {column.render ? column.render(row[column.key], row) : row[column.key]}
                     </TableCell>
                   ))}
-                  {(onEdit || onDelete) && (
+                  {(onDownload || onEdit || onDelete) && (
                     <TableCell className="text-right py-3 max-md:hidden">
                       <div className="flex items-center justify-end gap-1">
+                        {onDownload && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onDownload(row);
+                            }}
+                            className="text-quotla-orange hover:text-secondary-400 hover:bg-primary-700 h-7 w-7"
+                            title="Download"
+                          >
+                            <Download className="w-3.5 h-3.5" />
+                          </Button>
+                        )}
                         {onEdit && (
                           <Button
                             variant="ghost"
@@ -143,18 +159,20 @@ export function DataTable({
                           </Button>
                         )}
                         {onDelete && (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onDelete(row);
-                            }}
-                            className="text-primary-400 hover:text-rose-400 hover:bg-primary-700 h-7 w-7"
-                            title="Delete"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </Button>
+                          <div className="overflow-hidden transition-all duration-300 ease-in-out w-0 group-hover:w-7 opacity-0 group-hover:opacity-100">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onDelete(row);
+                              }}
+                              className="text-rose-400 hover:bg-rose-500/20 h-7 w-7"
+                              title="Delete"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </Button>
+                          </div>
                         )}
                       </div>
                     </TableCell>
