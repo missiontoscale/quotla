@@ -12,8 +12,10 @@ import {
   Users,
   AlertCircle,
   Clock,
-  ChevronRight
+  ChevronRight,
+  Receipt
 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { formatCurrency } from '@/lib/utils/currency'
 import { useUserCurrency } from '@/hooks/useUserCurrency'
 
@@ -29,13 +31,9 @@ interface ActivityItem {
 }
 
 interface ActivityFeedProps {
-  /** Maximum number of items to display. Defaults to 8. */
   limit?: number
-  /** Show "View More" link at the bottom */
   showViewMore?: boolean
-  /** Callback when "View More" is clicked */
   onViewMore?: () => void
-  /** Callback when an invoice activity item is clicked */
   onInvoiceClick?: (invoiceId: string) => void
 }
 
@@ -55,7 +53,6 @@ export function ActivityFeed({ limit = 8, showViewMore = false, onViewMore, onIn
     try {
       const activityList: ActivityItem[] = []
 
-      // Fetch recent invoices
       const { data: invoices } = await supabase
         .from('invoices')
         .select('id, invoice_number, status, total, created_at, updated_at, client_id, customers:client_id(full_name, company_name)')
@@ -115,7 +112,6 @@ export function ActivityFeed({ limit = 8, showViewMore = false, onViewMore, onIn
         })
       }
 
-      // Fetch recent customers
       const { data: customers } = await supabase
         .from('customers')
         .select('id, full_name, company_name, created_at')
@@ -136,7 +132,6 @@ export function ActivityFeed({ limit = 8, showViewMore = false, onViewMore, onIn
         })
       }
 
-      // Fetch low stock items
       const { data: lowStock } = await supabase
         .from('inventory_items')
         .select('id, name, quantity_on_hand, low_stock_threshold, updated_at')
@@ -161,7 +156,6 @@ export function ActivityFeed({ limit = 8, showViewMore = false, onViewMore, onIn
           })
       }
 
-      // Sort by timestamp and limit
       activityList.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
       setActivities(activityList.slice(0, limit))
     } catch (error) {
@@ -189,112 +183,143 @@ export function ActivityFeed({ limit = 8, showViewMore = false, onViewMore, onIn
     }
   }
 
-  const getIconBg = (type: ActivityItem['type']) => {
+  const getStatusBadge = (type: ActivityItem['type']) => {
+    const base = 'inline-flex items-center px-2 py-0.5 rounded-full text-[0.65rem] font-medium'
     switch (type) {
       case 'invoice_paid':
-        return 'bg-quotla-green/10 border-quotla-green/20'
-      case 'invoice_created':
-      case 'invoice_sent':
-        return 'bg-quotla-orange/10 border-quotla-orange/20'
+        return <span className={`${base} bg-quotla-green/20 text-quotla-green`}>Paid</span>
       case 'invoice_overdue':
-        return 'bg-rose-500/10 border-rose-500/20'
+        return <span className={`${base} bg-rose-500/20 text-rose-400`}>Overdue</span>
+      case 'invoice_sent':
+        return <span className={`${base} bg-quotla-orange/20 text-quotla-orange`}>Sent</span>
+      case 'invoice_created':
+        return <span className={`${base} bg-primary-600/20 text-primary-400`}>Draft</span>
       case 'customer_added':
-        return 'bg-quotla-orange/10 border-quotla-orange/20'
+        return <span className={`${base} bg-quotla-orange/20 text-quotla-orange`}>New</span>
       case 'low_stock':
-        return 'bg-amber-500/10 border-amber-500/20'
+        return <span className={`${base} bg-amber-500/20 text-amber-400`}>Alert</span>
       default:
-        return 'bg-primary-500/10 border-primary-500/20'
+        return null
     }
   }
 
   if (loading) {
     return (
-      <div className="space-y-3">
-        {[...Array(5)].map((_, i) => (
-          <div key={i} className="flex gap-3 animate-pulse">
-            <div className="w-8 h-8 bg-primary-700 rounded-lg" />
-            <div className="flex-1">
-              <div className="h-4 bg-primary-700 rounded w-1/3 mb-2" />
-              <div className="h-3 bg-primary-700/50 rounded w-2/3" />
+      <div className="p-6 bg-quotla-dark/90 border border-quotla-orange/20 rounded-2xl">
+        <div className="flex items-center justify-between mb-4">
+          <div className="h-5 bg-primary-700 rounded w-32 animate-pulse" />
+          <div className="h-8 bg-primary-700 rounded w-20 animate-pulse" />
+        </div>
+        <div className="space-y-3">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="flex gap-3 animate-pulse">
+              <div className="w-8 h-8 bg-primary-700 rounded-lg" />
+              <div className="flex-1">
+                <div className="h-4 bg-primary-700 rounded w-1/3 mb-2" />
+                <div className="h-3 bg-primary-700/50 rounded w-2/3" />
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     )
   }
 
   if (activities.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-8 text-center">
-        <div className="w-12 h-12 bg-primary-700 rounded-full flex items-center justify-center mb-3">
-          <Clock className="w-5 h-5 text-primary-500" />
+      <div className="p-6 bg-quotla-dark/90 border border-quotla-orange/20 rounded-2xl">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-medium text-primary-50 flex items-center gap-2">
+            <Receipt className="w-5 h-5 text-quotla-orange" />
+            Recent Activity
+          </h2>
         </div>
-        <p className="text-sm text-primary-400">No recent activity</p>
-        <p className="text-xs text-primary-500 mt-1">Activity will appear here as you use Quotla</p>
+        <div className="flex flex-col items-center justify-center py-8 text-center">
+          <div className="w-12 h-12 bg-primary-700 rounded-full flex items-center justify-center mb-3">
+            <Clock className="w-5 h-5 text-primary-500" />
+          </div>
+          <p className="text-sm text-primary-400">No recent activity</p>
+          <p className="text-xs text-primary-500 mt-1">Activity will appear here as you use Quotla</p>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="space-y-1">
-      {activities.map((activity) => {
-        const isInvoiceType = activity.type.startsWith('invoice_')
+    <div className="p-6 bg-quotla-dark/90 border border-quotla-orange/20 rounded-2xl transition-all duration-300 hover:border-quotla-orange/40">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-medium text-primary-50 flex items-center gap-2">
+          <Receipt className="w-5 h-5 text-quotla-orange" />
+          Recent Activity
+        </h2>
+        {showViewMore && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onViewMore}
+            className="border-primary-600 text-primary-300 hover:text-primary-50 hover:border-primary-400 h-9 px-3"
+          >
+            View More
+            <ChevronRight className="w-4 h-4 ml-1" />
+          </Button>
+        )}
+      </div>
 
-        const content = (
-          <div className="flex gap-3 p-2 rounded-lg hover:bg-primary-700/50 transition-colors group">
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center border flex-shrink-0 ${getIconBg(activity.type)}`}>
-              {getIcon(activity.type)}
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between gap-2">
-                <p className="text-sm font-medium text-primary-100 truncate">{activity.title}</p>
-                {activity.amount && (
-                  <span className={`text-xs font-medium ${activity.type === 'invoice_paid' ? 'text-quotla-green' : 'text-primary-400'}`}>
-                    {formatCurrency(activity.amount, currency)}
-                  </span>
-                )}
+      <div className="space-y-1">
+        {activities.map((activity) => {
+          const isInvoiceType = activity.type.startsWith('invoice_')
+
+          const content = (
+            <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-primary-700/50 transition-colors cursor-pointer group">
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center border bg-primary-700/30 border-primary-600 flex-shrink-0">
+                {getIcon(activity.type)}
               </div>
-              <p className="text-xs text-primary-500 truncate">{activity.description}</p>
-              <p className="text-[0.68rem] text-primary-500/70 mt-0.5">
-                {formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true })}
-              </p>
+              <div className="flex-1 min-w-0 flex items-center gap-3">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium text-primary-100 truncate">{activity.title}</p>
+                    {getStatusBadge(activity.type)}
+                  </div>
+                  <p className="text-xs text-primary-500 truncate">{activity.description}</p>
+                </div>
+                <div className="flex items-center gap-3 flex-shrink-0">
+                  {activity.amount && (
+                    <span className={`text-xs font-medium ${activity.type === 'invoice_paid' ? 'text-quotla-green' : 'text-primary-400'}`}>
+                      {formatCurrency(activity.amount, currency)}
+                    </span>
+                  )}
+                  <span className="text-[0.65rem] text-primary-500/70 whitespace-nowrap">
+                    {formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true })}
+                  </span>
+                </div>
+              </div>
             </div>
-          </div>
-        )
-
-        if (isInvoiceType && activity.invoiceId && onInvoiceClick) {
-          return (
-            <button
-              key={activity.id}
-              type="button"
-              className="w-full text-left"
-              onClick={() => onInvoiceClick(activity.invoiceId!)}
-            >
-              {content}
-            </button>
           )
-        }
 
-        if (activity.link) {
-          return (
-            <Link key={activity.id} href={activity.link}>
-              {content}
-            </Link>
-          )
-        }
+          if (isInvoiceType && activity.invoiceId && onInvoiceClick) {
+            return (
+              <button
+                key={activity.id}
+                type="button"
+                className="w-full text-left"
+                onClick={() => onInvoiceClick(activity.invoiceId!)}
+              >
+                {content}
+              </button>
+            )
+          }
 
-        return <div key={activity.id}>{content}</div>
-      })}
+          if (activity.link) {
+            return (
+              <Link key={activity.id} href={activity.link}>
+                {content}
+              </Link>
+            )
+          }
 
-      {showViewMore && (
-        <button
-          onClick={onViewMore}
-          className="w-full flex items-center justify-center gap-1 py-2 mt-2 text-sm text-primary-400 hover:text-primary-100 transition-colors rounded-lg hover:bg-primary-700/50"
-        >
-          View More
-          <ChevronRight className="w-4 h-4" />
-        </button>
-      )}
+          return <div key={activity.id}>{content}</div>
+        })}
+      </div>
     </div>
   )
 }
