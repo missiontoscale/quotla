@@ -30,7 +30,6 @@ export interface SubscriptionPlan {
   id: string
   name: string
   priceUSD: number
-  stripePriceId?: string
   popular?: boolean
   features: string[]
   cta: string
@@ -49,13 +48,6 @@ export interface SubscriptionPlan {
 }
 
 export type PlanTier = SubscriptionPlan['tier']
-
-// Stripe Price IDs - Replace with your actual Stripe Price IDs
-export const STRIPE_PRICE_IDS = {
-  starter: process.env.NEXT_PUBLIC_STRIPE_STARTER_PRICE_ID || 'price_starter',
-  essentials: process.env.NEXT_PUBLIC_STRIPE_ESSENTIALS_PRICE_ID || 'price_essentials',
-  pro: process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID || 'price_pro',
-} as const
 
 export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   {
@@ -87,7 +79,6 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     id: 'starter',
     name: 'Starter',
     priceUSD: 1,
-    stripePriceId: STRIPE_PRICE_IDS.starter,
     tier: 'starter',
     features: [
       '10 AI-generated quotes per month',
@@ -114,7 +105,6 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     id: 'essentials',
     name: 'Essentials',
     priceUSD: 5,
-    stripePriceId: STRIPE_PRICE_IDS.essentials,
     tier: 'essentials',
     popular: true,
     features: [
@@ -144,7 +134,6 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     id: 'pro',
     name: 'Pro',
     priceUSD: 19,
-    stripePriceId: STRIPE_PRICE_IDS.pro,
     tier: 'pro',
     features: [
       'Unlimited AI-generated quotes',

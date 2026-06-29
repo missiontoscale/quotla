@@ -549,7 +549,7 @@ export default function QuotlaChat({ onClose }: { onClose?: () => void } = {}) {
           </div>
           <div className="text-left">
             <div className="font-heading font-bold text-sm text-gray-900 dark:text-white">Create Manually</div>
-            <div className="font-sans text-xs text-gray-500 dark:text-primary-400">Skip AI and create yourself</div>
+            <div className="font-sans text-xs text-gray-500 dark:text-primary-400">Create manually</div>
           </div>
         </button>
       </div>

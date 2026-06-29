@@ -38,7 +38,7 @@ export function AdjustStockDialog({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [adjustmentType, setAdjustmentType] = useState<AdjustmentType>('add')
-  const [quantity, setQuantity] = useState<number>(0)
+  const [quantity, setQuantity] = useState<number>(1)
   const [notes, setNotes] = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -218,9 +218,12 @@ export function AdjustStockDialog({
               type="number"
               min="0"
               value={quantity}
-              onChange={(e) => setQuantity(Math.max(0, parseInt(e.target.value) || 0))}
+              onChange={(e) => {
+                const raw = e.target.value
+                setQuantity(raw === '' ? 1 : Math.max(0, parseInt(raw) || 1))
+              }}
               className="bg-slate-800 border-slate-700 h-10 text-lg font-medium"
-              placeholder="0"
+              placeholder="1"
             />
           </div>
 

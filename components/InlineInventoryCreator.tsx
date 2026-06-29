@@ -81,7 +81,7 @@ export default function InlineInventoryCreator({ isOpen, onClose, onItemCreated,
           cost_price: '',
           currency: defaultCurrency,
           track_inventory: true,
-          quantity_on_hand: '0',
+    quantity_on_hand: '1',
           low_stock_threshold: '5',
           category: '',
         })

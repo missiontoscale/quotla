@@ -62,7 +62,7 @@ export function AddProductDialog({
     category: '',
     price: 0,
     cost_price: 0,
-    stock: 0,
+    stock: 1,
     low_stock_threshold: 10,
   })
 
@@ -303,8 +303,11 @@ export function AddProductDialog({
                     type="number"
                     step="0.01"
                     placeholder="0.00"
-                    value={formData.cost_price}
-                    onChange={(e) => setFormData({ ...formData, cost_price: parseFloat(e.target.value) || 0 })}
+                    value={formData.cost_price || ''}
+                    onChange={(e) => {
+                      const raw = e.target.value
+                      setFormData({ ...formData, cost_price: raw === '' ? 0 : parseFloat(raw) })
+                    }}
                     required
                         className="bg-slate-800 border-slate-700 h-8 text-sm"
                   />
@@ -317,8 +320,11 @@ export function AddProductDialog({
                     type="number"
                     step="0.01"
                     placeholder="0.00"
-                    value={formData.price}
-                    onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })}
+                    value={formData.price || ''}
+                    onChange={(e) => {
+                      const raw = e.target.value
+                      setFormData({ ...formData, price: raw === '' ? 0 : parseFloat(raw) })
+                    }}
                     required
                         className="bg-slate-800 border-slate-700 h-8 text-sm"
                   />
@@ -336,9 +342,12 @@ export function AddProductDialog({
                     <Input
                       id="stock"
                       type="number"
-                      placeholder="0"
+                      placeholder="1"
                       value={formData.stock}
-                      onChange={(e) => setFormData({ ...formData, stock: parseInt(e.target.value) || 0 })}
+                      onChange={(e) => {
+                        const raw = e.target.value
+                        setFormData({ ...formData, stock: raw === '' ? 0 : parseInt(raw) || 0 })
+                      }}
                       required
                       className="bg-slate-800 border-slate-700 h-8 text-sm"
                     />
@@ -351,7 +360,10 @@ export function AddProductDialog({
                       type="number"
                       placeholder="10"
                       value={formData.low_stock_threshold}
-                      onChange={(e) => setFormData({ ...formData, low_stock_threshold: parseInt(e.target.value) || 0 })}
+                      onChange={(e) => {
+                        const raw = e.target.value
+                        setFormData({ ...formData, low_stock_threshold: raw === '' ? 0 : parseInt(raw) || 0 })
+                      }}
                       className="bg-slate-800 border-slate-700 h-8 text-sm"
                     />
                   </div>
@@ -367,7 +379,10 @@ export function AddProductDialog({
                   type="number"
                   placeholder="10"
                   value={formData.low_stock_threshold}
-                  onChange={(e) => setFormData({ ...formData, low_stock_threshold: parseInt(e.target.value) || 0 })}
+                  onChange={(e) => {
+                    const raw = e.target.value
+                    setFormData({ ...formData, low_stock_threshold: raw === '' ? 0 : parseInt(raw) || 0 })
+                  }}
                     className="bg-slate-800 border-slate-700 h-8 text-sm"
                 />
                 <p className="text-xs text-slate-400 mt-1">

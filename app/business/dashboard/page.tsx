@@ -25,7 +25,6 @@ import {
 } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { AICreateModal } from '@/components/modals/AICreateModal'
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed'
 import { OnboardingProgress } from '@/components/dashboard/OnboardingProgress'
 import { CalendarWidget } from '@/components/dashboard/CalendarWidget'
@@ -102,7 +101,6 @@ function DashboardContent() {
   const { currency } = useUserCurrency()
   const { openInvoiceModal, openCustomerModal, openProductModal, openExpenseModal, setOnSuccess } = useModal()
   const [loading, setLoading] = useState(true)
-  const [showAICreate, setShowAICreate] = useState(false)
   const [topClient, setTopClient] = useState<{ name: string; revenue: number } | null>(null)
   const [stats, setStats] = useState<DashboardStats>({
     totalRevenue: 0,
@@ -621,17 +619,6 @@ function DashboardContent() {
               <ActivityFeed limit={3} />
             </Card>
 
-            {/* AI Create Button */}
-            <div className="flex justify-center">
-              <Button
-                onClick={() => setShowAICreate(true)}
-                className={cn(components.button.primary, 'text-sm h-9 w-full max-w-xs')}
-              >
-                <Sparkles className="w-4 h-4 mr-2" />
-                AI Create
-              </Button>
-            </div>
-
             {/* Low Stock Details - Contextual drill-down */}
             {stats.lowStockCount > 0 && lowStockItems.length > 0 && (
               <Card className={cn(
@@ -706,11 +693,6 @@ function DashboardContent() {
         </div>
       </div>
 
-      {/* AI Create Modal */}
-      <AICreateModal
-        open={showAICreate}
-        onOpenChange={setShowAICreate}
-      />
     </>
   )
 }

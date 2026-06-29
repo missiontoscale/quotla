@@ -6,14 +6,12 @@ import { useRouter } from 'next/navigation'
 import { formatCurrency } from '@/lib/utils/currency'
 import { SUBSCRIPTION_PLANS, getRemainingQuota, formatQuota, type UsageStats } from '@/lib/constants/plans'
 import { useAuth } from '@/contexts/AuthContext'
-import { useSubscription } from '@/hooks/useSubscription'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 
 export default function PricingPage() {
   const router = useRouter()
-  const { user, profile, subscriptionPlan } = useAuth()
-  const { createCheckoutSession, isFreePlan } = useSubscription()
+  const { user, profile } = useAuth()
   const [activeFaq, setActiveFaq] = useState<number | null>(null)
   const [usageStats, setUsageStats] = useState<UsageStats | null>(null)
 
@@ -56,14 +54,8 @@ export default function PricingPage() {
     }
 
     setIsUpgrading(planId)
-    try {
-      const url = await createCheckoutSession(planId)
-      if (url) {
-        window.location.href = url
-      }
-    } finally {
-      setIsUpgrading(null)
-    }
+    // TODO: Implement payment integration
+    setIsUpgrading(null)
   }
 
   const faqs = [
@@ -77,7 +69,7 @@ export default function PricingPage() {
     },
     {
       question: 'What payment methods do you accept?',
-      answer: 'We accept all major credit cards (Visa, MasterCard, American Express), debit cards, and PayPal. All payments are processed securely through Stripe.',
+      answer: 'We accept all major credit cards (Visa, MasterCard, American Express), debit cards, and PayPal.',
     },
     {
       question: 'What happens to my data if I cancel?',
@@ -134,20 +126,12 @@ export default function PricingPage() {
                   <p className="text-primary-200">
                     {currentPlan.id === 'free'
                       ? "You're currently on the Free plan"
-                      : `Active subscription - ${formatCurrency(currentPlan.priceUSD, 'USD')}/month`}
+                      : `${currentPlan.name} plan - ${formatCurrency(currentPlan.priceUSD, 'USD')}/month`}
                   </p>
                 </div>
-                <Link
-                  href="/billing"
-                  className="mt-4 md:mt-0 inline-block px-6 py-3 rounded-lg font-medium transition-all"
-                  style={{backgroundColor: '#ce6203', color: '#fffad6'}}
-                  onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
-                  onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
-                  onMouseDown={(e) => e.currentTarget.style.opacity = '0.7'}
-                  onMouseUp={(e) => e.currentTarget.style.opacity = '0.9'}
-                >
-                  Manage Subscription
-                </Link>
+                <div className="mt-4 md:mt-0 inline-block px-6 py-3 rounded-lg font-medium bg-quotla-orange/20 text-quotla-orange border border-quotla-orange/30">
+                  {currentPlan.id === 'free' ? 'Free Plan' : `${formatCurrency(currentPlan.priceUSD, 'USD')}/month`}
+                </div>
               </div>
 
               {/* Usage Stats */}

@@ -113,6 +113,10 @@ export function AddInvoiceDialog({
   mode = 'create'
 }: AddInvoiceDialogProps) {
   const { currency: userCurrency } = useUserCurrency()
+  const handleOpenChange = (open: boolean) => {
+    if (!open && loading) return
+    onOpenChange(open)
+  }
   const [currentStep, setCurrentStep] = useState(0)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -749,9 +753,9 @@ export function AddInvoiceDialog({
     await performSubmit()
   }
 
-  const handleConfirmNoCustomer = () => {
+  const handleConfirmNoCustomer = async () => {
     setShowNoCustomerConfirm(false)
-    performSubmit()
+    await performSubmit()
   }
 
   const handleCancelNoCustomer = () => {
@@ -831,7 +835,7 @@ export function AddInvoiceDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="bg-slate-900 border-slate-800 text-slate-100 max-w-xl md:max-w-3xl max-h-[90vh] overflow-y-auto px-3 md:px-4">
         <DialogHeader className="sticky top-0 z-10 bg-slate-900 border-b border-slate-800 pb-3 -mx-3 md:-mx-4 px-3 md:px-4 pt-4">
           <div className="flex items-center justify-between">
@@ -1125,14 +1129,17 @@ export function AddInvoiceDialog({
               </div>
               <div className="space-y-2">
                 <Label htmlFor="tax-rate" className="text-xs">Tax Rate (%)</Label>
-                <Input
-                  id="tax-rate"
-                  type="number"
-                  min="0"
-                  max="100"
-                  step="0.1"
-                  value={formData.tax_rate}
-                  onChange={(e) => setFormData({ ...formData, tax_rate: parseFloat(e.target.value) || 0 })}
+                  <Input
+                    id="tax-rate"
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="0.1"
+                    value={formData.tax_rate || ''}
+                    onChange={(e) => {
+                      const raw = e.target.value
+                      setFormData({ ...formData, tax_rate: raw === '' ? 0 : parseFloat(raw) })
+                    }}
                   disabled={isViewMode && !isEditing}
                   className="bg-slate-800 border-slate-700 h-8 text-sm"
                 />
@@ -1279,7 +1286,10 @@ export function AddInvoiceDialog({
                           min="1"
                           step="1"
                           value={item.quantity}
-                          onChange={(e) => updateLineItem(item.id, 'quantity', parseFloat(e.target.value) || 1)}
+                          onChange={(e) => {
+                            const raw = e.target.value
+                            updateLineItem(item.id, 'quantity', raw === '' ? 1 : parseFloat(raw))
+                          }}
                           disabled={isViewMode && !isEditing}
                           className="bg-slate-800 border-slate-700 h-8 text-sm"
                         />
@@ -1290,8 +1300,11 @@ export function AddInvoiceDialog({
                           type="number"
                           min="0"
                           step="0.01"
-                          value={item.unit_price}
-                          onChange={(e) => updateLineItem(item.id, 'unit_price', parseFloat(e.target.value) || 0)}
+                          value={item.unit_price || ''}
+                          onChange={(e) => {
+                            const raw = e.target.value
+                            updateLineItem(item.id, 'unit_price', raw === '' ? 0 : parseFloat(raw))
+                          }}
                           disabled={isViewMode && !isEditing}
                           className="bg-slate-800 border-slate-700 h-8 text-sm"
                         />

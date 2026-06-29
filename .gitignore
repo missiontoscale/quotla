@@ -19,6 +19,8 @@
 # production
 /build
 
+/for-AI-agents-to-learn
+
 # misc
 .DS_Store
 *.pem
@@ -41,6 +43,7 @@ nul
 *.tsbuildinfo
 next-env.d.ts
 context
+avoid
 
 # IDE
 .vscode/

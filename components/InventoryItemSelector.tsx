@@ -268,7 +268,8 @@ export default function InventoryItemSelector({ onSelect, currency, disabled, se
                         min="1"
                         value={currentQty}
                         onChange={(e) => {
-                          const val = parseInt(e.target.value) || 1
+                          const raw = e.target.value
+                          const val = raw === '' ? 1 : parseInt(raw) || 1
                           setItemQuantities(prev => ({ ...prev, [item.id]: Math.max(1, val) }))
                         }}
                         onClick={(e) => e.stopPropagation()}

@@ -43,7 +43,7 @@ export function AddInventoryItemDialog({ open, onOpenChange, onSuccess }: AddInv
     cost_price: 0,
     currency: DEFAULT_CURRENCY,
     track_inventory: true,
-    quantity_on_hand: 0,
+    quantity_on_hand: 1,
     low_stock_threshold: 10,
     reorder_quantity: 50,
     default_supplier_id: undefined,
@@ -113,7 +113,7 @@ export function AddInventoryItemDialog({ open, onOpenChange, onSuccess }: AddInv
         cost_price: 0,
         currency: DEFAULT_CURRENCY,
         track_inventory: true,
-        quantity_on_hand: 0,
+        quantity_on_hand: 1,
         low_stock_threshold: 10,
         reorder_quantity: 50,
         default_supplier_id: undefined,
@@ -205,43 +205,52 @@ export function AddInventoryItemDialog({ open, onOpenChange, onSuccess }: AddInv
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label htmlFor="cost-price" className="text-xs">Cost Price *</Label>
-              <Input
-                id="cost-price"
-                type="number"
-                step="0.01"
-                placeholder="0.00"
-                value={formData.cost_price}
-                onChange={(e) => setFormData({ ...formData, cost_price: parseFloat(e.target.value) || 0 })}
-                required
-                className="bg-slate-800 border-slate-700 h-8 text-sm"
-              />
+                <Input
+                  id="cost-price"
+                  type="number"
+                  step="0.01"
+                  placeholder="0.00"
+                  value={formData.cost_price || ''}
+                  onChange={(e) => {
+                    const raw = e.target.value
+                    setFormData({ ...formData, cost_price: raw === '' ? 0 : parseFloat(raw) })
+                  }}
+                  required
+                  className="bg-slate-800 border-slate-700 h-8 text-sm"
+                />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="unit-price" className="text-xs">Selling Price *</Label>
-              <Input
-                id="unit-price"
-                type="number"
-                step="0.01"
-                placeholder="0.00"
-                value={formData.unit_price}
-                onChange={(e) => setFormData({ ...formData, unit_price: parseFloat(e.target.value) || 0 })}
-                required
-                className="bg-slate-800 border-slate-700 h-8 text-sm"
-              />
+                <Input
+                  id="unit-price"
+                  type="number"
+                  step="0.01"
+                  placeholder="0.00"
+                  value={formData.unit_price || ''}
+                  onChange={(e) => {
+                    const raw = e.target.value
+                    setFormData({ ...formData, unit_price: raw === '' ? 0 : parseFloat(raw) })
+                  }}
+                  required
+                  className="bg-slate-800 border-slate-700 h-8 text-sm"
+                />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="tax-rate" className="text-xs">Tax Rate (%)</Label>
-              <Input
-                id="tax-rate"
-                type="number"
-                step="0.01"
-                placeholder="0"
-                value={formData.tax_rate}
-                onChange={(e) => setFormData({ ...formData, tax_rate: parseFloat(e.target.value) || 0 })}
-                className="bg-slate-800 border-slate-700 h-8 text-sm"
-              />
+                <Input
+                  id="tax-rate"
+                  type="number"
+                  step="0.01"
+                  placeholder="0"
+                  value={formData.tax_rate || ''}
+                  onChange={(e) => {
+                    const raw = e.target.value
+                    setFormData({ ...formData, tax_rate: raw === '' ? 0 : parseFloat(raw) })
+                  }}
+                  className="bg-slate-800 border-slate-700 h-8 text-sm"
+                />
             </div>
           </div>
 
@@ -263,9 +272,12 @@ export function AddInventoryItemDialog({ open, onOpenChange, onSuccess }: AddInv
                 <Input
                   id="quantity"
                   type="number"
-                  placeholder="0"
+                  placeholder="1"
                   value={formData.quantity_on_hand}
-                  onChange={(e) => setFormData({ ...formData, quantity_on_hand: parseInt(e.target.value) || 0 })}
+                  onChange={(e) => {
+                    const raw = e.target.value
+                    setFormData({ ...formData, quantity_on_hand: raw === '' ? 1 : parseInt(raw) || 1 })
+                  }}
                   className="bg-slate-800 border-slate-700 h-8 text-sm"
                 />
               </div>
@@ -277,7 +289,10 @@ export function AddInventoryItemDialog({ open, onOpenChange, onSuccess }: AddInv
                   type="number"
                   placeholder="10"
                   value={formData.low_stock_threshold}
-                  onChange={(e) => setFormData({ ...formData, low_stock_threshold: parseInt(e.target.value) || 0 })}
+                  onChange={(e) => {
+                    const raw = e.target.value
+                    setFormData({ ...formData, low_stock_threshold: raw === '' ? 0 : parseInt(raw) || 0 })
+                  }}
                   className="bg-slate-800 border-slate-700 h-8 text-sm"
                 />
               </div>
@@ -289,7 +304,10 @@ export function AddInventoryItemDialog({ open, onOpenChange, onSuccess }: AddInv
                   type="number"
                   placeholder="50"
                   value={formData.reorder_quantity}
-                  onChange={(e) => setFormData({ ...formData, reorder_quantity: parseInt(e.target.value) || 0 })}
+                  onChange={(e) => {
+                    const raw = e.target.value
+                    setFormData({ ...formData, reorder_quantity: raw === '' ? 50 : parseInt(raw) || 50 })
+                  }}
                   className="bg-slate-800 border-slate-700 h-8 text-sm"
                 />
               </div>

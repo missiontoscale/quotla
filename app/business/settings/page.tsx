@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, Suspense } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { CURRENCIES } from '@/types'
 import { validateFileUpload, validateImageUrl } from '@/lib/utils/validation'
@@ -13,8 +13,6 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { FormSection } from '@/components/ui/form-section'
 import { useToast } from '@/hooks/use-toast'
-import type { CalendlyConnection, CalendlyEventType } from '@/types/calendly'
-import type { StripeConnection } from '@/types/stripe'
 import {
   Dialog,
   DialogContent,
@@ -33,13 +31,6 @@ import {
   Upload,
   Camera,
   Settings,
-  Link2,
-  CalendarIcon,
-  CreditCard,
-  CheckCircle2,
-  XCircle,
-  Loader2,
-  ExternalLink,
   MapPin,
   Phone,
   FileText,
@@ -58,7 +49,6 @@ const DELETE_REASONS = [
 
 function SettingsContent() {
   const router = useRouter()
-  const searchParams = useSearchParams()
   const { profile, updateProfile, signOut, user } = useAuth()
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
@@ -69,14 +59,6 @@ function SettingsContent() {
   const [deleteReason, setDeleteReason] = useState('')
   const [customReason, setCustomReason] = useState('')
   const [deleting, setDeleting] = useState(false)
-
-  // Integration states
-  const [integrationsLoading, setIntegrationsLoading] = useState(true)
-  const [calendlyConnection, setCalendlyConnection] = useState<CalendlyConnection | null>(null)
-  const [calendlyEventTypes, setCalendlyEventTypes] = useState<CalendlyEventType[]>([])
-  const [calendlyDisconnecting, setCalendlyDisconnecting] = useState(false)
-  const [stripeConnection, setStripeConnection] = useState<StripeConnection | null>(null)
-  const [stripeDisconnecting, setStripeDisconnecting] = useState(false)
 
   const [formData, setFormData] = useState({
     company_name: profile?.company_name || '',
@@ -94,103 +76,7 @@ function SettingsContent() {
 
   useEffect(() => {
     setupStorage()
-    loadIntegrations()
-    checkCallbackStatus()
   }, [])
-
-  const checkCallbackStatus = () => {
-    const success = searchParams.get('success')
-    const error = searchParams.get('error')
-
-    if (success === 'calendly_connected') {
-      toast({
-        title: 'Calendly Connected',
-        description: 'Your Calendly account has been connected successfully.',
-      })
-      router.replace('/settings')
-    } else if (success === 'stripe_connected') {
-      toast({
-        title: 'Stripe Connected',
-        description: 'Your Stripe account has been connected successfully.',
-      })
-      router.replace('/settings')
-    } else if (error) {
-      let errorMessage = 'Connection failed'
-      switch (error) {
-        case 'calendly_denied':
-          errorMessage = 'You denied access to Calendly'
-          break
-        case 'stripe_denied':
-          errorMessage = 'You denied access to Stripe'
-          break
-        case 'invalid_callback':
-          errorMessage = 'Invalid callback response'
-          break
-        case 'invalid_state':
-          errorMessage = 'Security validation failed'
-          break
-        case 'oauth_failed':
-          errorMessage = 'OAuth authorization failed'
-          break
-        case 'stripe_connect_failed':
-          errorMessage = 'Failed to connect Stripe'
-          break
-      }
-      toast({
-        title: 'Connection Failed',
-        description: errorMessage,
-        variant: 'destructive',
-      })
-      router.replace('/settings')
-    }
-  }
-
-  const loadIntegrations = async () => {
-    try {
-      setIntegrationsLoading(true)
-
-      const { data: { user: authUser } } = await supabase.auth.getUser()
-      if (!authUser) return
-
-      // Fetch Calendly connection
-      const { data: calendlyData } = await supabase
-        .from('calendly_connections' as any)
-        .select('*')
-        .eq('user_id', authUser.id)
-        .eq('is_active', true)
-        .maybeSingle()
-
-      if (calendlyData) {
-        setCalendlyConnection(calendlyData as unknown as CalendlyConnection)
-        // Fetch event types
-        try {
-          const response = await fetch('/api/calendly/events')
-          if (response.ok) {
-            const data = await response.json()
-            setCalendlyEventTypes(data.event_types || [])
-          }
-        } catch (err) {
-          console.error('Error fetching event types:', err)
-        }
-      }
-
-      // Fetch Stripe connection
-      const { data: stripeData } = await supabase
-        .from('stripe_connections' as any)
-        .select('*')
-        .eq('user_id', authUser.id)
-        .eq('is_active', true)
-        .maybeSingle()
-
-      if (stripeData) {
-        setStripeConnection(stripeData as unknown as StripeConnection)
-      }
-    } catch (err) {
-      console.error('Error loading integrations:', err)
-    } finally {
-      setIntegrationsLoading(false)
-    }
-  }
 
   const setupStorage = async () => {
     try {
@@ -356,50 +242,6 @@ function SettingsContent() {
     setShowReasonStep(false)
     setDeleteReason('')
     setCustomReason('')
-  }
-
-  // Integration handlers
-  const handleCalendlyConnect = () => {
-    window.location.href = '/api/calendly/auth/connect'
-  }
-
-  const handleCalendlyDisconnect = async () => {
-    if (!confirm('Are you sure you want to disconnect Calendly?')) return
-
-    setCalendlyDisconnecting(true)
-    try {
-      const response = await fetch('/api/calendly/auth/disconnect', { method: 'POST' })
-      if (!response.ok) throw new Error('Failed to disconnect')
-
-      toast({ title: 'Disconnected', description: 'Calendly has been disconnected successfully.' })
-      setCalendlyConnection(null)
-      setCalendlyEventTypes([])
-    } catch (err) {
-      toast({ title: 'Error', description: 'Failed to disconnect Calendly', variant: 'destructive' })
-    } finally {
-      setCalendlyDisconnecting(false)
-    }
-  }
-
-  const handleStripeConnect = () => {
-    window.location.href = '/api/stripe/auth/connect'
-  }
-
-  const handleStripeDisconnect = async () => {
-    if (!confirm('Are you sure you want to disconnect Stripe?')) return
-
-    setStripeDisconnecting(true)
-    try {
-      const response = await fetch('/api/stripe/auth/disconnect', { method: 'POST' })
-      if (!response.ok) throw new Error('Failed to disconnect')
-
-      toast({ title: 'Disconnected', description: 'Stripe has been disconnected successfully.' })
-      setStripeConnection(null)
-    } catch (err) {
-      toast({ title: 'Error', description: 'Failed to disconnect Stripe', variant: 'destructive' })
-    } finally {
-      setStripeDisconnecting(false)
-    }
   }
 
   return (
@@ -685,153 +527,8 @@ function SettingsContent() {
           </Card>
         </div>
 
-        {/* Right Column - Integrations & Account */}
+        {/* Right Column - Account */}
         <div className="space-y-6">
-          {/* Integrations */}
-          <Card className="bg-slate-900/50 border-slate-800 overflow-hidden">
-            <div className="p-5 border-b border-slate-800">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 bg-purple-500/10 rounded-lg flex items-center justify-center">
-                  <Link2 className="w-4 h-4 text-purple-400" />
-                </div>
-                <div>
-                  <h2 className="text-base font-semibold text-slate-100">Integrations</h2>
-                  <p className="text-xs text-slate-500">Connect third-party services</p>
-                </div>
-              </div>
-            </div>
-            <div className="p-4 space-y-3">
-              {integrationsLoading ? (
-                <div className="flex items-center justify-center py-8">
-                  <Loader2 className="w-5 h-5 animate-spin text-slate-500" />
-                </div>
-              ) : (
-                <>
-                  {/* Calendly */}
-                  <div className="p-3 bg-slate-800/50 rounded-lg border border-slate-700/50">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="w-8 h-8 bg-blue-500/10 rounded-lg flex items-center justify-center">
-                        <CalendarIcon className="w-4 h-4 text-blue-400" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-slate-200">Calendly</span>
-                          {calendlyConnection && (
-                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-medium">
-                              <CheckCircle2 className="w-2.5 h-2.5" />
-                              Connected
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-[11px] text-slate-500 truncate">Schedule meetings with clients</p>
-                      </div>
-                    </div>
-                    {calendlyConnection ? (
-                      <div className="space-y-2">
-                        <div className="p-2 bg-slate-900/50 rounded text-xs">
-                          <span className="text-slate-500">Account:</span>
-                          <span className="text-slate-300 ml-1">{calendlyConnection.calendly_email}</span>
-                        </div>
-                        {calendlyEventTypes.length > 0 && (
-                          <div className="space-y-1">
-                            {calendlyEventTypes.slice(0, 2).map((et) => (
-                              <div key={et.uri} className="flex items-center justify-between p-2 bg-slate-900/50 rounded text-xs">
-                                <span className="text-slate-300">{et.name}</span>
-                                <a
-                                  href={et.scheduling_url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-blue-400 hover:text-blue-300"
-                                >
-                                  <ExternalLink className="w-3 h-3" />
-                                </a>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={handleCalendlyDisconnect}
-                          disabled={calendlyDisconnecting}
-                          className="w-full h-7 text-xs text-slate-400 hover:text-rose-400 hover:bg-rose-500/10"
-                        >
-                          {calendlyDisconnecting ? (
-                            <Loader2 className="w-3 h-3 mr-1.5 animate-spin" />
-                          ) : (
-                            <XCircle className="w-3 h-3 mr-1.5" />
-                          )}
-                          Disconnect
-                        </Button>
-                      </div>
-                    ) : (
-                      <Button
-                        size="sm"
-                        onClick={handleCalendlyConnect}
-                        className="w-full h-8 text-xs bg-blue-600 hover:bg-blue-500"
-                      >
-                        <CalendarIcon className="w-3 h-3 mr-1.5" />
-                        Connect Calendly
-                      </Button>
-                    )}
-                  </div>
-
-                  {/* Stripe */}
-                  <div className="p-3 bg-slate-800/50 rounded-lg border border-slate-700/50">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="w-8 h-8 bg-purple-500/10 rounded-lg flex items-center justify-center">
-                        <CreditCard className="w-4 h-4 text-purple-400" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-slate-200">Stripe</span>
-                          {stripeConnection && (
-                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-medium">
-                              <CheckCircle2 className="w-2.5 h-2.5" />
-                              Connected
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-[11px] text-slate-500 truncate">Accept payments on invoices</p>
-                      </div>
-                    </div>
-                    {stripeConnection ? (
-                      <div className="space-y-2">
-                        <div className="p-2 bg-slate-900/50 rounded text-xs">
-                          <span className="text-slate-500">Account:</span>
-                          <span className="text-slate-300 ml-1">{stripeConnection.stripe_email}</span>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={handleStripeDisconnect}
-                          disabled={stripeDisconnecting}
-                          className="w-full h-7 text-xs text-slate-400 hover:text-rose-400 hover:bg-rose-500/10"
-                        >
-                          {stripeDisconnecting ? (
-                            <Loader2 className="w-3 h-3 mr-1.5 animate-spin" />
-                          ) : (
-                            <XCircle className="w-3 h-3 mr-1.5" />
-                          )}
-                          Disconnect
-                        </Button>
-                      </div>
-                    ) : (
-                      <Button
-                        size="sm"
-                        onClick={handleStripeConnect}
-                        className="w-full h-8 text-xs bg-purple-600 hover:bg-purple-500"
-                      >
-                        <CreditCard className="w-3 h-3 mr-1.5" />
-                        Connect Stripe
-                      </Button>
-                    )}
-                  </div>
-                </>
-              )}
-            </div>
-          </Card>
-
           {/* Account Actions */}
           <Card className="bg-slate-900/50 border-slate-800 overflow-hidden">
             <div className="p-5 border-b border-slate-800">

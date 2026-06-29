@@ -390,14 +390,14 @@ export default function OnboardingPage() {
                   You're all set! 🚀
                 </h1>
                 <p className="text-lg text-slate-400 max-w-xl mx-auto">
-                  Your account is ready. Let's create your first quote or invoice with AI.
+                  Your account is ready. Create your first quote or invoice.
                 </p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8 max-w-xl mx-auto">
                 <div className="p-6 bg-slate-800/50 rounded-lg border border-slate-700 text-left">
-                  <h3 className="font-semibold text-slate-200 mb-2">✨ Try AI Create</h3>
+                  <h3 className="font-semibold text-slate-200 mb-2">📄 Create Invoice</h3>
                   <p className="text-sm text-slate-400">
-                    Use natural language to generate quotes and invoices instantly
+                    Create professional quotes and invoices for your clients
                   </p>
                 </div>
                 <div className="p-6 bg-slate-800/50 rounded-lg border border-slate-700 text-left">
