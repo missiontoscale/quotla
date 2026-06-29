@@ -134,7 +134,7 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-quotla-dark via-primary-700 to-quotla-dark flex items-center justify-center p-4">
       <div className="max-w-3xl w-full">
         {/* Progress Bar */}
         <div className="mb-8">
@@ -146,7 +146,7 @@ export default function OnboardingPage() {
                     className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all ${
                       currentStep >= step.id
                         ? 'bg-gradient-to-r from-orange-500 to-pink-500 text-white'
-                        : 'bg-slate-800 text-slate-500'
+                        : 'bg-primary-700/80 text-primary-400'
                     }`}
                   >
                     {currentStep > step.id ? (
@@ -156,7 +156,7 @@ export default function OnboardingPage() {
                     )}
                   </div>
                   <div className="mt-2 text-xs text-center">
-                    <div className={`font-semibold ${currentStep >= step.id ? 'text-slate-200' : 'text-slate-500'}`}>
+                    <div className={`font-semibold ${currentStep >= step.id ? 'text-primary-100' : 'text-primary-400'}`}>
                       {step.name}
                     </div>
                   </div>
@@ -164,7 +164,7 @@ export default function OnboardingPage() {
                 {idx < STEPS.length - 1 && (
                   <div
                     className={`flex-1 h-1 mx-2 transition-all ${
-                      currentStep > step.id ? 'bg-orange-500' : 'bg-slate-800'
+                      currentStep > step.id ? 'bg-orange-500' : 'bg-primary-700/80'
                     }`}
                   />
                 )}
@@ -174,7 +174,7 @@ export default function OnboardingPage() {
         </div>
 
         {/* Content Card */}
-        <div className="bg-slate-900 border border-slate-700 rounded-2xl p-8 shadow-2xl">
+        <div className="bg-primary-700 border border-primary-600/80 rounded-2xl p-8 shadow-2xl">
           {/* Step 1: Welcome */}
           {currentStep === 1 && (
             <div className="text-center space-y-6">
@@ -182,34 +182,34 @@ export default function OnboardingPage() {
                 <Sparkles className="w-10 h-10 text-white" />
               </div>
               <div>
-                <h1 className="text-4xl font-bold text-slate-50 mb-4">
+                <h1 className="text-4xl font-bold text-primary-50 mb-4">
                   Welcome to Quotla! 🎉
                 </h1>
-                <p className="text-lg text-slate-400 max-w-xl mx-auto">
+                <p className="text-lg text-primary-400 max-w-xl mx-auto">
                   Let's get you set up in just a few minutes. We'll help you configure your business profile and preferences.
                 </p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-                <div className="p-4 bg-slate-800/50 rounded-lg border border-slate-700">
+                <div className="p-4 bg-primary-700/50 rounded-lg border border-primary-600/80">
                   <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-orange-500/20 flex items-center justify-center">
                     <Building2 className="w-6 h-6 text-orange-400" />
                   </div>
-                  <h3 className="font-semibold text-slate-200 mb-2">Business Info</h3>
-                  <p className="text-sm text-slate-500">Set up your company details</p>
+                  <h3 className="font-semibold text-primary-100 mb-2">Business Info</h3>
+                  <p className="text-sm text-primary-400">Set up your company details</p>
                 </div>
-                <div className="p-4 bg-slate-800/50 rounded-lg border border-slate-700">
-                  <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-purple-500/20 flex items-center justify-center">
-                    <Globe className="w-6 h-6 text-purple-400" />
+                <div className="p-4 bg-primary-700/50 rounded-lg border border-primary-600/80">
+                  <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-quotla-orange/15 flex items-center justify-center">
+                    <Globe className="w-6 h-6 text-quotla-orange" />
                   </div>
-                  <h3 className="font-semibold text-slate-200 mb-2">Preferences</h3>
-                  <p className="text-sm text-slate-500">Choose your currency</p>
+                  <h3 className="font-semibold text-primary-100 mb-2">Preferences</h3>
+                  <p className="text-sm text-primary-400">Choose your currency</p>
                 </div>
-                <div className="p-4 bg-slate-800/50 rounded-lg border border-slate-700">
+                <div className="p-4 bg-primary-700/50 rounded-lg border border-primary-600/80">
                   <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-green-500/20 flex items-center justify-center">
                     <CheckCircle2 className="w-6 h-6 text-green-400" />
                   </div>
-                  <h3 className="font-semibold text-slate-200 mb-2">Start Creating</h3>
-                  <p className="text-sm text-slate-500">Generate quotes & invoices</p>
+                  <h3 className="font-semibold text-primary-100 mb-2">Start Creating</h3>
+                  <p className="text-sm text-primary-400">Generate quotes & invoices</p>
                 </div>
               </div>
             </div>
@@ -219,13 +219,13 @@ export default function OnboardingPage() {
           {currentStep === 2 && (
             <div className="space-y-6">
               <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold text-slate-50 mb-2">Tell us about your business</h2>
-                <p className="text-slate-400">This information will appear on your invoices and quotes</p>
+                <h2 className="text-3xl font-bold text-primary-50 mb-2">Tell us about your business</h2>
+                <p className="text-primary-400">This information will appear on your invoices and quotes</p>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="company_name" className="text-slate-200">
+                  <Label htmlFor="company_name" className="text-primary-100">
                     Company Name <span className="text-red-500">*</span>
                   </Label>
                   <Input
@@ -233,102 +233,102 @@ export default function OnboardingPage() {
                     value={formData.company_name}
                     onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
                     placeholder="Acme Inc."
-                    className="bg-slate-800 border-slate-700 text-slate-100"
+                    className="bg-primary-700/80 border-primary-600/80 text-primary-50"
                     required
                   />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="business_number" className="text-slate-200">Business Number</Label>
+                    <Label htmlFor="business_number" className="text-primary-100">Business Number</Label>
                     <Input
                       id="business_number"
                       value={formData.business_number}
                       onChange={(e) => setFormData({ ...formData, business_number: e.target.value })}
                       placeholder="Optional"
-                      className="bg-slate-800 border-slate-700 text-slate-100"
+                      className="bg-primary-700/80 border-primary-600/80 text-primary-50"
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="phone" className="text-slate-200">Phone</Label>
+                    <Label htmlFor="phone" className="text-primary-100">Phone</Label>
                     <Input
                       id="phone"
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       placeholder="+1 (555) 123-4567"
-                      className="bg-slate-800 border-slate-700 text-slate-100"
+                      className="bg-primary-700/80 border-primary-600/80 text-primary-50"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <Label htmlFor="address" className="text-slate-200">Address</Label>
+                  <Label htmlFor="address" className="text-primary-100">Address</Label>
                   <Textarea
                     id="address"
                     value={formData.address}
                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                     placeholder="123 Main Street"
-                    className="bg-slate-800 border-slate-700 text-slate-100"
+                    className="bg-primary-700/80 border-primary-600/80 text-primary-50"
                     rows={2}
                   />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <Label htmlFor="city" className="text-slate-200">City</Label>
+                    <Label htmlFor="city" className="text-primary-100">City</Label>
                     <Input
                       id="city"
                       value={formData.city}
                       onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                       placeholder="New York"
-                      className="bg-slate-800 border-slate-700 text-slate-100"
+                      className="bg-primary-700/80 border-primary-600/80 text-primary-50"
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="state" className="text-slate-200">State/Province</Label>
+                    <Label htmlFor="state" className="text-primary-100">State/Province</Label>
                     <Input
                       id="state"
                       value={formData.state}
                       onChange={(e) => setFormData({ ...formData, state: e.target.value })}
                       placeholder="NY"
-                      className="bg-slate-800 border-slate-700 text-slate-100"
+                      className="bg-primary-700/80 border-primary-600/80 text-primary-50"
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="postal_code" className="text-slate-200">Postal Code</Label>
+                    <Label htmlFor="postal_code" className="text-primary-100">Postal Code</Label>
                     <Input
                       id="postal_code"
                       value={formData.postal_code}
                       onChange={(e) => setFormData({ ...formData, postal_code: e.target.value })}
                       placeholder="10001"
-                      className="bg-slate-800 border-slate-700 text-slate-100"
+                      className="bg-primary-700/80 border-primary-600/80 text-primary-50"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="country" className="text-slate-200">Country</Label>
+                    <Label htmlFor="country" className="text-primary-100">Country</Label>
                     <Input
                       id="country"
                       value={formData.country}
                       onChange={(e) => setFormData({ ...formData, country: e.target.value })}
                       placeholder="United States"
-                      className="bg-slate-800 border-slate-700 text-slate-100"
+                      className="bg-primary-700/80 border-primary-600/80 text-primary-50"
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="website" className="text-slate-200">Website</Label>
+                    <Label htmlFor="website" className="text-primary-100">Website</Label>
                     <Input
                       id="website"
                       value={formData.website}
                       onChange={(e) => setFormData({ ...formData, website: e.target.value })}
                       placeholder="https://example.com"
-                      className="bg-slate-800 border-slate-700 text-slate-100"
+                      className="bg-primary-700/80 border-primary-600/80 text-primary-50"
                     />
                   </div>
                 </div>
@@ -340,23 +340,23 @@ export default function OnboardingPage() {
           {currentStep === 3 && (
             <div className="space-y-6">
               <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold text-slate-50 mb-2">Set your preferences</h2>
-                <p className="text-slate-400">Customize how you work with Quotla</p>
+                <h2 className="text-3xl font-bold text-primary-50 mb-2">Set your preferences</h2>
+                <p className="text-primary-400">Customize how you work with Quotla</p>
               </div>
 
               <div className="space-y-6">
-                <div className="p-6 bg-slate-800/50 rounded-lg border border-slate-700">
-                  <Label htmlFor="default_currency" className="text-slate-200 text-lg mb-4 block">
+                <div className="p-6 bg-primary-700/50 rounded-lg border border-primary-600/80">
+                  <Label htmlFor="default_currency" className="text-primary-100 text-lg mb-4 block">
                     Default Currency
                   </Label>
-                  <p className="text-sm text-slate-400 mb-4">
+                  <p className="text-sm text-primary-400 mb-4">
                     This will be the default currency for your quotes and invoices. You can always change it later.
                   </p>
                   <Select
                     value={formData.default_currency}
                     onValueChange={(value) => setFormData({ ...formData, default_currency: value })}
                   >
-                    <SelectTrigger className="bg-slate-900 border-slate-700 text-slate-100">
+                    <SelectTrigger className="bg-primary-700 border-primary-600/80 text-primary-50">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -370,8 +370,8 @@ export default function OnboardingPage() {
                 </div>
 
                 <div className="p-6 bg-gradient-to-br from-orange-500/10 to-pink-500/10 rounded-lg border border-orange-500/30">
-                  <h3 className="text-lg font-semibold text-slate-50 mb-2">🎉 You're almost ready!</h3>
-                  <p className="text-sm text-slate-300">
+                  <h3 className="text-lg font-semibold text-primary-50 mb-2">🎉 You're almost ready!</h3>
+                  <p className="text-sm text-primary-200">
                     Click "Complete Setup" to finish your onboarding and start creating professional quotes and invoices with AI.
                   </p>
                 </div>
@@ -386,23 +386,23 @@ export default function OnboardingPage() {
                 <CheckCircle2 className="w-10 h-10 text-white" />
               </div>
               <div>
-                <h1 className="text-4xl font-bold text-slate-50 mb-4">
+                <h1 className="text-4xl font-bold text-primary-50 mb-4">
                   You're all set! 🚀
                 </h1>
-                <p className="text-lg text-slate-400 max-w-xl mx-auto">
+                <p className="text-lg text-primary-400 max-w-xl mx-auto">
                   Your account is ready. Create your first quote or invoice.
                 </p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8 max-w-xl mx-auto">
-                <div className="p-6 bg-slate-800/50 rounded-lg border border-slate-700 text-left">
-                  <h3 className="font-semibold text-slate-200 mb-2">📄 Create Invoice</h3>
-                  <p className="text-sm text-slate-400">
+                <div className="p-6 bg-primary-700/50 rounded-lg border border-primary-600/80 text-left">
+                  <h3 className="font-semibold text-primary-100 mb-2">📄 Create Invoice</h3>
+                  <p className="text-sm text-primary-400">
                     Create professional quotes and invoices for your clients
                   </p>
                 </div>
-                <div className="p-6 bg-slate-800/50 rounded-lg border border-slate-700 text-left">
-                  <h3 className="font-semibold text-slate-200 mb-2">📊 Manage Clients</h3>
-                  <p className="text-sm text-slate-400">
+                <div className="p-6 bg-primary-700/50 rounded-lg border border-primary-600/80 text-left">
+                  <h3 className="font-semibold text-primary-100 mb-2">📊 Manage Clients</h3>
+                  <p className="text-sm text-primary-400">
                     Add clients, track invoices, and manage your business
                   </p>
                 </div>
@@ -418,12 +418,12 @@ export default function OnboardingPage() {
           )}
 
           {/* Navigation Buttons */}
-          <div className="flex justify-between items-center mt-8 pt-6 border-t border-slate-700">
+          <div className="flex justify-between items-center mt-8 pt-6 border-t border-primary-600/80">
             <Button
               onClick={handleBack}
               variant="ghost"
               disabled={currentStep === 1 || currentStep === 4 || loading}
-              className="text-slate-400 hover:text-slate-200"
+              className="text-primary-400 hover:text-primary-100"
             >
               Back
             </Button>
@@ -460,7 +460,7 @@ export default function OnboardingPage() {
           <div className="text-center mt-4">
             <button
               onClick={() => router.push('/business/dashboard')}
-              className="text-sm text-slate-500 hover:text-slate-300 transition-colors"
+              className="text-sm text-primary-400 hover:text-primary-200 transition-colors"
             >
               Skip for now
             </button>

@@ -52,7 +52,7 @@ function ConfirmationSent({ email }: { email: string }) {
       </div>
 
       {resendSuccess && (
-        <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-2 rounded text-sm">
+        <div className="bg-quotla-orange/10 border border-quotla-orange/30 text-quotla-orange px-4 py-2 rounded text-sm">
           Confirmation email resent successfully!
         </div>
       )}

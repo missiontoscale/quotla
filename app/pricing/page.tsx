@@ -189,7 +189,7 @@ export default function PricingPage() {
                           </div>
                           <div className="w-full bg-primary-600 rounded-full h-2">
                             <div
-                              className="bg-purple-600 h-2 rounded-full transition-all"
+                              className="bg-quotla-orange h-2 rounded-full transition-all"
                               style={{ width: `${Math.min(quotaInfo.invoices.percentage, 100)}%` }}
                             />
                           </div>

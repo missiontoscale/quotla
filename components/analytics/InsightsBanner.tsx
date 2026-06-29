@@ -47,10 +47,10 @@ const severityStyles: Record<
   { bg: string; border: string; icon: string; badge: string }
 > = {
   info: {
-    bg: 'bg-blue-950/30',
-    border: 'border-blue-500/20',
-    icon: 'text-blue-400',
-    badge: 'bg-blue-500/20 text-blue-300',
+    bg: 'bg-quotla-green/15',
+    border: 'border-quotla-green/30',
+    icon: 'text-emerald-400',
+    badge: 'bg-quotla-green/20 text-emerald-300',
   },
   warning: {
     bg: 'bg-amber-950/30',

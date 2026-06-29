@@ -192,7 +192,7 @@ export default function AboutPage() {
               {
                 title: 'Agencies',
                 description: 'Manage multiple clients with organized project workflows.',
-                color: 'from-purple-500 to-pink-500',
+                color: 'from-quotla-orange to-secondary-500',
                 image: '/images/home/managing-multiple-cleints.jpg'
               }
             ].map((item, idx) => (
@@ -265,12 +265,12 @@ export default function AboutPage() {
               {
                 title: 'Security',
                 description: 'Your data is encrypted and always protected.',
-                color: 'bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-blue-500'
+                color: 'bg-gradient-to-br from-quotla-orange/10 to-quotla-orange/5 border-quotla-orange'
               },
               {
                 title: 'Empathy',
                 description: 'Built by entrepreneurs, for entrepreneurs.',
-                color: 'bg-gradient-to-br from-pink-500/10 to-pink-500/5 border-pink-500'
+                color: 'bg-gradient-to-br from-secondary-400/10 to-secondary-400/5 border-secondary-400'
               }
             ].map((value, idx) => (
               <div
