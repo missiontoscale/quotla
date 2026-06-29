@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo, useRef } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { useUserCurrency } from '@/hooks/useUserCurrency'
 import { deductStockForInvoice, restoreStockForInvoice, hasStockBeenDeducted } from '@/lib/inventory/stock-operations'
-import { FileText, User, Calendar, DollarSign, Plus, Minus, Trash2, Package, Check, ChevronsUpDown, UserPlus, Save, Download, X, Loader2 } from 'lucide-react'
+import { FileText, User, Calendar, DollarSign, Plus, Minus, Trash2, Package, Check, ChevronsUpDown, UserPlus, Save, Download, X, Loader2, Edit } from 'lucide-react'
 import { exportToPDF, exportToWord, exportToPNG } from '@/lib/export'
 import type { Profile, InvoiceWithItems } from '@/types'
 import {
@@ -840,10 +840,21 @@ export function AddInvoiceDialog({
         <DialogHeader className="sticky top-0 z-10 bg-primary-700 border-b border-primary-600 pb-3 -mx-3 md:-mx-4 px-3 md:px-4 pt-4">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-xl">
-              {isViewMode ? 'View Invoice' : isEditMode ? 'Edit Invoice' : 'Create Invoice'}
+              {isViewMode && !isEditing ? 'View Invoice' : isEditMode || isEditing ? 'Edit Invoice' : 'Create Invoice'}
             </DialogTitle>
             {isViewMode && (
               <div className="flex items-center gap-2">
+                {!isEditing && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setIsEditing(true)}
+                    className="border-quotla-orange text-quotla-orange hover:bg-quotla-orange/10 h-9 gap-1.5"
+                  >
+                    <Edit className="h-4 w-4" />
+                    Edit
+                  </Button>
+                )}
                 <Button
                   type="button"
                   onClick={() => handleExport('pdf')}
