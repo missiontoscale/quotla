@@ -887,9 +887,9 @@ export function AddInvoiceDialog({
                   <div className={cn(
                     'w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold border-2 transition-colors',
                     index < currentStep
-                      ? 'bg-quotla-orange border-cyan-500 text-white'
+                      ? 'bg-quotla-orange border-quotla-orange text-white'
                       : index === currentStep
-                        ? 'bg-transparent border-cyan-400 text-quotla-orange'
+                        ? 'bg-transparent border-quotla-orange text-quotla-orange'
                         : 'bg-transparent border-primary-600/80 text-primary-400'
                   )}>
                     {index < currentStep ? <Check className="h-3.5 w-3.5" /> : index + 1}

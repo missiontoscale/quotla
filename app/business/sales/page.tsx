@@ -1210,7 +1210,7 @@ function SalesContent() {
             <div className="pt-3 border-t border-primary-600">
               <div className="w-full bg-primary-700 rounded-full h-2 overflow-hidden">
                 <div
-                  className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-500"
+                  className="h-full bg-gradient-to-r from-quotla-green to-quotla-orange transition-all duration-500"
                   style={{ width: `${Math.min((stats as any).conversionRate || 0, 100)}%` }}
                 />
               </div>

@@ -256,14 +256,14 @@ export function NotificationCenter() {
               {unreadCount > 0 && (
                 <button
                   onClick={markAllAsRead}
-                  className="text-[0.75rem] text-slate-400 hover:text-slate-200 px-2 py-1 rounded hover:bg-slate-800 transition-colors"
+                  className="text-[0.75rem] text-primary-400 hover:text-primary-200 px-2 py-1 rounded hover:bg-primary-700 transition-colors"
                 >
                   Mark all read
                 </button>
               )}
               <button
                 onClick={clearAll}
-                className="p-1.5 text-slate-400 hover:text-rose-400 rounded hover:bg-slate-800 transition-colors"
+                className="p-1.5 text-primary-400 hover:text-rose-400 rounded hover:bg-primary-700 transition-colors"
                 title="Clear all"
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -276,12 +276,12 @@ export function NotificationCenter() {
         <ScrollArea className="max-h-[400px]">
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-6 h-6 text-slate-500 animate-spin" />
+              <Loader2 className="w-6 h-6 text-primary-500 animate-spin" />
             </div>
           ) : notifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 px-4">
-              <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center mb-3">
-                <Bell className="w-6 h-6 text-slate-500" />
+              <div className="w-12 h-12 rounded-full bg-primary-700 flex items-center justify-center mb-3">
+                <Bell className="w-6 h-6 text-primary-500" />
               </div>
               <p className="text-[0.81rem] text-primary-400 font-medium">No notifications yet</p>
               <p className="text-[0.75rem] text-primary-500 mt-1 text-center">

@@ -723,17 +723,17 @@ function ProductsContent() {
 
           {/* Visual breakdown bar */}
           <div className="mb-3">
-            <div className="h-2 bg-primary-700 rounded-full overflow-hidden flex">
+            <div className="h-2 bg-primary-600 rounded-full overflow-hidden flex">
               <div
-                className="bg-emerald-500 transition-all duration-500"
+                className="bg-quotla-green transition-all duration-500"
                 style={{ width: `${(stats.inStock / stats.total) * 100}%` }}
               />
               <div
-                className="bg-amber-500 transition-all duration-500"
+                className="bg-quotla-orange transition-all duration-500"
                 style={{ width: `${(stats.lowStock / stats.total) * 100}%` }}
               />
               <div
-                className="bg-rose-500 transition-all duration-500"
+                className="bg-rose-700/60 transition-all duration-500"
                 style={{ width: `${(stats.outOfStock / stats.total) * 100}%` }}
               />
             </div>

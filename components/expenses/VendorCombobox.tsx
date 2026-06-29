@@ -129,7 +129,7 @@ export function VendorCombobox({
                     onSelect={handleUseCustomVendor}
                     className="cursor-pointer hover:bg-primary-700 text-primary-50"
                   >
-                    <Plus className="mr-2 h-4 w-4 text-cyan-400" />
+                    <Plus className="mr-2 h-4 w-4 text-quotla-orange" />
                     <span>
                       Use &quot;{searchValue.trim()}&quot; as vendor
                     </span>
@@ -153,7 +153,7 @@ export function VendorCombobox({
                       className={cn(
                         'mr-2 h-4 w-4',
                         selectedVendorId === vendor.id
-                          ? 'opacity-100 text-cyan-400'
+                          ? 'opacity-100 text-quotla-orange'
                           : 'opacity-0'
                       )}
                     />
