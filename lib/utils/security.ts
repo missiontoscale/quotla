@@ -80,9 +80,9 @@ export async function logAudit(
     action,
     resource_type: resourceType,
     resource_id: resourceId,
-    details: details || null,
+    details: details as never || null,
     ip_address: ipAddress,
-  })
+  } as never)
 }
 
 export function getClientIp(request: Request): string {

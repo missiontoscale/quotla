@@ -269,7 +269,7 @@ export async function POST(request: NextRequest) {
 async function updateImportStatus(
   supabase: Awaited<ReturnType<typeof createClient>>,
   batchId: string,
-  status: string,
+  status: "processing" | "completed" | "failed" | "undone",
   errorMessage?: string
 ) {
   await supabase

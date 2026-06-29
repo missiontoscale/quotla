@@ -35,7 +35,7 @@ export const supabase = createBrowserClient<Database>(supabaseUrl, supabaseAnonK
 // Handle auth state changes and clean up invalid sessions
 supabase.auth.onAuthStateChange(async (event, session) => {
   // Clear invalid sessions
-  if (event === 'TOKEN_REFRESH_FAILED' || event === 'USER_DELETED') {
+  if (event === 'TOKEN_REFRESH_FAILED' as any || event === 'USER_DELETED' as any) {
     await supabase.auth.signOut()
   }
 })

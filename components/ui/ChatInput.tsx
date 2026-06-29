@@ -106,7 +106,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
           px-4 py-3 ${BORDERS.ROUNDED_MD}
           border-2 border-${COLORS.PRIMARY[500]}
           focus-within:border-${COLORS.PRIMARY[500]}
-          focus-within:ring-2 focus-within:ring-${COLORS.PRIMARY[200]}
+          focus-within:ring-2 focus-within:ring-${COLORS.PRIMARY[300]}
           bg-white transition-all
         `.trim().replace(/\s+/g, ' ')}
       >

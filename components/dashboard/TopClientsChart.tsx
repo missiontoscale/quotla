@@ -5,6 +5,8 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { supabase } from '@/lib/supabase/client'
 import { useAuth } from '@/contexts/AuthContext'
 import { Card } from '@/components/ui/card'
+import { formatCurrency } from '@/lib/utils/currency'
+import { useDisplayCurrency } from '@/hooks/useUserCurrency'
 
 interface ClientData {
   name: string
@@ -14,6 +16,7 @@ interface ClientData {
 
 export default function TopClientsChart() {
   const { user } = useAuth()
+  const { displayCurrency } = useDisplayCurrency()
   const [data, setData] = useState<ClientData[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -45,7 +48,7 @@ export default function TopClientsChart() {
       const clientMap = new Map<string, { name: string; revenue: number; invoices: number }>()
 
       invoices.forEach(inv => {
-        const customer = inv.customer as { id: string; full_name: string; company_name: string | null } | null
+        const customer = inv.customer as unknown as { id: string; full_name: string; company_name: string | null } | null
         const clientKey = customer?.id || inv.client_id || 'unknown'
         const clientName = customer?.company_name || customer?.full_name || 'Unknown Customer'
 
@@ -133,10 +136,10 @@ export default function TopClientsChart() {
               borderRadius: '8px',
               color: '#f1f5f9'
             }}
-            formatter={(value: number, name: string) => {
-              if (name === 'revenue') return [`$${value.toLocaleString()}`, 'Revenue']
-              return [value, 'Invoices']
-            }}
+                  formatter={((value: number | undefined, name: string) => {
+                    if (name === 'revenue') return [formatCurrency(value ?? 0, displayCurrency), 'Revenue'];
+                    return [value, 'Invoices'];
+                  }) as never}
           />
           <Bar dataKey="revenue" fill="#f97316" radius={[8, 8, 0, 0]} />
         </BarChart>

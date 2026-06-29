@@ -133,8 +133,8 @@ function ExpensesContent() {
       const { data, error } = await supabase
         .from('expenses')
         .select('*, suppliers(name)')
-        .eq('user_id', user?.id)
-        .order('expense_date', { ascending: false });
+        .eq('user_id', user!.id)
+        .order('expense_date', { ascending: false } as never);
 
       if (error) throw error;
 
@@ -248,8 +248,8 @@ function ExpensesContent() {
       const { data, error } = await supabase
         .from('suppliers')
         .select('*')
-        .eq('user_id', user?.id)
-        .order('created_at', { ascending: false });
+        .eq('user_id', user!.id)
+        .order('created_at', { ascending: false } as never);
 
       if (error) throw error;
 
@@ -304,7 +304,7 @@ function ExpensesContent() {
         .from('expenses')
         .delete()
         .eq('id', row.id)
-        .eq('user_id', user?.id);
+        .eq('user_id', user!.id);
 
       if (error) throw error;
       fetchExpenses();
@@ -335,7 +335,7 @@ function ExpensesContent() {
         .from('suppliers')
         .delete()
         .eq('id', row.id)
-        .eq('user_id', user?.id);
+        .eq('user_id', user!.id);
 
       if (error) throw error;
       fetchVendors();
@@ -729,7 +729,7 @@ function ExpensesContent() {
                     fontSize: '12px',
                     color: '#fffad6'
                   }}
-                  formatter={(value: number) => [formatCurrency(value, displayCurrency), 'Expenses']}
+                  formatter={(value: number | undefined) => [formatCurrency(value ?? 0, displayCurrency), 'Expenses']}
                 />
                 <Area
                   type="monotone"

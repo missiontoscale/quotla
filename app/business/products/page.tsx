@@ -193,7 +193,7 @@ function ProductsContent() {
         ? filterArrayByDate(data || [], (m: any) => m.created_at)
         : data || [];
 
-      const stockMovements = filteredMovements as StockMovement[];
+      const stockMovements = filteredMovements as unknown as StockMovement[];
       setMovements(stockMovements);
 
       // Calculate today's stats
@@ -286,7 +286,7 @@ function ProductsContent() {
       const { data: paidInvoices } = await supabase
         .from('invoices')
         .select('id')
-        .eq('user_id', user?.id)
+        .eq('user_id', user!.id)
         .eq('status', 'paid');
 
       if (!paidInvoices || paidInvoices.length === 0) {
@@ -456,7 +456,7 @@ function ProductsContent() {
         .from('inventory_items')
         .delete()
         .eq('id', row.id)
-        .eq('user_id', user?.id);
+        .eq('user_id', user!.id);
 
       if (error) throw error;
 
@@ -695,7 +695,7 @@ function ProductsContent() {
         onOpenChange={setEditDialogOpen}
         onSuccess={handleProductAdded}
         productId={selectedProductId}
-        mode={dialogMode}
+        mode={dialogMode as 'create' | 'edit'}
       />
       <AdjustStockDialog
         open={stockDialogOpen}
@@ -997,12 +997,12 @@ function ProductsContent() {
                     fontSize: '12px',
                     color: '#fffad6'
                   }}
-                  formatter={(value: number, name: string) => {
+                  formatter={((value: number, name: string) => {
                     if (name === 'inventoryValue') {
                       return [formatCurrency(value, displayCurrency), 'Inventory Value'];
                     }
                     return [value, name === 'stockIn' ? 'Stock In' : 'Stock Out'];
-                  }}
+                  }) as never}
                 />
                 <Bar yAxisId="quantity" dataKey="stockIn" fill="#10b981" name="Stock In" />
                 <Bar yAxisId="quantity" dataKey="stockOut" fill="#ef4444" name="Stock Out" />

@@ -166,7 +166,7 @@ function SalesContent() {
       const { data: customersData, error: customersError } = await supabase
         .from('customers')
         .select('*')
-        .eq('user_id', user?.id)
+        .eq('user_id', user!.id)
         .order('created_at', { ascending: false });
 
       if (customersError) throw customersError;
@@ -221,7 +221,7 @@ function SalesContent() {
       const { data: invoicesData, error: invoicesError } = await supabase
         .from('invoices')
         .select('*')
-        .eq('user_id', user?.id)
+        .eq('user_id', user!.id)
         .order('created_at', { ascending: false });
 
       if (invoicesError) throw invoicesError;
@@ -507,7 +507,7 @@ function SalesContent() {
       const { data: lastYearInvoices } = await supabase
         .from('invoices')
         .select('id, total, status, issue_date')
-        .eq('user_id', user?.id)
+        .eq('user_id', user!.id)
         .eq('status', 'paid')
         .gte('issue_date', format(yoyRange.previous.start, 'yyyy-MM-dd'))
         .lte('issue_date', format(yoyRange.previous.end, 'yyyy-MM-dd'));
@@ -604,7 +604,7 @@ function SalesContent() {
         .from('customers')
         .delete()
         .eq('id', row.id)
-        .eq('user_id', user?.id);
+        .eq('user_id', user!.id);
 
       if (error) throw error;
       fetchCustomers();
@@ -642,8 +642,8 @@ function SalesContent() {
 
     try {
       // If invoice was sent or paid, restore stock before deleting
-      if ((row.status === 'sent' || row.status === 'paid') && user?.id) {
-        const result = await restoreStockForInvoice(row.id, user.id);
+      if ((row.status === 'sent' || row.status === 'paid') && user!.id) {
+        const result = await restoreStockForInvoice(row.id, user!.id);
         if (!result.success) {
           console.error('Stock restoration failed:', result.error);
           // Continue with deletion even if stock restoration fails
@@ -654,7 +654,7 @@ function SalesContent() {
         .from('invoices')
         .delete()
         .eq('id', row.id)
-        .eq('user_id', user?.id);
+        .eq('user_id', user!.id);
 
       if (error) throw error;
       fetchInvoices();
@@ -792,16 +792,16 @@ function SalesContent() {
         onOpenChange={setEditCustomerOpen}
         onSuccess={handleCustomerAdded}
         customerId={selectedCustomerId}
-        mode={customerDialogMode}
+        mode={customerDialogMode as 'create' | 'edit'}
       />
       <CustomerListModal
         open={customerListModalOpen}
         onOpenChange={setCustomerListModalOpen}
-        customers={customers}
+        customers={customers as any}
         currency={displayCurrency}
-        onView={handleViewCustomer}
-        onEdit={handleEditCustomer}
-        onDelete={handleDeleteCustomer}
+        onView={handleViewCustomer as any}
+        onEdit={handleEditCustomer as any}
+        onDelete={handleDeleteCustomer as any}
         onAddCustomer={handleAddCustomerFromModal}
       />
       <AddInvoiceDialog
@@ -819,11 +819,11 @@ function SalesContent() {
       <InvoiceListModal
         open={invoiceListModalOpen}
         onOpenChange={setInvoiceListModalOpen}
-        invoices={invoices}
+        invoices={invoices as any}
         currency={displayCurrency}
-        onView={handleViewInvoice}
-        onEdit={handleEditInvoice}
-        onDelete={handleDeleteInvoice}
+        onView={handleViewInvoice as any}
+        onEdit={handleEditInvoice as any}
+        onDelete={handleDeleteInvoice as any}
         onAddInvoice={handleAddInvoiceFromModal}
       />
       <BankImportModal
@@ -1066,13 +1066,13 @@ function SalesContent() {
                     fontSize: '12px',
                     color: '#fffad6'
                   }}
-                  formatter={(value: number, name: string) => {
+                  formatter={((value: number | undefined, name: string) => {
                     const labels: Record<string, string> = {
                       revenue: 'Revenue',
                       profit: 'Profit'
                     };
-                    return [formatCurrency(value, displayCurrency), labels[name] || name];
-                  }}
+                    return [formatCurrency(value ?? 0, displayCurrency), labels[name] || name];
+                  }) as never}
                 />
                 <Area
                   type="monotone"
@@ -1335,7 +1335,7 @@ function SalesContent() {
               customers.slice(0, 10).map((customer) => (
                 <CustomerPreviewCard
                   key={customer.id}
-                  customer={customer}
+                  customer={customer as any}
                   currency={displayCurrency}
                   onClick={() => handleViewCustomer(customer)}
                 />

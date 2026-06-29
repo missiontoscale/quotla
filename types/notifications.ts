@@ -20,7 +20,7 @@ export interface Notification {
   message: string
   priority: NotificationPriority
   is_read: boolean
-  read_at?: string
+  read_at: string | null
   action_url?: string
   metadata?: Record<string, unknown>
   created_at: string

@@ -20,12 +20,12 @@
 
 import React from 'react'
 import { COLORS, TYPOGRAPHY, SPACING } from '@/lib/constants'
-import { Button } from './button'
+import { Button } from '@/components/ui/button'
 
 export interface EmptyStateAction {
   label: string
   onClick: () => void
-  variant?: 'primary' | 'secondary' | 'ghost'
+  variant?: 'default' | 'secondary' | 'ghost'
 }
 
 export interface EmptyStateProps {
@@ -67,8 +67,8 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
       {/* Action button */}
       {action && (
         <Button
-          variant={action.variant || 'primary'}
-          size="md"
+          variant={action.variant || 'default'}
+          size="default"
           onClick={action.onClick}
         >
           {action.label}

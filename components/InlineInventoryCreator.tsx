@@ -53,6 +53,7 @@ export default function InlineInventoryCreator({ isOpen, onClose, onItemCreated,
           {
             user_id: user.id,
             name: formData.name,
+            item_type: 'product',
             sku: formData.sku || null,
             description: formData.description || null,
             unit_price: parseFloat(formData.unit_price),
@@ -63,7 +64,7 @@ export default function InlineInventoryCreator({ isOpen, onClose, onItemCreated,
             low_stock_threshold: formData.track_inventory ? parseInt(formData.low_stock_threshold) : 0,
             category: formData.category || null,
             is_active: true,
-          },
+          } as never,
         ])
         .select()
         .single()

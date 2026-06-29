@@ -284,7 +284,7 @@ export async function getScheduledMeetings(
     throw error;
   }
 
-  return data || [];
+  return (data || []) as unknown as ScheduledMeeting[];
 }
 
 /**

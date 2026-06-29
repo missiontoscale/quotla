@@ -121,7 +121,7 @@ export default function Navbar() {
               <div className="pl-4 mt-2 space-y-1">
                 {link.dropdownItems.map((item) => (
                   <Link
-                    key={item.href}
+                    key={item.href + item.label}
                     href={item.href}
                     onClick={() => setMobileMenuOpen(false)}
                     className="block px-4 py-2.5 text-sm text-[#fffad6]/80 hover:text-[#ce6203] transition-colors border-l-2 border-transparent hover:border-[#ce6203] hover:bg-[#ce6203]/5"
@@ -159,7 +159,7 @@ export default function Navbar() {
               <div className="py-3 px-2">
                 {link.dropdownItems.map((item, index) => (
                   <Link
-                    key={item.href}
+                    key={item.href + item.label}
                     href={item.href}
                     onClick={() => setOpenDropdown(null)}
                     className="relative flex items-start gap-4 px-4 py-3.5 rounded-lg hover:bg-[#445642]/20 transition-all duration-200 group"

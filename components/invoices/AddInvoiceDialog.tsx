@@ -367,10 +367,10 @@ export function AddInvoiceDialog({
         .insert({
           user_id: user.id,
           name: lineItem.description,
+          item_type: 'service',
           unit_price: lineItem.unit_price,
-          quantity: 0, // Start with 0 stock
           is_active: true,
-        })
+        } as never)
         .select('id, name, unit_price')
         .single()
 
@@ -693,7 +693,7 @@ export function AddInvoiceDialog({
 
       const { error: itemsError } = await supabase
         .from('invoice_items')
-        .insert(itemsToInsert)
+        .insert(itemsToInsert as never)
 
       if (itemsError) throw itemsError
 

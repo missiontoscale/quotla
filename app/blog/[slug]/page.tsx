@@ -73,18 +73,19 @@ export default function BlogPostPage() {
         const markdownPost = await response.json()
         // Convert to BlogPost format
         const convertedPost: BlogPost = {
-          id: markdownPost.slug,
-          title: markdownPost.title,
-          slug: markdownPost.slug,
-          excerpt: markdownPost.excerpt,
-          content: markdownPost.content,
-          author_id: 'markdown',
-          published: markdownPost.published,
-          published_at: markdownPost.date,
-          created_at: markdownPost.date,
-          category: markdownPost.category,
-          tags: markdownPost.tags,
-          reading_time_minutes: markdownPost.readingTime,
+            id: markdownPost.slug,
+            title: markdownPost.title,
+            slug: markdownPost.slug,
+            excerpt: markdownPost.excerpt,
+            content: markdownPost.content,
+            author_id: 'markdown',
+            published: markdownPost.published,
+            published_at: markdownPost.date,
+            created_at: markdownPost.date,
+            updated_at: markdownPost.date,
+            category: markdownPost.category,
+            tags: markdownPost.tags,
+            reading_time_minutes: markdownPost.readingTime,
           featured_image_url: markdownPost.image
         }
         setPost(convertedPost)

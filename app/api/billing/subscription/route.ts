@@ -122,7 +122,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({
           success: true,
           cancelAtPeriodEnd: subscription.cancel_at_period_end,
-          currentPeriodEnd: new Date(subscription.current_period_end * 1000).toISOString(),
+          currentPeriodEnd: new Date((subscription as any).current_period_end * 1000).toISOString(),
         })
       }
 

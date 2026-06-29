@@ -13,7 +13,7 @@ import { Package, AlertCircle } from 'lucide-react'
 interface InventoryItem {
   id: string
   name: string
-  sku: string
+  sku: string | null
   description: string | null
   category: string | null
   unit_price: number

@@ -67,7 +67,7 @@ export async function GET(req: NextRequest) {
       scope: response.scope,
       is_active: true,
       updated_at: new Date().toISOString(),
-    });
+    } as never);
 
     if (insertError) {
       console.error('Error storing Stripe connection:', insertError);

@@ -76,7 +76,7 @@ export function AnomalyDot({
 
   // Check if this point is an anomaly
   const anomaly = payload?.anomaly || anomalyPoints.find(
-    (a) => a.value === payload?.[dataKey as keyof typeof payload]
+    (a) => a.value === (payload as Record<string, unknown>)?.[dataKey as string]
   )
 
   if (!anomaly) {
@@ -137,7 +137,7 @@ export function AnomalyActiveDot({
   if (cx === undefined || cy === undefined) return null
 
   const anomaly = payload?.anomaly || anomalyPoints.find(
-    (a) => a.index === payload?.index
+    (a) => a.index === (payload as AnomalyPoint)?.index
   )
 
   if (!anomaly) {

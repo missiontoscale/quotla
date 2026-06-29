@@ -40,6 +40,7 @@ nul
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+context
 
 # IDE
 .vscode/

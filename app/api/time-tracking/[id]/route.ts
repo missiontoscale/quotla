@@ -6,9 +6,10 @@ import type { UpdateTimeEntryInput } from '@/types/time-tracking'
 // GET - Fetch a single time entry
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const cookieStore = await cookies()
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -38,7 +39,7 @@ export async function GET(
         quote:quotes(id, quote_number),
         invoice:invoices(id, invoice_number)
       `)
-      .eq('id', params.id)
+      .eq('id', id)
       .eq('user_id', session.user.id)
       .single()
 
@@ -59,9 +60,10 @@ export async function GET(
 // PATCH - Update a time entry (or stop it)
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const cookieStore = await cookies()
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -98,7 +100,7 @@ export async function PATCH(
     const { data: timeEntry, error } = await supabase
       .from('time_entries')
       .update(updateData)
-      .eq('id', params.id)
+      .eq('id', id)
       .eq('user_id', session.user.id)
       .select()
       .single()
@@ -120,9 +122,10 @@ export async function PATCH(
 // DELETE - Delete a time entry
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const cookieStore = await cookies()
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -147,7 +150,7 @@ export async function DELETE(
     const { error } = await supabase
       .from('time_entries')
       .delete()
-      .eq('id', params.id)
+      .eq('id', id)
       .eq('user_id', session.user.id)
 
     if (error) {

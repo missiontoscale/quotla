@@ -28,6 +28,7 @@ export interface Database {
           default_currency: string
           is_admin: boolean
           subscription_plan: string
+          onboarding_completed: boolean
           created_at: string
           updated_at: string
         }
@@ -49,6 +50,7 @@ export interface Database {
           default_currency?: string
           is_admin?: boolean
           subscription_plan?: string
+          onboarding_completed?: boolean
           created_at?: string
           updated_at?: string
         }
@@ -70,9 +72,11 @@ export interface Database {
           default_currency?: string
           is_admin?: boolean
           subscription_plan?: string
+          onboarding_completed?: boolean
           created_at?: string
           updated_at?: string
         }
+        Relationships: [];
       }
       customers: {
         Row: {
@@ -135,6 +139,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: [];
       }
       quotes: {
         Row: {
@@ -194,6 +199,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: [];
       }
       quote_items: {
         Row: {
@@ -226,6 +232,7 @@ export interface Database {
           sort_order?: number
           created_at?: string
         }
+        Relationships: [];
       }
       blog_posts: {
         Row: {
@@ -237,6 +244,10 @@ export interface Database {
           author_id: string | null
           published: boolean
           published_at: string | null
+          featured_image_url: string | null
+          category: string | null
+          tags: string[] | null
+          reading_time_minutes: number | null
           created_at: string
           updated_at: string
         }
@@ -249,6 +260,10 @@ export interface Database {
           author_id?: string | null
           published?: boolean
           published_at?: string | null
+          featured_image_url?: string | null
+          category?: string | null
+          tags?: string[] | null
+          reading_time_minutes?: number | null
           created_at?: string
           updated_at?: string
         }
@@ -261,9 +276,14 @@ export interface Database {
           author_id?: string | null
           published?: boolean
           published_at?: string | null
+          featured_image_url?: string | null
+          category?: string | null
+          tags?: string[] | null
+          reading_time_minutes?: number | null
           created_at?: string
           updated_at?: string
         }
+        Relationships: [];
       }
       blog_comments: {
         Row: {
@@ -302,6 +322,7 @@ export interface Database {
           approved_at?: string | null
           created_at?: string
         }
+        Relationships: [];
       }
       newsletter_subscribers: {
         Row: {
@@ -328,6 +349,7 @@ export interface Database {
           subscribed?: boolean
           created_at?: string
         }
+        Relationships: [];
       }
       rate_limits: {
         Row: {
@@ -354,6 +376,7 @@ export interface Database {
           window_start?: string
           created_at?: string
         }
+        Relationships: [];
       }
       audit_logs: {
         Row: {
@@ -386,6 +409,7 @@ export interface Database {
           ip_address?: string | null
           created_at?: string
         }
+        Relationships: [];
       }
       invoices: {
         Row: {
@@ -448,6 +472,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: [];
       }
       invoice_items: {
         Row: {
@@ -483,6 +508,7 @@ export interface Database {
           inventory_item_id?: string | null
           created_at?: string
         }
+        Relationships: [];
       }
       notifications: {
         Row: {
@@ -524,6 +550,7 @@ export interface Database {
           metadata?: Json | null
           created_at?: string
         }
+        Relationships: [];
       }
       expenses: {
         Row: {
@@ -601,6 +628,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: [];
       }
       bank_statement_imports: {
         Row: {
@@ -663,6 +691,7 @@ export interface Database {
           created_at?: string
           completed_at?: string | null
         }
+        Relationships: [];
       }
       stripe_customers: {
         Row: {
@@ -692,6 +721,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: [];
       }
       stripe_subscriptions: {
         Row: {
@@ -748,6 +778,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: [];
       }
       stripe_payment_intents: {
         Row: {
@@ -786,6 +817,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: [];
       }
       stripe_invoices: {
         Row: {
@@ -839,6 +871,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: [];
       }
       cancellation_surveys: {
         Row: {
@@ -868,7 +901,609 @@ export interface Database {
           would_recommend?: number | null
           created_at?: string
         }
+        Relationships: [];
       }
+      inventory_items: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          sku: string | null
+          description: string | null
+          category: string | null
+          item_type: string
+          unit_price: number
+          cost_price: number
+          currency: string
+          track_inventory: boolean
+          quantity_on_hand: number
+          low_stock_threshold: number
+          reorder_quantity: number | null
+          default_supplier_id: string | null
+          tax_rate: number | null
+          image_url: string | null
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          sku?: string | null
+          description?: string | null
+          category?: string | null
+          item_type: string
+          unit_price: number
+          cost_price: number
+          currency?: string
+          track_inventory?: boolean
+          quantity_on_hand?: number
+          low_stock_threshold?: number
+          reorder_quantity?: number | null
+          default_supplier_id?: string | null
+          tax_rate?: number | null
+          image_url?: string | null
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          name?: string
+          sku?: string | null
+          description?: string | null
+          category?: string | null
+          item_type?: string
+          unit_price?: number
+          cost_price?: number
+          currency?: string
+          track_inventory?: boolean
+          quantity_on_hand?: number
+          low_stock_threshold?: number
+          reorder_quantity?: number | null
+          default_supplier_id?: string | null
+          tax_rate?: number | null
+          image_url?: string | null
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [];
+      }
+      stock_movements: {
+        Row: {
+          id: string
+          user_id: string
+          inventory_item_id: string
+          movement_type: string
+          quantity_change: number
+          quantity_before: number
+          quantity_after: number
+          reference_type: string | null
+          reference_id: string | null
+          unit_value: number | null
+          total_value: number | null
+          notes: string | null
+          performed_by: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          inventory_item_id: string
+          movement_type: string
+          quantity_change: number
+          quantity_before: number
+          quantity_after: number
+          reference_type?: string | null
+          reference_id?: string | null
+          unit_value?: number | null
+          total_value?: number | null
+          notes?: string | null
+          performed_by: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          inventory_item_id?: string
+          movement_type?: string
+          quantity_change?: number
+          quantity_before?: number
+          quantity_after?: number
+          reference_type?: string | null
+          reference_id?: string | null
+          unit_value?: number | null
+          total_value?: number | null
+          notes?: string | null
+          performed_by?: string
+          created_at?: string
+        }
+        Relationships: [];
+      }
+      suppliers: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          contact_person: string | null
+          email: string | null
+          phone: string | null
+          address: string | null
+          city: string | null
+          state: string | null
+          postal_code: string | null
+          country: string | null
+          tax_id: string | null
+          payment_terms: string | null
+          notes: string | null
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          contact_person?: string | null
+          email?: string | null
+          phone?: string | null
+          address?: string | null
+          city?: string | null
+          state?: string | null
+          postal_code?: string | null
+          country?: string | null
+          tax_id?: string | null
+          payment_terms?: string | null
+          notes?: string | null
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          name?: string
+          contact_person?: string | null
+          email?: string | null
+          phone?: string | null
+          address?: string | null
+          city?: string | null
+          state?: string | null
+          postal_code?: string | null
+          country?: string | null
+          tax_id?: string | null
+          payment_terms?: string | null
+          notes?: string | null
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [];
+      }
+      low_stock_alerts: {
+        Row: {
+          id: string
+          user_id: string
+          inventory_item_id: string
+          triggered_at: string
+          quantity_at_trigger: number
+          threshold: number
+          is_acknowledged: boolean
+          acknowledged_at: string | null
+          notification_sent: boolean
+          notification_sent_at: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          inventory_item_id: string
+          triggered_at?: string
+          quantity_at_trigger: number
+          threshold: number
+          is_acknowledged?: boolean
+          acknowledged_at?: string | null
+          notification_sent?: boolean
+          notification_sent_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          inventory_item_id?: string
+          triggered_at?: string
+          quantity_at_trigger?: number
+          threshold?: number
+          is_acknowledged?: boolean
+          acknowledged_at?: string | null
+          notification_sent?: boolean
+          notification_sent_at?: string | null
+          created_at?: string
+        }
+        Relationships: [];
+      }
+      calendly_connections: {
+        Row: {
+          id: string
+          user_id: string
+          access_token: string
+          refresh_token: string
+          token_expires_at: string
+          calendly_user_uri: string
+          calendly_email: string
+          calendly_organization_uri: string | null
+          default_event_type_uri: string | null
+          webhook_subscription_uri: string | null
+          is_active: boolean
+          last_synced_at: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          access_token: string
+          refresh_token: string
+          token_expires_at: string
+          calendly_user_uri: string
+          calendly_email: string
+          calendly_organization_uri?: string | null
+          default_event_type_uri?: string | null
+          webhook_subscription_uri?: string | null
+          is_active?: boolean
+          last_synced_at?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          access_token?: string
+          refresh_token?: string
+          token_expires_at?: string
+          calendly_user_uri?: string
+          calendly_email?: string
+          calendly_organization_uri?: string | null
+          default_event_type_uri?: string | null
+          webhook_subscription_uri?: string | null
+          is_active?: boolean
+          last_synced_at?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [];
+      }
+      scheduled_meetings: {
+        Row: {
+          id: string
+          user_id: string
+          client_id: string | null
+          quote_id: string | null
+          invoice_id: string | null
+          calendly_event_uri: string
+          calendly_invitee_uri: string
+          event_type_name: string
+          invitee_email: string
+          invitee_name: string
+          start_time: string
+          end_time: string
+          location: string | null
+          status: string
+          canceled_at: string | null
+          canceled_by: string | null
+          cancellation_reason: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          client_id?: string | null
+          quote_id?: string | null
+          invoice_id?: string | null
+          calendly_event_uri: string
+          calendly_invitee_uri: string
+          event_type_name: string
+          invitee_email: string
+          invitee_name: string
+          start_time: string
+          end_time: string
+          location?: string | null
+          status?: string
+          canceled_at?: string | null
+          canceled_by?: string | null
+          cancellation_reason?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          client_id?: string | null
+          quote_id?: string | null
+          invoice_id?: string | null
+          calendly_event_uri?: string
+          calendly_invitee_uri?: string
+          event_type_name?: string
+          invitee_email?: string
+          invitee_name?: string
+          start_time?: string
+          end_time?: string
+          location?: string | null
+          status?: string
+          canceled_at?: string | null
+          canceled_by?: string | null
+          cancellation_reason?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [];
+      }
+      stripe_connections: {
+        Row: {
+          id: string
+          user_id: string
+          stripe_account_id: string
+          stripe_email: string | null
+          access_token: string
+          refresh_token: string
+          token_type: string
+          scope: string
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          stripe_account_id: string
+          stripe_email?: string | null
+          access_token: string
+          refresh_token: string
+          token_type: string
+          scope: string
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          stripe_account_id?: string
+          stripe_email?: string | null
+          access_token?: string
+          refresh_token?: string
+          token_type?: string
+          scope?: string
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [];
+      }
+      oauth_states: {
+        Row: {
+          id: string
+          state: string
+          user_id: string | null
+          provider: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          state: string
+          user_id?: string | null
+          provider: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          state?: string
+          user_id?: string | null
+          provider?: string
+          created_at?: string
+        }
+        Relationships: [];
+      }
+      project_costs: {
+        Row: {
+          id: string
+          user_id: string
+          description: string
+          cost_type: string
+          amount: number
+          quote_id: string | null
+          invoice_id: string | null
+          client_id: string | null
+          currency: string
+          date: string
+          is_reimbursable: boolean
+          reimbursed: boolean
+          notes: string | null
+          receipt_url: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          description: string
+          cost_type: string
+          amount: number
+          quote_id?: string | null
+          invoice_id?: string | null
+          client_id?: string | null
+          currency?: string
+          date?: string
+          is_reimbursable?: boolean
+          reimbursed?: boolean
+          notes?: string | null
+          receipt_url?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          description?: string
+          cost_type?: string
+          amount?: number
+          quote_id?: string | null
+          invoice_id?: string | null
+          client_id?: string | null
+          currency?: string
+          date?: string
+          is_reimbursable?: boolean
+          reimbursed?: boolean
+          notes?: string | null
+          receipt_url?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [];
+      }
+      project_profitability: {
+        Row: {
+          id: string
+          user_id: string
+          client_id: string | null
+          client_name: string | null
+          quote_number: string | null
+          quoted_amount: number | null
+          invoice_id: string | null
+          invoice_number: string | null
+          invoiced_amount: number | null
+          amount_paid: number | null
+          invoice_status: string | null
+          total_costs: number | null
+          labor_costs: number | null
+          materials_costs: number | null
+          overhead_costs: number | null
+          other_costs: number | null
+          time_tracking_billable: number | null
+          total_hours: number | null
+          profit: number | null
+          profit_margin_percentage: number | null
+          quote_date: string | null
+          invoice_date: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          client_id?: string | null
+          client_name?: string | null
+          quote_number?: string | null
+          quoted_amount?: number | null
+          invoice_id?: string | null
+          invoice_number?: string | null
+          invoiced_amount?: number | null
+          amount_paid?: number | null
+          invoice_status?: string | null
+          total_costs?: number | null
+          labor_costs?: number | null
+          materials_costs?: number | null
+          overhead_costs?: number | null
+          other_costs?: number | null
+          time_tracking_billable?: number | null
+          total_hours?: number | null
+          profit?: number | null
+          profit_margin_percentage?: number | null
+          quote_date?: string | null
+          invoice_date?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          client_id?: string | null
+          client_name?: string | null
+          quote_number?: string | null
+          quoted_amount?: number | null
+          invoice_id?: string | null
+          invoice_number?: string | null
+          invoiced_amount?: number | null
+          amount_paid?: number | null
+          invoice_status?: string | null
+          total_costs?: number | null
+          labor_costs?: number | null
+          materials_costs?: number | null
+          overhead_costs?: number | null
+          other_costs?: number | null
+          time_tracking_billable?: number | null
+          total_hours?: number | null
+          profit?: number | null
+          profit_margin_percentage?: number | null
+          quote_date?: string | null
+          invoice_date?: string | null
+        }
+        Relationships: [];
+      }
+      time_entries: {
+        Row: {
+          id: string
+          user_id: string
+          client_id: string | null
+          quote_id: string | null
+          invoice_id: string | null
+          description: string
+          start_time: string
+          end_time: string | null
+          duration_seconds: number
+          is_billable: boolean
+          hourly_rate: number | null
+          billable_amount: number | null
+          status: string
+          tags: string[] | null
+          notes: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          client_id?: string | null
+          quote_id?: string | null
+          invoice_id?: string | null
+          description: string
+          start_time: string
+          end_time?: string | null
+          duration_seconds: number
+          is_billable?: boolean
+          hourly_rate?: number | null
+          billable_amount?: number | null
+          status?: string
+          tags?: string[] | null
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          client_id?: string | null
+          quote_id?: string | null
+          invoice_id?: string | null
+          description?: string
+          start_time?: string
+          end_time?: string | null
+          duration_seconds?: number
+          is_billable?: boolean
+          hourly_rate?: number | null
+          billable_amount?: number | null
+          status?: string
+          tags?: string[] | null
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [];
+      }
+    }
+    Views: {
+    }
+    Functions: {
     }
   }
 }

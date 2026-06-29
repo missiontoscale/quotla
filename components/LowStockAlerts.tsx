@@ -27,7 +27,7 @@ export default function LowStockAlerts() {
 
       if (error) throw error
 
-      setAlerts(data || [])
+      setAlerts((data || []) as unknown as LowStockAlert[])
     } catch (error) {
       console.error('Error loading alerts:', error)
     } finally {

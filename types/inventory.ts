@@ -1,62 +1,16 @@
 // Inventory Management TypeScript Types
 
-export interface Supplier {
-  id: string
-  user_id: string
-  name: string
-  contact_person?: string
-  email?: string
-  phone?: string
-  address?: string
-  city?: string
-  state?: string
-  country?: string
-  postal_code?: string
-  tax_id?: string
-  payment_terms?: string
-  notes?: string
-  is_active: boolean
-  created_at: string
-  updated_at: string
+export type DatabaseSupplier = import('./database').Database['public']['Tables']['suppliers']['Row']
+
+export interface Supplier extends DatabaseSupplier {
+  // Computed/joined fields
 }
 
 export type ItemType = 'product' | 'service'
 
-export interface InventoryItem {
-  id: string
-  user_id: string
+export type DatabaseInventoryItem = import('./database').Database['public']['Tables']['inventory_items']['Row']
 
-  // Basic Information
-  name: string
-  sku?: string
-  description?: string
-  category?: string
-  item_type: ItemType
-
-  // Pricing
-  unit_price: number
-  cost_price: number
-  currency: string
-
-  // Stock Management
-  track_inventory: boolean
-  quantity_on_hand: number
-  low_stock_threshold: number
-  reorder_quantity: number
-
-  // Supplier
-  default_supplier_id?: string
-
-  // Additional
-  tax_rate: number
-  is_active: boolean
-  image_url?: string
-
-  // Timestamps
-  created_at: string
-  updated_at: string
-
-  // Computed/joined fields (not in DB)
+export interface InventoryItem extends DatabaseInventoryItem {
   supplier?: Supplier
   is_low_stock?: boolean
   total_value?: number
@@ -122,52 +76,15 @@ export interface PurchaseOrderItem {
 export type MovementType = 'purchase' | 'sale' | 'adjustment' | 'return' | 'damage' | 'transfer'
 export type ReferenceType = 'quote' | 'invoice' | 'purchase_order' | 'manual'
 
-export interface StockMovement {
-  id: string
-  user_id: string
-  inventory_item_id: string
+export type DatabaseStockMovement = import('./database').Database['public']['Tables']['stock_movements']['Row']
 
-  // Movement Details
-  movement_type: MovementType
-  quantity_change: number
-  quantity_before: number
-  quantity_after: number
-
-  // Reference
-  reference_type?: ReferenceType
-  reference_id?: string
-
-  // Financial
-  unit_value?: number
-  total_value?: number
-
-  // Additional
-  notes?: string
-  performed_by?: string
-
-  created_at: string
-
-  // Computed/joined fields
+export interface StockMovement extends DatabaseStockMovement {
   inventory_item?: InventoryItem
 }
 
-export interface LowStockAlert {
-  id: string
-  user_id: string
-  inventory_item_id: string
+export type DatabaseLowStockAlert = import('./database').Database['public']['Tables']['low_stock_alerts']['Row']
 
-  // Alert Details
-  triggered_at: string
-  quantity_at_trigger: number
-  threshold: number
-  is_acknowledged: boolean
-  acknowledged_at?: string
-
-  // Notification
-  notification_sent: boolean
-  notification_sent_at?: string
-
-  // Computed/joined fields
+export interface LowStockAlert extends DatabaseLowStockAlert {
   inventory_item?: InventoryItem
 }
 

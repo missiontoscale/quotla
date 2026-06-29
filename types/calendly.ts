@@ -36,7 +36,7 @@ export interface ScheduledMeeting {
   start_time: string;
   end_time: string;
   location: string | null;
-  status: 'scheduled' | 'canceled' | 'completed';
+  status: string;
   canceled_at: string | null;
   canceled_by: 'host' | 'invitee' | null;
   cancellation_reason: string | null;

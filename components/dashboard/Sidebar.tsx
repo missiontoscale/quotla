@@ -36,11 +36,11 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
 
   return (
     <div
-      className={`bg-slate-900 border-r border-slate-800 flex flex-col h-full overflow-hidden transition-all duration-300 ${
+      className={`bg-primary-700 border-r border-primary-600 flex flex-col h-full overflow-hidden transition-all duration-300 ${
         collapsed ? 'w-16' : 'w-64'
       }`}
     >
-      <div className="p-3.5 border-b border-slate-800 flex items-center justify-between">
+      <div className="p-3.5 border-b border-primary-600 flex items-center justify-between">
         <Link href="/business/dashboard" className="flex items-center">
           {collapsed ? (
             <img
@@ -60,7 +60,7 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
           variant="ghost"
           size="icon"
           onClick={onToggleCollapse}
-          className="text-slate-400 hover:text-slate-100 hover:bg-slate-800 h-8 w-8"
+          className="text-primary-400 hover:text-primary-50 hover:bg-primary-700/80 h-8 w-8"
         >
           {collapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-3.5 h-3.5" />}
         </Button>
@@ -77,8 +77,8 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
                 href={item.path}
                 className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg transition-all ${
                   isActive
-                    ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
-                    : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800'
+                    ? 'bg-quotla-orange/15 text-quotla-orange border border-quotla-orange/30'
+                    : 'text-primary-400 hover:text-primary-50 hover:bg-primary-700/80'
                 }`}
                 title={collapsed ? item.label : undefined}
               >

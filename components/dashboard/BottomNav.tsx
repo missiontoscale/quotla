@@ -22,7 +22,7 @@ export function BottomNav() {
   const pathname = usePathname()
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-slate-900 border-t border-slate-800 pb-[env(safe-area-inset-bottom)]">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-primary-700 border-t border-primary-600 pb-[env(safe-area-inset-bottom)]">
       <div className="flex justify-around items-center h-16">
         {navItems.map((item) => {
           const Icon = item.icon
@@ -34,12 +34,12 @@ export function BottomNav() {
               href={item.path}
               className={`flex flex-col items-center justify-center min-w-[64px] min-h-[44px] px-2 py-1 rounded-lg transition-colors ${
                 isActive
-                  ? 'text-violet-400'
-                  : 'text-slate-400 active:text-slate-200'
+                  ? 'text-quotla-orange'
+                  : 'text-primary-400 active:text-primary-200'
               }`}
             >
-              <Icon className={`w-6 h-6 ${isActive ? 'text-violet-400' : ''}`} />
-              <span className={`text-[0.65rem] mt-1 ${isActive ? 'text-violet-400 font-medium' : ''}`}>
+              <Icon className={`w-6 h-6 ${isActive ? 'text-quotla-orange' : ''}`} />
+              <span className={`text-[0.65rem] mt-1 ${isActive ? 'text-quotla-orange font-medium' : ''}`}>
                 {item.label}
               </span>
             </Link>

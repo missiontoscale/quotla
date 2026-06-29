@@ -161,7 +161,7 @@ function SettingsContent() {
         .maybeSingle()
 
       if (calendlyData) {
-        setCalendlyConnection(calendlyData as CalendlyConnection)
+        setCalendlyConnection(calendlyData as unknown as CalendlyConnection)
         // Fetch event types
         try {
           const response = await fetch('/api/calendly/events')
@@ -183,7 +183,7 @@ function SettingsContent() {
         .maybeSingle()
 
       if (stripeData) {
-        setStripeConnection(stripeData as StripeConnection)
+        setStripeConnection(stripeData as unknown as StripeConnection)
       }
     } catch (err) {
       console.error('Error loading integrations:', err)

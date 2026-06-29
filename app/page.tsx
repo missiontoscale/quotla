@@ -8,7 +8,7 @@ import LoadingSpinner from '@/components/LoadingSpinner'
 import Navbar from '@/components/Navbar'
 import HeroCarousel from '@/components/home/HeroCarousel'
 import PricingSection from '@/components/home/PricingSection'
-import { detectUserCurrency, formatPrice, type Currency } from '@/lib/utils/currency'
+import { detectUserCurrency, formatPrice } from '@/lib/utils/currency'
 import BusinessOwnerFeatures from '@/components/home/BusinessOwnerFeatures'
 
 export default function HomePage() {
@@ -22,11 +22,7 @@ export default function HomePage() {
   const [placeholderText, setPlaceholderText] = useState('')
   const [placeholderPhraseIndex, setPlaceholderPhraseIndex] = useState(0)
   const [isPlaceholderDeleting, setIsPlaceholderDeleting] = useState(false)
-  const [currency, setCurrency] = useState<Currency>({
-    code: 'NGN',
-    symbol: '₦',
-    rate: 1,
-  })
+  const [currencyCode, setCurrencyCode] = useState('NGN')
   const [isLoadingCurrency, setIsLoadingCurrency] = useState(true)
 
   const placeholderPhrases = [
@@ -57,8 +53,8 @@ export default function HomePage() {
   useEffect(() => {
     const loadCurrency = async () => {
       setIsLoadingCurrency(true)
-      const detectedCurrency = await detectUserCurrency()
-      setCurrency(detectedCurrency)
+      const detected = await detectUserCurrency()
+      setCurrencyCode(detected)
       setIsLoadingCurrency(false)
     }
 
@@ -577,7 +573,7 @@ export default function HomePage() {
         <BusinessOwnerFeatures />
 
         {/* Story Section 6: Pricing - Wave transition - CENTERED */}
-        <PricingSection currency={currency} isLoadingCurrency={isLoadingCurrency} />
+        <PricingSection />
 
         {/* Story Section 7: FAQ - Asymmetric background */}
         <section className="relative py-32 bg-gradient-to-br from-quotla-dark via-[#1a2820] to-quotla-dark overflow-hidden">

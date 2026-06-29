@@ -10,7 +10,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
   return (
-    <div className="flex h-dvh max-h-dvh w-full max-w-full overflow-hidden bg-slate-950 text-slate-100">
+    <div className="flex h-dvh max-h-dvh w-full max-w-full overflow-hidden bg-quotla-dark text-primary-50">
       {/* Sidebar - hidden on mobile */}
       <div className="hidden md:flex flex-shrink-0">
         <Sidebar

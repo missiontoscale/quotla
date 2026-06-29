@@ -81,17 +81,13 @@ export function YoYChart({
     }
   }, [data])
 
-  const renderTooltip = ({ active, payload, label }: {
-    active?: boolean
-    payload?: Array<{ color: string; name: string; value: number }>
-    label?: string
-  }) => {
+  const renderTooltip = ({ active, payload, label }: any) => {
     if (!active || !payload || payload.length === 0) return null
 
     return (
       <div className="bg-quotla-dark border border-quotla-green/30 rounded-lg p-3 shadow-lg">
         <p className="text-primary-50 font-medium mb-2">{label}</p>
-        {payload.map((entry, index) => (
+        {payload.map((entry: any, index: number) => (
           <div
             key={index}
             className="flex items-center justify-between gap-4 text-sm"

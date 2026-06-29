@@ -150,7 +150,7 @@ export default function RevenueChart() {
               borderRadius: '8px',
               color: '#f1f5f9'
             }}
-            formatter={(value: number) => [`$${value.toLocaleString()}`, 'Revenue']}
+            formatter={((value: number | undefined) => [`$${(value ?? 0).toLocaleString()}`, 'Revenue']) as never}
           />
           <Area
             type="monotone"

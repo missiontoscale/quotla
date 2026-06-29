@@ -168,7 +168,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
           const data = await response.json()
           errorMessage = data.error || errorMessage
         } catch (e) {
-          errorMessage = `${ERROR_MESSAGES.SERVICE_UNAVAILABLE} (${response.status})`
+          errorMessage = ERROR_MESSAGES.SERVICE_UNAVAILABLE + ' (' + response.status + ')'
         }
         throw new Error(errorMessage)
       }
