@@ -2,12 +2,6 @@
  * EmptyState Component
  *
  * Empty state component with icon, title, description, and optional CTA button.
- * Used across dashboard, blog, chat interfaces, and list pages.
- *
- * Consolidates empty state patterns from:
- * - app/dashboard/page.tsx (lines 242-255)
- * - app/blog/page.tsx (lines 239-246)
- * - components/CreateModal.tsx (lines 384-427)
  *
  * Usage:
  * <EmptyState
@@ -148,22 +142,7 @@ export const EmptyStates = {
     />
   ),
 
-  NoBlogPosts: () => (
-    <EmptyState
-      icon={
-        <svg className="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={1.5}
-            d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2 2 0 00-2-2h-2"
-          />
-        </svg>
-      }
-      title="No blog posts found"
-      description="Check back later for new content."
-    />
-  ),
+
 }
 
 export default EmptyState

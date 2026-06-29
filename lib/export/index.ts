@@ -18,6 +18,17 @@ import { saveAs } from 'file-saver'
 import { format } from 'date-fns'
 import { QuoteWithItems, InvoiceWithItems, Profile, CURRENCIES } from '@/types'
 
+function escapeHtml(str: string): string {
+  const map: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#x27;',
+  }
+  return str.replace(/[&<>"']/g, (char) => map[char])
+}
+
 interface ExportData {
   type: 'quote' | 'invoice'
   data: QuoteWithItems | InvoiceWithItems
@@ -672,36 +683,67 @@ export async function exportToPNG(exportData: ExportData): Promise<void> {
 
   const issueDate = format(new Date(data.issue_date), 'MMM dd, yyyy')
 
+  const esc = escapeHtml
+
+  const fromSection = profile ? `
+    <div style="flex: 1;">
+      <h3 style="font-size: 18px; margin-bottom: 12px;">From:</h3>
+      ${profile.company_name ? `<p style="margin: 6px 0; font-weight: bold; line-height: 1.6;">${esc(profile.company_name)}</p>` : ''}
+      ${profile.address ? `<p style="margin: 6px 0; line-height: 1.6;">${esc(profile.address)}</p>` : ''}
+      ${[profile.city, profile.state, profile.postal_code].filter(Boolean).join(', ') ? `<p style="margin: 6px 0; line-height: 1.6;">${esc([profile.city, profile.state, profile.postal_code].filter(Boolean).join(', '))}</p>` : ''}
+      ${profile.country ? `<p style="margin: 6px 0; line-height: 1.6;">${esc(profile.country)}</p>` : ''}
+      ${profile.phone ? `<p style="margin: 6px 0; line-height: 1.6;">Phone: ${esc(profile.phone)}</p>` : ''}
+      ${profile.tax_id ? `<p style="margin: 6px 0; line-height: 1.6;">Tax ID: ${esc(profile.tax_id)}</p>` : ''}
+    </div>
+  ` : ''
+
+  const clientSection = data.client ? `
+    <div style="flex: 1;">
+      <h3 style="font-size: 18px; margin-bottom: 12px;">${isQuote ? 'To:' : 'Bill To:'}</h3>
+      <p style="margin: 6px 0; font-weight: bold; line-height: 1.6;">${esc(data.client.full_name)}</p>
+      ${data.client.address ? `<p style="margin: 6px 0; line-height: 1.6;">${esc(data.client.address)}</p>` : ''}
+      <p style="margin: 6px 0; line-height: 1.6;">${esc(data.client.city || '')}, ${esc(data.client.country || '')}</p>
+    </div>
+  ` : ''
+
+  const itemsRows = data.items.map((item, index) => `
+    <tr style="background-color: ${index % 2 === 0 ? '#fafafa' : '#ffffff'};">
+      <td style="padding: 12px 14px; border: 1px solid #ccc; line-height: 1.5;">${esc(item.description)}</td>
+      <td style="padding: 12px 14px; text-align: right; border: 1px solid #ccc;">${item.quantity}</td>
+      <td style="padding: 12px 14px; text-align: right; border: 1px solid #ccc;">${getCurrencySymbol(data.currency)} ${item.unit_price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+      <td style="padding: 12px 14px; text-align: right; border: 1px solid #ccc;">${getCurrencySymbol(data.currency)} ${item.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+    </tr>
+  `).join('')
+
+  const notesSection = data.notes ? `
+    <div style="margin-bottom: 30px;">
+      <h4 style="color: #666666; margin-bottom: 8px;">Notes:</h4>
+      <p style="margin: 6px 0; line-height: 1.6;">${esc(data.notes)}</p>
+    </div>
+  ` : ''
+
+  const terms = isQuote ? (data as QuoteWithItems).terms : (data as InvoiceWithItems).payment_terms
+  const termsLabel = isQuote ? 'Terms &amp; Conditions:' : 'Payment Terms:'
+  const termsSection = terms ? `
+    <div style="margin-bottom: 30px;">
+      <h4 style="color: #666666; margin-bottom: 8px;">${termsLabel}</h4>
+      <p style="margin: 6px 0; line-height: 1.6;">${esc(terms)}</p>
+    </div>
+  ` : ''
+
   tempDiv.innerHTML = `
     <div style="text-align: center; margin-bottom: 50px;">
       <h1 style="font-size: 42px; font-weight: bold; color: #1a1a1a; margin: 0;">${documentTitle}</h1>
     </div>
 
     <div style="margin-bottom: 40px;">
-      <p style="margin: 8px 0; line-height: 1.6;"><strong>${documentTitle} Number:</strong> ${documentNumber}</p>
+      <p style="margin: 8px 0; line-height: 1.6;"><strong>${documentTitle} Number:</strong> ${esc(documentNumber)}</p>
       <p style="margin: 8px 0; line-height: 1.6;"><strong>Date:</strong> ${issueDate}</p>
     </div>
 
     <div style="display: flex; margin-bottom: 40px; gap: 40px;">
-      <div style="flex: 1;">
-        <h3 style="font-size: 18px; margin-bottom: 12px;">From:</h3>
-        ${profile ? `
-          ${profile.company_name ? `<p style="margin: 6px 0; font-weight: bold; line-height: 1.6;">${profile.company_name}</p>` : ''}
-          ${profile.address ? `<p style="margin: 6px 0; line-height: 1.6;">${profile.address}</p>` : ''}
-          ${[profile.city, profile.state, profile.postal_code].filter(Boolean).join(', ') ? `<p style="margin: 6px 0; line-height: 1.6;">${[profile.city, profile.state, profile.postal_code].filter(Boolean).join(', ')}</p>` : ''}
-          ${profile.country ? `<p style="margin: 6px 0; line-height: 1.6;">${profile.country}</p>` : ''}
-          ${profile.phone ? `<p style="margin: 6px 0; line-height: 1.6;">Phone: ${profile.phone}</p>` : ''}
-          ${profile.tax_id ? `<p style="margin: 6px 0; line-height: 1.6;">Tax ID: ${profile.tax_id}</p>` : ''}
-        ` : ''}
-      </div>
-      <div style="flex: 1;">
-        <h3 style="font-size: 18px; margin-bottom: 12px;">${isQuote ? 'To:' : 'Bill To:'}</h3>
-        ${data.client ? `
-          <p style="margin: 6px 0; font-weight: bold; line-height: 1.6;">${data.client.full_name}</p>
-          ${data.client.address ? `<p style="margin: 6px 0; line-height: 1.6;">${data.client.address}</p>` : ''}
-          <p style="margin: 6px 0; line-height: 1.6;">${data.client.city || ''}, ${data.client.country || ''}</p>
-        ` : ''}
-      </div>
+      ${fromSection}
+      ${clientSection}
     </div>
 
     <div style="margin-bottom: 40px;">
@@ -715,14 +757,7 @@ export async function exportToPNG(exportData: ExportData): Promise<void> {
           </tr>
         </thead>
         <tbody>
-          ${data.items.map((item, index) => `
-            <tr style="background-color: ${index % 2 === 0 ? '#fafafa' : '#ffffff'};">
-              <td style="padding: 12px 14px; border: 1px solid #ccc; line-height: 1.5;">${item.description}</td>
-              <td style="padding: 12px 14px; text-align: right; border: 1px solid #ccc;">${item.quantity}</td>
-              <td style="padding: 12px 14px; text-align: right; border: 1px solid #ccc;">${getCurrencySymbol(data.currency)} ${item.unit_price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-              <td style="padding: 12px 14px; text-align: right; border: 1px solid #ccc;">${getCurrencySymbol(data.currency)} ${item.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-            </tr>
-          `).join('')}
+          ${itemsRows}
         </tbody>
       </table>
     </div>
@@ -734,19 +769,8 @@ export async function exportToPNG(exportData: ExportData): Promise<void> {
       <p style="margin: 12px 0 0 0; font-size: 18px; font-weight: bold;"><strong>TOTAL:</strong> ${getCurrencySymbol(data.currency)} ${data.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
     </div>
 
-    ${data.notes ? `
-      <div style="margin-bottom: 30px;">
-        <h4 style="color: #666666; margin-bottom: 8px;">Notes:</h4>
-        <p style="margin: 6px 0; line-height: 1.6;">${data.notes}</p>
-      </div>
-    ` : ''}
-
-    ${(isQuote && (data as QuoteWithItems).terms) || (!isQuote && (data as InvoiceWithItems).payment_terms) ? `
-      <div style="margin-bottom: 30px;">
-        <h4 style="color: #666666; margin-bottom: 8px;">${isQuote ? 'Terms & Conditions:' : 'Payment Terms:'}</h4>
-        <p style="margin: 6px 0; line-height: 1.6;">${isQuote ? (data as QuoteWithItems).terms : (data as InvoiceWithItems).payment_terms}</p>
-      </div>
-    ` : ''}
+    ${notesSection}
+    ${termsSection}
 
     <div style="text-align: center; margin-top: 50px;">
       <p style="font-size: 12px; color: #999999;">Generated with Quotla</p>

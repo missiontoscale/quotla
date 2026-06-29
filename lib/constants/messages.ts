@@ -86,8 +86,6 @@ export const EMPTY_STATE_TEXT = {
   NO_DEALS: 'You have sealed zero deals',
   NO_CLIENTS: 'No clients yet',
 
-  // Blog
-  NO_POSTS: 'No posts found',
   NO_RESULTS: 'Results not found',
 
   // Generic

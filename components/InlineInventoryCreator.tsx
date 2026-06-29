@@ -147,7 +147,7 @@ export default function InlineInventoryCreator({ isOpen, onClose, onItemCreated,
                 id="name"
                 name="name"
                 required
-                className="w-full px-2.5 py-2 bg-primary-800 border border-primary-600 rounded text-primary-50 placeholder-primary-500 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 text-sm"
+                className="w-full px-2.5 py-2 bg-primary-800 border border-primary-600 rounded text-primary-50 placeholder-primary-500 focus:ring-1 focus:ring-quotla-orange focus:border-quotla-orange text-sm"
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="Premium Widget"
@@ -163,7 +163,7 @@ export default function InlineInventoryCreator({ isOpen, onClose, onItemCreated,
                   type="text"
                   id="sku"
                   name="sku"
-                  className="w-full px-2.5 py-2 bg-primary-800 border border-primary-600 rounded text-primary-50 placeholder-primary-500 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 text-sm"
+                  className="w-full px-2.5 py-2 bg-primary-800 border border-primary-600 rounded text-primary-50 placeholder-primary-500 focus:ring-1 focus:ring-quotla-orange focus:border-quotla-orange text-sm"
                   value={formData.sku}
                   onChange={handleChange}
                   placeholder="WGT-001"
@@ -178,7 +178,7 @@ export default function InlineInventoryCreator({ isOpen, onClose, onItemCreated,
                   type="text"
                   id="category"
                   name="category"
-                  className="w-full px-2.5 py-2 bg-primary-800 border border-primary-600 rounded text-primary-50 placeholder-primary-500 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 text-sm"
+                  className="w-full px-2.5 py-2 bg-primary-800 border border-primary-600 rounded text-primary-50 placeholder-primary-500 focus:ring-1 focus:ring-quotla-orange focus:border-quotla-orange text-sm"
                   value={formData.category}
                   onChange={handleChange}
                   placeholder="Products"
@@ -194,7 +194,7 @@ export default function InlineInventoryCreator({ isOpen, onClose, onItemCreated,
                 id="description"
                 name="description"
                 rows={2}
-                className="w-full px-2.5 py-2 bg-primary-800 border border-primary-600 rounded text-primary-50 placeholder-primary-500 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 text-sm resize-none"
+                className="w-full px-2.5 py-2 bg-primary-800 border border-primary-600 rounded text-primary-50 placeholder-primary-500 focus:ring-1 focus:ring-quotla-orange focus:border-quotla-orange text-sm resize-none"
                 value={formData.description}
                 onChange={handleChange}
                 placeholder="Item description..."
@@ -215,7 +215,7 @@ export default function InlineInventoryCreator({ isOpen, onClose, onItemCreated,
                     required
                     min="0"
                     step="0.01"
-                    className="w-full px-2.5 py-2 bg-primary-800 border border-primary-600 rounded text-primary-50 placeholder-primary-500 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 text-sm"
+                    className="w-full px-2.5 py-2 bg-primary-800 border border-primary-600 rounded text-primary-50 placeholder-primary-500 focus:ring-1 focus:ring-quotla-orange focus:border-quotla-orange text-sm"
                     value={formData.unit_price}
                     onChange={handleChange}
                     placeholder="99.99"
@@ -229,7 +229,7 @@ export default function InlineInventoryCreator({ isOpen, onClose, onItemCreated,
                   <select
                     id="currency"
                     name="currency"
-                    className="w-full px-2.5 py-2 bg-primary-800 border border-primary-600 rounded text-primary-50 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 text-sm"
+                    className="w-full px-2.5 py-2 bg-primary-800 border border-primary-600 rounded text-primary-50 focus:ring-1 focus:ring-quotla-orange focus:border-quotla-orange text-sm"
                     value={formData.currency}
                     onChange={handleChange}
                   >
@@ -252,7 +252,7 @@ export default function InlineInventoryCreator({ isOpen, onClose, onItemCreated,
                   name="cost_price"
                   min="0"
                   step="0.01"
-                  className="w-full px-2.5 py-2 bg-primary-800 border border-primary-600 rounded text-primary-50 placeholder-primary-500 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 text-sm"
+                  className="w-full px-2.5 py-2 bg-primary-800 border border-primary-600 rounded text-primary-50 placeholder-primary-500 focus:ring-1 focus:ring-quotla-orange focus:border-quotla-orange text-sm"
                   value={formData.cost_price}
                   onChange={handleChange}
                   placeholder="50.00"
@@ -287,7 +287,7 @@ export default function InlineInventoryCreator({ isOpen, onClose, onItemCreated,
                       id="quantity_on_hand"
                       name="quantity_on_hand"
                       min="0"
-                      className="w-full px-2.5 py-2 bg-primary-800 border border-primary-600 rounded text-primary-50 placeholder-primary-500 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 text-sm"
+                      className="w-full px-2.5 py-2 bg-primary-800 border border-primary-600 rounded text-primary-50 placeholder-primary-500 focus:ring-1 focus:ring-quotla-orange focus:border-quotla-orange text-sm"
                       value={formData.quantity_on_hand}
                       onChange={handleChange}
                     />
@@ -302,7 +302,7 @@ export default function InlineInventoryCreator({ isOpen, onClose, onItemCreated,
                       id="low_stock_threshold"
                       name="low_stock_threshold"
                       min="0"
-                      className="w-full px-2.5 py-2 bg-primary-800 border border-primary-600 rounded text-primary-50 placeholder-primary-500 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 text-sm"
+                      className="w-full px-2.5 py-2 bg-primary-800 border border-primary-600 rounded text-primary-50 placeholder-primary-500 focus:ring-1 focus:ring-quotla-orange focus:border-quotla-orange text-sm"
                       value={formData.low_stock_threshold}
                       onChange={handleChange}
                     />

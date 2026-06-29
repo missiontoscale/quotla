@@ -71,7 +71,7 @@ export default function LegalPage() {
                     <li>Business information (company name, address, logo)</li>
                     <li>Quote and invoice data you create</li>
                     <li>Client information you add to the platform</li>
-                    <li>Payment information (processed securely by Stripe)</li>
+                    <li>Payment information (processed securely by our payment provider)</li>
                   </ul>
                 </div>
 
