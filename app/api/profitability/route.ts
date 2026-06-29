@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error('Error fetching profitability data:', error)
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ error: 'Failed to fetch profitability data' }, { status: 500 })
     }
 
     // Calculate summary statistics

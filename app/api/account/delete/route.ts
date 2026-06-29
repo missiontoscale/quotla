@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { cookies } from 'next/headers'
+import { checkRateLimit, logAudit, getClientIp } from '@/lib/utils/security'
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,15 +18,42 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Log the deletion reason for analytics (optional)
-    if (reason) {
-      console.log(`Account deletion reason for user ${userId}: ${reason}`)
+    // Authenticate the request server-side
+    const cookieStore = await cookies()
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+    if (!supabaseUrl) {
+      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 })
     }
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+    const supabase = createClient(supabaseUrl, supabaseAnonKey!, {
+      cookies: {
+        get(name: string) { return cookieStore.get(name)?.value },
+      },
+    } as any)
 
-    if (!supabaseUrl || !supabaseServiceKey) {
+    const { data: { session }, error: authError } = await supabase.auth.getSession()
+    if (authError || !session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Verify the authenticated user matches the requested userId (prevent IDOR)
+    if (session.user.id !== userId) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
+    // Rate limit: max 1 deletion attempt per hour per user
+    const rateCheck = await checkRateLimit(`account-delete:${userId}`, 'delete_account', 1, 60)
+    if (!rateCheck.allowed) {
+      return NextResponse.json(
+        { error: 'Too many attempts. Try again later.' },
+        { status: 429, headers: { 'Retry-After': '3600' } }
+      )
+    }
+
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+    if (!supabaseServiceKey) {
       return NextResponse.json({ error: 'Server configuration error' }, { status: 500 })
     }
 
@@ -33,35 +62,23 @@ export async function POST(request: NextRequest) {
     })
 
     // Delete user data in order (due to foreign key constraints)
-    // 1. Delete quote items
     const { data: quotes } = await supabaseAdmin.from('quotes').select('id').eq('user_id', userId)
     if (quotes && quotes.length > 0) {
       const quoteIds = quotes.map((q) => q.id)
       await supabaseAdmin.from('quote_items').delete().in('quote_id', quoteIds)
     }
 
-    // 2. Delete quotes
     await supabaseAdmin.from('quotes').delete().eq('user_id', userId)
-
-    // 3. Delete customers
     await supabaseAdmin.from('customers').delete().eq('user_id', userId)
-
-    // 4. Delete profile
     await supabaseAdmin.from('profiles').delete().eq('id', userId)
 
-    // 6. Delete auth user
     const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(userId)
+    if (deleteError) throw deleteError
 
-    if (deleteError) {
-      throw deleteError
-    }
+    await logAudit(userId, 'account_deleted', 'user', userId, { reason }, getClientIp(request))
 
     return NextResponse.json({ success: true, message: 'Account deleted successfully' })
-  } catch (error) {
-    console.error('Account deletion error:', error)
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to delete account' },
-      { status: 500 }
-    )
+  } catch {
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

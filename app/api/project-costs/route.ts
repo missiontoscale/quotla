@@ -62,7 +62,7 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error('Error fetching project costs:', error)
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ error: 'Failed to fetch project costs' }, { status: 500 })
     }
 
     return NextResponse.json(costs)
@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error('Error creating project cost:', error)
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ error: 'Failed to create project cost' }, { status: 500 })
     }
 
     return NextResponse.json(cost, { status: 201 })

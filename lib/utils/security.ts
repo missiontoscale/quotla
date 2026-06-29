@@ -99,7 +99,7 @@ export function sanitizeHtml(html: string): string {
     .replace(/javascript:/gi, '')
 }
 
-// Validate request authentication
+// Validate request authentication via Bearer JWT
 export async function validateAuth(request: Request): Promise<{
   authenticated: boolean
   userId: string | null
@@ -111,10 +111,15 @@ export async function validateAuth(request: Request): Promise<{
       return { authenticated: false, userId: null, error: 'No authentication token provided' }
     }
 
-    // In a real implementation, verify the JWT token here
-    // For now, we rely on Supabase's built-in auth
-    return { authenticated: true, userId: null }
-  } catch (error) {
+    const token = authHeader.slice(7)
+    const { data: { user }, error } = await supabaseAdmin.auth.getUser(token)
+
+    if (error || !user) {
+      return { authenticated: false, userId: null, error: 'Invalid or expired token' }
+    }
+
+    return { authenticated: true, userId: user.id }
+  } catch {
     return { authenticated: false, userId: null, error: 'Invalid authentication token' }
   }
 }

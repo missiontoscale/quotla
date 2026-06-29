@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error('Error fetching time entries:', error)
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ error: 'Failed to fetch time entries' }, { status: 500 })
     }
 
     // Get summary statistics
@@ -149,7 +149,7 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error('Error creating time entry:', error)
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ error: 'Failed to create time entry' }, { status: 500 })
     }
 
     return NextResponse.json(timeEntry, { status: 201 })

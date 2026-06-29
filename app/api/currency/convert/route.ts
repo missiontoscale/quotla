@@ -121,10 +121,9 @@ export async function POST(request: NextRequest) {
     const result = await convertCurrency(amount, from, to)
 
     return NextResponse.json(result)
-  } catch (error) {
-    console.error('Currency conversion error:', error)
+  } catch {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to convert currency' },
+      { error: 'Failed to convert currency' },
       { status: 500 }
     )
   }
@@ -139,10 +138,9 @@ export async function GET() {
       rates,
       timestamp: new Date().toISOString(),
     })
-  } catch (error) {
-    console.error('Exchange rates fetch error:', error)
+  } catch {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to fetch exchange rates' },
+      { error: 'Failed to fetch exchange rates' },
       { status: 500 }
     )
   }
