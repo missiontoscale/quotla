@@ -91,9 +91,9 @@ export default function InventorySlideOver({ isOpen, onClose }: InventorySlideOv
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent side="right" className="w-full sm:max-w-2xl bg-slate-950 border-l-4 border-l-cyan-500 border-y-2 border-r-2 border-slate-800 rounded-none overflow-y-auto">
-        <SheetHeader className="border-b-2 border-slate-800 pb-4">
-          <SheetTitle className="text-2xl font-black text-slate-100 uppercase tracking-wide">
+      <SheetContent side="right" className="w-full sm:max-w-2xl bg-primary-900 border-l-4 border-l-quotla-orange border-y-2 border-r-2 border-primary-600 rounded-none overflow-y-auto">
+        <SheetHeader className="border-b-2 border-primary-600 pb-4">
+          <SheetTitle className="text-2xl font-black text-primary-50 uppercase tracking-wide">
             Products Inventory
           </SheetTitle>
         </SheetHeader>
@@ -116,7 +116,7 @@ export default function InventorySlideOver({ isOpen, onClose }: InventorySlideOv
               className={`rounded-none font-bold uppercase text-xs ${
                 filter === 'all'
                   ? 'bg-cyan-600 hover:bg-cyan-500'
-                  : 'border-slate-700 hover:bg-slate-800'
+                  : 'border-primary-600 hover:bg-primary-700'
               }`}
             >
               All Items
@@ -128,7 +128,7 @@ export default function InventorySlideOver({ isOpen, onClose }: InventorySlideOv
               className={`rounded-none font-bold uppercase text-xs ${
                 filter === 'low-stock'
                   ? 'bg-orange-600 hover:bg-orange-500'
-                  : 'border-slate-700 hover:bg-slate-800'
+                  : 'border-primary-600 hover:bg-primary-700'
               }`}
             >
               Low Stock
@@ -140,7 +140,7 @@ export default function InventorySlideOver({ isOpen, onClose }: InventorySlideOv
               className={`rounded-none font-bold uppercase text-xs ${
                 filter === 'out-of-stock'
                   ? 'bg-red-600 hover:bg-red-500'
-                  : 'border-slate-700 hover:bg-slate-800'
+                  : 'border-primary-600 hover:bg-primary-700'
               }`}
             >
               Out of Stock
@@ -152,7 +152,7 @@ export default function InventorySlideOver({ isOpen, onClose }: InventorySlideOv
             <input
               type="text"
               placeholder="Search by name, SKU, or category..."
-              className="w-full px-4 py-3 bg-slate-900 border-2 border-slate-800 rounded-none text-slate-200 placeholder:text-slate-600 focus:border-cyan-500 focus:outline-none font-mono text-sm"
+              className="w-full px-4 py-3 bg-primary-800 border-2 border-primary-600 rounded-none text-primary-100 placeholder:text-primary-500 focus:border-quotla-orange focus:outline-none font-mono text-sm"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -164,9 +164,9 @@ export default function InventorySlideOver({ isOpen, onClose }: InventorySlideOv
               <div className="animate-spin rounded-none h-12 w-12 border-4 border-cyan-500 border-t-transparent"></div>
             </div>
           ) : filteredItems.length === 0 ? (
-            <div className="text-center py-12 bg-slate-900/50 border-2 border-slate-800 rounded-none">
-              <Package className="w-16 h-16 mx-auto mb-4 text-slate-600" />
-              <p className="text-slate-400 mb-4">
+            <div className="text-center py-12 bg-primary-800/50 border-2 border-primary-600 rounded-none">
+              <Package className="w-16 h-16 mx-auto mb-4 text-primary-500" />
+              <p className="text-primary-400 mb-4">
                 {searchQuery || filter !== 'all' ? 'No items match your filters' : 'No products in inventory'}
               </p>
               <Link href="/business/products" onClick={onClose}>
@@ -184,7 +184,7 @@ export default function InventorySlideOver({ isOpen, onClose }: InventorySlideOv
                 return (
                   <div
                     key={item.id}
-                    className={`p-4 bg-slate-900/80 border-l-4 border-slate-700 hover:border-cyan-500 transition-all ${
+                    className={`p-4 bg-primary-800/80 border-l-4 border-primary-600 hover:border-quotla-orange transition-all ${
                       isOutOfStock ? 'border-l-red-500 bg-red-950/20' :
                       isLowStock ? 'border-l-orange-500 bg-orange-950/20' : ''
                     }`}
@@ -192,7 +192,7 @@ export default function InventorySlideOver({ isOpen, onClose }: InventorySlideOv
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-bold text-slate-100">{item.name}</h4>
+                          <h4 className="font-bold text-primary-50">{item.name}</h4>
                           {isOutOfStock && (
                             <span className="px-2 py-0.5 text-[10px] font-bold uppercase bg-red-500 text-white rounded-none">
                               Out of Stock
@@ -204,7 +204,7 @@ export default function InventorySlideOver({ isOpen, onClose }: InventorySlideOv
                             </span>
                           )}
                         </div>
-                        <div className="flex items-center gap-3 text-xs text-slate-500 font-mono">
+                        <div className="flex items-center gap-3 text-xs text-primary-500 font-mono">
                           <span>SKU: {item.sku}</span>
                           {item.category && (
                             <>
@@ -221,7 +221,7 @@ export default function InventorySlideOver({ isOpen, onClose }: InventorySlideOv
                         {item.track_inventory && (
                           <div className={`text-xs mt-1 font-mono ${
                             isOutOfStock ? 'text-red-400' :
-                            isLowStock ? 'text-orange-400' : 'text-slate-500'
+                            isLowStock ? 'text-orange-400' : 'text-primary-500'
                           }`}>
                             Stock: {item.quantity_on_hand}
                           </div>
@@ -230,15 +230,15 @@ export default function InventorySlideOver({ isOpen, onClose }: InventorySlideOv
                     </div>
 
                     {item.description && (
-                      <p className="text-sm text-slate-400 mb-3 line-clamp-2">{item.description}</p>
+                      <p className="text-sm text-primary-400 mb-3 line-clamp-2">{item.description}</p>
                     )}
 
-                    <div className="flex gap-2 pt-3 border-t border-slate-800">
+                    <div className="flex gap-2 pt-3 border-t border-primary-600">
                       <Link href={`/inventory/${item.id}`} onClick={onClose}>
                         <Button
                           size="sm"
                           variant="outline"
-                          className="border-slate-700 hover:bg-slate-800 rounded-none text-xs font-bold uppercase"
+                          className="border-primary-600 hover:bg-primary-700 rounded-none text-xs font-bold uppercase"
                         >
                           View
                         </Button>
@@ -247,7 +247,7 @@ export default function InventorySlideOver({ isOpen, onClose }: InventorySlideOv
                         <Button
                           size="sm"
                           variant="outline"
-                          className="border-slate-700 hover:bg-slate-800 rounded-none text-xs font-bold uppercase"
+                          className="border-primary-600 hover:bg-primary-700 rounded-none text-xs font-bold uppercase"
                         >
                           Edit
                         </Button>
@@ -269,13 +269,13 @@ export default function InventorySlideOver({ isOpen, onClose }: InventorySlideOv
 
           {/* Summary Stats */}
           {filteredItems.length > 0 && (
-            <div className="grid grid-cols-2 gap-3 pt-4 border-t-2 border-slate-800">
-              <div className="p-4 bg-slate-900 border border-slate-800 rounded-none">
-                <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">Total Items</div>
-                <div className="text-2xl font-black text-slate-200">{filteredItems.length}</div>
+            <div className="grid grid-cols-2 gap-3 pt-4 border-t-2 border-primary-600">
+              <div className="p-4 bg-primary-800 border border-primary-600 rounded-none">
+                <div className="text-xs text-primary-500 uppercase tracking-wide mb-1">Total Items</div>
+                <div className="text-2xl font-black text-primary-100">{filteredItems.length}</div>
               </div>
-              <div className="p-4 bg-slate-900 border border-slate-800 rounded-none">
-                <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">Total Value</div>
+              <div className="p-4 bg-primary-800 border border-primary-600 rounded-none">
+                <div className="text-xs text-primary-500 uppercase tracking-wide mb-1">Total Value</div>
                 <div className="text-2xl font-black text-cyan-400">
                   {formatCurrency(
                     filteredItems.reduce((sum, item) => sum + item.quantity_on_hand * item.cost_price, 0),

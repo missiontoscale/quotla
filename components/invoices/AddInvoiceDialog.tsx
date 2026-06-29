@@ -729,7 +729,6 @@ export function AddInvoiceDialog({
       }
 
       onSuccess()
-      onOpenChange(false)
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message :
         (typeof err === 'object' && err !== null && 'message' in err) ? String((err as { message: unknown }).message) :
@@ -738,6 +737,7 @@ export function AddInvoiceDialog({
       setError(`Unable to ${invoiceId ? 'update' : 'create'} invoice: ${errorMessage}`)
     } finally {
       setLoading(false)
+      onOpenChange(false)
     }
   }
 
@@ -844,15 +844,15 @@ export function AddInvoiceDialog({
             </DialogTitle>
             {isViewMode && (
               <div className="flex items-center gap-2">
-                <button
+                <Button
                   type="button"
-                  onClick={() => setShowDownloadOptions(!showDownloadOptions)}
+                  onClick={() => handleExport('pdf')}
                   disabled={exporting !== null}
-                  className="p-2 rounded-md text-primary-400 hover:text-quotla-orange hover:bg-primary-700/80 transition-colors disabled:opacity-50"
-                  aria-label="Download options"
+                  className="bg-quotla-orange hover:bg-secondary-500 text-white text-sm h-9 gap-1.5"
                 >
-                  <Download className="h-5 w-5" />
-                </button>
+                  <Download className="h-4 w-4" />
+                  {exporting === 'pdf' ? 'Downloading...' : 'Download PDF'}
+                </Button>
                 <button
                   type="button"
                   onClick={() => onOpenChange(false)}
@@ -1409,7 +1409,7 @@ export function AddInvoiceDialog({
                     <th className="text-right px-3 py-2 text-[10px] text-primary-400 font-medium uppercase tracking-wide">Amount</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800">
+                <tbody className="divide-y divide-primary-600">
                   {lineItems.filter(i => i.description).map(item => (
                     <tr key={item.id}>
                       <td className="px-3 py-2 text-primary-100">{item.description}</td>
@@ -1461,20 +1461,22 @@ export function AddInvoiceDialog({
                 </div>
               )}
               <div className="flex gap-2 shrink-0">
-                <p className="text-[10px] text-primary-400 uppercase tracking-wide w-full mb-1 hidden">Export</p>
                 {(['png', 'pdf', 'word'] as const).map(fmt => (
-                  <button
+                  <Button
                     key={fmt}
                     type="button"
+                    variant="outline"
+                    size="sm"
                     onClick={() => handleExport(fmt)}
                     disabled={exporting !== null}
-                    className="px-3 py-1.5 text-xs font-medium rounded-md bg-primary-700/80 text-primary-200 hover:bg-primary-600/80 hover:text-white transition-colors disabled:opacity-50 uppercase flex items-center gap-1.5"
+                    className="border-quotla-orange/40 text-quotla-orange hover:bg-quotla-orange/10 hover:text-quotla-orange text-xs h-8 gap-1"
                   >
                     {exporting === fmt
                       ? <Loader2 className="h-3 w-3 animate-spin" />
-                      : fmt === 'word' ? 'DOCX' : fmt.toUpperCase()
+                      : <Download className="h-3 w-3" />
                     }
-                  </button>
+                    {fmt === 'word' ? 'DOCX' : fmt.toUpperCase()}
+                  </Button>
                 ))}
               </div>
             </div>

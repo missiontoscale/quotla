@@ -89,24 +89,24 @@ export default function RevenueChart() {
 
   if (loading) {
     return (
-      <Card className="bg-slate-900/50 border border-slate-700 p-6">
+      <Card className="bg-primary-800/50 border border-primary-600 p-6">
         <div className="animate-pulse space-y-4">
-          <div className="h-6 bg-slate-800 rounded w-1/3"></div>
-          <div className="h-64 bg-slate-800 rounded"></div>
+          <div className="h-6 bg-primary-700 rounded w-1/3"></div>
+          <div className="h-64 bg-primary-700 rounded"></div>
         </div>
       </Card>
     )
   }
 
   return (
-    <Card className="bg-slate-900/50 border border-slate-700 p-6">
+    <Card className="bg-primary-800/50 border border-primary-600 p-6">
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h3 className="text-lg font-bold text-slate-100 mb-1">Revenue Overview</h3>
-          <p className="text-sm text-slate-500">Last 6 months</p>
+          <h3 className="text-lg font-bold text-primary-50 mb-1">Revenue Overview</h3>
+          <p className="text-sm text-primary-500">Last 6 months</p>
         </div>
         <div className="text-right">
-          <div className="text-2xl font-bold text-slate-100">
+          <div className="text-2xl font-bold text-primary-50">
             ${totalRevenue.toLocaleString()}
           </div>
           {percentageChange !== 0 && (

@@ -65,7 +65,7 @@ export function DataTable({
     <div className="space-y-3.5">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-primary-400" />
           <Input
             placeholder={searchPlaceholder}
             value={searchTerm}
@@ -73,7 +73,7 @@ export function DataTable({
               setSearchTerm(e.target.value);
               setCurrentPage(1);
             }}
-            className="pl-9 pr-9 h-9 text-[0.81rem] bg-slate-800 border-slate-700 text-slate-100"
+            className="pl-9 pr-9 h-9 text-[0.81rem] bg-primary-700 border-primary-600 text-primary-50"
           />
           {searchTerm && (
             <button
@@ -81,7 +81,7 @@ export function DataTable({
                 setSearchTerm('');
                 setCurrentPage(1);
               }}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-primary-400 hover:text-primary-100"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -90,18 +90,18 @@ export function DataTable({
         {filters}
       </div>
 
-      <div className="bg-slate-900 border border-slate-800 rounded-lg overflow-hidden">
+      <div className="bg-primary-800 border border-primary-600 rounded-lg overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="border-slate-800 hover:bg-slate-800/50">
+              <TableRow className="border-primary-600 hover:bg-primary-700/50">
                 {columns.map((column) => (
-                  <TableHead key={column.key} className="text-slate-400 text-[0.72rem] py-3">
+                  <TableHead key={column.key} className="text-primary-400 text-[0.72rem] py-3">
                     {column.label}
                   </TableHead>
                 ))}
                 {(onEdit || onDelete) && (
-                  <TableHead className="text-slate-400 text-right text-[0.72rem] py-3 max-md:hidden w-20"></TableHead>
+                  <TableHead className="text-primary-400 text-right text-[0.72rem] py-3 max-md:hidden w-20"></TableHead>
                 )}
               </TableRow>
             </TableHeader>
@@ -109,9 +109,8 @@ export function DataTable({
               {paginatedData.map((row, index) => (
                 <TableRow
                   key={index}
-                  className="border-slate-800 hover:bg-slate-800/50 md:cursor-default cursor-pointer"
+                  className="border-primary-600 hover:bg-primary-700/50 md:cursor-default cursor-pointer"
                   onClick={() => {
-                    // On mobile, clicking row opens view/edit modal
                     if (window.innerWidth < 768) {
                       if (onView) {
                         onView(row);
@@ -122,7 +121,7 @@ export function DataTable({
                   }}
                 >
                   {columns.map((column) => (
-                    <TableCell key={column.key} className="text-slate-300 text-[0.81rem] py-3">
+                    <TableCell key={column.key} className="text-primary-200 text-[0.81rem] py-3">
                       {column.render ? column.render(row[column.key], row) : row[column.key]}
                     </TableCell>
                   ))}
@@ -137,7 +136,7 @@ export function DataTable({
                               e.stopPropagation();
                               onEdit(row);
                             }}
-                            className="text-slate-400 hover:text-cyan-400 hover:bg-slate-800 h-7 w-7"
+                            className="text-primary-400 hover:text-quotla-orange hover:bg-primary-700 h-7 w-7"
                             title="Edit"
                           >
                             <Edit className="w-3.5 h-3.5" />
@@ -151,7 +150,7 @@ export function DataTable({
                               e.stopPropagation();
                               onDelete(row);
                             }}
-                            className="text-slate-400 hover:text-rose-400 hover:bg-slate-800 h-7 w-7"
+                            className="text-primary-400 hover:text-rose-400 hover:bg-primary-700 h-7 w-7"
                             title="Delete"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -168,13 +167,13 @@ export function DataTable({
       </div>
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div className="flex items-center gap-2 text-[0.81rem] text-slate-400">
+        <div className="flex items-center gap-2 text-[0.81rem] text-primary-400">
           <span className="hidden sm:inline">Show</span>
           <Select value={String(pageSize)} onValueChange={(value) => setPageSize(Number(value))}>
-            <SelectTrigger className="w-18 h-11 sm:h-8 text-[0.81rem] bg-slate-800 border-slate-700 text-slate-300">
+            <SelectTrigger className="w-18 h-11 sm:h-8 text-[0.81rem] bg-primary-700 border-primary-600 text-primary-200">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-slate-900 border-slate-800">
+            <SelectContent className="bg-primary-800 border-primary-600">
               <SelectItem value="10" className="min-h-[44px] sm:min-h-0">10</SelectItem>
               <SelectItem value="25" className="min-h-[44px] sm:min-h-0">25</SelectItem>
               <SelectItem value="50" className="min-h-[44px] sm:min-h-0">50</SelectItem>
@@ -191,7 +190,7 @@ export function DataTable({
             size="sm"
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             disabled={currentPage === 1}
-            className="border-slate-700 text-slate-300 hover:bg-slate-800 disabled:opacity-50 text-[0.72rem] h-11 sm:h-8 px-4 sm:px-3"
+            className="border-primary-600 text-primary-300 hover:bg-primary-700 disabled:opacity-50 text-[0.72rem] h-11 sm:h-8 px-4 sm:px-3"
           >
             <span className="hidden sm:inline">Previous</span>
             <span className="sm:hidden">Prev</span>
@@ -207,8 +206,8 @@ export function DataTable({
                   onClick={() => setCurrentPage(page)}
                   className={
                     currentPage === page
-                      ? 'bg-violet-500 text-white hover:bg-violet-600 text-[0.72rem] h-8 w-8'
-                      : 'border-slate-700 text-slate-300 hover:bg-slate-800 text-[0.72rem] h-8 w-8'
+                      ? 'bg-quotla-orange text-white hover:bg-secondary-500 text-[0.72rem] h-8 w-8'
+                      : 'border-primary-600 text-primary-300 hover:bg-primary-700 text-[0.72rem] h-8 w-8'
                   }
                 >
                   {page}
@@ -216,7 +215,7 @@ export function DataTable({
               );
             })}
           </div>
-          <span className="sm:hidden text-[0.81rem] text-slate-400">
+          <span className="sm:hidden text-[0.81rem] text-primary-400">
             {currentPage} / {totalPages}
           </span>
           <Button
@@ -224,7 +223,7 @@ export function DataTable({
             size="sm"
             onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
             disabled={currentPage === totalPages}
-            className="border-slate-700 text-slate-300 hover:bg-slate-800 disabled:opacity-50 text-[0.72rem] h-11 sm:h-8 px-4 sm:px-3"
+            className="border-primary-600 text-primary-300 hover:bg-primary-700 disabled:opacity-50 text-[0.72rem] h-11 sm:h-8 px-4 sm:px-3"
           >
             Next
           </Button>

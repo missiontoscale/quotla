@@ -188,7 +188,7 @@ export function AddVendorDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-slate-900 border-slate-800 text-slate-100 max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-primary-800 border-primary-600 text-primary-50 max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl">
             {isEditMode ? 'Edit Vendor' : 'Add New Vendor'}
@@ -210,7 +210,7 @@ export function AddVendorDialog({
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
-                className="bg-slate-800 border-slate-700 h-8 text-sm"
+                className="bg-primary-800 border-primary-600 h-8 text-sm"
               />
             </div>
 
@@ -223,7 +223,7 @@ export function AddVendorDialog({
                   value={formData.contact_person}
                   onChange={(e) => setFormData({ ...formData, contact_person: e.target.value })}
                   required
-                  className="bg-slate-800 border-slate-700 h-8 text-sm"
+                  className="bg-primary-800 border-primary-600 h-8 text-sm"
                 />
               </div>
 
@@ -236,7 +236,7 @@ export function AddVendorDialog({
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   required
-                  className="bg-slate-800 border-slate-700 h-8 text-sm"
+                  className="bg-primary-800 border-primary-600 h-8 text-sm"
                 />
               </div>
             </div>
@@ -250,7 +250,7 @@ export function AddVendorDialog({
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 required
-                className="bg-slate-800 border-slate-700 h-8 text-sm"
+                className="bg-primary-800 border-primary-600 h-8 text-sm"
               />
             </div>
           </FormSection>
@@ -264,7 +264,7 @@ export function AddVendorDialog({
                   placeholder="e.g., Electronics, Textiles"
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="bg-slate-800 border-slate-700 h-8 text-sm"
+                  className="bg-primary-800 border-primary-600 h-8 text-sm"
                 />
               </div>
 
@@ -274,10 +274,10 @@ export function AddVendorDialog({
                   value={formData.status}
                   onValueChange={(value) => setFormData({ ...formData, status: value as 'active' | 'inactive' })}
                 >
-                  <SelectTrigger id="status" className="bg-slate-800 border-slate-700 h-8 text-sm">
+                  <SelectTrigger id="status" className="bg-primary-800 border-primary-600 h-8 text-sm">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-slate-900 border-slate-800">
+                  <SelectContent className="bg-primary-800 border-primary-600">
                     <SelectItem value="active">Active</SelectItem>
                     <SelectItem value="inactive">Inactive</SelectItem>
                   </SelectContent>
@@ -294,7 +294,7 @@ export function AddVendorDialog({
                 placeholder="Street address"
                 value={formData.address}
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                className="bg-slate-800 border-slate-700 min-h-20 text-sm"
+                className="bg-primary-800 border-primary-600 min-h-20 text-sm"
                 rows={2}
               />
             </div>
@@ -308,7 +308,7 @@ export function AddVendorDialog({
                     placeholder="City"
                     value={formData.city}
                     onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    className="bg-slate-800 border-slate-700 h-8 text-sm"
+                    className="bg-primary-800 border-primary-600 h-8 text-sm"
                   />
                 </div>
 
@@ -319,7 +319,7 @@ export function AddVendorDialog({
                     placeholder="Country"
                     value={formData.country}
                     onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                    className="bg-slate-800 border-slate-700 h-8 text-sm"
+                    className="bg-primary-800 border-primary-600 h-8 text-sm"
                   />
                 </div>
               </div>
@@ -331,7 +331,7 @@ export function AddVendorDialog({
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              className="border-slate-700 text-slate-300 hover:bg-slate-800 text-sm h-9"
+              className="border-primary-600 text-primary-200 hover:bg-primary-700 text-sm h-9"
             >
               Cancel
             </Button>

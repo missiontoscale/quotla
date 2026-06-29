@@ -243,7 +243,7 @@ export function AddExpenseDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-slate-900 border-slate-800 text-slate-100 max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-primary-800 border-primary-600 text-primary-50 max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl">
             {isEditMode ? 'Edit Expense' : 'Add New Expense'}
@@ -274,7 +274,7 @@ export function AddExpenseDialog({
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 required
-                className="bg-slate-800 border-slate-700 h-8 text-sm"
+                className="bg-primary-800 border-primary-600 h-8 text-sm"
               />
             </div>
 
@@ -290,7 +290,7 @@ export function AddExpenseDialog({
                   value={formData.amount}
                   onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
                   required
-                  className="bg-slate-800 border-slate-700 h-8 text-sm"
+                  className="bg-primary-800 border-primary-600 h-8 text-sm"
                 />
               </div>
 
@@ -300,10 +300,10 @@ export function AddExpenseDialog({
                   value={formData.currency}
                   onValueChange={(value) => setFormData({ ...formData, currency: value })}
                 >
-                  <SelectTrigger id="currency" className="bg-slate-800 border-slate-700 h-8 text-sm">
+                  <SelectTrigger id="currency" className="bg-primary-800 border-primary-600 h-8 text-sm">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-slate-900 border-slate-800 max-h-60">
+                  <SelectContent className="bg-primary-800 border-primary-600 max-h-60">
                     {CURRENCIES.map((curr) => (
                       <SelectItem key={curr.code} value={curr.code}>
                         {curr.symbol} {curr.code}
@@ -321,7 +321,7 @@ export function AddExpenseDialog({
                   value={formData.expense_date}
                   onChange={(e) => setFormData({ ...formData, expense_date: e.target.value })}
                   required
-                  className="bg-slate-800 border-slate-700 h-8 text-sm"
+                  className="bg-primary-800 border-primary-600 h-8 text-sm"
                 />
               </div>
             </div>
@@ -335,10 +335,10 @@ export function AddExpenseDialog({
                   value={formData.category}
                   onValueChange={(value) => setFormData({ ...formData, category: value })}
                 >
-                  <SelectTrigger id="category" className="bg-slate-800 border-slate-700 h-8 text-sm">
+                  <SelectTrigger id="category" className="bg-primary-800 border-primary-600 h-8 text-sm">
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
-                  <SelectContent className="bg-slate-900 border-slate-800">
+                  <SelectContent className="bg-primary-800 border-primary-600">
                     {DEFAULT_EXPENSE_CATEGORIES.map((cat) => (
                       <SelectItem key={cat.name} value={cat.name}>
                         {cat.name}
@@ -354,10 +354,10 @@ export function AddExpenseDialog({
                   value={formData.payment_method}
                   onValueChange={(value) => setFormData({ ...formData, payment_method: value })}
                 >
-                  <SelectTrigger id="payment_method" className="bg-slate-800 border-slate-700 h-8 text-sm">
+                  <SelectTrigger id="payment_method" className="bg-primary-800 border-primary-600 h-8 text-sm">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-slate-900 border-slate-800">
+                  <SelectContent className="bg-primary-800 border-primary-600">
                     <SelectItem value="card">Credit/Debit Card</SelectItem>
                     <SelectItem value="cash">Cash</SelectItem>
                     <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
@@ -385,7 +385,7 @@ export function AddExpenseDialog({
                   setFormData({ ...formData, vendor_name: vendorName, supplier_id: '' })
                 }}
               />
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-primary-500">
                 Type to search existing vendors or enter a new vendor name
               </p>
             </div>
@@ -399,10 +399,10 @@ export function AddExpenseDialog({
                   value={formData.status}
                   onValueChange={(value) => setFormData({ ...formData, status: value as ExpenseFormData['status'] })}
                 >
-                  <SelectTrigger id="status" className="bg-slate-800 border-slate-700 h-8 text-sm">
+                  <SelectTrigger id="status" className="bg-primary-800 border-primary-600 h-8 text-sm">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-slate-900 border-slate-800">
+                  <SelectContent className="bg-primary-800 border-primary-600">
                     <SelectItem value="pending">Pending</SelectItem>
                     <SelectItem value="approved">Approved</SelectItem>
                     <SelectItem value="reimbursed">Reimbursed</SelectItem>
@@ -417,7 +417,7 @@ export function AddExpenseDialog({
                   id="is_tax_deductible"
                   checked={formData.is_tax_deductible}
                   onChange={(e) => setFormData({ ...formData, is_tax_deductible: e.target.checked })}
-                  className="rounded border-slate-700 bg-slate-800"
+                  className="rounded border-primary-600 bg-primary-800"
                 />
                 <Label htmlFor="is_tax_deductible" className="text-xs">Tax Deductible</Label>
               </div>
@@ -430,7 +430,7 @@ export function AddExpenseDialog({
                 placeholder="Additional notes..."
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                className="bg-slate-800 border-slate-700 min-h-20 text-sm"
+                className="bg-primary-800 border-primary-600 min-h-20 text-sm"
                 rows={2}
               />
             </div>
@@ -441,7 +441,7 @@ export function AddExpenseDialog({
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              className="border-slate-700 text-slate-300 hover:bg-slate-800 text-sm h-9"
+              className="border-primary-600 text-primary-200 hover:bg-primary-700 text-sm h-9"
             >
               Cancel
             </Button>

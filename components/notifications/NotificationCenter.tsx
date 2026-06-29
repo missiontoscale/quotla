@@ -283,24 +283,24 @@ export function NotificationCenter() {
               <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center mb-3">
                 <Bell className="w-6 h-6 text-slate-500" />
               </div>
-              <p className="text-[0.81rem] text-slate-400 font-medium">No notifications yet</p>
-              <p className="text-[0.75rem] text-slate-500 mt-1 text-center">
+              <p className="text-[0.81rem] text-primary-400 font-medium">No notifications yet</p>
+              <p className="text-[0.75rem] text-primary-500 mt-1 text-center">
                 We&apos;ll notify you when something important happens
               </p>
             </div>
           ) : (
-            <div className="divide-y divide-slate-800/50">
+            <div className="divide-y divide-primary-600/50">
               {groupedNotifications.map((group) => (
                 <div key={group.date}>
                   {/* Group header */}
-                  <div className="px-4 py-2 bg-slate-800/30 sticky top-0 z-10">
-                    <span className="text-[0.68rem] font-medium text-slate-500 uppercase tracking-wider">
+                  <div className="px-4 py-2 bg-primary-700/30 sticky top-0 z-10">
+                    <span className="text-[0.68rem] font-medium text-primary-500 uppercase tracking-wider">
                       {group.label}
                     </span>
                   </div>
 
                   {/* Notifications in group */}
-                  <div className="divide-y divide-slate-800/30">
+                  <div className="divide-y divide-primary-600/30">
                     {group.notifications.map((notification) => (
                       <NotificationItem
                         key={notification.id}

@@ -111,15 +111,15 @@ export default function InlineInventoryCreator({ isOpen, onClose, onItemCreated,
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => { if (!loading) onClose() }}></div>
 
       {/* Modal panel */}
-      <div className="relative w-full max-w-md max-h-[90vh] flex flex-col bg-slate-900 rounded-lg shadow-xl border border-slate-700">
+      <div className="relative w-full max-w-md max-h-[90vh] flex flex-col bg-primary-800 rounded-lg shadow-xl border border-primary-600">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-700">
-          <h2 className="text-sm font-medium text-slate-200" id="modal-title">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-primary-600">
+          <h2 className="text-sm font-medium text-primary-100" id="modal-title">
             Add Inventory Item
           </h2>
           <button
             type="button"
-            className="text-slate-400 hover:text-slate-200 transition-colors"
+            className="text-primary-400 hover:text-primary-100 transition-colors"
             onClick={onClose}
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -139,7 +139,7 @@ export default function InlineInventoryCreator({ isOpen, onClose, onItemCreated,
 
             {/* Basic Information */}
             <div className="space-y-1">
-              <label htmlFor="name" className="block text-xs text-slate-400">
+              <label htmlFor="name" className="block text-xs text-primary-400">
                 Item Name *
               </label>
               <input
@@ -147,7 +147,7 @@ export default function InlineInventoryCreator({ isOpen, onClose, onItemCreated,
                 id="name"
                 name="name"
                 required
-                className="w-full px-2.5 py-2 bg-slate-800 border border-slate-700 rounded text-slate-100 placeholder-slate-500 focus:ring-1 focus:ring-slate-500 focus:border-slate-500 text-sm"
+                className="w-full px-2.5 py-2 bg-primary-800 border border-primary-600 rounded text-primary-50 placeholder-primary-500 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 text-sm"
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="Premium Widget"
@@ -156,14 +156,14 @@ export default function InlineInventoryCreator({ isOpen, onClose, onItemCreated,
 
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-1">
-                <label htmlFor="sku" className="block text-xs text-slate-400">
+                <label htmlFor="sku" className="block text-xs text-primary-400">
                   SKU
                 </label>
                 <input
                   type="text"
                   id="sku"
                   name="sku"
-                  className="w-full px-2.5 py-2 bg-slate-800 border border-slate-700 rounded text-slate-100 placeholder-slate-500 focus:ring-1 focus:ring-slate-500 focus:border-slate-500 text-sm"
+                  className="w-full px-2.5 py-2 bg-primary-800 border border-primary-600 rounded text-primary-50 placeholder-primary-500 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 text-sm"
                   value={formData.sku}
                   onChange={handleChange}
                   placeholder="WGT-001"
@@ -171,14 +171,14 @@ export default function InlineInventoryCreator({ isOpen, onClose, onItemCreated,
               </div>
 
               <div className="space-y-1">
-                <label htmlFor="category" className="block text-xs text-slate-400">
+                <label htmlFor="category" className="block text-xs text-primary-400">
                   Category
                 </label>
                 <input
                   type="text"
                   id="category"
                   name="category"
-                  className="w-full px-2.5 py-2 bg-slate-800 border border-slate-700 rounded text-slate-100 placeholder-slate-500 focus:ring-1 focus:ring-slate-500 focus:border-slate-500 text-sm"
+                  className="w-full px-2.5 py-2 bg-primary-800 border border-primary-600 rounded text-primary-50 placeholder-primary-500 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 text-sm"
                   value={formData.category}
                   onChange={handleChange}
                   placeholder="Products"
@@ -187,14 +187,14 @@ export default function InlineInventoryCreator({ isOpen, onClose, onItemCreated,
             </div>
 
             <div className="space-y-1">
-              <label htmlFor="description" className="block text-xs text-slate-400">
+              <label htmlFor="description" className="block text-xs text-primary-400">
                 Description
               </label>
               <textarea
                 id="description"
                 name="description"
                 rows={2}
-                className="w-full px-2.5 py-2 bg-slate-800 border border-slate-700 rounded text-slate-100 placeholder-slate-500 focus:ring-1 focus:ring-slate-500 focus:border-slate-500 text-sm resize-none"
+                className="w-full px-2.5 py-2 bg-primary-800 border border-primary-600 rounded text-primary-50 placeholder-primary-500 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 text-sm resize-none"
                 value={formData.description}
                 onChange={handleChange}
                 placeholder="Item description..."
@@ -202,10 +202,10 @@ export default function InlineInventoryCreator({ isOpen, onClose, onItemCreated,
             </div>
 
             {/* Pricing */}
-            <div className="border-t border-slate-700/50 pt-3">
+            <div className="border-t border-primary-600/50 pt-3">
               <div className="grid grid-cols-3 gap-2">
                 <div className="col-span-2 space-y-1">
-                  <label htmlFor="unit_price" className="block text-xs text-slate-400">
+                  <label htmlFor="unit_price" className="block text-xs text-primary-400">
                     Selling Price *
                   </label>
                   <input
@@ -215,7 +215,7 @@ export default function InlineInventoryCreator({ isOpen, onClose, onItemCreated,
                     required
                     min="0"
                     step="0.01"
-                    className="w-full px-2.5 py-2 bg-slate-800 border border-slate-700 rounded text-slate-100 placeholder-slate-500 focus:ring-1 focus:ring-slate-500 focus:border-slate-500 text-sm"
+                    className="w-full px-2.5 py-2 bg-primary-800 border border-primary-600 rounded text-primary-50 placeholder-primary-500 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 text-sm"
                     value={formData.unit_price}
                     onChange={handleChange}
                     placeholder="99.99"
@@ -223,13 +223,13 @@ export default function InlineInventoryCreator({ isOpen, onClose, onItemCreated,
                 </div>
 
                 <div className="space-y-1">
-                  <label htmlFor="currency" className="block text-xs text-slate-400">
+                  <label htmlFor="currency" className="block text-xs text-primary-400">
                     Currency
                   </label>
                   <select
                     id="currency"
                     name="currency"
-                    className="w-full px-2.5 py-2 bg-slate-800 border border-slate-700 rounded text-slate-100 focus:ring-1 focus:ring-slate-500 focus:border-slate-500 text-sm"
+                    className="w-full px-2.5 py-2 bg-primary-800 border border-primary-600 rounded text-primary-50 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 text-sm"
                     value={formData.currency}
                     onChange={handleChange}
                   >
@@ -243,7 +243,7 @@ export default function InlineInventoryCreator({ isOpen, onClose, onItemCreated,
               </div>
 
               <div className="mt-2 space-y-1">
-                <label htmlFor="cost_price" className="block text-xs text-slate-400">
+                <label htmlFor="cost_price" className="block text-xs text-primary-400">
                   Cost Price
                 </label>
                 <input
@@ -252,7 +252,7 @@ export default function InlineInventoryCreator({ isOpen, onClose, onItemCreated,
                   name="cost_price"
                   min="0"
                   step="0.01"
-                  className="w-full px-2.5 py-2 bg-slate-800 border border-slate-700 rounded text-slate-100 placeholder-slate-500 focus:ring-1 focus:ring-slate-500 focus:border-slate-500 text-sm"
+                  className="w-full px-2.5 py-2 bg-primary-800 border border-primary-600 rounded text-primary-50 placeholder-primary-500 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 text-sm"
                   value={formData.cost_price}
                   onChange={handleChange}
                   placeholder="50.00"
@@ -261,17 +261,17 @@ export default function InlineInventoryCreator({ isOpen, onClose, onItemCreated,
             </div>
 
             {/* Inventory Tracking */}
-            <div className="border-t border-slate-700/50 pt-3">
+            <div className="border-t border-primary-600/50 pt-3">
               <div className="flex items-center gap-2 mb-2">
                 <input
                   type="checkbox"
                   id="track_inventory"
                   name="track_inventory"
-                  className="w-3.5 h-3.5 text-slate-500 bg-slate-800 border-slate-600 rounded focus:ring-1 focus:ring-slate-500"
+                  className="w-3.5 h-3.5 text-primary-500 bg-primary-800 border-primary-600 rounded focus:ring-1 focus:ring-primary-500"
                   checked={formData.track_inventory}
                   onChange={handleChange}
                 />
-                <label htmlFor="track_inventory" className="text-xs text-slate-400 cursor-pointer">
+                <label htmlFor="track_inventory" className="text-xs text-primary-400 cursor-pointer">
                   Track inventory
                 </label>
               </div>
@@ -279,7 +279,7 @@ export default function InlineInventoryCreator({ isOpen, onClose, onItemCreated,
               {formData.track_inventory && (
                 <div className="grid grid-cols-2 gap-2">
                   <div className="space-y-1">
-                    <label htmlFor="quantity_on_hand" className="block text-xs text-slate-400">
+                    <label htmlFor="quantity_on_hand" className="block text-xs text-primary-400">
                       Initial Qty
                     </label>
                     <input
@@ -287,14 +287,14 @@ export default function InlineInventoryCreator({ isOpen, onClose, onItemCreated,
                       id="quantity_on_hand"
                       name="quantity_on_hand"
                       min="0"
-                      className="w-full px-2.5 py-2 bg-slate-800 border border-slate-700 rounded text-slate-100 placeholder-slate-500 focus:ring-1 focus:ring-slate-500 focus:border-slate-500 text-sm"
+                      className="w-full px-2.5 py-2 bg-primary-800 border border-primary-600 rounded text-primary-50 placeholder-primary-500 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 text-sm"
                       value={formData.quantity_on_hand}
                       onChange={handleChange}
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label htmlFor="low_stock_threshold" className="block text-xs text-slate-400">
+                    <label htmlFor="low_stock_threshold" className="block text-xs text-primary-400">
                       Low Stock
                     </label>
                     <input
@@ -302,7 +302,7 @@ export default function InlineInventoryCreator({ isOpen, onClose, onItemCreated,
                       id="low_stock_threshold"
                       name="low_stock_threshold"
                       min="0"
-                      className="w-full px-2.5 py-2 bg-slate-800 border border-slate-700 rounded text-slate-100 placeholder-slate-500 focus:ring-1 focus:ring-slate-500 focus:border-slate-500 text-sm"
+                      className="w-full px-2.5 py-2 bg-primary-800 border border-primary-600 rounded text-primary-50 placeholder-primary-500 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 text-sm"
                       value={formData.low_stock_threshold}
                       onChange={handleChange}
                     />
@@ -314,12 +314,12 @@ export default function InlineInventoryCreator({ isOpen, onClose, onItemCreated,
         </div>
 
         {/* Footer */}
-        <div className="flex-shrink-0 px-4 py-3 border-t border-slate-700 flex justify-end gap-2">
+        <div className="flex-shrink-0 px-4 py-3 border-t border-primary-600 flex justify-end gap-2">
           <button
             type="button"
             onClick={onClose}
             disabled={loading}
-            className="px-3 py-1.5 rounded border border-slate-600 text-slate-300 hover:bg-slate-800 transition-colors text-sm"
+            className="px-3 py-1.5 rounded border border-primary-600 text-primary-200 hover:bg-primary-700 transition-colors text-sm"
           >
             Cancel
           </button>
@@ -327,7 +327,7 @@ export default function InlineInventoryCreator({ isOpen, onClose, onItemCreated,
             type="button"
             onClick={handleSubmit}
             disabled={loading}
-            className="px-4 py-1.5 rounded bg-slate-700 hover:bg-slate-600 text-slate-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+            className="px-4 py-1.5 rounded bg-primary-600 hover:bg-primary-600 text-primary-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
           >
             {loading ? 'Creating...' : 'Create'}
           </button>

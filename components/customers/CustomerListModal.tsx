@@ -57,7 +57,7 @@ export function CustomerListModal({
       render: (value: string) => {
         const statusColors: Record<string, string> = {
           active: 'bg-emerald-500/20 text-emerald-400',
-          inactive: 'bg-slate-500/20 text-slate-400',
+          inactive: 'bg-primary-400/20 text-primary-400',
         }
         return (
           <Badge className={statusColors[value] || statusColors.active}>
@@ -70,7 +70,7 @@ export function CustomerListModal({
       key: 'balance',
       label: 'Outstanding',
       render: (value: number) => (
-        <span className={value > 0 ? 'text-rose-400' : 'text-slate-300'}>
+        <span className={value > 0 ? 'text-rose-400' : 'text-primary-200'}>
           {formatCurrency(value || 0, currency)}
         </span>
       ),
@@ -88,12 +88,12 @@ export function CustomerListModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-slate-900 border-slate-800 text-slate-100 max-w-5xl max-h-[85vh] overflow-hidden flex flex-col">
+      <DialogContent className="bg-primary-800 border-primary-600 text-primary-50 max-w-5xl max-h-[85vh] overflow-hidden flex flex-col">
         <DialogHeader className="flex-shrink-0">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-xl">
               Customers & Clients
-              <Badge className="ml-2 bg-slate-700 text-slate-300">
+              <Badge className="ml-2 bg-primary-600 text-primary-200">
                 {customers.length}
               </Badge>
             </DialogTitle>

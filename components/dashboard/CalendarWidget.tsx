@@ -80,14 +80,14 @@ export function CalendarWidget() {
     const date = new Date(dateStr)
     if (isToday(date)) return 'text-amber-400'
     if (isTomorrow(date)) return 'text-amber-400'
-    return 'text-slate-400'
+    return 'text-primary-400'
   }
 
   if (loading) {
     return (
       <div className="space-y-3">
         {[...Array(3)].map((_, i) => (
-          <div key={i} className="h-14 bg-slate-800/50 rounded-lg animate-pulse" />
+          <div key={i} className="h-14 bg-primary-700/50 rounded-lg animate-pulse" />
         ))}
       </div>
     )
@@ -96,11 +96,11 @@ export function CalendarWidget() {
   if (dueItems.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-8 text-center">
-        <div className="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center mb-3">
-          <Calendar className="w-5 h-5 text-slate-500" />
+        <div className="w-12 h-12 bg-primary-700 rounded-full flex items-center justify-center mb-3">
+          <Calendar className="w-5 h-5 text-primary-500" />
         </div>
-        <p className="text-sm text-slate-400">No upcoming due dates</p>
-        <p className="text-xs text-slate-500 mt-1">Invoice due dates will appear here</p>
+        <p className="text-sm text-primary-400">No upcoming due dates</p>
+        <p className="text-xs text-primary-500 mt-1">Invoice due dates will appear here</p>
       </div>
     )
   }
@@ -121,25 +121,25 @@ export function CalendarWidget() {
           <Link
             key={item.id}
             href="/business/sales"
-            className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-slate-800/50 transition-colors group"
+            className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-primary-700/50 transition-colors group"
           >
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 border ${
               item.isOverdue
                 ? 'bg-rose-500/10 border-rose-500/20'
-                : 'bg-slate-800/50 border-slate-700/50'
+                : 'bg-primary-700/50 border-primary-600/50'
             }`}>
-              <FileText className={`w-4 h-4 ${item.isOverdue ? 'text-rose-400' : 'text-slate-400'}`} />
+              <FileText className={`w-4 h-4 ${item.isOverdue ? 'text-rose-400' : 'text-primary-400'}`} />
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-2">
-                <p className="text-sm font-medium text-slate-200 truncate">#{item.number}</p>
+                <p className="text-sm font-medium text-primary-100 truncate">#{item.number}</p>
                 <span className={`text-xs font-medium ${getDueDateColor(item.dueDate, item.isOverdue)}`}>
                   {formatDueDate(item.dueDate)}
                 </span>
               </div>
               <div className="flex items-center justify-between gap-2">
-                <p className="text-xs text-slate-500 truncate">{item.clientName}</p>
-                <span className="text-xs text-slate-400">{formatCurrency(item.amount, currency)}</span>
+                <p className="text-xs text-primary-500 truncate">{item.clientName}</p>
+                <span className="text-xs text-primary-400">{formatCurrency(item.amount, currency)}</span>
               </div>
             </div>
           </Link>
@@ -149,7 +149,7 @@ export function CalendarWidget() {
       {dueItems.length > 5 && (
         <Link
           href="/business/sales"
-          className="flex items-center justify-center gap-1 p-2 text-xs text-slate-400 hover:text-slate-200 transition-colors"
+          className="flex items-center justify-center gap-1 p-2 text-xs text-primary-400 hover:text-primary-100 transition-colors"
         >
           View all {dueItems.length} items
           <ChevronRight className="w-3 h-3" />

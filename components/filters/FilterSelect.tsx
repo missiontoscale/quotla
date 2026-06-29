@@ -31,11 +31,11 @@ export function FilterSelect({
   return (
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger
-        className={`w-[140px] sm:w-[160px] bg-slate-800 border-slate-700/50 text-slate-100 h-8 text-xs sm:text-sm shrink-0 ${className || ''}`}
+        className={`w-[140px] sm:w-[160px] bg-primary-800 border-primary-600/50 text-primary-50 h-8 text-xs sm:text-sm shrink-0 ${className || ''}`}
       >
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
-      <SelectContent className="bg-slate-900 border-slate-800">
+      <SelectContent className="bg-primary-800 border-primary-600">
         {includeAll && <SelectItem value="all">{allLabel}</SelectItem>}
         {options.map((option) => (
           <SelectItem key={option.value} value={option.value}>

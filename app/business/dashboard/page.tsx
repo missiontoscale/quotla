@@ -130,6 +130,7 @@ function DashboardContent() {
   const [revenueTrend, setRevenueTrend] = useState<TrendAnalysisResult | null>(null)
   const [anomalies, setAnomalies] = useState<BusinessMetricAnomaly[]>([])
   const [dismissedAnomalyIds, setDismissedAnomalyIds] = useState<Set<string>>(new Set())
+  const [refreshTrigger, setRefreshTrigger] = useState(0)
 
   // Date ranges for comparison
   const dateRanges = useMemo(() => {
@@ -377,12 +378,13 @@ function DashboardContent() {
         lowStockCount: lowStock.length,
         inventoryValue,
         stockQuantity,
-        lastMonthStockQuantity: stockQuantity, // Snapshot comparison not available yet
+        lastMonthStockQuantity: stockQuantity,
         totalCustomers: customerData.length,
         newCustomersThisMonth,
         lastMonthCustomers: lastMonthNewCustomers,
         avgRevenuePerCustomer,
       })
+      setRefreshTrigger(n => n + 1)
     } catch (error) {
       console.error('Error loading dashboard data:', error)
     } finally {
@@ -616,7 +618,7 @@ function DashboardContent() {
                   View More <ChevronRight className="w-3 h-3" />
                 </Link>
               </div>
-              <ActivityFeed limit={3} />
+              <ActivityFeed key={refreshTrigger} limit={3} />
             </Card>
 
             {/* Low Stock Details - Contextual drill-down */}
@@ -680,14 +682,14 @@ function DashboardContent() {
             />
 
             {/* Onboarding - Contextual guidance */}
-            <OnboardingProgress />
+            <OnboardingProgress key={refreshTrigger} />
 
             {/* Due Dates - Time-sensitive information */}
             <Card className={components.card.base}>
               <div className="flex items-center justify-between mb-4">
                 <h2 className={components.heading.card}>Upcoming Due Dates</h2>
               </div>
-              <CalendarWidget />
+              <CalendarWidget key={refreshTrigger} />
             </Card>
           </aside>
         </div>

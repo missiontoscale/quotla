@@ -167,7 +167,7 @@ export default function InventoryItemSelector({ onSelect, currency, disabled, se
             onFocus={() => setShowDropdown(true)}
             placeholder="Add from Inventory..."
             disabled={disabled || loading}
-            className="flex-1 px-2.5 sm:px-3 py-2 border border-slate-600 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm bg-slate-800 dark:bg-slate-800 text-slate-100 dark:text-slate-100 placeholder-slate-400"
+            className="flex-1 px-2.5 sm:px-3 py-2 border border-primary-500 dark:border-primary-500 rounded-lg focus:ring-2 focus:ring-quotla-orange focus:border-transparent text-sm bg-primary-700 dark:bg-primary-700 text-primary-50 dark:text-primary-50 placeholder-primary-400"
           />
           <button
             type="button"
@@ -192,7 +192,7 @@ export default function InventoryItemSelector({ onSelect, currency, disabled, se
 
       {/* Dropdown */}
       {showDropdown && filteredItems.length > 0 && (
-        <div className="absolute z-50 w-full mt-1 bg-slate-800/95 backdrop-blur-sm border border-slate-700 rounded-lg shadow-2xl max-h-72 sm:max-h-96 overflow-y-auto">
+        <div className="absolute z-50 w-full mt-1 bg-primary-700/95 backdrop-blur-sm border border-primary-600 rounded-lg shadow-2xl max-h-72 sm:max-h-96 overflow-y-auto">
           {filteredItems.map((item) => {
             const status = getStockStatus(item)
             const showPriceWarning = item.currency !== currency
@@ -206,14 +206,14 @@ export default function InventoryItemSelector({ onSelect, currency, disabled, se
             return (
               <div
                 key={item.id}
-                className={`px-3 py-2 border-b border-slate-700/50 last:border-b-0 hover:bg-slate-700/30 transition-colors ${isSelected ? 'bg-cyan-500/5 border-l-2 border-l-cyan-500' : ''}`}
+                className={`px-3 py-2 border-b border-primary-600/50 last:border-b-0 hover:bg-primary-600/30 transition-colors ${isSelected ? 'bg-quotla-orange/5 border-l-2 border-l-quotla-orange' : ''}`}
               >
                 {/* Top Row: Name, SKU, Price */}
                 <div className="flex items-center justify-between gap-3 mb-1.5">
                   <div className="flex items-center gap-2 flex-1 min-w-0">
-                    <p className="font-medium text-slate-100 truncate text-sm">{item.name}</p>
+                    <p className="font-medium text-primary-50 truncate text-sm">{item.name}</p>
                     {item.sku && (
-                      <span className="text-[10px] text-slate-400 px-1.5 py-0.5 bg-slate-700/50 rounded font-mono">
+                      <span className="text-[10px] text-primary-400 px-1.5 py-0.5 bg-primary-600/50 rounded font-mono">
                         {item.sku}
                       </span>
                     )}
@@ -232,7 +232,7 @@ export default function InventoryItemSelector({ onSelect, currency, disabled, se
 
                 {/* Middle Row: Description (if exists) */}
                 {item.description && (
-                  <p className="text-xs text-slate-400 mb-1.5 line-clamp-1">{item.description}</p>
+                  <p className="text-xs text-primary-400 mb-1.5 line-clamp-1">{item.description}</p>
                 )}
 
                 {/* Bottom Row: Status, Stock, Actions */}
@@ -242,7 +242,7 @@ export default function InventoryItemSelector({ onSelect, currency, disabled, se
                       {status.text}
                     </span>
                     {item.track_inventory && (
-                      <span className="text-slate-500">
+                      <span className="text-primary-500">
                         {item.quantity_on_hand} left
                       </span>
                     )}
@@ -250,14 +250,14 @@ export default function InventoryItemSelector({ onSelect, currency, disabled, se
 
                   {/* Quantity + Add Button */}
                   <div className="flex items-center gap-1.5">
-                    <div className="flex items-center bg-slate-900/50 rounded border border-slate-600">
+                    <div className="flex items-center bg-primary-800/50 rounded border border-primary-500">
                       <button
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation()
                           handleQuantityChange(item.id, -1)
                         }}
-                        className="w-6 h-6 flex items-center justify-center hover:bg-slate-700 text-slate-400 hover:text-slate-200 transition-colors"
+                        className="w-6 h-6 flex items-center justify-center hover:bg-primary-600 text-primary-400 hover:text-primary-100 transition-colors"
                       >
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
@@ -273,7 +273,7 @@ export default function InventoryItemSelector({ onSelect, currency, disabled, se
                           setItemQuantities(prev => ({ ...prev, [item.id]: Math.max(1, val) }))
                         }}
                         onClick={(e) => e.stopPropagation()}
-                        className="w-10 text-center bg-transparent border-0 text-slate-100 text-xs focus:outline-none focus:ring-0 py-1"
+                        className="w-10 text-center bg-transparent border-0 text-primary-50 text-xs focus:outline-none focus:ring-0 py-1"
                       />
                       <button
                         type="button"
@@ -281,7 +281,7 @@ export default function InventoryItemSelector({ onSelect, currency, disabled, se
                           e.stopPropagation()
                           handleQuantityChange(item.id, 1)
                         }}
-                        className="w-6 h-6 flex items-center justify-center hover:bg-slate-700 text-slate-400 hover:text-slate-200 transition-colors"
+                        className="w-6 h-6 flex items-center justify-center hover:bg-primary-600 text-primary-400 hover:text-primary-100 transition-colors"
                       >
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -297,7 +297,7 @@ export default function InventoryItemSelector({ onSelect, currency, disabled, se
                       disabled={isSelected}
                       className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
                         isSelected
-                          ? 'bg-slate-700/50 text-slate-500 cursor-not-allowed'
+                          ? 'bg-primary-600/50 text-primary-500 cursor-not-allowed'
                           : 'bg-cyan-500 hover:bg-cyan-600 text-white shadow-sm'
                       }`}
                     >
@@ -313,8 +313,8 @@ export default function InventoryItemSelector({ onSelect, currency, disabled, se
 
       {/* No results */}
       {showDropdown && searchQuery && filteredItems.length === 0 && (
-        <div className="absolute z-50 w-full mt-1 bg-slate-800 border border-slate-700 rounded-lg shadow-xl p-3 sm:p-4 text-center">
-          <p className="text-xs sm:text-sm text-slate-400">No items found matching "{searchQuery}"</p>
+        <div className="absolute z-50 w-full mt-1 bg-primary-700 border border-primary-600 rounded-lg shadow-xl p-3 sm:p-4 text-center">
+          <p className="text-xs sm:text-sm text-primary-400">No items found matching "{searchQuery}"</p>
         </div>
       )}
       </div>

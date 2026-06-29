@@ -110,11 +110,11 @@ export function OnboardingProgress() {
 
   if (loading) {
     return (
-      <div className="p-4 bg-slate-800/30 border border-slate-700/50 rounded-xl animate-pulse">
-        <div className="h-4 bg-slate-700 rounded w-1/3 mb-4" />
+      <div className="p-4 bg-primary-700/30 border border-primary-600/50 rounded-xl animate-pulse">
+        <div className="h-4 bg-primary-600 rounded w-1/3 mb-4" />
         <div className="space-y-3">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-12 bg-slate-700/50 rounded-lg" />
+            <div key={i} className="h-12 bg-primary-600/50 rounded-lg" />
           ))}
         </div>
       </div>
@@ -124,15 +124,15 @@ export function OnboardingProgress() {
   const progress = (completedCount / steps.length) * 100
 
   return (
-    <div className="p-4 bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-700/50 rounded-xl">
+    <div className="p-4 bg-gradient-to-br from-primary-700/50 to-primary-800/50 border border-primary-600/50 rounded-xl">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-sm font-semibold text-slate-100">Get started with Quotla</h3>
-          <p className="text-xs text-slate-500 mt-0.5">{completedCount} of {steps.length} steps completed</p>
+          <h3 className="text-sm font-semibold text-primary-50">Get started with Quotla</h3>
+          <p className="text-xs text-primary-500 mt-0.5">{completedCount} of {steps.length} steps completed</p>
         </div>
         <button
           onClick={() => setDismissed(true)}
-          className="p-1 text-slate-500 hover:text-slate-300 transition-colors"
+          className="p-1 text-primary-500 hover:text-primary-300 transition-colors"
           title="Dismiss"
         >
           <X className="w-4 h-4" />
@@ -140,9 +140,9 @@ export function OnboardingProgress() {
       </div>
 
       {/* Progress bar */}
-      <div className="h-1.5 bg-slate-700 rounded-full mb-4 overflow-hidden">
+      <div className="h-1.5 bg-primary-600 rounded-full mb-4 overflow-hidden">
         <div
-          className="h-full bg-gradient-to-r from-cyan-500 to-emerald-500 rounded-full transition-all duration-500"
+          className="h-full bg-gradient-to-r from-quotla-orange to-emerald-500 rounded-full transition-all duration-500"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -158,28 +158,28 @@ export function OnboardingProgress() {
               className={`flex items-center gap-3 p-2.5 rounded-lg transition-all ${
                 step.completed
                   ? 'bg-emerald-500/5 border border-emerald-500/10'
-                  : 'bg-slate-800/30 border border-slate-700/30 hover:border-slate-600/50'
+                  : 'bg-primary-700/30 border border-primary-600/30 hover:border-primary-500/50'
               }`}
             >
               <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
                 step.completed
                   ? 'bg-emerald-500/20'
-                  : 'bg-slate-700/50'
+                  : 'bg-primary-600/50'
               }`}>
                 {step.completed ? (
                   <Check className="w-4 h-4 text-emerald-400" />
                 ) : (
-                  <Icon className="w-4 h-4 text-slate-400" />
+                  <Icon className="w-4 h-4 text-primary-400" />
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <p className={`text-sm font-medium ${step.completed ? 'text-emerald-400' : 'text-slate-200'}`}>
+                <p className={`text-sm font-medium ${step.completed ? 'text-emerald-400' : 'text-primary-100'}`}>
                   {step.title}
                 </p>
-                <p className="text-xs text-slate-500 truncate">{step.description}</p>
+                <p className="text-xs text-primary-500 truncate">{step.description}</p>
               </div>
               {!step.completed && (
-                <ChevronRight className="w-4 h-4 text-slate-600 flex-shrink-0" />
+                <ChevronRight className="w-4 h-4 text-primary-600 flex-shrink-0" />
               )}
             </Link>
           )

@@ -133,7 +133,7 @@ export function AddInventoryItemDialog({ open, onOpenChange, onSuccess }: AddInv
 
   return (
     <Dialog open={open} onOpenChange={(newOpen) => { if (!loading) onOpenChange(newOpen) }}>
-      <DialogContent className="bg-slate-900 border-slate-800 text-slate-100 max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-primary-800 border-primary-600 text-primary-50 max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl">Add New Product</DialogTitle>
         </DialogHeader>
@@ -145,10 +145,10 @@ export function AddInventoryItemDialog({ open, onOpenChange, onSuccess }: AddInv
                 value={formData.item_type}
                 onValueChange={(value) => setFormData({ ...formData, item_type: value as 'product' | 'service' })}
               >
-                <SelectTrigger id="item-type" className="bg-slate-800 border-slate-700 h-8 text-sm">
+                <SelectTrigger id="item-type" className="bg-primary-700 border-primary-600 h-8 text-sm">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-slate-900 border-slate-800">
+                <SelectContent className="bg-primary-800 border-primary-600">
                   <SelectItem value="product">Product</SelectItem>
                   <SelectItem value="service">Service</SelectItem>
                 </SelectContent>
@@ -162,7 +162,7 @@ export function AddInventoryItemDialog({ open, onOpenChange, onSuccess }: AddInv
                 placeholder="PROD-XXX"
                 value={formData.sku}
                 onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
-                className="bg-slate-800 border-slate-700 h-8 text-sm"
+                className="bg-primary-700 border-primary-600 h-8 text-sm"
               />
             </div>
           </div>
@@ -175,7 +175,7 @@ export function AddInventoryItemDialog({ open, onOpenChange, onSuccess }: AddInv
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               required
-              className="bg-slate-800 border-slate-700 h-8 text-sm"
+              className="bg-primary-700 border-primary-600 h-8 text-sm"
             />
           </div>
 
@@ -186,7 +186,7 @@ export function AddInventoryItemDialog({ open, onOpenChange, onSuccess }: AddInv
               placeholder="Product description"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="bg-slate-800 border-slate-700 min-h-20 text-sm"
+              className="bg-primary-700 border-primary-600 min-h-20 text-sm"
               rows={3}
             />
           </div>
@@ -198,7 +198,7 @@ export function AddInventoryItemDialog({ open, onOpenChange, onSuccess }: AddInv
               placeholder="e.g., Electronics, Furniture"
               value={formData.category}
               onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-              className="bg-slate-800 border-slate-700 h-8 text-sm"
+              className="bg-primary-700 border-primary-600 h-8 text-sm"
             />
           </div>
 
@@ -216,7 +216,7 @@ export function AddInventoryItemDialog({ open, onOpenChange, onSuccess }: AddInv
                     setFormData({ ...formData, cost_price: raw === '' ? 0 : parseFloat(raw) })
                   }}
                   required
-                  className="bg-slate-800 border-slate-700 h-8 text-sm"
+                  className="bg-primary-700 border-primary-600 h-8 text-sm"
                 />
             </div>
 
@@ -233,7 +233,7 @@ export function AddInventoryItemDialog({ open, onOpenChange, onSuccess }: AddInv
                     setFormData({ ...formData, unit_price: raw === '' ? 0 : parseFloat(raw) })
                   }}
                   required
-                  className="bg-slate-800 border-slate-700 h-8 text-sm"
+                  className="bg-primary-700 border-primary-600 h-8 text-sm"
                 />
             </div>
 
@@ -249,7 +249,7 @@ export function AddInventoryItemDialog({ open, onOpenChange, onSuccess }: AddInv
                     const raw = e.target.value
                     setFormData({ ...formData, tax_rate: raw === '' ? 0 : parseFloat(raw) })
                   }}
-                  className="bg-slate-800 border-slate-700 h-8 text-sm"
+                  className="bg-primary-700 border-primary-600 h-8 text-sm"
                 />
             </div>
           </div>
@@ -278,7 +278,7 @@ export function AddInventoryItemDialog({ open, onOpenChange, onSuccess }: AddInv
                     const raw = e.target.value
                     setFormData({ ...formData, quantity_on_hand: raw === '' ? 1 : parseInt(raw) || 1 })
                   }}
-                  className="bg-slate-800 border-slate-700 h-8 text-sm"
+                  className="bg-primary-700 border-primary-600 h-8 text-sm"
                 />
               </div>
 
@@ -293,7 +293,7 @@ export function AddInventoryItemDialog({ open, onOpenChange, onSuccess }: AddInv
                     const raw = e.target.value
                     setFormData({ ...formData, low_stock_threshold: raw === '' ? 0 : parseInt(raw) || 0 })
                   }}
-                  className="bg-slate-800 border-slate-700 h-8 text-sm"
+                  className="bg-primary-700 border-primary-600 h-8 text-sm"
                 />
               </div>
 
@@ -308,7 +308,7 @@ export function AddInventoryItemDialog({ open, onOpenChange, onSuccess }: AddInv
                     const raw = e.target.value
                     setFormData({ ...formData, reorder_quantity: raw === '' ? 50 : parseInt(raw) || 50 })
                   }}
-                  className="bg-slate-800 border-slate-700 h-8 text-sm"
+                  className="bg-primary-700 border-primary-600 h-8 text-sm"
                 />
               </div>
             </div>
@@ -320,10 +320,10 @@ export function AddInventoryItemDialog({ open, onOpenChange, onSuccess }: AddInv
               value={formData.default_supplier_id}
               onValueChange={(value) => setFormData({ ...formData, default_supplier_id: value })}
             >
-              <SelectTrigger id="supplier" className="bg-slate-800 border-slate-700 h-8 text-sm">
+              <SelectTrigger id="supplier" className="bg-primary-700 border-primary-600 h-8 text-sm">
                 <SelectValue placeholder="Select a supplier" />
               </SelectTrigger>
-              <SelectContent className="bg-slate-900 border-slate-800">
+              <SelectContent className="bg-primary-800 border-primary-600">
                 <SelectItem value="none">None</SelectItem>
                 {suppliers.map((supplier) => (
                   <SelectItem key={supplier.id} value={supplier.id}>
@@ -339,7 +339,7 @@ export function AddInventoryItemDialog({ open, onOpenChange, onSuccess }: AddInv
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              className="border-slate-700 text-slate-300 hover:bg-slate-800 text-sm h-9"
+              className="border-primary-600 text-primary-200 hover:bg-primary-700 text-sm h-9"
             >
               Cancel
             </Button>

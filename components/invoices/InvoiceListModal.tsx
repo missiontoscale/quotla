@@ -151,11 +151,11 @@ export function InvoiceListModal({
       label: '',
       render: (value: string) => {
         const dotColors: Record<string, string> = {
-          draft: 'bg-slate-400',
+          draft: 'bg-primary-400',
           sent: 'bg-blue-400',
           paid: 'bg-emerald-400',
           overdue: 'bg-rose-400',
-          cancelled: 'bg-slate-500',
+          cancelled: 'bg-primary-500',
         }
         return (
           <span
@@ -189,62 +189,63 @@ export function InvoiceListModal({
       key: 'actions',
       label: '',
       render: (value: any, row: InvoiceRow) => (
-        <div className="relative" ref={openDropdownId === row.id ? dropdownRef : null}>
+        <div className="relative flex justify-end" ref={openDropdownId === row.id ? dropdownRef : null}>
           <Button
             variant="ghost"
-            size="icon"
+            size="sm"
             onClick={(e) => {
               e.stopPropagation()
               setOpenDropdownId(openDropdownId === row.id ? null : row.id)
             }}
             disabled={downloadingInvoiceId === row.id}
-            className="text-slate-400 hover:text-cyan-400 hover:bg-slate-800 h-11 w-11 md:h-7 md:w-7"
+            className="text-quotla-orange hover:text-white hover:bg-quotla-orange/20 h-8 gap-1.5 text-xs"
             title="Download"
           >
-            <Download className="w-4 h-4" />
+            <Download className="w-3.5 h-3.5" />
+            Download
           </Button>
           {openDropdownId === row.id && (
-            <div className="absolute right-0 bottom-full mb-2 md:bottom-auto md:top-full md:mt-2 w-48 rounded-md shadow-lg bg-slate-800 ring-1 ring-slate-700 z-50">
+            <div className="absolute right-0 bottom-full mb-2 md:bottom-auto md:top-full md:mt-2 w-48 rounded-md shadow-lg bg-primary-700 border border-primary-600 z-50">
               <div className="py-1" role="menu">
                 <button
                   onClick={(e) => {
                     e.stopPropagation()
                     handleDownload(row.id, 'pdf')
                   }}
-                  className="block w-full text-left px-4 py-2 text-sm text-slate-300 hover:bg-slate-700"
+                  className="block w-full text-left px-4 py-2 text-sm text-primary-200 hover:bg-primary-600/80"
                   role="menuitem"
                 >
-                  📄 PDF Document
+                  PDF Document
                 </button>
                 <button
                   onClick={(e) => {
                     e.stopPropagation()
                     handleDownload(row.id, 'word')
                   }}
-                  className="block w-full text-left px-4 py-2 text-sm text-slate-300 hover:bg-slate-700"
+                  className="block w-full text-left px-4 py-2 text-sm text-primary-200 hover:bg-primary-600/80"
                   role="menuitem"
                 >
-                  📝 Word Document
+                  Word Document
                 </button>
                 <button
                   onClick={(e) => {
                     e.stopPropagation()
                     handleDownload(row.id, 'png')
                   }}
-                  className="block w-full text-left px-4 py-2 text-sm text-slate-300 hover:bg-slate-700"
+                  className="block w-full text-left px-4 py-2 text-sm text-primary-200 hover:bg-primary-600/80"
                   role="menuitem"
                 >
-                  🖼️ PNG Image
+                  PNG Image
                 </button>
                 <button
                   onClick={(e) => {
                     e.stopPropagation()
                     handleDownload(row.id, 'json')
                   }}
-                  className="block w-full text-left px-4 py-2 text-sm text-slate-300 hover:bg-slate-700"
+                  className="block w-full text-left px-4 py-2 text-sm text-primary-200 hover:bg-primary-600/80"
                   role="menuitem"
                 >
-                  📋 JSON Data
+                  JSON Data
                 </button>
               </div>
             </div>
@@ -256,18 +257,18 @@ export function InvoiceListModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-slate-900 border-slate-800 text-slate-100 max-w-2xl md:max-w-5xl max-h-[85vh] overflow-hidden flex flex-col px-3 md:px-4">
+      <DialogContent className="bg-primary-800 border-primary-600 text-primary-50 max-w-2xl md:max-w-5xl max-h-[85vh] overflow-hidden flex flex-col px-3 md:px-4">
         <DialogHeader className="flex-shrink-0">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-xl">
               All Invoices
-              <Badge className="ml-2 bg-slate-700 text-slate-300">
+              <Badge className="ml-2 bg-primary-700 text-primary-300">
                 {invoices.length}
               </Badge>
             </DialogTitle>
             <Button
               onClick={onAddInvoice}
-              className="bg-cyan-500 hover:bg-cyan-600 text-white"
+              className="bg-quotla-orange hover:bg-secondary-500 text-white"
             >
               <Plus className="w-4 h-4 mr-2" />
               New Invoice
@@ -276,15 +277,15 @@ export function InvoiceListModal({
         </DialogHeader>
         <div className="flex flex-wrap items-center gap-3 mt-3 px-1">
           {[
-            { label: 'Draft', color: 'bg-slate-400' },
+            { label: 'Draft', color: 'bg-primary-400' },
             { label: 'Sent', color: 'bg-blue-400' },
             { label: 'Paid', color: 'bg-emerald-400' },
             { label: 'Overdue', color: 'bg-rose-400' },
-            { label: 'Cancelled', color: 'bg-slate-500' },
+            { label: 'Cancelled', color: 'bg-primary-500' },
           ].map((s) => (
             <div key={s.label} className="flex items-center gap-1.5">
               <span className={`w-2 h-2 rounded-full ${s.color}`} />
-              <span className="text-xs text-slate-400">{s.label}</span>
+              <span className="text-xs text-primary-400">{s.label}</span>
             </div>
           ))}
         </div>

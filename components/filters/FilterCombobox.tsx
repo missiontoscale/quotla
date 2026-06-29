@@ -75,8 +75,8 @@ export function FilterCombobox({
           role="combobox"
           aria-expanded={open}
           className={cn(
-            'w-[140px] sm:w-[160px] justify-between bg-slate-800 border-slate-700/50 h-8 text-xs sm:text-sm hover:bg-slate-700/50 shrink-0',
-            !selectedOption && 'text-slate-400',
+            'w-[140px] sm:w-[160px] justify-between bg-primary-700 border-primary-600/50 h-8 text-xs sm:text-sm hover:bg-primary-600/50 shrink-0',
+            !selectedOption && 'text-primary-400',
             className
           )}
         >
@@ -87,15 +87,15 @@ export function FilterCombobox({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-slate-900 border-slate-700">
-        <Command className="bg-slate-900" shouldFilter={false}>
+      <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-primary-800 border-primary-600">
+        <Command className="bg-primary-800" shouldFilter={false}>
           <CommandInput
             placeholder={searchPlaceholder}
             value={searchValue}
             onValueChange={setSearchValue}
-            className="h-9 bg-slate-900 text-slate-100"
+            className="h-9 bg-primary-800 text-primary-50"
           />
-          <CommandList className="bg-slate-900">
+          <CommandList className="bg-primary-800">
             {filteredOptions.length > 0 ? (
               <CommandGroup>
                 {filteredOptions.map((option) => (
@@ -103,7 +103,7 @@ export function FilterCombobox({
                     key={option.id}
                     value={option.id}
                     onSelect={() => handleSelect(option.id)}
-                    className="cursor-pointer hover:bg-slate-800 text-slate-100"
+                    className="cursor-pointer hover:bg-primary-700 text-primary-50"
                   >
                     <Check
                       className={cn(
@@ -118,18 +118,18 @@ export function FilterCombobox({
                 ))}
               </CommandGroup>
             ) : (
-              <CommandEmpty className="py-4 text-sm text-slate-400">
+              <CommandEmpty className="py-4 text-sm text-primary-400">
                 {emptyMessage}
               </CommandEmpty>
             )}
 
             {value && (
               <>
-                <CommandSeparator className="bg-slate-700" />
+                <CommandSeparator className="bg-primary-600" />
                 <CommandGroup>
                   <CommandItem
                     onSelect={handleClear}
-                    className="cursor-pointer hover:bg-slate-800 text-slate-400"
+                    className="cursor-pointer hover:bg-primary-700 text-primary-400"
                   >
                     Clear selection
                   </CommandItem>

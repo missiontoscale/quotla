@@ -41,14 +41,14 @@ export function FilterBar({
               variant="ghost"
               size="sm"
               onClick={onClear}
-              className="text-slate-400 hover:text-slate-200 h-8 px-2"
+              className="text-primary-400 hover:text-primary-100 h-8 px-2"
             >
               <X className="w-3.5 h-3.5 mr-1" />
               Clear
             </Button>
           )}
           {resultCount !== undefined && (
-            <span className="text-xs text-slate-400">
+            <span className="text-xs text-primary-400">
               {resultCount} {resultCount === 1 ? 'result' : 'results'}
             </span>
           )}

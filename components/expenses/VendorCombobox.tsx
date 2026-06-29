@@ -101,33 +101,33 @@ export function VendorCombobox({
           aria-expanded={open}
           disabled={disabled}
           className={cn(
-            'w-full justify-between bg-slate-800 border-slate-700 h-8 text-sm hover:bg-slate-700/50',
-            !displayValue && 'text-slate-400'
+            'w-full justify-between bg-primary-800 border-primary-600 h-8 text-sm hover:bg-primary-600/50',
+            !displayValue && 'text-primary-400'
           )}
         >
           <span className="flex items-center gap-2 truncate">
-            <Store className="h-3.5 w-3.5 shrink-0 text-slate-400" />
+            <Store className="h-3.5 w-3.5 shrink-0 text-primary-400" />
             {displayValue || 'Select or type vendor name...'}
           </span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-slate-900 border-slate-700">
-        <Command className="bg-slate-900" shouldFilter={false}>
+      <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-primary-800 border-primary-600">
+        <Command className="bg-primary-800" shouldFilter={false}>
           <CommandInput
             placeholder="Search or type vendor name..."
             value={searchValue}
             onValueChange={setSearchValue}
-            className="h-9 bg-slate-900 text-slate-100"
+            className="h-9 bg-primary-800 text-primary-50"
           />
-          <CommandList className="bg-slate-900">
+          <CommandList className="bg-primary-800">
             {/* Show option to use custom vendor name if there's input and no exact match */}
             {searchValue.trim() && !exactMatch && (
               <>
                 <CommandGroup heading="Use custom vendor">
                   <CommandItem
                     onSelect={handleUseCustomVendor}
-                    className="cursor-pointer hover:bg-slate-800 text-slate-100"
+                    className="cursor-pointer hover:bg-primary-700 text-primary-50"
                   >
                     <Plus className="mr-2 h-4 w-4 text-cyan-400" />
                     <span>
@@ -135,19 +135,19 @@ export function VendorCombobox({
                     </span>
                   </CommandItem>
                 </CommandGroup>
-                <CommandSeparator className="bg-slate-700" />
+                <CommandSeparator className="bg-primary-600" />
               </>
             )}
 
             {/* Show existing vendors */}
             {filteredVendors.length > 0 ? (
-              <CommandGroup heading="Existing vendors" className="text-slate-400">
+              <CommandGroup heading="Existing vendors" className="text-primary-400">
                 {filteredVendors.map((vendor) => (
                   <CommandItem
                     key={vendor.id}
                     value={vendor.id}
                     onSelect={() => handleSelectVendor(vendor.id, vendor.name)}
-                    className="cursor-pointer hover:bg-slate-800 text-slate-100"
+                    className="cursor-pointer hover:bg-primary-700 text-primary-50"
                   >
                     <Check
                       className={cn(
@@ -162,7 +162,7 @@ export function VendorCombobox({
                 ))}
               </CommandGroup>
             ) : (
-              <CommandEmpty className="py-4 text-sm text-slate-400">
+              <CommandEmpty className="py-4 text-sm text-primary-400">
                 {searchValue
                   ? 'No vendors found. Press Enter or click above to use as custom vendor.'
                   : 'No vendors available. Type to add a custom vendor.'}
@@ -172,11 +172,11 @@ export function VendorCombobox({
             {/* Clear option if there's a selection */}
             {(selectedVendorId || customVendorName) && (
               <>
-                <CommandSeparator className="bg-slate-700" />
+                <CommandSeparator className="bg-primary-600" />
                 <CommandGroup>
                   <CommandItem
                     onSelect={handleClear}
-                    className="cursor-pointer hover:bg-slate-800 text-slate-400"
+                    className="cursor-pointer hover:bg-primary-700 text-primary-400"
                   >
                     Clear selection
                   </CommandItem>

@@ -85,8 +85,8 @@ export function FilterMultiSelect({
           role="combobox"
           aria-expanded={open}
           className={cn(
-            'w-full sm:w-[160px] justify-between bg-slate-800 border-slate-700/50 h-10 sm:h-8 text-xs sm:text-sm hover:bg-slate-700/50 shrink-0',
-            selectedOptions.length === 0 && 'text-slate-400',
+            'w-full sm:w-[160px] justify-between bg-primary-800 border-primary-600/50 h-10 sm:h-8 text-xs sm:text-sm hover:bg-primary-600/50 shrink-0',
+            selectedOptions.length === 0 && 'text-primary-400',
             className
           )}
         >
@@ -102,17 +102,17 @@ export function FilterMultiSelect({
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="w-[--radix-popover-trigger-width] min-w-[200px] p-0 bg-slate-900 border-slate-700"
+        className="w-[--radix-popover-trigger-width] min-w-[200px] p-0 bg-primary-800 border-primary-600"
         align="start"
       >
-        <Command className="bg-slate-900" shouldFilter={false}>
+        <Command className="bg-primary-800" shouldFilter={false}>
           <CommandInput
             placeholder={searchPlaceholder}
             value={searchValue}
             onValueChange={setSearchValue}
-            className="h-10 sm:h-9 bg-slate-900 text-slate-100"
+            className="h-10 sm:h-9 bg-primary-800 text-primary-50"
           />
-          <CommandList className="bg-slate-900 max-h-[200px]">
+          <CommandList className="bg-primary-800 max-h-[200px]">
             {filteredOptions.length > 0 ? (
               <CommandGroup>
                 {filteredOptions.map((option) => {
@@ -122,11 +122,11 @@ export function FilterMultiSelect({
                       key={option.id}
                       value={option.id}
                       onSelect={() => handleToggle(option.id)}
-                      className="cursor-pointer hover:bg-slate-800 text-slate-100 min-h-[44px] sm:min-h-[36px] flex items-center gap-2"
+                      className="cursor-pointer hover:bg-primary-700 text-primary-50 min-h-[44px] sm:min-h-[36px] flex items-center gap-2"
                     >
                       <Checkbox
                         checked={isSelected}
-                        className="border-slate-600 data-[state=checked]:bg-cyan-500 data-[state=checked]:border-cyan-500"
+                        className="border-primary-600 data-[state=checked]:bg-cyan-500 data-[state=checked]:border-cyan-500"
                       />
                       <span className="truncate">{option.label}</span>
                     </CommandItem>
@@ -134,18 +134,18 @@ export function FilterMultiSelect({
                 })}
               </CommandGroup>
             ) : (
-              <CommandEmpty className="py-4 text-sm text-slate-400">
+              <CommandEmpty className="py-4 text-sm text-primary-400">
                 {emptyMessage}
               </CommandEmpty>
             )}
 
             {value.length > 0 && (
               <>
-                <CommandSeparator className="bg-slate-700" />
+                <CommandSeparator className="bg-primary-600" />
                 <CommandGroup>
                   <CommandItem
                     onSelect={handleClear}
-                    className="cursor-pointer hover:bg-slate-800 text-slate-400 min-h-[44px] sm:min-h-[36px] justify-center"
+                    className="cursor-pointer hover:bg-primary-700 text-primary-400 min-h-[44px] sm:min-h-[36px] justify-center"
                   >
                     <X className="w-3.5 h-3.5 mr-1.5" />
                     Clear all

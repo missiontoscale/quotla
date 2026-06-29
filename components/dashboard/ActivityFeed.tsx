@@ -178,7 +178,7 @@ export function ActivityFeed({ limit = 8, showViewMore = false, onViewMore }: Ac
       case 'low_stock':
         return <Package className="w-4 h-4 text-amber-400" />
       default:
-        return <Clock className="w-4 h-4 text-slate-400" />
+        return <Clock className="w-4 h-4 text-primary-400" />
     }
   }
 
@@ -196,7 +196,7 @@ export function ActivityFeed({ limit = 8, showViewMore = false, onViewMore }: Ac
       case 'low_stock':
         return 'bg-amber-500/10 border-amber-500/20'
       default:
-        return 'bg-slate-500/10 border-slate-500/20'
+        return 'bg-primary-500/10 border-primary-500/20'
     }
   }
 
@@ -205,10 +205,10 @@ export function ActivityFeed({ limit = 8, showViewMore = false, onViewMore }: Ac
       <div className="space-y-3">
         {[...Array(5)].map((_, i) => (
           <div key={i} className="flex gap-3 animate-pulse">
-            <div className="w-8 h-8 bg-slate-800 rounded-lg" />
+            <div className="w-8 h-8 bg-primary-700 rounded-lg" />
             <div className="flex-1">
-              <div className="h-4 bg-slate-800 rounded w-1/3 mb-2" />
-              <div className="h-3 bg-slate-800/50 rounded w-2/3" />
+              <div className="h-4 bg-primary-700 rounded w-1/3 mb-2" />
+              <div className="h-3 bg-primary-700/50 rounded w-2/3" />
             </div>
           </div>
         ))}
@@ -219,11 +219,11 @@ export function ActivityFeed({ limit = 8, showViewMore = false, onViewMore }: Ac
   if (activities.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-8 text-center">
-        <div className="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center mb-3">
-          <Clock className="w-5 h-5 text-slate-500" />
+        <div className="w-12 h-12 bg-primary-700 rounded-full flex items-center justify-center mb-3">
+          <Clock className="w-5 h-5 text-primary-500" />
         </div>
-        <p className="text-sm text-slate-400">No recent activity</p>
-        <p className="text-xs text-slate-500 mt-1">Activity will appear here as you use Quotla</p>
+        <p className="text-sm text-primary-400">No recent activity</p>
+        <p className="text-xs text-primary-500 mt-1">Activity will appear here as you use Quotla</p>
       </div>
     )
   }
@@ -232,21 +232,21 @@ export function ActivityFeed({ limit = 8, showViewMore = false, onViewMore }: Ac
     <div className="space-y-1">
       {activities.map((activity) => {
         const content = (
-          <div className="flex gap-3 p-2 rounded-lg hover:bg-slate-800/50 transition-colors group">
+          <div className="flex gap-3 p-2 rounded-lg hover:bg-primary-700/50 transition-colors group">
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center border flex-shrink-0 ${getIconBg(activity.type)}`}>
               {getIcon(activity.type)}
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-2">
-                <p className="text-sm font-medium text-slate-200 truncate">{activity.title}</p>
+                <p className="text-sm font-medium text-primary-100 truncate">{activity.title}</p>
                 {activity.amount && (
-                  <span className={`text-xs font-medium ${activity.type === 'invoice_paid' ? 'text-emerald-400' : 'text-slate-400'}`}>
+                  <span className={`text-xs font-medium ${activity.type === 'invoice_paid' ? 'text-emerald-400' : 'text-primary-400'}`}>
                     {formatCurrency(activity.amount, currency)}
                   </span>
                 )}
               </div>
-              <p className="text-xs text-slate-500 truncate">{activity.description}</p>
-              <p className="text-[0.68rem] text-slate-600 mt-0.5">
+              <p className="text-xs text-primary-500 truncate">{activity.description}</p>
+              <p className="text-[0.68rem] text-primary-500/70 mt-0.5">
                 {formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true })}
               </p>
             </div>
@@ -267,7 +267,7 @@ export function ActivityFeed({ limit = 8, showViewMore = false, onViewMore }: Ac
       {showViewMore && (
         <button
           onClick={onViewMore}
-          className="w-full flex items-center justify-center gap-1 py-2 mt-2 text-sm text-slate-400 hover:text-slate-200 transition-colors rounded-lg hover:bg-slate-800/50"
+          className="w-full flex items-center justify-center gap-1 py-2 mt-2 text-sm text-primary-400 hover:text-primary-100 transition-colors rounded-lg hover:bg-primary-700/50"
         >
           View More
           <ChevronRight className="w-4 h-4" />

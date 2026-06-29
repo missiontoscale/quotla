@@ -89,10 +89,10 @@ export default function TopClientsChart() {
 
   if (loading) {
     return (
-      <Card className="bg-slate-900/50 border border-slate-700 p-6">
+      <Card className="bg-primary-800/50 border border-primary-600 p-6">
         <div className="animate-pulse space-y-4">
-          <div className="h-6 bg-slate-800 rounded w-1/3"></div>
-          <div className="h-64 bg-slate-800 rounded"></div>
+          <div className="h-6 bg-primary-800 rounded w-1/3"></div>
+          <div className="h-64 bg-primary-800 rounded"></div>
         </div>
       </Card>
     )
@@ -100,9 +100,9 @@ export default function TopClientsChart() {
 
   if (data.length === 0) {
     return (
-      <Card className="bg-slate-900/50 border border-slate-700 p-6">
-        <h3 className="text-lg font-bold text-slate-100 mb-4">Top Clients</h3>
-        <div className="flex items-center justify-center h-64 text-slate-500">
+      <Card className="bg-primary-800/50 border border-primary-600 p-6">
+        <h3 className="text-lg font-bold text-primary-50 mb-4">Top Clients</h3>
+        <div className="flex items-center justify-center h-64 text-primary-500">
           <p>No paid invoices yet</p>
         </div>
       </Card>
@@ -110,8 +110,8 @@ export default function TopClientsChart() {
   }
 
   return (
-    <Card className="bg-slate-900/50 border border-slate-700 p-6">
-      <h3 className="text-lg font-bold text-slate-100 mb-4">Top 5 Clients by Revenue</h3>
+    <Card className="bg-primary-800/50 border border-primary-600 p-6">
+      <h3 className="text-lg font-bold text-primary-50 mb-4">Top 5 Clients by Revenue</h3>
 
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
