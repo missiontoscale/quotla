@@ -198,11 +198,10 @@ export function InvoiceListModal({
               setOpenDropdownId(openDropdownId === row.id ? null : row.id)
             }}
             disabled={downloadingInvoiceId === row.id}
-            className="text-quotla-orange hover:text-white hover:bg-quotla-orange/20 h-8 gap-1.5 text-xs"
+            className="text-quotla-orange hover:text-white hover:bg-quotla-orange/20 h-8 w-8 p-0"
             title="Download"
           >
             <Download className="w-3.5 h-3.5" />
-            Download
           </Button>
           {openDropdownId === row.id && (
             <div className="absolute right-0 bottom-full mb-2 md:bottom-auto md:top-full md:mt-2 w-48 rounded-md shadow-lg bg-primary-700 border border-primary-600 z-50">
@@ -268,10 +267,10 @@ export function InvoiceListModal({
             </DialogTitle>
             <Button
               onClick={onAddInvoice}
-              className="bg-quotla-orange hover:bg-secondary-500 text-white"
+              className="bg-quotla-orange hover:bg-secondary-500 text-white h-9 w-9 p-0"
+              title="New Invoice"
             >
-              <Plus className="w-4 h-4 mr-2" />
-              New Invoice
+              <Plus className="w-4 h-4" />
             </Button>
           </div>
         </DialogHeader>

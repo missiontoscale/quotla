@@ -26,8 +26,10 @@ import {
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed'
+import { ActivityFeedSkeleton } from '@/components/dashboard/ActivityFeedSkeleton'
 import { OnboardingProgress } from '@/components/dashboard/OnboardingProgress'
 import { CalendarWidget } from '@/components/dashboard/CalendarWidget'
+import { CalendarWidgetSkeleton } from '@/components/dashboard/CalendarWidgetSkeleton'
 import { MetricsCardSkeleton } from '@/components/dashboard/MetricsCardSkeleton'
 import { formatCurrency, formatCompactCurrency } from '@/lib/utils/currency'
 import { useUserCurrency } from '@/hooks/useUserCurrency'
@@ -418,9 +420,27 @@ function DashboardContent() {
 
   if (loading) {
     return (
-      <div className="space-y-4 max-w-[1400px] mx-auto px-3 md:px-4">
+      <div className="space-y-6 max-w-[1400px] mx-auto px-3 md:px-4">
+        <div className="hidden md:block">
+          <div className="h-7 bg-primary-700 rounded w-64 mb-2 animate-pulse" />
+          <div className="h-4 bg-primary-700/50 rounded w-48 animate-pulse" />
+        </div>
+
         <MetricsCardSkeleton />
-        <MetricsCardSkeleton />
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
+            <ActivityFeedSkeleton />
+          </div>
+          <aside className="space-y-6">
+            <div className="h-24 bg-primary-700/30 rounded-xl animate-pulse" />
+            <div className="h-32 bg-primary-700/30 rounded-xl animate-pulse" />
+            <div className="bg-quotla-dark/90 border border-primary-600 rounded-xl p-5 animate-pulse">
+              <div className="h-5 bg-primary-700 rounded w-40 mb-4" />
+              <CalendarWidgetSkeleton />
+            </div>
+          </aside>
+        </div>
       </div>
     )
   }
