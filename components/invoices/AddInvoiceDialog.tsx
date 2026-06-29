@@ -836,8 +836,8 @@ export function AddInvoiceDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="bg-slate-900 border-slate-800 text-slate-100 max-w-xl md:max-w-3xl max-h-[90vh] overflow-y-auto px-3 md:px-4">
-        <DialogHeader className="sticky top-0 z-10 bg-slate-900 border-b border-slate-800 pb-3 -mx-3 md:-mx-4 px-3 md:px-4 pt-4">
+      <DialogContent className="bg-primary-700 border-primary-600 text-primary-50 max-w-xl md:max-w-3xl max-h-[90vh] overflow-y-auto px-3 md:px-4">
+        <DialogHeader className="sticky top-0 z-10 bg-primary-700 border-b border-primary-600 pb-3 -mx-3 md:-mx-4 px-3 md:px-4 pt-4">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-xl">
               {isViewMode ? 'View Invoice' : isEditMode ? 'Edit Invoice' : 'Create Invoice'}
@@ -848,7 +848,7 @@ export function AddInvoiceDialog({
                   type="button"
                   onClick={() => setShowDownloadOptions(!showDownloadOptions)}
                   disabled={exporting !== null}
-                  className="p-2 rounded-md text-slate-400 hover:text-cyan-400 hover:bg-slate-800 transition-colors disabled:opacity-50"
+                  className="p-2 rounded-md text-primary-400 hover:text-quotla-orange hover:bg-primary-700/80 transition-colors disabled:opacity-50"
                   aria-label="Download options"
                 >
                   <Download className="h-5 w-5" />
@@ -856,7 +856,7 @@ export function AddInvoiceDialog({
                 <button
                   type="button"
                   onClick={() => onOpenChange(false)}
-                  className="p-2 rounded-md text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors"
+                  className="p-2 rounded-md text-primary-400 hover:text-primary-100 hover:bg-primary-700/80 transition-colors"
                   aria-label="Close"
                 >
                   <X className="h-5 w-5" />
@@ -887,16 +887,16 @@ export function AddInvoiceDialog({
                   <div className={cn(
                     'w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold border-2 transition-colors',
                     index < currentStep
-                      ? 'bg-cyan-500 border-cyan-500 text-white'
+                      ? 'bg-quotla-orange border-cyan-500 text-white'
                       : index === currentStep
-                        ? 'bg-transparent border-cyan-400 text-cyan-400'
-                        : 'bg-transparent border-slate-700 text-slate-500'
+                        ? 'bg-transparent border-cyan-400 text-quotla-orange'
+                        : 'bg-transparent border-primary-600/80 text-primary-400'
                   )}>
                     {index < currentStep ? <Check className="h-3.5 w-3.5" /> : index + 1}
                   </div>
                   <span className={cn(
                     'text-[10px] font-medium whitespace-nowrap',
-                    index < currentStep ? 'text-cyan-400' : index === currentStep ? 'text-slate-200' : 'text-slate-500'
+                    index < currentStep ? 'text-quotla-orange' : index === currentStep ? 'text-primary-100' : 'text-primary-400'
                   )}>
                     {step.label}
                   </span>
@@ -904,7 +904,7 @@ export function AddInvoiceDialog({
                 {index < STEPS.length - 1 && (
                   <div className={cn(
                     'flex-1 h-0.5 mx-1 mb-4 transition-colors',
-                    index < currentStep ? 'bg-cyan-500' : 'bg-slate-700'
+                    index < currentStep ? 'bg-quotla-orange' : 'bg-primary-600/80'
                   )} />
                 )}
               </div>
@@ -913,12 +913,12 @@ export function AddInvoiceDialog({
 
           {/* Inline download options row */}
           {isViewMode && showDownloadOptions && (
-            <div className="flex gap-2 mt-3 pt-3 border-t border-slate-800">
+            <div className="flex gap-2 mt-3 pt-3 border-t border-primary-600">
               <button
                 type="button"
                 onClick={() => handleExport('png')}
                 disabled={exporting !== null}
-                className="flex-1 px-3 py-2 text-sm font-medium rounded-md bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition-colors disabled:opacity-50"
+                className="flex-1 px-3 py-2 text-sm font-medium rounded-md bg-primary-700/80 text-primary-200 hover:bg-primary-600/80 hover:text-white transition-colors disabled:opacity-50"
               >
                 {exporting === 'png' ? 'Exporting...' : 'PNG'}
               </button>
@@ -926,7 +926,7 @@ export function AddInvoiceDialog({
                 type="button"
                 onClick={() => handleExport('pdf')}
                 disabled={exporting !== null}
-                className="flex-1 px-3 py-2 text-sm font-medium rounded-md bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition-colors disabled:opacity-50"
+                className="flex-1 px-3 py-2 text-sm font-medium rounded-md bg-primary-700/80 text-primary-200 hover:bg-primary-600/80 hover:text-white transition-colors disabled:opacity-50"
               >
                 {exporting === 'pdf' ? 'Exporting...' : 'PDF'}
               </button>
@@ -934,7 +934,7 @@ export function AddInvoiceDialog({
                 type="button"
                 onClick={() => handleExport('word')}
                 disabled={exporting !== null}
-                className="flex-1 px-3 py-2 text-sm font-medium rounded-md bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition-colors disabled:opacity-50"
+                className="flex-1 px-3 py-2 text-sm font-medium rounded-md bg-primary-700/80 text-primary-200 hover:bg-primary-600/80 hover:text-white transition-colors disabled:opacity-50"
               >
                 {exporting === 'word' ? 'Exporting...' : 'DOCX'}
               </button>
@@ -960,22 +960,22 @@ export function AddInvoiceDialog({
                   }}
                   onFocus={() => setCustomerComboboxOpen(true)}
                   disabled={isViewMode && !isEditing}
-                  className="bg-slate-800 border-slate-700 h-8 text-sm pr-8"
+                  className="bg-primary-700/80 border-primary-600/80 h-8 text-sm pr-8"
                 />
                 <ChevronsUpDown className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50 pointer-events-none" />
                 {customerComboboxOpen && (
-                  <div className="absolute z-50 w-full mt-1 bg-slate-900 border border-slate-800 rounded-md shadow-lg">
-                    <Command className="bg-slate-900" shouldFilter={false}>
+                  <div className="absolute z-50 w-full mt-1 bg-primary-700 border border-primary-600 rounded-md shadow-lg">
+                    <Command className="bg-primary-700" shouldFilter={false}>
                       <CommandList className="max-h-60">
                         {filteredCustomers.length === 0 && !customerSearchValue && (
-                          <div className="py-6 text-center text-sm text-slate-400">No customers found.</div>
+                          <div className="py-6 text-center text-sm text-primary-400">No customers found.</div>
                         )}
                         {filteredCustomers.length === 0 && customerSearchValue && !searchMatchesExisting && (
                           <div className="p-2">
                             <Button
                               type="button"
                               variant="ghost"
-                              className="w-full justify-start text-sm text-cyan-400 hover:text-cyan-300 hover:bg-slate-800"
+                              className="w-full justify-start text-sm text-quotla-orange hover:text-quotla-orange hover:bg-primary-700/80"
                               onClick={() => useTemporaryCustomer(customerSearchValue)}
                             >
                               <UserPlus className="mr-2 h-4 w-4" />
@@ -993,7 +993,7 @@ export function AddInvoiceDialog({
                                 setCustomerSearchValue('')
                                 setCustomerComboboxOpen(false)
                               }}
-                              className="text-sm cursor-pointer hover:bg-slate-800"
+                              className="text-sm cursor-pointer hover:bg-primary-700/80"
                             >
                               <Check
                                 className={`mr-2 h-4 w-4 ${
@@ -1008,10 +1008,10 @@ export function AddInvoiceDialog({
                           ))}
                         </CommandGroup>
                         {customerSearchValue && !searchMatchesExisting && filteredCustomers.length > 0 && (
-                          <CommandGroup className="border-t border-slate-800">
+                          <CommandGroup className="border-t border-primary-600">
                             <CommandItem
                               onSelect={() => useTemporaryCustomer(customerSearchValue)}
-                              className="text-sm cursor-pointer text-cyan-400 hover:text-cyan-300 hover:bg-slate-800"
+                              className="text-sm cursor-pointer text-quotla-orange hover:text-quotla-orange hover:bg-primary-700/80"
                             >
                               <UserPlus className="mr-2 h-4 w-4" />
                               Use "{customerSearchValue}"
@@ -1058,7 +1058,7 @@ export function AddInvoiceDialog({
                   onChange={(e) => setFormData({ ...formData, invoice_number: e.target.value })}
                   required
                   disabled={isViewMode && !isEditing}
-                  className="bg-slate-800 border-slate-700 h-8 text-sm"
+                  className="bg-primary-700/80 border-primary-600/80 h-8 text-sm"
                 />
               </div>
               <div className="space-y-2">
@@ -1069,7 +1069,7 @@ export function AddInvoiceDialog({
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   disabled={isViewMode && !isEditing}
-                  className="bg-slate-800 border-slate-700 h-8 text-sm"
+                  className="bg-primary-700/80 border-primary-600/80 h-8 text-sm"
                 />
               </div>
             </div>
@@ -1084,7 +1084,7 @@ export function AddInvoiceDialog({
                   onChange={(e) => setFormData({ ...formData, issue_date: e.target.value })}
                   required
                   disabled={isViewMode && !isEditing}
-                  className="bg-slate-800 border-slate-700 h-8 text-sm"
+                  className="bg-primary-700/80 border-primary-600/80 h-8 text-sm"
                 />
               </div>
               <div className="space-y-2">
@@ -1095,7 +1095,7 @@ export function AddInvoiceDialog({
                   value={formData.due_date}
                   onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
                   disabled={isViewMode && !isEditing}
-                  className="bg-slate-800 border-slate-700 h-8 text-sm"
+                  className="bg-primary-700/80 border-primary-600/80 h-8 text-sm"
                 />
               </div>
             </div>
@@ -1109,10 +1109,10 @@ export function AddInvoiceDialog({
                     onValueChange={handleCurrencyChange}
                     disabled={(isViewMode && !isEditing) || isConverting}
                   >
-                    <SelectTrigger className="bg-slate-800 border-slate-700 h-8 text-sm">
+                    <SelectTrigger className="bg-primary-700/80 border-primary-600/80 h-8 text-sm">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-900 border-slate-800 max-h-60">
+                    <SelectContent className="bg-primary-700 border-primary-600 max-h-60">
                       {CURRENCIES.map((curr) => (
                         <SelectItem key={curr.code} value={curr.code}>
                           {curr.symbol} {curr.code} - {curr.name}
@@ -1122,7 +1122,7 @@ export function AddInvoiceDialog({
                   </Select>
                   {isConverting && (
                     <div className="absolute right-8 top-1/2 -translate-y-1/2">
-                      <Loader2 className="h-4 w-4 animate-spin text-cyan-400" />
+                      <Loader2 className="h-4 w-4 animate-spin text-quotla-orange" />
                     </div>
                   )}
                 </div>
@@ -1141,7 +1141,7 @@ export function AddInvoiceDialog({
                       setFormData({ ...formData, tax_rate: raw === '' ? 0 : parseFloat(raw) })
                     }}
                   disabled={isViewMode && !isEditing}
-                  className="bg-slate-800 border-slate-700 h-8 text-sm"
+                  className="bg-primary-700/80 border-primary-600/80 h-8 text-sm"
                 />
               </div>
             </div>
@@ -1162,7 +1162,7 @@ export function AddInvoiceDialog({
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 disabled={isViewMode && !isEditing}
-                className="bg-slate-800 border-slate-700 min-h-16 text-sm"
+                className="bg-primary-700/80 border-primary-600/80 min-h-16 text-sm"
                 rows={2}
               />
             </div>
@@ -1174,7 +1174,7 @@ export function AddInvoiceDialog({
                 value={formData.payment_terms}
                 onChange={(e) => setFormData({ ...formData, payment_terms: e.target.value })}
                 disabled={isViewMode && !isEditing}
-                className="bg-slate-800 border-slate-700 min-h-16 text-sm"
+                className="bg-primary-700/80 border-primary-600/80 min-h-16 text-sm"
                 rows={2}
               />
             </div>
@@ -1215,22 +1215,22 @@ export function AddInvoiceDialog({
                             }}
                             onFocus={() => setOpenLineItemDropdown(item.id)}
                             disabled={isViewMode && !isEditing}
-                            className="bg-slate-800 border-slate-700 h-8 text-sm pr-8"
+                            className="bg-primary-700/80 border-primary-600/80 h-8 text-sm pr-8"
                           />
                           <ChevronsUpDown className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50 pointer-events-none" />
                           {openLineItemDropdown === item.id && (
-                            <div className="absolute z-50 w-full mt-1 bg-slate-900 border border-slate-800 rounded-md shadow-lg">
-                              <Command className="bg-slate-900" shouldFilter={false}>
+                            <div className="absolute z-50 w-full mt-1 bg-primary-700 border border-primary-600 rounded-md shadow-lg">
+                              <Command className="bg-primary-700" shouldFilter={false}>
                                 <CommandList className="max-h-48">
                                   {filteredItems.length === 0 && !searchValue && (
-                                    <div className="py-4 text-center text-sm text-slate-400">No inventory items found.</div>
+                                    <div className="py-4 text-center text-sm text-primary-400">No inventory items found.</div>
                                   )}
                                   {filteredItems.length === 0 && searchValue && !matchesInventory && (
                                     <div className="p-2">
                                       <Button
                                         type="button"
                                         variant="ghost"
-                                        className="w-full justify-start text-sm text-cyan-400 hover:text-cyan-300 hover:bg-slate-800"
+                                        className="w-full justify-start text-sm text-quotla-orange hover:text-quotla-orange hover:bg-primary-700/80"
                                         onClick={() => useCustomLineItem(item.id, searchValue)}
                                       >
                                         <Plus className="mr-2 h-4 w-4" />
@@ -1248,7 +1248,7 @@ export function AddInvoiceDialog({
                                           setLineItemSearchValues(prev => ({ ...prev, [item.id]: '' }))
                                           setOpenLineItemDropdown(null)
                                         }}
-                                        className="text-sm cursor-pointer hover:bg-slate-800"
+                                        className="text-sm cursor-pointer hover:bg-primary-700/80"
                                       >
                                         <Check
                                           className={`mr-2 h-4 w-4 ${
@@ -1256,17 +1256,17 @@ export function AddInvoiceDialog({
                                           }`}
                                         />
                                         <span className="flex-1">{inv.name}</span>
-                                        <span className="text-xs text-slate-400">
+                                        <span className="text-xs text-primary-400">
                                           {formatCurrency(inv.unit_price, formData.currency)}
                                         </span>
                                       </CommandItem>
                                     ))}
                                   </CommandGroup>
                                   {searchValue && !matchesInventory && filteredItems.length > 0 && (
-                                    <CommandGroup className="border-t border-slate-800">
+                                    <CommandGroup className="border-t border-primary-600">
                                       <CommandItem
                                         onSelect={() => useCustomLineItem(item.id, searchValue)}
-                                        className="text-sm cursor-pointer text-cyan-400 hover:text-cyan-300 hover:bg-slate-800"
+                                        className="text-sm cursor-pointer text-quotla-orange hover:text-quotla-orange hover:bg-primary-700/80"
                                       >
                                         <Plus className="mr-2 h-4 w-4" />
                                         Use "{searchValue}"
@@ -1291,7 +1291,7 @@ export function AddInvoiceDialog({
                             updateLineItem(item.id, 'quantity', raw === '' ? 1 : parseFloat(raw))
                           }}
                           disabled={isViewMode && !isEditing}
-                          className="bg-slate-800 border-slate-700 h-8 text-sm"
+                          className="bg-primary-700/80 border-primary-600/80 h-8 text-sm"
                         />
                       </div>
                       <div className="col-span-4 sm:col-span-2 space-y-1">
@@ -1306,12 +1306,12 @@ export function AddInvoiceDialog({
                             updateLineItem(item.id, 'unit_price', raw === '' ? 0 : parseFloat(raw))
                           }}
                           disabled={isViewMode && !isEditing}
-                          className="bg-slate-800 border-slate-700 h-8 text-sm"
+                          className="bg-primary-700/80 border-primary-600/80 h-8 text-sm"
                         />
                       </div>
                       <div className="col-span-3 sm:col-span-2 space-y-1">
                         {index === 0 && <Label className="text-xs">Amount</Label>}
-                        <div className="h-8 flex items-center text-sm text-slate-300">
+                        <div className="h-8 flex items-center text-sm text-primary-200">
                           {formatCurrency(item.amount, formData.currency)}
                         </div>
                       </div>
@@ -1323,7 +1323,7 @@ export function AddInvoiceDialog({
                             variant="ghost"
                             size="sm"
                             onClick={() => removeLineItem(item.id)}
-                            className="h-8 w-8 p-0 text-slate-400 hover:text-rose-400"
+                            className="h-8 w-8 p-0 text-primary-400 hover:text-rose-400"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -1331,8 +1331,8 @@ export function AddInvoiceDialog({
                       </div>
                     </div>
                     {item.isCustomItem && !item.savedToInventory && item.description && item.unit_price > 0 && (!isViewMode || isEditing) && (
-                      <div className="flex items-center gap-2 p-2 bg-slate-800/50 border border-slate-700 rounded-lg ml-0 sm:ml-0">
-                        <span className="text-xs text-slate-400 flex-1">
+                      <div className="flex items-center gap-2 p-2 bg-primary-700/80/50 border border-primary-600/80 rounded-lg ml-0 sm:ml-0">
+                        <span className="text-xs text-primary-400 flex-1">
                           Save "{item.description}" to inventory?
                         </span>
                         <Button
@@ -1341,7 +1341,7 @@ export function AddInvoiceDialog({
                           size="sm"
                           onClick={() => saveLineItemToInventory(item.id)}
                           disabled={savingItemId === item.id}
-                          className="text-xs h-7 text-slate-300 hover:text-slate-200 hover:bg-slate-700"
+                          className="text-xs h-7 text-primary-200 hover:text-primary-100 hover:bg-primary-600/80"
                         >
                           <Save className="mr-1 h-3 w-3" />
                           {savingItemId === item.id ? 'Saving...' : 'Save to Inventory'}
@@ -1358,7 +1358,7 @@ export function AddInvoiceDialog({
                   variant="ghost"
                   size="sm"
                   onClick={addLineItem}
-                  className="text-cyan-400 hover:text-cyan-300"
+                  className="text-quotla-orange hover:text-quotla-orange"
                 >
                   <Plus className="h-4 w-4 mr-1" />
                   Add Line Item
@@ -1372,67 +1372,67 @@ export function AddInvoiceDialog({
           {currentStep === 3 && (
           <div className="space-y-4">
             {/* Invoice header summary */}
-            <div className="p-4 bg-slate-800/50 border border-slate-700 rounded-lg space-y-3">
+            <div className="p-4 bg-primary-700/80/50 border border-primary-600/80 rounded-lg space-y-3">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-[10px] text-slate-400 uppercase tracking-wide">Invoice</p>
-                  <p className="font-semibold text-slate-100">{formData.invoice_number}</p>
-                  {formData.title && <p className="text-sm text-slate-300 mt-0.5">{formData.title}</p>}
+                  <p className="text-[10px] text-primary-400 uppercase tracking-wide">Invoice</p>
+                  <p className="font-semibold text-primary-50">{formData.invoice_number}</p>
+                  {formData.title && <p className="text-sm text-primary-200 mt-0.5">{formData.title}</p>}
                 </div>
                 <div className="text-right">
-                  <p className="text-[10px] text-slate-400 uppercase tracking-wide">Bill To</p>
-                  <p className="text-sm text-slate-200">{selectedCustomerDisplay || <span className="text-slate-500 italic">No customer</span>}</p>
+                  <p className="text-[10px] text-primary-400 uppercase tracking-wide">Bill To</p>
+                  <p className="text-sm text-primary-100">{selectedCustomerDisplay || <span className="text-primary-400 italic">No customer</span>}</p>
                 </div>
               </div>
               <div className="flex gap-6 text-sm">
                 <div>
-                  <p className="text-[10px] text-slate-400 uppercase tracking-wide">Issue Date</p>
-                  <p className="text-slate-200">{formData.issue_date}</p>
+                  <p className="text-[10px] text-primary-400 uppercase tracking-wide">Issue Date</p>
+                  <p className="text-primary-100">{formData.issue_date}</p>
                 </div>
                 {formData.due_date && (
                   <div>
-                    <p className="text-[10px] text-slate-400 uppercase tracking-wide">Due Date</p>
-                    <p className="text-slate-200">{formData.due_date}</p>
+                    <p className="text-[10px] text-primary-400 uppercase tracking-wide">Due Date</p>
+                    <p className="text-primary-100">{formData.due_date}</p>
                   </div>
                 )}
               </div>
             </div>
 
             {/* Line items table */}
-            <div className="border border-slate-700 rounded-lg overflow-hidden">
+            <div className="border border-primary-600/80 rounded-lg overflow-hidden">
               <table className="w-full text-sm">
-                <thead className="bg-slate-800">
+                <thead className="bg-primary-700/80">
                   <tr>
-                    <th className="text-left px-3 py-2 text-[10px] text-slate-400 font-medium uppercase tracking-wide">Description</th>
-                    <th className="text-right px-3 py-2 text-[10px] text-slate-400 font-medium uppercase tracking-wide">Qty</th>
-                    <th className="text-right px-3 py-2 text-[10px] text-slate-400 font-medium uppercase tracking-wide">Price</th>
-                    <th className="text-right px-3 py-2 text-[10px] text-slate-400 font-medium uppercase tracking-wide">Amount</th>
+                    <th className="text-left px-3 py-2 text-[10px] text-primary-400 font-medium uppercase tracking-wide">Description</th>
+                    <th className="text-right px-3 py-2 text-[10px] text-primary-400 font-medium uppercase tracking-wide">Qty</th>
+                    <th className="text-right px-3 py-2 text-[10px] text-primary-400 font-medium uppercase tracking-wide">Price</th>
+                    <th className="text-right px-3 py-2 text-[10px] text-primary-400 font-medium uppercase tracking-wide">Amount</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800">
                   {lineItems.filter(i => i.description).map(item => (
                     <tr key={item.id}>
-                      <td className="px-3 py-2 text-slate-200">{item.description}</td>
-                      <td className="px-3 py-2 text-right text-slate-300">{item.quantity}</td>
-                      <td className="px-3 py-2 text-right text-slate-300">{formatCurrency(item.unit_price, formData.currency)}</td>
-                      <td className="px-3 py-2 text-right text-slate-200">{formatCurrency(item.amount, formData.currency)}</td>
+                      <td className="px-3 py-2 text-primary-100">{item.description}</td>
+                      <td className="px-3 py-2 text-right text-primary-200">{item.quantity}</td>
+                      <td className="px-3 py-2 text-right text-primary-200">{formatCurrency(item.unit_price, formData.currency)}</td>
+                      <td className="px-3 py-2 text-right text-primary-100">{formatCurrency(item.amount, formData.currency)}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-              <div className="px-3 py-3 bg-slate-800/30 border-t border-slate-700 space-y-1.5">
+              <div className="px-3 py-3 bg-primary-700/80/30 border-t border-primary-600/80 space-y-1.5">
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-400">Subtotal</span>
-                  <span className="text-slate-200">{formatCurrency(subtotal, formData.currency)}</span>
+                  <span className="text-primary-400">Subtotal</span>
+                  <span className="text-primary-100">{formatCurrency(subtotal, formData.currency)}</span>
                 </div>
                 {formData.tax_rate > 0 && (
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-400">Tax ({formData.tax_rate}%)</span>
-                    <span className="text-slate-200">{formatCurrency(taxAmount, formData.currency)}</span>
+                    <span className="text-primary-400">Tax ({formData.tax_rate}%)</span>
+                    <span className="text-primary-100">{formatCurrency(taxAmount, formData.currency)}</span>
                   </div>
                 )}
-                <div className="flex justify-between font-semibold pt-1.5 border-t border-slate-700">
-                  <span className="text-slate-200">Total</span>
+                <div className="flex justify-between font-semibold pt-1.5 border-t border-primary-600/80">
+                  <span className="text-primary-100">Total</span>
                   <span className="text-emerald-400">{formatCurrency(total, formData.currency)}</span>
                 </div>
               </div>
@@ -1447,10 +1447,10 @@ export function AddInvoiceDialog({
                     value={formData.status}
                     onValueChange={(value) => setFormData({ ...formData, status: value as InvoiceFormData['status'] })}
                   >
-                    <SelectTrigger className="bg-slate-800 border-slate-700 h-8 text-sm">
+                    <SelectTrigger className="bg-primary-700/80 border-primary-600/80 h-8 text-sm">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-900 border-slate-800">
+                    <SelectContent className="bg-primary-700 border-primary-600">
                       <SelectItem value="draft">Draft</SelectItem>
                       <SelectItem value="sent">Sent</SelectItem>
                       <SelectItem value="paid">Paid</SelectItem>
@@ -1461,14 +1461,14 @@ export function AddInvoiceDialog({
                 </div>
               )}
               <div className="flex gap-2 shrink-0">
-                <p className="text-[10px] text-slate-400 uppercase tracking-wide w-full mb-1 hidden">Export</p>
+                <p className="text-[10px] text-primary-400 uppercase tracking-wide w-full mb-1 hidden">Export</p>
                 {(['png', 'pdf', 'word'] as const).map(fmt => (
                   <button
                     key={fmt}
                     type="button"
                     onClick={() => handleExport(fmt)}
                     disabled={exporting !== null}
-                    className="px-3 py-1.5 text-xs font-medium rounded-md bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition-colors disabled:opacity-50 uppercase flex items-center gap-1.5"
+                    className="px-3 py-1.5 text-xs font-medium rounded-md bg-primary-700/80 text-primary-200 hover:bg-primary-600/80 hover:text-white transition-colors disabled:opacity-50 uppercase flex items-center gap-1.5"
                   >
                     {exporting === fmt
                       ? <Loader2 className="h-3 w-3 animate-spin" />
@@ -1480,17 +1480,17 @@ export function AddInvoiceDialog({
             </div>
 
             {formData.notes && (
-              <div className="p-3 bg-slate-800/30 border border-slate-700 rounded-lg">
-                <p className="text-[10px] text-slate-400 uppercase tracking-wide mb-1">Notes</p>
-                <p className="text-sm text-slate-300 whitespace-pre-wrap">{formData.notes}</p>
+              <div className="p-3 bg-primary-700/80/30 border border-primary-600/80 rounded-lg">
+                <p className="text-[10px] text-primary-400 uppercase tracking-wide mb-1">Notes</p>
+                <p className="text-sm text-primary-200 whitespace-pre-wrap">{formData.notes}</p>
               </div>
             )}
 
-            <div className="p-3 bg-slate-800/30 border border-slate-700 rounded-lg">
-              <p className="text-[10px] text-slate-400 uppercase tracking-wide mb-1">Payment Terms</p>
+            <div className="p-3 bg-primary-700/80/30 border border-primary-600/80 rounded-lg">
+              <p className="text-[10px] text-primary-400 uppercase tracking-wide mb-1">Payment Terms</p>
               {formData.payment_terms
-                ? <p className="text-sm text-slate-300 whitespace-pre-wrap">{formData.payment_terms}</p>
-                : <p className="text-sm text-slate-500 italic">No payment terms set</p>
+                ? <p className="text-sm text-primary-200 whitespace-pre-wrap">{formData.payment_terms}</p>
+                : <p className="text-sm text-primary-400 italic">No payment terms set</p>
               }
             </div>
           </div>
@@ -1516,7 +1516,7 @@ export function AddInvoiceDialog({
                       onOpenChange(false)
                     }
                   }}
-                  className="border-slate-700 text-slate-300 hover:bg-slate-800 text-sm h-9"
+                  className="border-primary-600/80 text-primary-200 hover:bg-primary-700/80 text-sm h-9"
                 >
                   Cancel
                 </Button>
@@ -1527,7 +1527,7 @@ export function AddInvoiceDialog({
                     type="button"
                     variant="outline"
                     onClick={() => setCurrentStep(s => s - 1)}
-                    className="border-slate-700 text-slate-300 hover:bg-slate-800 text-sm h-9"
+                    className="border-primary-600/80 text-primary-200 hover:bg-primary-700/80 text-sm h-9"
                   >
                     Back
                   </Button>
@@ -1536,7 +1536,7 @@ export function AddInvoiceDialog({
                   <Button
                     type="button"
                     onClick={() => setCurrentStep(s => s + 1)}
-                    className="bg-cyan-500 hover:bg-cyan-600 text-white text-sm h-9"
+                    className="bg-quotla-orange hover:bg-secondary-500 text-white text-sm h-9"
                   >
                     Next
                   </Button>
@@ -1544,7 +1544,7 @@ export function AddInvoiceDialog({
                   <Button
                     type="button"
                     onClick={() => setIsEditing(true)}
-                    className="bg-cyan-500 hover:bg-cyan-600 text-white text-sm h-9"
+                    className="bg-quotla-orange hover:bg-secondary-500 text-white text-sm h-9"
                   >
                     Edit Invoice
                   </Button>
@@ -1552,7 +1552,7 @@ export function AddInvoiceDialog({
                   <Button
                     type="submit"
                     disabled={loading}
-                    className="bg-cyan-500 hover:bg-cyan-600 text-white text-sm h-9"
+                    className="bg-quotla-orange hover:bg-secondary-500 text-white text-sm h-9"
                   >
                     {loading
                       ? ((isEditMode || isEditing) ? 'Updating...' : 'Creating...')
@@ -1568,25 +1568,25 @@ export function AddInvoiceDialog({
 
       {/* Confirmation modal for creating invoice without customer */}
       <AlertDialog open={showNoCustomerConfirm} onOpenChange={setShowNoCustomerConfirm}>
-        <AlertDialogContent className="border-slate-700 bg-slate-800">
+        <AlertDialogContent className="border-primary-600/80 bg-primary-700/80">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-slate-200">
+            <AlertDialogTitle className="text-primary-100">
               No customer selected
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-slate-400">
+            <AlertDialogDescription className="text-primary-400">
               Are you sure you want to create this invoice without a customer?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel
               onClick={handleCancelNoCustomer}
-              className="border-slate-600 bg-slate-700 text-slate-200 hover:bg-slate-600"
+              className="border-primary-500 bg-primary-600/80 text-primary-100 hover:bg-primary-600"
             >
               No, select a customer
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmNoCustomer}
-              className="bg-cyan-600 text-white hover:bg-cyan-700"
+              className="bg-quotla-orange text-white hover:bg-secondary-600"
             >
               Yes, continue
             </AlertDialogAction>

@@ -702,7 +702,7 @@ function SalesContent() {
       render: (value: string) => {
         const statusColors: Record<string, string> = {
           draft: 'bg-primary-600/20 text-primary-400',
-          sent: 'bg-blue-500/20 text-blue-400',
+          sent: 'bg-quotla-orange/20 text-quotla-orange',
           paid: 'bg-quotla-green/20 text-emerald-400',
           overdue: 'bg-rose-500/20 text-rose-400',
           cancelled: 'bg-primary-700/20 text-primary-400'

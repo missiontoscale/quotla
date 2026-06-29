@@ -396,7 +396,7 @@ function ExpensesContent() {
         const statusColors: Record<string, string> = {
           pending: 'bg-amber-500/20 text-amber-400',
           approved: 'bg-emerald-500/20 text-emerald-400',
-          reimbursed: 'bg-blue-500/20 text-blue-400',
+          reimbursed: 'bg-quotla-orange/20 text-quotla-orange',
           rejected: 'bg-rose-500/20 text-rose-400',
         };
         return (

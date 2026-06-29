@@ -248,12 +248,12 @@ function SettingsContent() {
     <div className="space-y-6 pb-8 max-w-[1000px] mx-auto">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
+        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-quotla-orange to-secondary-600 flex items-center justify-center">
           <Settings className="w-6 h-6 text-white" />
         </div>
         <div>
-          <h1 className="text-2xl font-semibold text-slate-100">Settings</h1>
-          <p className="text-sm text-slate-500 mt-0.5">Manage your profile, business, and integrations</p>
+          <h1 className="text-2xl font-semibold text-primary-50">Settings</h1>
+          <p className="text-sm text-primary-400 mt-0.5">Manage your profile, business, and integrations</p>
         </div>
       </div>
 
@@ -262,15 +262,15 @@ function SettingsContent() {
         {/* Left Column - Profile & Business */}
         <div className="lg:col-span-2 space-y-6">
           {/* Profile Section */}
-          <Card className="bg-slate-900/50 border-slate-800 overflow-hidden">
-            <div className="p-5 border-b border-slate-800">
+          <Card className="bg-primary-700/50 border-primary-600 overflow-hidden">
+            <div className="p-5 border-b border-primary-600">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 bg-violet-500/10 rounded-lg flex items-center justify-center">
-                  <User className="w-4 h-4 text-violet-400" />
+                <div className="w-9 h-9 bg-quotla-orange/10 rounded-lg flex items-center justify-center">
+                  <User className="w-4 h-4 text-quotla-orange" />
                 </div>
                 <div>
-                  <h2 className="text-base font-semibold text-slate-100">Profile</h2>
-                  <p className="text-xs text-slate-500">Your personal account details</p>
+                  <h2 className="text-base font-semibold text-primary-50">Profile</h2>
+                  <p className="text-xs text-primary-400">Your personal account details</p>
                 </div>
               </div>
             </div>
@@ -281,10 +281,10 @@ function SettingsContent() {
                     <img
                       src={validateImageUrl(profile.avatar_url)!}
                       alt="Profile"
-                      className="h-20 w-20 rounded-full object-cover border-2 border-slate-700"
+                      className="h-20 w-20 rounded-full object-cover border-2 border-primary-600/80"
                     />
                   ) : (
-                    <div className="h-20 w-20 rounded-full bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center">
+                    <div className="h-20 w-20 rounded-full bg-gradient-to-br from-quotla-orange to-secondary-500 flex items-center justify-center">
                       <span className="text-white text-2xl font-semibold">
                         {profile?.email?.charAt(0).toUpperCase() || 'U'}
                       </span>
@@ -306,14 +306,14 @@ function SettingsContent() {
                   />
                 </div>
                 <div className="flex-1">
-                  <p className="text-slate-100 font-medium">{profile?.email}</p>
-                  <p className="text-xs text-slate-500 mt-1">PNG, JPEG, or WebP. Max 2MB.</p>
+                  <p className="text-primary-50 font-medium">{profile?.email}</p>
+                  <p className="text-xs text-primary-400 mt-1">PNG, JPEG, or WebP. Max 2MB.</p>
                   <Button
                     type="button"
                     variant="outline"
                     size="sm"
                     disabled={uploading}
-                    className="mt-3 border-slate-700 text-slate-300 hover:bg-slate-800 h-8 text-xs"
+                    className="mt-3 border-primary-600/80 text-primary-200 hover:bg-primary-700/80 h-8 text-xs"
                     onClick={() => document.getElementById('avatar-upload')?.click()}
                   >
                     <Upload className="w-3 h-3 mr-2" />
@@ -325,31 +325,31 @@ function SettingsContent() {
           </Card>
 
           {/* Business Information */}
-          <Card className="bg-slate-900/50 border-slate-800 overflow-hidden">
-            <div className="p-5 border-b border-slate-800">
+          <Card className="bg-primary-700/50 border-primary-600 overflow-hidden">
+            <div className="p-5 border-b border-primary-600">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 bg-cyan-500/10 rounded-lg flex items-center justify-center">
-                  <Building2 className="w-4 h-4 text-cyan-400" />
+                <div className="w-9 h-9 bg-quotla-orange/10 rounded-lg flex items-center justify-center">
+                  <Building2 className="w-4 h-4 text-quotla-orange" />
                 </div>
                 <div>
-                  <h2 className="text-base font-semibold text-slate-100">Business Information</h2>
-                  <p className="text-xs text-slate-500">Details that appear on invoices and documents</p>
+                  <h2 className="text-base font-semibold text-primary-50">Business Information</h2>
+                  <p className="text-xs text-primary-400">Details that appear on invoices and documents</p>
                 </div>
               </div>
             </div>
             <form onSubmit={handleSubmit} className="p-5 space-y-5">
               {/* Logo Upload */}
-              <div className="flex items-center gap-4 p-4 bg-slate-800/30 rounded-lg">
-                <div className="w-16 h-16 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center overflow-hidden flex-shrink-0">
+              <div className="flex items-center gap-4 p-4 bg-primary-700/30 rounded-lg">
+                <div className="w-16 h-16 rounded-lg bg-primary-700/80 border border-primary-600/80 flex items-center justify-center overflow-hidden flex-shrink-0">
                   {profile?.logo_url && validateImageUrl(profile.logo_url) ? (
                     <img src={validateImageUrl(profile.logo_url)!} alt="Logo" className="w-full h-full object-contain p-2" />
                   ) : (
-                    <Building2 className="w-6 h-6 text-slate-600" />
+                    <Building2 className="w-6 h-6 text-primary-500" />
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-200">Business Logo</p>
-                  <p className="text-xs text-slate-500 mt-0.5">PNG, JPEG, or WebP. Max 2MB.</p>
+                  <p className="text-sm font-medium text-primary-100">Business Logo</p>
+                  <p className="text-xs text-primary-400 mt-0.5">PNG, JPEG, or WebP. Max 2MB.</p>
                   <input
                     id="logo-upload"
                     type="file"
@@ -363,7 +363,7 @@ function SettingsContent() {
                     variant="outline"
                     size="sm"
                     disabled={uploading}
-                    className="mt-2 border-slate-700 text-slate-300 hover:bg-slate-800 h-7 text-xs"
+                    className="mt-2 border-primary-600/80 text-primary-200 hover:bg-primary-700/80 h-7 text-xs"
                     onClick={() => document.getElementById('logo-upload')?.click()}
                   >
                     <Upload className="w-3 h-3 mr-1.5" />
@@ -376,41 +376,41 @@ function SettingsContent() {
               <FormSection title="Company Details" icon={FileText}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div className="space-y-1.5">
-                    <Label htmlFor="company_name" className="text-xs text-slate-400">Company Name</Label>
+                    <Label htmlFor="company_name" className="text-xs text-primary-400">Company Name</Label>
                     <Input
                       id="company_name"
                       name="company_name"
                       value={formData.company_name}
                       onChange={handleChange}
-                      className="bg-slate-800 border-slate-700 text-slate-100 h-9 text-sm"
+                      className="bg-primary-700/80 border-primary-600/80 text-primary-50 h-9 text-sm"
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label htmlFor="business_number" className="text-xs text-slate-400">Business Number</Label>
+                    <Label htmlFor="business_number" className="text-xs text-primary-400">Business Number</Label>
                     <Input
                       id="business_number"
                       name="business_number"
                       value={formData.business_number}
                       onChange={handleChange}
                       placeholder="Optional"
-                      className="bg-slate-800 border-slate-700 text-slate-100 h-9 text-sm"
+                      className="bg-primary-700/80 border-primary-600/80 text-primary-50 h-9 text-sm"
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label htmlFor="tax_id" className="text-xs text-slate-400">Tax ID</Label>
+                    <Label htmlFor="tax_id" className="text-xs text-primary-400">Tax ID</Label>
                     <Input
                       id="tax_id"
                       name="tax_id"
                       value={formData.tax_id}
                       onChange={handleChange}
                       placeholder="Optional"
-                      className="bg-slate-800 border-slate-700 text-slate-100 h-9 text-sm"
+                      className="bg-primary-700/80 border-primary-600/80 text-primary-50 h-9 text-sm"
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label htmlFor="phone" className="text-xs text-slate-400">Phone</Label>
+                    <Label htmlFor="phone" className="text-xs text-primary-400">Phone</Label>
                     <div className="relative">
-                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-500" />
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-primary-400" />
                       <Input
                         type="tel"
                         id="phone"
@@ -418,14 +418,14 @@ function SettingsContent() {
                         value={formData.phone}
                         onChange={handleChange}
                         placeholder="Optional"
-                        className="bg-slate-800 border-slate-700 text-slate-100 h-9 text-sm pl-9"
+                        className="bg-primary-700/80 border-primary-600/80 text-primary-50 h-9 text-sm pl-9"
                       />
                     </div>
                   </div>
                   <div className="md:col-span-2 space-y-1.5">
-                    <Label htmlFor="website" className="text-xs text-slate-400">Website</Label>
+                    <Label htmlFor="website" className="text-xs text-primary-400">Website</Label>
                     <div className="relative">
-                      <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-500" />
+                      <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-primary-400" />
                       <Input
                         type="url"
                         id="website"
@@ -433,7 +433,7 @@ function SettingsContent() {
                         value={formData.website}
                         onChange={handleChange}
                         placeholder="https://example.com"
-                        className="bg-slate-800 border-slate-700 text-slate-100 h-9 text-sm pl-9"
+                        className="bg-primary-700/80 border-primary-600/80 text-primary-50 h-9 text-sm pl-9"
                       />
                     </div>
                   </div>
@@ -444,53 +444,53 @@ function SettingsContent() {
               <FormSection title="Business Address" icon={MapPin} collapsible defaultOpen={false}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div className="md:col-span-2 space-y-1.5">
-                    <Label htmlFor="address" className="text-xs text-slate-400">Street Address</Label>
+                    <Label htmlFor="address" className="text-xs text-primary-400">Street Address</Label>
                     <Input
                       id="address"
                       name="address"
                       value={formData.address}
                       onChange={handleChange}
-                      className="bg-slate-800 border-slate-700 text-slate-100 h-9 text-sm"
+                      className="bg-primary-700/80 border-primary-600/80 text-primary-50 h-9 text-sm"
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label htmlFor="city" className="text-xs text-slate-400">City</Label>
+                    <Label htmlFor="city" className="text-xs text-primary-400">City</Label>
                     <Input
                       id="city"
                       name="city"
                       value={formData.city}
                       onChange={handleChange}
-                      className="bg-slate-800 border-slate-700 text-slate-100 h-9 text-sm"
+                      className="bg-primary-700/80 border-primary-600/80 text-primary-50 h-9 text-sm"
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label htmlFor="state" className="text-xs text-slate-400">State/Province</Label>
+                    <Label htmlFor="state" className="text-xs text-primary-400">State/Province</Label>
                     <Input
                       id="state"
                       name="state"
                       value={formData.state}
                       onChange={handleChange}
-                      className="bg-slate-800 border-slate-700 text-slate-100 h-9 text-sm"
+                      className="bg-primary-700/80 border-primary-600/80 text-primary-50 h-9 text-sm"
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label htmlFor="postal_code" className="text-xs text-slate-400">Postal Code</Label>
+                    <Label htmlFor="postal_code" className="text-xs text-primary-400">Postal Code</Label>
                     <Input
                       id="postal_code"
                       name="postal_code"
                       value={formData.postal_code}
                       onChange={handleChange}
-                      className="bg-slate-800 border-slate-700 text-slate-100 h-9 text-sm"
+                      className="bg-primary-700/80 border-primary-600/80 text-primary-50 h-9 text-sm"
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label htmlFor="country" className="text-xs text-slate-400">Country</Label>
+                    <Label htmlFor="country" className="text-xs text-primary-400">Country</Label>
                     <Input
                       id="country"
                       name="country"
                       value={formData.country}
                       onChange={handleChange}
-                      className="bg-slate-800 border-slate-700 text-slate-100 h-9 text-sm"
+                      className="bg-primary-700/80 border-primary-600/80 text-primary-50 h-9 text-sm"
                     />
                   </div>
                 </div>
@@ -499,15 +499,15 @@ function SettingsContent() {
               {/* Currency */}
               <FormSection title="Preferences" icon={DollarSign}>
                 <div className="space-y-1.5">
-                  <Label htmlFor="default_currency" className="text-xs text-slate-400">Default Currency</Label>
+                  <Label htmlFor="default_currency" className="text-xs text-primary-400">Default Currency</Label>
                   <Select
                     value={formData.default_currency}
                     onValueChange={(value) => setFormData(prev => ({ ...prev, default_currency: value }))}
                   >
-                    <SelectTrigger className="bg-slate-800 border-slate-700 text-slate-100 h-9 text-sm">
+                    <SelectTrigger className="bg-primary-700/80 border-primary-600/80 text-primary-50 h-9 text-sm">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-900 border-slate-800">
+                    <SelectContent className="bg-primary-700 border-primary-600">
                       {CURRENCIES.map((currency) => (
                         <SelectItem key={currency.code} value={currency.code} className="text-sm">
                           {currency.code} - {currency.name} ({currency.symbol})
@@ -519,7 +519,7 @@ function SettingsContent() {
               </FormSection>
 
               <div className="flex justify-end pt-2">
-                <Button type="submit" disabled={loading} className="bg-violet-600 hover:bg-violet-500 text-white h-9">
+                <Button type="submit" disabled={loading} className="bg-quotla-orange hover:bg-secondary-500 text-white h-9">
                   {loading ? 'Saving...' : 'Save Changes'}
                 </Button>
               </div>
@@ -530,15 +530,15 @@ function SettingsContent() {
         {/* Right Column - Account */}
         <div className="space-y-6">
           {/* Account Actions */}
-          <Card className="bg-slate-900/50 border-slate-800 overflow-hidden">
-            <div className="p-5 border-b border-slate-800">
+          <Card className="bg-primary-700/50 border-primary-600 overflow-hidden">
+            <div className="p-5 border-b border-primary-600">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 bg-slate-500/10 rounded-lg flex items-center justify-center">
-                  <Shield className="w-4 h-4 text-slate-400" />
+                <div className="w-9 h-9 bg-primary-400/10 rounded-lg flex items-center justify-center">
+                  <Shield className="w-4 h-4 text-primary-400" />
                 </div>
                 <div>
-                  <h2 className="text-base font-semibold text-slate-100">Account</h2>
-                  <p className="text-xs text-slate-500">Session and account actions</p>
+                  <h2 className="text-base font-semibold text-primary-50">Account</h2>
+                  <p className="text-xs text-primary-400">Session and account actions</p>
                 </div>
               </div>
             </div>
@@ -552,7 +552,7 @@ function SettingsContent() {
                   }
                 }}
                 variant="outline"
-                className="w-full justify-start border-slate-700 text-slate-300 hover:bg-slate-800 h-9"
+                className="w-full justify-start border-primary-600/80 text-primary-200 hover:bg-primary-700/80 h-9"
               >
                 <LogOut className="w-4 h-4 mr-2" />
                 Sign Out
@@ -561,7 +561,7 @@ function SettingsContent() {
           </Card>
 
           {/* Danger Zone */}
-          <Card className="bg-slate-900/50 border-rose-500/30 overflow-hidden">
+          <Card className="bg-primary-700/50 border-rose-500/30 overflow-hidden">
             <div className="p-5 border-b border-rose-500/20">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 bg-rose-500/10 rounded-lg flex items-center justify-center">
@@ -569,12 +569,12 @@ function SettingsContent() {
                 </div>
                 <div>
                   <h2 className="text-base font-semibold text-rose-400">Danger Zone</h2>
-                  <p className="text-xs text-slate-500">Irreversible actions</p>
+                  <p className="text-xs text-primary-400">Irreversible actions</p>
                 </div>
               </div>
             </div>
             <div className="p-4">
-              <p className="text-xs text-slate-400 mb-3">
+              <p className="text-xs text-primary-400 mb-3">
                 Permanently delete your account and all associated data including quotes, invoices, and clients.
               </p>
               <Button
@@ -592,12 +592,12 @@ function SettingsContent() {
 
       {/* Delete Account Modal */}
       <Dialog open={showDeleteModal} onOpenChange={handleCloseDeleteModal}>
-        <DialogContent className="bg-slate-900 border-slate-800 sm:max-w-md">
+        <DialogContent className="bg-primary-700 border-primary-600 sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-slate-100 text-xl">
+            <DialogTitle className="text-primary-50 text-xl">
               {showReasonStep ? 'We\'re sorry to see you go' : 'Are you sure you want to leave?'}
             </DialogTitle>
-            <DialogDescription className="text-slate-400">
+            <DialogDescription className="text-primary-400">
               {showReasonStep
                 ? 'Please let us know why you\'re leaving so we can improve.'
                 : 'All your quotes, invoices, clients, and settings will be permanently deleted.'}
@@ -607,12 +607,12 @@ function SettingsContent() {
           {showReasonStep ? (
             <div className="space-y-4 py-2">
               <div className="space-y-2">
-                <Label className="text-sm text-slate-300">Why are you leaving?</Label>
+                <Label className="text-sm text-primary-200">Why are you leaving?</Label>
                 <Select value={deleteReason} onValueChange={setDeleteReason}>
-                  <SelectTrigger className="bg-slate-800 border-slate-700 text-slate-100">
+                  <SelectTrigger className="bg-primary-700/80 border-primary-600/80 text-primary-50">
                     <SelectValue placeholder="Select a reason..." />
                   </SelectTrigger>
-                  <SelectContent className="bg-slate-900 border-slate-800">
+                  <SelectContent className="bg-primary-700 border-primary-600">
                     {DELETE_REASONS.map((reason) => (
                       <SelectItem key={reason.value} value={reason.value}>
                         {reason.label}
@@ -624,10 +624,10 @@ function SettingsContent() {
 
               {deleteReason === 'custom' && (
                 <div className="space-y-2">
-                  <Label className="text-sm text-slate-300">Tell us more</Label>
+                  <Label className="text-sm text-primary-200">Tell us more</Label>
                   <Input
                     type="text"
-                    className="bg-slate-800 border-slate-700 text-slate-100"
+                    className="bg-primary-700/80 border-primary-600/80 text-primary-50"
                     placeholder="Please share your reason..."
                     value={customReason}
                     onChange={(e) => setCustomReason(e.target.value)}
@@ -639,7 +639,7 @@ function SettingsContent() {
                 <Button
                   onClick={handleCloseDeleteModal}
                   variant="outline"
-                  className="border-slate-700 text-slate-300 hover:bg-slate-800"
+                  className="border-primary-600/80 text-primary-200 hover:bg-primary-700/80"
                   disabled={deleting}
                 >
                   Cancel
@@ -659,7 +659,7 @@ function SettingsContent() {
               <Button
                 onClick={handleCloseDeleteModal}
                 variant="outline"
-                className="border-slate-700 text-slate-300 hover:bg-slate-800"
+                className="border-primary-600/80 text-primary-200 hover:bg-primary-700/80"
               >
                 No, keep my account
               </Button>
@@ -683,7 +683,7 @@ export default function SettingsPage() {
     <Suspense fallback={
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="relative">
-          <div className="animate-spin rounded-full h-12 w-12 border-2 border-slate-700 border-t-cyan-500"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-2 border-primary-600/80 border-t-cyan-500"></div>
         </div>
       </div>
     }>
