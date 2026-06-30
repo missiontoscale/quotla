@@ -203,14 +203,14 @@ export function AddInvoiceDialog({
 
   useEffect(() => {
     if (open) {
-      // Reset editing state and wizard step when dialog opens
       setIsEditing(false)
-      setCurrentStep(0)
       fetchCustomers()
       fetchInventoryItems()
       if (invoiceId) {
+        setCurrentStep(3)
         loadInvoice()
       } else {
+        setCurrentStep(0)
         resetForm()
       }
       fetchProfile()
@@ -875,15 +875,14 @@ export function AddInvoiceDialog({
               </div>
             )}
           </div>
-          {/* Wizard progress bar */}
+          {/* Wizard progress bar — only for new invoice creation */}
+          {!invoiceId && (
           <div className="flex items-center mt-4">
             {STEPS.map((step, index) => (
               <div key={step.label} className="flex items-center flex-1 last:flex-none">
                 <button
                   type="button"
                   onClick={() => {
-                    // In view mode (not editing), allow free navigation
-                    // In create/edit mode, only allow going back
                     if (isViewMode && !isEditing) {
                       setCurrentStep(index)
                     } else if (index < currentStep) {
@@ -921,6 +920,7 @@ export function AddInvoiceDialog({
               </div>
             ))}
           </div>
+          )}
 
           {/* Inline download options row */}
           {isViewMode && showDownloadOptions && (
@@ -1544,9 +1544,8 @@ export function AddInvoiceDialog({
                   type="button"
                   variant="outline"
                   onClick={() => {
-                    if (isViewMode && isEditing) {
+                    if (invoiceId && isEditing) {
                       setIsEditing(false)
-                      setCurrentStep(0)
                     } else {
                       onOpenChange(false)
                     }
@@ -1557,7 +1556,7 @@ export function AddInvoiceDialog({
                 </Button>
               )}
               <div className="flex gap-2 ml-auto">
-                {currentStep > 0 && (
+                {currentStep > 0 && !invoiceId && (
                   <Button
                     type="button"
                     variant="outline"

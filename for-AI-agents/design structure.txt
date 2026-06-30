@@ -1,0 +1,367 @@
+Relevant icon representations
+quotlalogo -> [QLO]
+[salesicon] -> SIC
+[expenseicon] -> EIC
+[invoiceicon] -> IIC
+[quoteicon] -> QIC
+[clienticon] or [customericon] -> CIC
+[multiclienticon] or [multicustomericon] -> MCIC
+[producticon] or [inventoryicon] -> PIC
+[documenticon] -> DIC
+[alerticon] -> AIC
+[hideicon] -> HIC
+[seemoreicon] -> SMIC
+[threedotsicon] -> TDIC
+[redcancelbutton] -> REDX
+[searchicon] -> SIC
+[historyicon] -> HISIC
+[notificationicon] -> NIC
+[twolinehamburgericon] -> HIC
+[helpicon] or [suporticon] -> HSIC
+[settingsicon] -> SIC
+[billings] -> BILIC
+[staricon] or [saveicon] -> 
+[downloadicon] -> DLIC
+[businessprofileicon] -> BPIC
+[settingsicon] -> SETIC
+[billingsicon] -> BILIC
+[switchbusinessicon] -> SBIC
+[signouticon] -> SIIC
+
+-- Navigation [should be filled/dark when active]
+[heartnavigationicon] -> HNIC
+[quotlanavigationicon] -> QNIC
+[recordsnavigationicon] -> RNIC
+
+
++ quotlalogo -> Quotla logomark
++ salesicon -> a shopping cart
++ expenseicon -> circled-minus
++ invoiceicon and quoteicon can be the same -> 
++ client icon -> an avataricon
++ multiclienticon -> multiple avatars, group of people
++ inventoryicon & producticon -> a box
++ documeticon -> 
++ alerticon -> 
++ hideicon -> 
++ seemoreicon -> 
++ threedotsicon -> 
++ redcancelbutton -> 
++ searchicon -> 
++ historyicon -> 
++ notificationicon -> 
++ twolinehamburgericon -> 
++ helpicon or supporticon -> 
++ settingsicon -> 
++ billingsicon -> 
++ staricon or saveicon -> 
++ downloadicon -> 
++ businessprofileicon -> 
++ settingsicon -> 
++ billingsicon-> 
++ switchbusinessicon -> 
++ signouticon -> 
+
+-- Navigation
++ heartnavigationicon -> 
++ quotlanavigationicon -> 
++ recordsnavigationicon -> 
+
+
+All transitions should be smooth, not too slow, not laggy.
+All navigation icons will have tooltip quick actions
+User should also be able to star/flag an invoice, or a particular transaction, and see it in the notification as a reminder
+
+Get the required icons from either
+Option 1: https://iconoir.com/
+Option 2: https://heroicons.com/
+Option 3[use only sparingly]: https://lucide.dev/
+
+
+----------------------------------------------------------------------------------------
+
+--------------------------------------------
+
+--------------------------------------------
+* 1st Navigation button leads here
+
+HEALTH
+--------------------------------------------
+The Health screen (essentially the home screen) should answer one question:
+
+"Is my business okay?"
+
+Everything else is secondary.
+--------------------------------------------
+If tap on or around Business health:
+
+Health Breakdown
+
+Cash Flow
+
+Invoices
+
+Inventory
+
+Operations
+
+Customers
+
+Records
+┌──────────────────────────────────┐
+│ [QLO]		       [NIC] [HIC] │
+│                                  │
+│              [HNIC] {00% should be inside the HNIC}              │
+│          (Health Score)          │
+│         Last updated [second/minute/hour/days/time/date/months/years] ago         │
+│                                  │
+├──────────────────────────────────┤
+│ ┌──────────────────────────────┐ │
+│ │ Needs Attention      2 items [ │ │[If there are more than 2 items that need collapse the rest, and when user clicks on the item count, or anywhere on the tab]
+│ │ 				 │ │
+│ │ [Big, red AIC]  2 invoices are overdue                             >    │ │
+│ │ 	            ₦72,000      │ │
+│ │ 				 │ │
+│ │ [Big PIC]  Product low in stock                              >    │ │
+│ │            Granola 500g      │ │
+│ └──────────────────────────────┘ │
+├──────────────────────────────────┤
+│ Today                [HIC][SMIC] │
+│ ┌────────────┐  ┌────────────┐   │
+│ │Revenue     │  │Profit      │   │     
+│ │₦48,500.00  │  │₦48,500.00  │   │
+│ └────────────┘  └────────────┘   │
+│ ┌────────────┐  ┌────────────┐   │
+│ │Revenue     │  │Outstanding │   │     
+│ │₦48,500     │  │₦48,500.00  │   │
+│ └────────────┘  └────────────┘   │
+│                                  │
+├──────────────────────────────────┤
+│ ┌──────────────────────────────┐ │
+│ │ (rounded-corner search bar. placeholder "customers")     │
+│ └──────────────────────────────┘ │
+├──────────────────────────────────┤
+│ 	                           │
+│ Recent		View all   │ When user clicks view all, the recent tab actually slides up from bottom, not a new screen
+│                                  │
+│ [SIC] Sold {ProductName} (x Qty)...	N7,090.41     │
+│{Jan/Nov/Jul}, {Day}{th/rd}, Hour:Minute:Second      │
+│ 				    		      │
+│ [IIC] Invoice created 	 	N7,340.00     │
+│{Jan/Nov/Jul}, {Day}{th/rd}, Hour:Minute:Second      │
+│ 					    	      │
+│ [SIC] Sold {ProductName} (x Qty)...	N3,000.00     │
+│ {Jan/Nov/Jul}, {Day}{th/rd}, Hour:Minute:Second     │
+│ 				   │
+├──────────────────────────────────┤
+│  [HNIC] [Health which will have tooltip business Health]    ⬢Quotla logo [Quotla:which will have tooltip quick actions]    📚 [Records: which will have tooltip] Records │
+└──────────────────────────────────┘
+
+------------------------------------------
+** When user clicks HIC on the Home or Records pages, this is the menu that will show.
+
+Expectation: The menu slides from the right.
+
+┌──────────────────────────────────┐
+│ [QLO] Quotla		     [REDX]│
+├──────────────────────────────────┤
+│ 	                           │
+│ [BPIC] Business                  │
+│ 	                           │
+├──────────────────────────────────┤
+│ 	                           │
+│ [SETIC] Settings	           │
+│ 	                           │
+├──────────────────────────────────┤
+│ 	                           │
+│ [SBIC] Switch Business           │
+│ 	                           │
+├──────────────────────────────────┤
+│ 	                           │
+│ [BILIC] Billings	           │
+│ 	                           │
+├──────────────────────────────────┤
+│ 	                           │
+│ [HSIC] Support	           │
+│ 	                           │
+├──────────────────────────────────┤
+│ 	                           │
+│ [SIIC] Sign Out      	           │[Sign out should be faded grey
+│ 	                           │
+└──────────────────────────────────┘
+--------------------------------------------
+** When user clicks Notification Button
+
+when updates filter is clicked
+┌──────────────────────────────────┐
+│ <  Notifications          [TDIC] │
+├──────────────────────────────────┤ 
+│ ┌────────────┐ ┌────────┐ ┌──────────┐ │
+│ │Attention   │ │Updates │ │System  │ │
+│ └────────────┘ └────────┘ └──────────┘ │
+│──────────────────────────────────│
+│ [SIC] Sold {ProductName} (x Qty)...	N7,090.41 │
+│{Jan/Nov/Jul}, {Day}{th/rd}, Hour:Minute:Second      │
+│ 				    		      │
+│ [IIC] Invoice created 	 	N7,340.00 │
+│{Jan/Nov/Jul}, {Day}{th/rd}, Hour:Minute:Second      │
+│ 					    	      │
+│ [SIC] Sold {ProductName} (x Qty)...	N3,000.00 │
+│ {Jan/Nov/Jul}, {Day}{th/rd}, Hour:Minute:Second     │
+│ 					    	      │
+│ [EIC] Paid for {ExpenseName} ...	N5,210.00 │
+│ {Jan/Nov/Jul}, {Day}{th/rd}, Hour:Minute:Second     │
+│ 					    	      │
+│ [CIC] Added customer {CustomerName} ...{Jan/Nov/Jul}, {Day}{th/rd}, Hour:Minute:Second     │
+│ 					    	      │
+│ [PIC] Added {ProductName} to stock ...14 units │
+│ {Jan/Nov/Jul}, {Day}{th/rd}, Hour:Minute:Second     │
+│ 					    	      │
+│ [QIC] Quote created 	 		N3,020.00 │
+│ {Jan/Nov/Jul}, {Day}{th/rd}, Hour:Minute:Second     │
+│				   │
+└──────────────────────────────────┘
+
+
+when attention filter is clicked
+┌──────────────────────────────────┐
+│ <  Notifications          [TDIC] │
+├──────────────────────────────────┤ 
+│ ┌────────────┐ ┌────────┐ ┌──────────┐ │
+│ │Attention   │ │Updates │ │System  │ │
+│ └────────────┘ └────────┘ └──────────┘ │
+│──────────────────────────────────│
+│ [SIC] Sold {ProductName} (x Qty)...	N7,090.41 │
+│{Jan/Nov/Jul}, {Day}{th/rd}, Hour:Minute:Second      │
+│ 				    		      │
+│ [IIC] Invoice created 	 	N7,340.00 │
+│{Jan/Nov/Jul}, {Day}{th/rd}, Hour:Minute:Second      │
+│ 					    	      │
+│ [SIC] Sold {ProductName} (x Qty)...	N3,000.00 │
+│ {Jan/Nov/Jul}, {Day}{th/rd}, Hour:Minute:Second     │
+│ 					    	      │
+│ [EIC] Paid for {ExpenseName} ...	N5,210.00 │
+│ {Jan/Nov/Jul}, {Day}{th/rd}, Hour:Minute:Second     │
+│ 					    	      │
+│ [CIC] Added customer {CustomerName} ...{Jan/Nov/Jul}, {Day}{th/rd}, Hour:Minute:Second     │
+│ 					    	      │
+│ [PIC] Added {ProductName} to stock ...14 units │
+│ {Jan/Nov/Jul}, {Day}{th/rd}, Hour:Minute:Second     │
+│ 					    	      │
+│ [QIC] Quote created 	 		N3,020.00 │
+│ {Jan/Nov/Jul}, {Day}{th/rd}, Hour:Minute:Second     │
+│				   │
+└──────────────────────────────────┘
+--------------------------------------------
+
+----------------------------------------------------------------------------------------
+
+--------------------------------------------
+
+--------------------------------------------
+* 2nd Navigation button leads here
+QUOTLA
+
+This is not a page, but a bottom sheet that swipes up when the quotla navigation button is clicked.
+
+--------------------------------------------
+
+
+┌──────────────────────────────────┐
+│                                  │
+│ What's up?   		    [REDX] │
+│                                  │
+├──────────────────────────────────┤
+│ 	                           │
+│ [SIC] I just made a sale!    >   │
+│ 	                           │
+├──────────────────────────────────┤
+│ 	                           │
+│ [IIC] I need an invoice      >   │
+│ 	                           │
+├──────────────────────────────────┤
+│ 	                           │
+│ [PIC] I want to add a new product  >   │
+│ 	                           │
+├──────────────────────────────────┤
+│ 	                           │
+│ [EIC] I spent money	       >   │
+│ 	                           │
+├──────────────────────────────────┤
+│ 	                           │
+│ [CIC] Want to add a customer      >   │
+│ 	                           │
+├──────────────────────────────────┤												┌──────────────────────────────────┐
+│ 	                           │												│ 	           │               │
+│ [HISIC] More		       >   │  -> When user clicks, the tab transforms into(that is, the tab swipes in from right: 	│ [DIC] 	   │ [HISC]        │
+│ 	                           │												│ Documents        │ History       │
+├──────────────────────────────────┤												└──────────────────────────────────┘
+│ 	                           │
+│ [REDX] Nothing      	       >   │
+│ 	                           │
+└──────────────────────────────────┘
+
+
+----------------------------------------------------------------------------------------
+
+--------------------------------------------
+
+--------------------------------------------
+* 3rd Navigation button leads here
+RECORDS
+
+This is not a page.
+
+It is a bottom sheet.
+It swipes up when the quotla button is clicked
+
+--------------------------------------------
+
+
+┌──────────────────────────────────┐
+│ [HIC] Records              [SIC] │
+├──────────────────────────────────┤
+│ 	                           │
+│ [SIC] Sales	               >   │
+│ 	                           │
+├──────────────────────────────────┤
+│ 	                           │
+│ [IIC] Invoices	       >   │
+│ 	                           │
+├──────────────────────────────────┤
+│ 	                           │
+│ [EIC] Expenses	       >   │
+│ 	                           │
+├──────────────────────────────────┤
+│ 	                           │
+│ [PIC] Inventory	       >   │
+│ 	                           │
+├──────────────────────────────────┤
+│ 	                           │
+│ [MCIC] Customers 	       >   │
+│ 	                           │
+├──────────────────────────────────┤
+│ 	                           │
+│ [DIC] Documents      	       >   │
+│ 	                           │
+├──────────────────────────────────┤
+│ 	                           │
+│ Recent Activity		View all   │ When user clicks view all, the recent tab actually slides up from bottom, not a new screen
+│                                  │
+│ [SIC] Sold {ProductName} (x Qty)...	N7,090.41     │
+│{Jan/Nov/Jul}, {Day}{th/rd}, Hour:Minute:Second      │
+│ 				    		      │
+│ [IIC] Invoice created 	 	N7,340.00     │
+│{Jan/Nov/Jul}, {Day}{th/rd}, Hour:Minute:Second      │
+│ 					    	      │
+│ [SIC] Sold {ProductName} (x Qty)...	N3,000.00     │
+│ {Jan/Nov/Jul}, {Day}{th/rd}, Hour:Minute:Second     │
+│ 					    	      │
+├──────────────────────────────────┤
+│   [HNIC]     [QNIC]     [RNIC]   │
+└──────────────────────────────────┘
+The Recent section should collapse after three items with a clear "View all" affordance.
+
+
+
+                                                                                                                                                                                                  
