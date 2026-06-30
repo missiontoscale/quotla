@@ -850,25 +850,13 @@ export function AddInvoiceDialog({
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => {
-                      setIsEditing(true)
-                      setCurrentStep(0)
-                    }}
+                    onClick={() => setIsEditing(true)}
                     className="border-quotla-orange text-quotla-orange hover:bg-quotla-orange/10 h-9 w-9 p-0"
                     title="Edit"
                   >
                     <Edit className="h-4 w-4" />
                   </Button>
                 )}
-                <Button
-                  type="button"
-                  onClick={() => handleExport('pdf')}
-                  disabled={exporting !== null}
-                  className="bg-quotla-orange hover:bg-secondary-500 text-white text-sm h-9 w-9 p-0"
-                  title="Download PDF"
-                >
-                  <Download className="h-4 w-4" />
-                </Button>
                 <button
                   type="button"
                   onClick={() => onOpenChange(false)}
@@ -1411,28 +1399,64 @@ export function AddInvoiceDialog({
           <div className="space-y-4">
             {/* Invoice header summary */}
             <div className="p-4 bg-primary-700/80/50 border border-primary-600/80 rounded-lg space-y-3">
-              <div className="flex items-start justify-between gap-4">
-                <div>
+              <div className={`flex items-start justify-between gap-4 ${isEditing ? 'flex-col' : ''}`}>
+                <div className="w-full">
                   <p className="text-[10px] text-primary-400 uppercase tracking-wide">Invoice</p>
-                  <p className="font-semibold text-primary-50">{formData.invoice_number}</p>
-                  {formData.title && <p className="text-sm text-primary-200 mt-0.5">{formData.title}</p>}
+                  {isEditing ? (
+                    <div className="space-y-2 mt-1">
+                      <Input
+                        value={formData.invoice_number}
+                        onChange={(e) => setFormData({ ...formData, invoice_number: e.target.value })}
+                        className="bg-primary-700/80 border-primary-600/80 h-8 text-sm"
+                      />
+                      <Input
+                        value={formData.title}
+                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                        placeholder="Invoice title (optional)"
+                        className="bg-primary-700/80 border-primary-600/80 h-8 text-sm"
+                      />
+                    </div>
+                  ) : (
+                    <>
+                      <p className="font-semibold text-primary-50">{formData.invoice_number}</p>
+                      {formData.title && <p className="text-sm text-primary-200 mt-0.5">{formData.title}</p>}
+                    </>
+                  )}
                 </div>
-                <div className="text-right">
+                <div className="w-full sm:w-auto">
                   <p className="text-[10px] text-primary-400 uppercase tracking-wide">Bill To</p>
                   <p className="text-sm text-primary-100">{selectedCustomerDisplay || <span className="text-primary-400 italic">No customer</span>}</p>
                 </div>
               </div>
-              <div className="flex gap-6 text-sm">
-                <div>
+              <div className="flex flex-wrap gap-4 text-sm">
+                <div className="flex-1 min-w-36">
                   <p className="text-[10px] text-primary-400 uppercase tracking-wide">Issue Date</p>
-                  <p className="text-primary-100">{formData.issue_date}</p>
+                  {isEditing ? (
+                    <Input
+                      type="date"
+                      value={formData.issue_date}
+                      onChange={(e) => setFormData({ ...formData, issue_date: e.target.value })}
+                      className="bg-primary-700/80 border-primary-600/80 h-8 text-sm mt-1"
+                    />
+                  ) : (
+                    <p className="text-primary-100">{formData.issue_date}</p>
+                  )}
                 </div>
-                {formData.due_date && (
-                  <div>
-                    <p className="text-[10px] text-primary-400 uppercase tracking-wide">Due Date</p>
+                <div className="flex-1 min-w-36">
+                  <p className="text-[10px] text-primary-400 uppercase tracking-wide">Due Date</p>
+                  {isEditing ? (
+                    <Input
+                      type="date"
+                      value={formData.due_date}
+                      onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
+                      className="bg-primary-700/80 border-primary-600/80 h-8 text-sm mt-1"
+                    />
+                  ) : formData.due_date ? (
                     <p className="text-primary-100">{formData.due_date}</p>
-                  </div>
-                )}
+                  ) : (
+                    <p className="text-primary-400 italic">Not set</p>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -1463,12 +1487,30 @@ export function AddInvoiceDialog({
                   <span className="text-primary-400">Subtotal</span>
                   <span className="text-primary-100">{formatCurrency(subtotal, formData.currency)}</span>
                 </div>
-                {formData.tax_rate > 0 && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-primary-400">Tax ({formData.tax_rate}%)</span>
+                {isEditing || formData.tax_rate > 0 ? (
+                  <div className="flex justify-between text-sm items-center">
+                    {isEditing ? (
+                      <div className="flex items-center gap-2">
+                        <span className="text-primary-400">Tax</span>
+                        <div className="flex items-center gap-1">
+                          <Input
+                            type="number"
+                            min="0"
+                            max="100"
+                            step="0.1"
+                            value={formData.tax_rate}
+                            onChange={(e) => setFormData({ ...formData, tax_rate: parseFloat(e.target.value) || 0 })}
+                            className="bg-primary-700/80 border-primary-600/80 h-7 w-16 text-sm text-right"
+                          />
+                          <span className="text-primary-400 text-xs">%</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <span className="text-primary-400">Tax ({formData.tax_rate}%)</span>
+                    )}
                     <span className="text-primary-100">{formatCurrency(taxAmount, formData.currency)}</span>
                   </div>
-                )}
+                ) : null}
                 <div className="flex justify-between font-semibold pt-1.5 border-t border-primary-600/80">
                   <span className="text-primary-100">Total</span>
                   <span className="text-quotla-green">{formatCurrency(total, formData.currency)}</span>
@@ -1519,19 +1561,34 @@ export function AddInvoiceDialog({
               </div>
             </div>
 
-            {formData.notes && (
-              <div className="p-3 bg-primary-700/80/30 border border-primary-600/80 rounded-lg">
-                <p className="text-[10px] text-primary-400 uppercase tracking-wide mb-1">Notes</p>
+            <div className="p-3 bg-primary-700/80/30 border border-primary-600/80 rounded-lg">
+              <p className="text-[10px] text-primary-400 uppercase tracking-wide mb-1">Notes</p>
+              {isEditing ? (
+                <Textarea
+                  value={formData.notes}
+                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                  placeholder="Add notes..."
+                  className="bg-primary-700/80 border-primary-600/80 text-sm mt-1 min-h-[60px]"
+                />
+              ) : formData.notes ? (
                 <p className="text-sm text-primary-200 whitespace-pre-wrap">{formData.notes}</p>
-              </div>
-            )}
+              ) : null}
+            </div>
 
             <div className="p-3 bg-primary-700/80/30 border border-primary-600/80 rounded-lg">
               <p className="text-[10px] text-primary-400 uppercase tracking-wide mb-1">Payment Terms</p>
-              {formData.payment_terms
-                ? <p className="text-sm text-primary-200 whitespace-pre-wrap">{formData.payment_terms}</p>
-                : <p className="text-sm text-primary-400 italic">No payment terms set</p>
-              }
+              {isEditing ? (
+                <Textarea
+                  value={formData.payment_terms}
+                  onChange={(e) => setFormData({ ...formData, payment_terms: e.target.value })}
+                  placeholder="Set payment terms..."
+                  className="bg-primary-700/80 border-primary-600/80 text-sm mt-1 min-h-[60px]"
+                />
+              ) : formData.payment_terms ? (
+                <p className="text-sm text-primary-200 whitespace-pre-wrap">{formData.payment_terms}</p>
+              ) : (
+                <p className="text-sm text-primary-400 italic">No payment terms set</p>
+              )}
             </div>
           </div>
           )}
