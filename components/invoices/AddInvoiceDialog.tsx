@@ -201,6 +201,8 @@ export function AddInvoiceDialog({
     return subtotal + taxAmount
   }, [subtotal, taxAmount])
 
+  const activeStep = invoiceId ? 3 : currentStep
+
   useEffect(() => {
     if (open) {
       setIsEditing(false)
@@ -954,7 +956,7 @@ export function AddInvoiceDialog({
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 py-4">
           {/* Step 0: Client */}
-          {currentStep === 0 && (
+          {activeStep === 0 && (
           <FormSection title="Customer" icon={User} description="Who is this invoice for?">
             <div className="space-y-2">
               <Label htmlFor="customer" className="text-xs">Select Customer *</Label>
@@ -1057,7 +1059,7 @@ export function AddInvoiceDialog({
           )}
 
           {/* Step 2: Details */}
-          {currentStep === 2 && (
+          {activeStep === 2 && (
           <>
           <FormSection title="Invoice Details" icon={FileText} description="Basic invoice information">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1194,7 +1196,7 @@ export function AddInvoiceDialog({
           )}
 
           {/* Step 1: Items */}
-          {currentStep === 1 && (
+          {activeStep === 1 && (
           <FormSection title="Line Items" icon={Package} description="Products or services being invoiced">
             <div className="space-y-3">
               {lineItems.map((item, index) => {
@@ -1402,7 +1404,7 @@ export function AddInvoiceDialog({
           )}
 
           {/* Step 3: Review & Save */}
-          {currentStep === 3 && (
+          {activeStep === 3 && (
           <div className="space-y-4">
             {/* Invoice header summary */}
             <div className="p-4 bg-primary-700/80/50 border border-primary-600/80 rounded-lg space-y-3">
@@ -1566,7 +1568,7 @@ export function AddInvoiceDialog({
                     Back
                   </Button>
                 )}
-                {currentStep < STEPS.length - 1 ? (
+                {!invoiceId && currentStep < STEPS.length - 1 ? (
                   <Button
                     type="button"
                     onClick={() => setCurrentStep(s => s + 1)}
