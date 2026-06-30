@@ -1521,23 +1521,31 @@ export function AddInvoiceDialog({
             {/* Status + Export row */}
             <div className="flex flex-wrap items-end gap-3">
               {(!isViewMode || isEditing) && (
-                <div className="flex-1 space-y-1.5 min-w-32">
-                  <Label className="text-xs">Status</Label>
-                  <Select
-                    value={formData.status}
-                    onValueChange={(value) => setFormData({ ...formData, status: value as InvoiceFormData['status'] })}
-                  >
-                    <SelectTrigger className="bg-primary-700/80 border-primary-600/80 h-8 text-sm">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-primary-700 border-primary-600">
-                      <SelectItem value="draft">Draft</SelectItem>
-                      <SelectItem value="sent">Sent</SelectItem>
-                      <SelectItem value="paid">Paid</SelectItem>
-                      <SelectItem value="overdue">Overdue</SelectItem>
-                      <SelectItem value="cancelled">Cancelled</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="flex-1 min-w-32">
+                  <Label className="text-xs mb-2 block">Status</Label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {([
+                      { value: 'draft', label: 'Draft', cls: 'bg-primary-600/20 text-primary-400 border-primary-600/40 hover:bg-primary-600/30' },
+                      { value: 'sent', label: 'Sent', cls: 'bg-quotla-orange/20 text-quotla-orange border-quotla-orange/40 hover:bg-quotla-orange/30' },
+                      { value: 'paid', label: 'Paid', cls: 'bg-quotla-green/20 text-quotla-green border-quotla-green/40 hover:bg-quotla-green/30' },
+                      { value: 'overdue', label: 'Overdue', cls: 'bg-rose-500/20 text-rose-400 border-rose-500/40 hover:bg-rose-500/30' },
+                      { value: 'cancelled', label: 'Cancelled', cls: 'bg-primary-700/20 text-primary-400 border-primary-600/40 hover:bg-primary-700/30' },
+                    ] as const).map(s => (
+                      <button
+                        key={s.value}
+                        type="button"
+                        onClick={() => setFormData({ ...formData, status: s.value as InvoiceFormData['status'] })}
+                        className={cn(
+                          'px-3 py-1 rounded-full text-xs font-medium border transition-all',
+                          formData.status === s.value
+                            ? `${s.cls} ring-1 ring-offset-1 ring-offset-primary-700`
+                            : 'bg-primary-700/40 text-primary-400 border-primary-600/30 hover:bg-primary-700/60'
+                        )}
+                      >
+                        {s.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
               <div className="flex gap-2 shrink-0">
