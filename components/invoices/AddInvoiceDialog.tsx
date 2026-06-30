@@ -201,11 +201,11 @@ export function AddInvoiceDialog({
     return subtotal + taxAmount
   }, [subtotal, taxAmount])
 
-  const activeStep = invoiceId ? 3 : currentStep
+  const activeStep = invoiceId && !isEditing ? 3 : currentStep
 
   useEffect(() => {
     if (open) {
-      setIsEditing(false)
+      setIsEditing(mode === 'edit')
       fetchCustomers()
       fetchInventoryItems()
       if (invoiceId) {
@@ -877,17 +877,17 @@ export function AddInvoiceDialog({
               </div>
             )}
           </div>
-          {/* Wizard progress bar — only for new invoice creation */}
-          {!invoiceId && (
+          {/* Wizard progress bar — for new invoice creation and edit mode */}
+          {(!invoiceId || isEditing) && (
           <div className="flex items-center mt-4">
             {STEPS.map((step, index) => (
               <div key={step.label} className="flex items-center flex-1 last:flex-none">
                 <button
                   type="button"
                   onClick={() => {
-                    if (isViewMode && !isEditing) {
+                    if (invoiceId && isEditing) {
                       setCurrentStep(index)
-                    } else if (index < currentStep) {
+                    } else if (!invoiceId && index < currentStep) {
                       setCurrentStep(index)
                     }
                   }}
@@ -1558,7 +1558,7 @@ export function AddInvoiceDialog({
                 </Button>
               )}
               <div className="flex gap-2 ml-auto">
-                {currentStep > 0 && !invoiceId && (
+                {currentStep > 0 && (!invoiceId || isEditing) && (
                   <Button
                     type="button"
                     variant="outline"
@@ -1568,34 +1568,28 @@ export function AddInvoiceDialog({
                     Back
                   </Button>
                 )}
-                {!invoiceId && currentStep < STEPS.length - 1 ? (
-                  <Button
-                    type="button"
-                    onClick={() => setCurrentStep(s => s + 1)}
-                    className="bg-quotla-orange hover:bg-secondary-500 text-white text-sm h-9"
-                  >
-                    Next
-                  </Button>
-                ) : isViewMode && !isEditing ? (
-                  <Button
-                    type="button"
-                    onClick={() => setIsEditing(true)}
-                    className="bg-quotla-orange hover:bg-secondary-500 text-white text-sm h-9"
-                  >
-                    Edit Invoice
-                  </Button>
-                ) : (
-                  <Button
-                    type="submit"
-                    disabled={loading}
-                    className="bg-quotla-orange hover:bg-secondary-500 text-white text-sm h-9"
-                  >
-                    {loading
-                      ? ((isEditMode || isEditing) ? 'Updating...' : 'Creating...')
-                      : ((isEditMode || isEditing) ? 'Update Invoice' : 'Create Invoice')
-                    }
-                  </Button>
-                )}
+                {(!invoiceId || isEditing) ? (
+                  currentStep < STEPS.length - 1 ? (
+                    <Button
+                      type="button"
+                      onClick={() => setCurrentStep(s => s + 1)}
+                      className="bg-quotla-orange hover:bg-secondary-500 text-white text-sm h-9"
+                    >
+                      Next
+                    </Button>
+                  ) : (
+                    <Button
+                      type="submit"
+                      disabled={loading}
+                      className="bg-quotla-orange hover:bg-secondary-500 text-white text-sm h-9"
+                    >
+                      {loading
+                        ? ((isEditMode || isEditing) ? 'Updating...' : 'Creating...')
+                        : ((isEditMode || isEditing) ? 'Update Invoice' : 'Create Invoice')
+                      }
+                    </Button>
+                  )
+                ) : null}
               </div>
             </div>
           </DialogFooter>
