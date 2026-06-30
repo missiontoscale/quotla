@@ -15,7 +15,7 @@ Phase 1: Navigation & Layout Restructure
 
 ---
 
-## Implementation Plan (8 Independent Phases)
+## Implementation Plan (9 Independent Phases)
 
 ### PHASE 1: Navigation & Layout Restructure
 **Goal:** Replace the current 4-item bottom nav and sidebar with the new 3-item nav structure.
@@ -78,59 +78,79 @@ Phase 1: Navigation & Layout Restructure
 
 ---
 
-### PHASE 5: Notifications System
+### PHASE 5: Pipeline Screens (Universal Creation Flows)
+**Goal:** Build all creation pipelines using the shared Action → Details → Review → Done flow.
+
+| Stage | Description | Files to Create/Modify |
+|-------|-------------|------------------------|
+| 5.1 | **Pipeline framework** — Create reusable `PipelineContainer`, `PipelineStep`, `PipelineReview` components that enforce the 3-4 step pattern. | `components/pipeline/PipelineContainer.tsx`, `components/pipeline/PipelineStep.tsx`, `components/pipeline/PipelineReview.tsx` |
+| 5.2 | **Record Sale pipeline** — 3 steps: (1) Search/select product or service, (2) Customer, Quantity, Payment method, (3) Review & Record Sale. | `components/pipeline/RecordSalePipeline.tsx` |
+| 5.3 | **Invoice pipeline** — 3 steps: (1) Customer, (2) Service, Price, Due Date, (3) Review & Create Invoice. | `components/pipeline/InvoicePipeline.tsx` |
+| 5.4 | **Expense pipeline** — 3 steps: (1) Category (Rent/Transport/Utilities/Products/Salary/Other), (2) Amount, Description, Receipt (optional), (3) Review & Save Expense. | `components/pipeline/ExpensePipeline.tsx` |
+| 5.5 | **Add Product pipeline** — 3 steps: (1) Product Name, Category, (2) Buying Price, Selling Price, Current Stock, Minimum Stock, (3) Review & Save Product. | `components/pipeline/AddProductPipeline.tsx` |
+| 5.6 | **Add Customer** — Single screen: Name, Phone, Email (optional), Birthday (optional), Notes (optional), Save. | `components/pipeline/AddCustomerScreen.tsx` |
+| 5.7 | **Create Quote pipeline** — 4 steps: (1) Customer, (2) Service, (3) Price, Expiry Date, (4) Review & Create Quote. | `components/pipeline/CreateQuotePipeline.tsx` |
+| 5.8 | **Documents screen** — Upload options: Upload, Take Photo, Import PDF, Import Image, Cancel. | `components/documents/DocumentsScreen.tsx` |
+| 5.9 | **Product Details view** — Detail display: Stock, Buying Price, Selling Price, Minimum Stock, Edit button. | `components/products/ProductDetails.tsx` |
+| 5.10 | **Customer Details view** — Detail display: Phone, Last Purchase, Total Purchases, Outstanding, Record Sale button. | `components/customers/CustomerDetails.tsx` |
+
+**Verification:** `npx tsc --noEmit`, `npm run build`
+
+---
+
+### PHASE 6: Notifications System
 **Goal:** Notification panel with Attention/Updates/System tabs accessed from NIC icon.
 
 | Stage | Description | Files to Create/Modify |
 |-------|-------------|------------------------|
-| 5.1 | **Notification Panel component** — Slide-in/overlay panel from right with "< Notifications" header and TDIC menu. | `components/notifications/NotificationPanel.tsx` |
-| 5.2 | **Filter tabs** — Three tabs: Attention, Updates, System. Each shows filtered notifications. | `components/notifications/NotificationFilters.tsx` |
-| 5.3 | **Notification items** — Rows with appropriate icons per type (SIC/IIC/EIC/CIC/PIC/QIC), description, amount, timestamp. | `components/notifications/NotificationItem.tsx` |
-| 5.4 | **Notification data/context** — Fetch and manage notification state from Supabase or local events. | `contexts/NotificationContext.tsx` |
-| 5.5 | **Badge/indicator** — Unread count badge on NIC in TopBar. | `components/dashboard/TopBar.tsx` |
+| 6.1 | **Notification Panel component** — Slide-in/overlay panel from right with "< Notifications" header and TDIC menu. | `components/notifications/NotificationPanel.tsx` |
+| 6.2 | **Filter tabs** — Three tabs: Attention, Updates, System. Each shows filtered notifications. | `components/notifications/NotificationFilters.tsx` |
+| 6.3 | **Notification items** — Rows with appropriate icons per type (SIC/IIC/EIC/CIC/PIC/QIC), description, amount, timestamp. | `components/notifications/NotificationItem.tsx` |
+| 6.4 | **Notification data/context** — Fetch and manage notification state from Supabase or local events. | `contexts/NotificationContext.tsx` |
+| 6.5 | **Badge/indicator** — Unread count badge on NIC in TopBar. | `components/dashboard/TopBar.tsx` |
 
 **Verification:** `npx tsc --noEmit`, `npm run build`
 
 ---
 
-### PHASE 6: Hamburger Menu (Settings Drawer)
+### PHASE 7: Hamburger Menu (Settings Drawer)
 **Goal:** Slide-in drawer from right with settings, business, account options.
 
 | Stage | Description | Files to Create/Modify |
 |-------|-------------|------------------------|
-| 6.1 | **Settings Drawer component** — Slides from right when HIC is clicked. QLO logo + REDX close. | `components/settings/SettingsDrawer.tsx` |
-| 6.2 | **Menu items** — [BPIC] Business, [SETIC] Settings, [SBIC] Switch Business, [BILIC] Billings, [HSIC] Support, [SIIC] Sign Out (faded grey). | `components/settings/SettingsDrawer.tsx` |
-| 6.3 | **DrawerTrigger integration** — Wire HIC in TopBar to open the drawer. | `components/dashboard/TopBar.tsx` |
-| 6.4 | **Sign Out logic** — Handle sign out with confirmation. | `components/settings/SettingsDrawer.tsx` |
+| 7.1 | **Settings Drawer component** — Slides from right when HIC is clicked. QLO logo + REDX close. | `components/settings/SettingsDrawer.tsx` |
+| 7.2 | **Menu items** — [BPIC] Business, [SETIC] Settings, [SBIC] Switch Business, [BILIC] Billings, [HSIC] Support, [SIIC] Sign Out (faded grey). | `components/settings/SettingsDrawer.tsx` |
+| 7.3 | **DrawerTrigger integration** — Wire HIC in TopBar to open the drawer. | `components/dashboard/TopBar.tsx` |
+| 7.4 | **Sign Out logic** — Handle sign out with confirmation. | `components/settings/SettingsDrawer.tsx` |
 
 **Verification:** `npx tsc --noEmit`, `npm run build`
 
 ---
 
-### PHASE 7: Icon System & Polish
+### PHASE 8: Icon System & Polish
 **Goal:** Implement all icon shortcodes, tooltips, transitions, accessibility.
 
 | Stage | Description | Files to Create/Modify |
 |-------|-------------|------------------------|
-| 7.1 | **Icon registry** — Create a central icon mapping (QLO, SIC, EIC, IIC, QIC, CIC, MCIC, PIC, DIC, AIC, HIC, SMIC, TDIC, REDX, HISIC, NIC, HNIC, QNIC, RNIC, BPIC, SETIC, SBIC, BILIC, HSIC, SIIC) mapped to Lucide icons. | `components/icons/IconRegistry.tsx` |
-| 7.2 | **Tooltip system** — All navigation icons get tooltip quick actions on hover/tap-hold. | `components/ui/TooltipWrapper.tsx` |
-| 7.3 | **Smooth transitions** — Ensure all panel slides, sheet swipes, and drawer animations are smooth (200-300ms) and respect `prefers-reduced-motion`. | Global CSS + animation utilities |
-| 7.4 | **Accessibility pass** — aria-labels on all icons, keyboard navigation for sheets/drawers, screen reader labels. | Across all new components |
+| 8.1 | **Icon registry** — Create a central icon mapping (QLO, SIC, EIC, IIC, QIC, CIC, MCIC, PIC, DIC, AIC, HIC, SMIC, TDIC, REDX, HISIC, NIC, HNIC, QNIC, RNIC, BPIC, SETIC, SBIC, BILIC, HSIC, SIIC) mapped to Lucide icons. | `components/icons/IconRegistry.tsx` |
+| 8.2 | **Tooltip system** — All navigation icons get tooltip quick actions on hover/tap-hold. | `components/ui/TooltipWrapper.tsx` |
+| 8.3 | **Smooth transitions** — Ensure all panel slides, sheet swipes, and drawer animations are smooth (200-300ms) and respect `prefers-reduced-motion`. | Global CSS + animation utilities |
+| 8.4 | **Accessibility pass** — aria-labels on all icons, keyboard navigation for sheets/drawers, screen reader labels. | Across all new components |
 
 **Verification:** `npx tsc --noEmit`, `npm run build`
 
 ---
 
-### PHASE 8: Verification & Cleanup
+### PHASE 9: Verification & Cleanup
 **Goal:** Ensure zero errors and no broken references.
 
 | Stage | Description | Files to Create/Modify |
 |-------|-------------|------------------------|
-| 8.1 | **TypeScript check** — Run `npx tsc --noEmit`, fix all errors. | — |
-| 8.2 | **Build check** — Run `npm run build`, fix all errors. | — |
-| 8.3 | **Remove deprecated components** — Delete old Sidebar (if replaced), old BottomNav (if replaced), old dashboard components that are no longer referenced. | Various |
-| 8.4 | **Update references** — Ensure all links lead to existing pages. Update any cross-references. | Various |
-| 8.5 | **Final PROGRESS_TRACKER update** — Document scores, lessons, remaining issues. | `for-AI-agents/PROGRESS_TRACKER.md` |
+| 9.1 | **TypeScript check** — Run `npx tsc --noEmit`, fix all errors. | — |
+| 9.2 | **Build check** — Run `npm run build`, fix all errors. | — |
+| 9.3 | **Remove deprecated components** — Delete old Sidebar (if replaced), old BottomNav (if replaced), old dashboard components that are no longer referenced. | Various |
+| 9.4 | **Update references** — Ensure all links lead to existing pages. Update any cross-references. | Various |
+| 9.5 | **Final PROGRESS_TRACKER update** — Document scores, lessons, remaining issues. | `for-AI-agents/PROGRESS_TRACKER.md` |
 
 **Verification:** `npx tsc --noEmit`, `npm run build`
 
@@ -147,7 +167,8 @@ Phase 1: Navigation & Layout Restructure
 - Core feature pages (Sales, Inventory, Expenses) implemented
 - AI agents folder restructured with new governance files
 - **Context gathered:** Read MASTER_GUIDE.md, MASTER_CONTEXT.md, DESIGN_PRO.md, design structure.txt, explored full codebase
-- **Implementation plan created:** 8 phases with detailed stages for full UI revamp
+- **Implementation plan created:** 9 phases with detailed stages for full UI revamp
+- **Integrated "design structures yet to be accounted for.txt":** Merged Universal Pipeline philosophy and 9 creation screen designs into design structure.txt; cleaned and removed redundant file
 
 ---
 
@@ -227,6 +248,8 @@ _None documented._
 - A single progress file is better than scattered logs (LessonsSoFar + WhatIsWrong + PRD)
 - **New:** The design structure specification is detailed enough to implement phase-by-phase independently
 - **New:** Each phase should be self-contained with its own verification step to maintain progress continuity
+- **New:** "design structures yet to be accounted for.txt" integrated into design structure.txt as Universal Pipeline + dedicated pipeline screens (Record Sale, Invoice, Expense, Add Product, Add Customer, Create Quote, Documents, Product Details, Customer Details)
+- **New:** Existing file deleted after clean integration
 
 ---
 

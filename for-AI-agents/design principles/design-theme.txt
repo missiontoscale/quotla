@@ -1,0 +1,902 @@
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                              QUOTLA DESIGN DNA
+                         Where Business Meets Brutalism
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PHILOSOPHY: Business tools don't have to be boring. We blend raw functionality with
+unexpected visual moments—a dark, confident palette punctuated by amber fire.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                              COLOR PHILOSOPHY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+THE PALETTE:
+Think aged leather ledgers, burning amber, forest green accounting tables,
+cream parchment. Not "modern SaaS"—more like a Victorian counting house
+reimagined for 2026.
+
+PRIMARIES:
+  Midnight Ink      #0e1616  ████  The void. Deep background, grounding force
+  Ledger Green      #445642  ████  Serious business. Stability, growth, trust
+  Parchment         #fffad6  ████  Warm light. Readable, inviting, not clinical
+  Forge Orange      #ce6203  ████  Heat. Action, urgency, the forge of commerce
+
+EXTENDED DARKS (For depth, not just grays):
+  Charcoal Edge     #1a1f1f  ████  Elevated surfaces
+  Slate Shadow      #2a2f2f  ████  Interactive zones, hover states
+  Deep Moss         #080b0b  ████  Absolute depths, dramatic moments
+
+ACCENTS (Unexpected pops):
+  Electric Lime     #84cc16  ████  Profit spikes, wins, growth bursts
+  Cool Mint         #6ee7b7  ████  Completed tasks, success states
+  Blood Orange      #f97316  ████  Warnings that demand attention
+  Deep Crimson      #dc2626  ████  Losses, errors, critical alerts
+  Gold Leaf         #f59e0b  ████  Premium features, value highlights
+
+NEUTRALS (Not gray scale—warm tones):
+  Bone              #e8e8cc  ████  Soft separators
+  Ash               #9ca3af  ████  Disabled states, placeholder text
+  Smoke             #6b7280  ████  Metadata, secondary info
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                         TYPOGRAPHY: PERSONALITY OVER POLISH
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PRIMARY: Inter
+  Clean. Functional. But we use it BOLDLY.
+  Weights: 400 (body), 600 (emphasis), 700 (headers that mean business)
+
+DISPLAY: Bricolage Grotesque
+  Quirky without being precious. Marketing moments. Feature announcements.
+  Use sparingly—this is the spice, not the meal.
+
+SIZE STRATEGY (Anti-minimalist):
+  Dashboard numbers: HUGE (3xl-6xl). Make revenue feel important.
+  Body text: Comfortable (0.8rem base). Not trying to be "clean" at expense of readability.
+  Labels: Small but BOLD (0.6rem, weight 700). Shouting in a whisper.
+
+UNUSUAL CHOICES:
+  - All-caps labels (11px, 700 weight, 0.1em tracking) for military precision
+  - Tabular numbers ALWAYS for financial data (font-variant-numeric: tabular-nums)
+  - Generous line-height (1.6-1.8) because cramped text is for spreadsheets
+  - Drop the obsession with "elegant" small sizes—go BIGGER on key metrics
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                          SPACING: ASYMMETRIC TENSION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Forget the "8px grid religion." Use rhythm that feels RIGHT:
+
+CARD PADDING:
+  - Standard card: 24px (not 20, not 16. Own it.)
+  - Stat cards: 28px top/bottom, 32px left/right (give those numbers room to breathe)
+  - Dense tables: 16px cells (pack data, not fluff)
+
+VERTICAL RHYTHM:
+  - Section gaps: 64px (double the standard SaaS 32px)
+  - Card stacks: 20px (prime number, feels less mechanical)
+  - List items: 14px (just off from 16px—creates subtle tension)
+
+HORIZONTAL:
+  - Dashboard: 3-column on desktop but use 1.2fr 1fr 0.8fr ratios (not equal)
+  - Sidebar: 280px (not 256, not 300—specific, intentional)
+  - Max content width: 1400px (wide enough to show data density)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                            BUTTONS: CHARACTER STUDY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PRIMARY (The Money Maker):
+  ┌──────────────────────────┐
+  │   CREATE QUOTE  →        │  bg: #ce6203 (forge orange)
+  └──────────────────────────┘  text: white, 600 weight
+                                padding: 16px 32px (generous)
+                                border: 2px solid rgba(255,255,255,0.1) (inner glow)
+                                shadow: 0 4px 12px rgba(206,98,3,0.4) (colored shadow!)
+                                hover: translate-y(-1px) + shadow grows
+                                active: translate-y(0) (satisfying press)
+
+SECONDARY (The Quiet Professional):
+  ┌──────────────────────────┐
+  │      View Details        │  bg: transparent
+  └──────────────────────────┘  border: 1.5px solid #445642
+                                text: #fffad6
+                                hover: bg becomes rgba(68,86,66,0.15)
+                                NO shadow (contrast with primary)
+
+GHOST (The Minimalist):
+  ┌──────────────────────────┐
+  │       Cancel             │  bg: transparent
+  └──────────────────────────┘  border: none
+                                text: #9ca3af
+                                hover: text becomes #fffad6
+                                underline appears on hover (from left to right, 200ms)
+
+DANGER (The Nuclear Option):
+  ┌──────────────────────────┐
+  │   ⚠ DELETE FOREVER       │  bg: linear-gradient(135deg, #dc2626, #991b1b)
+  └──────────────────────────┘  text: white
+                                border: 1px solid rgba(255,255,255,0.2)
+                                NO rounded corners (sharp edges = danger)
+                                hover: slight red glow
+
+ICON-ONLY (The Utility Player):
+  ┌─────┐
+  │  ⋮  │                       40×40px (touch-friendly)
+  └─────┘                       bg: rgba(255,250,214,0.05)
+                                rounded: 8px (not circle—circles are overdone)
+                                hover: bg becomes rgba(206,98,3,0.1)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                         INPUTS: BRUTALIST ELEGANCE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TEXT INPUT (The Workhorse):
+  ┌─────────────────────────────────────────────────────┐
+  │ Enter invoice amount...                             │
+  └─────────────────────────────────────────────────────┘
+  bg: rgba(26,31,31,0.6) (semi-transparent, not solid)
+  border-bottom: 2px solid #374151 (ONLY bottom border—architectural)
+  border-top/sides: none
+  padding: 14px 4px (minimal horizontal, generous vertical)
+  focus: border-bottom becomes 3px #ce6203 (thickens AND changes color)
+  transition: border 150ms cubic-bezier(0.4, 0, 0.2, 1)
+
+LABEL (The Instructor):
+  text: #d1d5db
+  font-size: 11px
+  text-transform: uppercase
+  letter-spacing: 0.08em
+  font-weight: 700
+  margin-bottom: 8px
+  Include a subtle border-left: 3px solid #445642 (offset: -12px from text)
+
+SELECT DROPDOWN (The Decision Point):
+  Same as text input BUT:
+  - Right-aligned caret (custom SVG, not default)
+  - On open: dropdown appears with 200ms slide-down
+  - Options have 8px left accent bar on hover (not background fill)
+
+TEXTAREA (The Storyteller):
+  Same foundation as text input
+  min-height: 120px
+  Vertical resize ONLY
+  Add a character counter in bottom-right: "247/500" in 10px, #6b7280
+
+CHECKBOX (The Decisive Square):
+  18×18px square (not rounded—pure geometry)
+  border: 2px solid #445642
+  checked: fills with #ce6203, white checkmark
+  Animation: checkmark draws in (stroke-dasharray trick, 200ms)
+
+RADIO (The Circle of Truth):
+  18×18px circle
+  border: 2px solid #445642
+  selected: inner dot (10×10px) in #ce6203 with scale animation (0.8 → 1.0)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                       CARDS: SURFACES WITH PERSONALITY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STAT CARD (Revenue Showcase):
+  ┌────────────────────────────────────────────┐
+  │  TOTAL REVENUE                      ↗      │
+  │  $24,847.00                                │
+  │  ▂▃▅▆█▆▅▃▂ +12.4% vs last month           │
+  └────────────────────────────────────────────┘
+  bg: linear-gradient(165deg, #1a1f1f 0%, #0e1616 100%)
+  border-left: 4px solid #ce6203 (accent stripe, not border)
+  border-top/right/bottom: 1px solid rgba(255,250,214,0.1)
+  padding: 28px 32px
+  Number: 48px, 700 weight, tabular-nums, letter-spacing: -0.02em
+  Sparkline: inline SVG, 60px wide, stroke: #84cc16
+  Icon: top-right, 32×32px, opacity: 0.4
+
+DATA CARD (The Information Panel):
+  ┌────────────────────────────────────────────┐
+  │  ┃ RECENT INVOICES                        │
+  │    ─────────────────────────────────────   │
+  │    Client A          $5,000    ● PAID     │
+  │    Client B          $3,200    ○ PENDING  │
+  └────────────────────────────────────────────┘
+  bg: #1a1f1f
+  border: 1px solid #2a2f2f
+  rounded: 12px (softer than stat cards)
+  Accent bar: 3px #445642 on left edge
+  Header includes icon: 16×16px, aligned with text
+  Rows: 16px padding, border-bottom: 1px solid rgba(255,250,214,0.05)
+
+ELEVATED CARD (Premium):
+  Same as data card but:
+  - shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 1px rgba(255,250,214,0.1)
+  - hover: lifts 2px, shadow grows
+  - Optional: subtle gradient overlay top-to-bottom
+
+BRUTALIST CARD (The Statement):
+  NO rounded corners
+  border: 2px solid #fffad6
+  bg: #0e1616
+  padding: 32px
+  Sharp angles, high contrast
+  Use for: pricing tiers, special announcements, "break glass" moments
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                      TABS: ARCHITECTURAL NAVIGATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+UNDERLINE STYLE (Primary):
+  ┌────────────────────────────────────────────────────┐
+  │  OVERVIEW    ANALYTICS    SETTINGS                 │
+  │  ━━━━━━━━                                          │
+  └────────────────────────────────────────────────────┘
+  Container: border-bottom: 1px solid #2a2f2f (full width)
+  Inactive tab:
+    - text: #9ca3af, 600 weight
+    - padding: 12px 24px
+    - border-bottom: 2px solid transparent
+  Active tab:
+    - text: #fffad6, 700 weight
+    - border-bottom: 3px solid #ce6203
+    - slight letter-spacing increase: 0.01em
+  Hover (inactive):
+    - text: #d1d5db
+    - border-bottom: 2px solid #445642
+
+PILL STYLE (Secondary):
+  ┌─────────────────────────┐
+  │ [Daily] Weekly  Monthly │
+  └─────────────────────────┘
+  Container: bg #1a1f1f, rounded-lg, padding: 4px
+  Inactive: text #9ca3af, padding: 8px 16px
+  Active:
+    - bg: #ce6203
+    - text: white
+    - rounded: 6px
+    - shadow: 0 2px 4px rgba(206,98,3,0.3)
+  Transition: background 200ms, transform 100ms
+  Active pill "pops" on click (scale: 0.98 → 1.0)
+
+SEGMENTED CONTROL (Tertiary):
+  Similar to pill but:
+  - Border: 1.5px solid #445642 around container
+  - Active segment: bg #445642, not orange
+  - More subdued, for settings/toggles
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                      TABLES: DATA DENSITY WITH STYLE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+DESIGN PRINCIPLE: Information-dense but scannable. Not "airy"—we're showing WORK.
+
+HEADER:
+  bg: rgba(68,86,66,0.1) (subtle green tint)
+  text: 10px, uppercase, 700 weight, 0.1em tracking, #9ca3af
+  padding: 16px 20px
+  border-bottom: 2px solid #445642 (thicker than usual)
+  Sort indicators: offset to right, 12×12px icons
+
+ROW (Default):
+  padding: 14px 20px (compact but not cramped)
+  border-bottom: 1px solid rgba(255,250,214,0.04) (barely visible)
+  hover: bg becomes rgba(206,98,3,0.06) + left border: 2px solid #ce6203
+
+ROW (Alternate - use sparingly):
+  Instead of zebra stripes:
+  - Every 5th row gets subtle bg: rgba(255,250,214,0.02)
+  - Creates rhythm without monotony
+
+CELLS:
+  - Numeric: right-aligned, tabular-nums
+  - Text: left-aligned
+  - Status: centered with badge
+  - Actions: right-aligned, icon buttons 32×32px
+
+SPECIAL: Revenue/Loss columns
+  - Positive: text color #84cc16 (electric lime), prefix with +
+  - Negative: text color #dc2626 (crimson), prefix with -
+  - Zero: text color #6b7280 (muted)
+  - Font weight: 600
+
+MOBILE TRANSFORMATION:
+  Don't just make table scrollable—transform to card list:
+  Each row becomes a card with key-value pairs, stacked vertically
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                    CHARTS: DATA VISUALIZATION AS ART
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+COLOR STRATEGY (Not rainbow—purposeful):
+  Primary metric:     #ce6203 (forge orange)
+  Secondary metric:   #445642 (ledger green)
+  Tertiary metric:    #fffad6 (parchment)
+  Positive trend:     #84cc16 (electric lime)
+  Negative trend:     #dc2626 (crimson)
+  Neutral/Comparison: #6b7280 (smoke)
+
+BAR CHART:
+  - Bar width: variable based on data range, but minimum 24px
+  - Rounded top corners: 6px
+  - Flat bottom (no rounding—grounded)
+  - Gradient fill: subtle top-to-bottom (lighter at top)
+  - Hover: bar lifts with shadow, tooltip appears
+  - Spacing between bars: 12px (generous—let bars breathe)
+  - Grid lines: 1px dashed #374151, 40% opacity
+
+LINE CHART:
+  - Line thickness: 3px (substantial, not hairline)
+  - Points: 8px circles, white border (2px), colored fill
+  - Hover point: scales to 12px
+  - Area under line: gradient from color (30% opacity) to transparent
+  - Multiple lines: use varying stroke styles (solid, dashed, dotted) not just color
+  - Crosshair on hover: thin lines extending to axes
+
+PIE/DONUT CHART:
+  - Stroke between segments: 2px #0e1616 (clean separation)
+  - Hover segment: scale 1.05, shadow appears
+  - Center label (donut): Large number (36px), small descriptor below (11px)
+  - Legend: positioned to right, dot + label, click to toggle segment
+  - Avoid rainbow—use 3-4 colors max, varying shades
+
+SPARKLINES (Inline mini-charts):
+  - Height: 40px, Width: 80px
+  - No axes, no labels—pure trend
+  - Line: 2px, single color
+  - Last point highlighted: 6px circle
+  - Use in stat cards for quick trend indication
+
+TOOLTIP DESIGN:
+  bg: #0e1616 (dark, not card color)
+  border: 1.5px solid #ce6203 (accent border)
+  padding: 12px 16px
+  shadow: 0 4px 12px rgba(0,0,0,0.6)
+  text: 12px
+  Metric value: 16px, 700 weight
+  Appears: 100ms delay (not instant—deliberate)
+  Position: cursor offset +15px x, +15px y
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                        MODALS: COMMANDING ATTENTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+BACKDROP:
+  bg: rgba(0,0,0,0.85) (heavy, dark—this is serious)
+  backdrop-filter: blur(8px) (freeze the world behind)
+  z-index: 100
+
+MODAL CONTAINER:
+  bg: #0e1616
+  border: 2px solid #445642 (strong border, not subtle)
+  rounded: 16px
+  max-width: 640px (not 600, not 700—specific)
+  shadow: 0 24px 64px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,250,214,0.1)
+  Animation: scale(0.95) opacity(0) → scale(1) opacity(1), 250ms cubic-bezier
+
+HEADER:
+  padding: 24px 32px
+  border-bottom: 1px solid rgba(68,86,66,0.3)
+  Title: 24px, 700 weight, #fffad6
+  Close button: top-right, 40×40px, hover: rotate 90deg (playful)
+
+BODY:
+  padding: 32px
+  max-height: 60vh
+  overflow-y: auto
+  Custom scrollbar: 8px wide, #445642 track, #ce6203 thumb
+
+FOOTER:
+  padding: 20px 32px
+  border-top: 1px solid rgba(68,86,66,0.3)
+  bg: rgba(26,31,31,0.5) (subtle distinction from body)
+  Buttons: right-aligned, 12px gap
+
+DESTRUCTIVE MODAL VARIANT:
+  Header bg: rgba(220,38,38,0.1)
+  Border color: #dc2626
+  Title color: #dc2626
+  Icon in header: warning triangle, 24×24px
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                   NOTIFICATIONS: INTERRUPTIONS WITH GRACE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TOAST (Bottom-right stack):
+  Position: fixed, bottom 24px, right 24px
+  Width: 360px
+  bg: #1a1f1f
+  border-left: 4px solid [semantic color]
+  rounded: 8px
+  padding: 16px 20px
+  shadow: 0 8px 24px rgba(0,0,0,0.5)
+
+  Success: border-color #84cc16, icon: checkmark circle
+  Error: border-color #dc2626, icon: X circle
+  Warning: border-color #f59e0b, icon: alert triangle
+  Info: border-color #445642, icon: info circle
+
+  Animation in: slide from right + fade, 300ms
+  Animation out: slide to right + fade, 200ms
+  Auto-dismiss: 5s (can be dismissed early)
+
+  Stack spacing: 12px between toasts
+  Max stack: 3 toasts (older ones auto-dismiss)
+
+BANNER (Top, full-width):
+  Height: 56px
+  bg: linear-gradient(90deg, #ce6203, #f59e0b) (vibrant gradient)
+  text: white, centered, 14px, 600 weight
+  Close button: right side, white X
+  Use for: critical announcements, trial expiry, maintenance
+
+INLINE ALERT (Within content):
+  ┌────────────────────────────────────────────────┐
+  │  ⚠  Low inventory: Only 3 items remaining      │
+  └────────────────────────────────────────────────┘
+  bg: rgba(color, 0.1)
+  border: 1px solid rgba(color, 0.4)
+  border-left: 4px solid [full color]
+  padding: 14px 18px
+  rounded: 6px
+  Icon: 20×20px, left-aligned
+  Text: 13px, color matches border
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                      BADGES: SEMANTIC INDICATORS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STATUS BADGES (State indicators):
+  PAID:     bg rgba(132,204,22,0.15), text #84cc16, border 1px solid rgba(132,204,22,0.3)
+  PENDING:  bg rgba(245,158,11,0.15), text #f59e0b, border 1px solid rgba(245,158,11,0.3)
+  OVERDUE:  bg rgba(220,38,38,0.15), text #dc2626, border 1px solid rgba(220,38,38,0.3)
+  DRAFT:    bg rgba(156,163,175,0.15), text #9ca3af, border 1px solid rgba(156,163,175,0.3)
+
+  Shape: Squared (rounded: 4px—minimal rounding)
+  Padding: 6px 12px
+  Font: 11px, 700 weight, uppercase, 0.05em tracking
+  Dot: 6×6px circle, same color as text, left of label
+
+COUNT BADGES (Notifications):
+  ┌────┐
+  │ 5  │  Circular (20×20px)
+  └────┘  bg: #dc2626
+          text: white, 11px, 700 weight
+          Position: absolute, top-right of parent (-8px, -8px offset)
+          Minimum width: 20px (expands for 10+)
+          Pulse animation on update
+
+TAGS (Categorization):
+  ┌──────────┐
+  │ EXPENSES │  bg: rgba(68,86,66,0.2)
+  └──────────┘  text: #fffad6
+                border: 1px solid #445642
+                padding: 6px 10px
+                rounded: 4px
+                font: 10px, 700 weight, uppercase
+                hover: bg becomes rgba(68,86,66,0.3)
+                Removable variant: X icon on right, 14×14px
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                   BACKGROUNDS: LAYERS OF DEPTH
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+BASE LAYER (The Foundation):
+  #0e1616 solid
+  Optional: Subtle noise texture overlay (opacity: 0.03)
+
+SURFACE LAYER (Cards, panels):
+  #1a1f1f with optional gradient:
+  linear-gradient(165deg, rgba(26,31,31,1) 0%, rgba(14,22,22,1) 100%)
+
+ELEVATED SURFACES:
+  Same as surface but with shadow and optional rim light:
+  box-shadow:
+    0 8px 24px rgba(0,0,0,0.4),
+    inset 0 1px 0 rgba(255,250,214,0.05)
+
+HERO BACKGROUNDS (Marketing moments):
+  Radial gradient from center:
+  radial-gradient(circle at 50% 0%,
+    rgba(206,98,3,0.15) 0%,
+    rgba(14,22,22,1) 60%
+  )
+  + Grid overlay:
+  background-image:
+    linear-gradient(rgba(255,250,214,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,250,214,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+
+ACCENT OVERLAYS (Special zones):
+  Left accent bar: 4px solid #ce6203, positioned absolute left 0
+  Top glow: linear-gradient(180deg, rgba(206,98,3,0.1) 0%, transparent 100%)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                     SHADOWS: SCULPTING WITH LIGHT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PHILOSOPHY: Shadows create hierarchy. Use multiple shadow layers for realism.
+
+LEVELS:
+  Ground:     0 1px 2px rgba(0,0,0,0.2)
+  Raised:     0 4px 8px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2)
+  Floating:   0 12px 24px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.3)
+  Elevated:   0 20px 40px rgba(0,0,0,0.5), 0 4px 8px rgba(0,0,0,0.4)
+  Modal:      0 32px 64px rgba(0,0,0,0.7), 0 8px 16px rgba(0,0,0,0.5)
+
+COLORED SHADOWS (Use sparingly):
+  Primary CTA: 0 8px 20px rgba(206,98,3,0.4)
+  Success: 0 4px 12px rgba(132,204,22,0.3)
+  Error: 0 4px 12px rgba(220,38,38,0.4)
+
+INNER SHADOWS (Depth):
+  Pressed buttons: inset 0 2px 4px rgba(0,0,0,0.3)
+  Input fields: inset 0 1px 2px rgba(0,0,0,0.1)
+
+GLOW EFFECTS:
+  Focus: 0 0 0 3px rgba(206,98,3,0.3), 0 0 12px rgba(206,98,3,0.2)
+  Active: 0 0 20px rgba(206,98,3,0.4)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                  ANIMATIONS: PURPOSEFUL MOTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TIMING FUNCTIONS (Not just ease-in-out):
+  Entrances:  cubic-bezier(0.25, 0.46, 0.45, 0.94) - smooth entry
+  Exits:      cubic-bezier(0.55, 0.085, 0.68, 0.53) - swift exit
+  Elastic:    cubic-bezier(0.68, -0.55, 0.265, 1.55) - bouncy
+  Sharp:      cubic-bezier(0.4, 0, 0.6, 1) - precise
+
+DURATIONS:
+  Micro (hover):      100ms
+  Quick (buttons):    150ms
+  Standard (modals):  250ms
+  Deliberate (pages): 400ms
+  Dramatic (hero):    600ms
+
+SIGNATURE ANIMATIONS:
+
+  Number Counter (Revenue updates):
+    Count from 0 to value over 800ms
+    Easing: cubic-bezier(0.25, 0.46, 0.45, 0.94)
+    Add slight blur during transition (filter: blur(1px) → blur(0))
+
+  Card Entrance:
+    opacity: 0 → 1
+    transform: translateY(20px) rotateX(10deg) → translateY(0) rotateX(0)
+    duration: 400ms, delay: stagger 80ms per card
+
+  Skeleton Pulse (Loading):
+    background: linear-gradient(90deg,
+      rgba(26,31,31,1) 0%,
+      rgba(42,47,47,1) 50%,
+      rgba(26,31,31,1) 100%
+    )
+    background-size: 200% 100%
+    animation: pulse 1.5s infinite
+    @keyframes pulse { 0%, 100% { background-position: 0% 0%; } 50% { background-position: 100% 0%; } }
+
+  Button Press:
+    transform: scale(1) → scale(0.96) (50ms) → scale(1) (100ms)
+    Satisfying tactile feedback
+
+  Revenue Spike (Chart point):
+    Scale pulse: 1 → 1.3 → 1 (600ms)
+    Glow appears and fades
+    Use when new high value is recorded
+
+  Drawer Slide:
+    transform: translateX(-100%) → translateX(0)
+    duration: 300ms
+    easing: cubic-bezier(0.25, 0.46, 0.45, 0.94)
+
+  Morphing Background (Hero):
+    border-radius animates between organic shapes
+    duration: 20s, infinite loop
+    Subtle, ambient movement
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                    NAVIGATION: SPATIAL AWARENESS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TOP BAR (Command center):
+  Height: 64px (generous—this is important real estate)
+  bg: rgba(14,22,22,0.95)
+  backdrop-filter: blur(12px)
+  border-bottom: 1px solid rgba(68,86,66,0.3)
+  position: sticky top-0
+  z-index: 100
+
+  Logo: left, 32px height
+  Nav items: center, 16px gap
+  User menu: right, avatar 40×40px
+
+SIDEBAR (Vertical hierarchy):
+  Width: 280px (desktop), slides in on mobile
+  bg: #0e1616
+  border-right: 1px solid #1a1f1f
+
+  Logo section: 80px height, centered
+  Nav section: scrollable, flex-1
+  User section: 72px height, border-top
+
+  Nav Item (inactive):
+    padding: 12px 20px
+    text: #9ca3af, 14px, 600 weight
+    icon: 20×20px, left-aligned, 12px gap to text
+    hover: bg rgba(206,98,3,0.08), text #fffad6
+    transition: all 200ms
+
+  Nav Item (active):
+    bg: linear-gradient(90deg, rgba(206,98,3,0.2) 0%, transparent 100%)
+    border-left: 3px solid #ce6203
+    text: #fffad6
+    icon color: #ce6203
+
+BREADCRUMBS:
+  Container: 40px height, flex items-center
+  Separator: "/" or "›", 12px, #6b7280, margin 0 8px
+  Item: 13px, #9ca3af
+  Current: #fffad6, 600 weight
+  Clickable items: hover underline, 150ms transition
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                        RESPONSIVE: MOBILE METAMORPHOSIS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+BREAKPOINTS:
+  xs:  0px     (base, mobile-first)
+  sm:  640px   (large phone, small tablet)
+  md:  768px   (tablet)
+  lg:  1024px  (laptop)
+  xl:  1280px  (desktop)
+  2xl: 1536px  (large desktop)
+
+MOBILE PATTERNS (<640px):
+  - Sidebar becomes bottom nav bar (60px height, 5 icons max)
+  - Tables transform to card list
+  - Dashboard: 1 column, cards stack
+  - Stat cards: full width, larger touch targets
+  - Modals: full screen with slide-up animation
+  - Top bar: burger menu left, logo center, profile right
+
+TABLET PATTERNS (640-1024px):
+  - Dashboard: 2 column grid
+  - Sidebar: drawer that overlays (not pushes content)
+  - Tables: horizontal scroll with sticky first column
+  - Charts: reduce height slightly, maintain readability
+
+DESKTOP PATTERNS (1024px+):
+  - Full sidebar always visible
+  - Dashboard: 3-4 column grid with asymmetric layouts
+  - Tables: full display with all columns
+  - More generous spacing throughout
+
+TOUCH TARGETS (Mobile):
+  Minimum: 44×44px (Apple standard)
+  Preferred: 48×48px
+  Spacing between: 8px minimum
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                      ACCESSIBILITY: INCLUSIVE BY DEFAULT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+FOCUS INDICATORS:
+  Standard: 2px solid #ce6203, offset 2px
+  High contrast mode: 3px solid white
+  Never: outline: none without replacement
+
+CONTRAST RATIOS (WCAG AAA):
+  Large text (18px+): 4.5:1 minimum
+  Normal text: 7:1 minimum
+  UI components: 3:1 minimum
+
+  Verified combinations:
+  #fffad6 on #0e1616: 15.8:1 ✓
+  #ce6203 on #0e1616: 4.8:1 ✓ (large text only)
+  #84cc16 on #0e1616: 9.2:1 ✓
+
+KEYBOARD NAVIGATION:
+  Tab order: logical, left-to-right, top-to-bottom
+  Skip links: "Skip to main content" (visually hidden, appears on focus)
+  Escape: closes modals, dropdowns, menus
+  Arrow keys: navigate lists, menus, tabs
+  Space/Enter: activate buttons, links
+  Home/End: jump to start/end of lists
+
+SCREEN READERS:
+  All icons: aria-label or aria-labelledby
+  Complex widgets: proper ARIA roles (dialog, menu, tablist, etc.)
+  Live regions: aria-live for dynamic content
+  Hidden decorative elements: aria-hidden="true"
+
+COLOR BLINDNESS:
+  Never rely on color alone—use icons, labels, patterns
+  Success/Error: checkmark/X icons + color
+  Charts: varying line styles (solid/dashed) + color
+  Status: text label + colored dot
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                         ICONS: VISUAL VOCABULARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+LIBRARY: Lucide React (consistent, customizable)
+
+SIZING:
+  16×16: Inline with text, tight spaces
+  20×20: Default UI size, buttons, nav
+  24×24: Emphasized actions, headers
+  32×32: Feature icons, empty states
+  48×48: Hero sections, large illustrations
+
+STROKE:
+  Default: 2px (strong, confident)
+  Delicate: 1.5px (detailed icons, small sizes)
+  Bold: 2.5px (emphasis, CTA buttons)
+
+COLORS:
+  Inherit: currentColor (most common—follows text color)
+  Accent: #ce6203 (important actions)
+  Muted: #6b7280 (secondary actions)
+  Success: #84cc16
+  Error: #dc2626
+
+ANIMATION:
+  Hover: rotate 15deg or scale 1.1 (playful micro-interaction)
+  Active: subtle pulse
+  Loading: rotate 360deg infinite (1s duration)
+
+CUSTOM TOUCHES:
+  - Revenue up: arrow with trailing lines (speed lines)
+  - Warning: triangle with exclamation, slight shake on appear
+  - Success: checkmark with expanding circle (0.3s)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                        IMPLEMENTATION EXAMPLES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// REVENUE STAT CARD
+<div className="relative bg-gradient-to-br from-[#1a1f1f] to-[#0e1616]
+                border-l-4 border-[#ce6203] rounded-lg p-7
+                shadow-[0_8px_24px_rgba(0,0,0,0.4)]">
+  <div className="flex items-start justify-between mb-3">
+    <div>
+      <p className="text-[11px] font-bold uppercase tracking-wider
+                    text-[#9ca3af] mb-1">
+        Total Revenue
+      </p>
+      <p className="text-5xl font-bold tabular-nums tracking-tight
+                    text-[#fffad6]" style={{fontVariantNumeric: 'tabular-nums'}}>
+        $24,847
+      </p>
+    </div>
+    <div className="opacity-40">
+      <DollarSign className="w-8 h-8 text-[#ce6203]" strokeWidth={2} />
+    </div>
+  </div>
+  <div className="flex items-center gap-2">
+    <span className="flex items-center gap-1 text-[#84cc16]
+                     font-semibold text-sm">
+      <TrendingUp className="w-4 h-4" />
+      +12.4%
+    </span>
+    <span className="text-[#6b7280] text-xs">vs last month</span>
+  </div>
+</div>
+
+// PRIMARY CTA BUTTON
+<button className="group relative px-8 py-4 bg-[#ce6203] text-white
+                   font-semibold rounded-lg
+                   border-2 border-white/10
+                   shadow-[0_4px_12px_rgba(206,98,3,0.4)]
+                   hover:shadow-[0_6px_16px_rgba(206,98,3,0.5)]
+                   hover:-translate-y-0.5
+                   active:translate-y-0
+                   transition-all duration-150
+                   focus:outline-none focus:ring-2 focus:ring-[#ce6203]
+                   focus:ring-offset-2 focus:ring-offset-[#0e1616]">
+  <span className="flex items-center gap-2">
+    Create Quote
+    <ArrowRight className="w-5 h-5 group-hover:translate-x-1
+                           transition-transform" />
+  </span>
+</button>
+
+// BRUTALIST INPUT
+<div className="space-y-2">
+  <label className="relative flex items-center gap-3">
+    <div className="w-0.5 h-4 bg-[#445642]" />
+    <span className="text-[11px] font-bold uppercase tracking-wider
+                     text-[#d1d5db]">
+      Invoice Amount
+    </span>
+  </label>
+  <input
+    type="text"
+    placeholder="Enter amount..."
+    className="w-full bg-[#1a1f1f]/60 text-[#fffad6]
+               border-0 border-b-2 border-[#374151]
+               px-1 py-3.5
+               focus:outline-none focus:border-b-3 focus:border-[#ce6203]
+               transition-all duration-150
+               placeholder:text-[#6b7280]"
+  />
+</div>
+
+// DATA TABLE ROW (with hover effect)
+<tr className="group border-b border-white/5
+               hover:bg-[#ce6203]/6
+               transition-colors cursor-pointer
+               relative">
+  <td className="absolute left-0 w-0 h-full bg-[#ce6203]
+                 group-hover:w-0.5 transition-all" />
+  <td className="px-5 py-3.5 text-[#fffad6] font-medium">
+    Acme Corp
+  </td>
+  <td className="px-5 py-3.5 text-right tabular-nums text-[#fffad6]">
+    $5,000.00
+  </td>
+  <td className="px-5 py-3.5 text-center">
+    <span className="inline-flex items-center gap-1.5 px-3 py-1.5
+                     bg-[#84cc16]/15 text-[#84cc16]
+                     border border-[#84cc16]/30
+                     rounded font-bold text-[11px] uppercase tracking-wide">
+      <span className="w-1.5 h-1.5 rounded-full bg-[#84cc16]" />
+      Paid
+    </span>
+  </td>
+</tr>
+
+// TOAST NOTIFICATION
+<div className="fixed bottom-6 right-6 z-[60]
+                bg-[#1a1f1f] border-l-4 border-[#84cc16]
+                rounded-lg shadow-[0_8px_24px_rgba(0,0,0,0.5)]
+                p-4 min-w-[360px]
+                animate-[slideIn_300ms_cubic-bezier(0.25,0.46,0.45,0.94)]">
+  <div className="flex items-start gap-3">
+    <div className="flex-shrink-0 mt-0.5">
+      <CheckCircle className="w-5 h-5 text-[#84cc16]" strokeWidth={2} />
+    </div>
+    <div className="flex-1">
+      <p className="text-[#fffad6] font-semibold text-sm mb-1">
+        Quote created successfully!
+      </p>
+      <p className="text-[#9ca3af] text-xs">
+        Your quote has been saved and is ready to send.
+      </p>
+    </div>
+    <button className="flex-shrink-0 text-[#6b7280]
+                       hover:text-[#fffad6] transition-colors">
+      <X className="w-4 h-4" />
+    </button>
+  </div>
+</div>
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                           THE QUOTLA AESTHETIC
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+NOT: Clean, minimal, modern SaaS
+YES: Dark, confident, business-focused with moments of unexpected warmth
+
+NOT: Purple gradients, bubbly cards, playful illustrations
+YES: Amber fire, architectural lines, data density with style
+
+NOT: Perfectly symmetrical 8px grids
+YES: Intentional asymmetry, prime number spacing, visual rhythm
+
+NOT: Passive, friendly, approachable
+YES: Commanding, professional, trustworthy with character
+
+INSPIRATION:
+- Art Deco ledgers and accounting books
+- Brutalist architecture (function-first beauty)
+- High-contrast film noir lighting
+- Forge fire and leather-bound tomes
+- Terminal interfaces (information density)
+
+THE RESULT:
+A business tool that feels SERIOUS without being STERILE.
+Professional without being BORING.
+Functional without being GENERIC.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Version 1.0 | January 2026 | Mission To Scale Design Team

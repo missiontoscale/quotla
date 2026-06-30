@@ -850,7 +850,10 @@ export function AddInvoiceDialog({
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => setIsEditing(true)}
+                    onClick={() => {
+                      setIsEditing(true)
+                      setCurrentStep(0)
+                    }}
                     className="border-quotla-orange text-quotla-orange hover:bg-quotla-orange/10 h-9 w-9 p-0"
                     title="Edit"
                   >
