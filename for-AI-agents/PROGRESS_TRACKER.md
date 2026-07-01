@@ -169,13 +169,18 @@ Phase 1: Navigation & Layout Restructure
 - **Context gathered:** Read MASTER_GUIDE.md, MASTER_CONTEXT.md, DESIGN_PRO.md, design structure.txt, explored full codebase
 - **Implementation plan created:** 9 phases with detailed stages for full UI revamp
 - **Integrated "design structures yet to be accounted for.txt":** Merged Universal Pipeline philosophy and 9 creation screen designs into design structure.txt; cleaned and removed redundant file
+- **PHASE 1, Stage 1.1:** Created new `BottomNav` with 3 items — Health (HNIC/Heart icon), Quotla (QNIC/diamond icon), Records (RNIC/LayoutGrid icon). Active state = filled/dark icon with orange color. Tooltips on each item using shadcn Tooltip. Accepts optional props for Quotla/Records sheet triggers (wired in later stages). Local state for sheet-button active appearance.
 
 ---
 
 ## In Progress
 
 **PHASE 1: Navigation & Layout Restructure**
-- Not yet started
+- **Stage 1.1: Complete ✓** — BottomNav with 3 items created
+- Stage 1.2: Update Sidebar to match new nav items + add Records sub-items — pending
+- Stage 1.3: Update TopBar — pending
+- Stage 1.4: Restructure DashboardLayout — pending
+- Stage 1.5: Create route /business/dashboard → Health screen — pending
 
 ---
 
@@ -213,7 +218,7 @@ See [Implementation Plan](#implementation-plan-8-independent-phases) above.
 
 ## Files Modified
 
-_None yet in this revamp phase._
+- `components/dashboard/BottomNav.tsx` — Replaced 4-item nav (Dashboard, Sales, Inventory, Expenses) with 3-item nav (Health/HNIC, Quotla/QNIC, Records/RNIC). Added tooltips, active filled/dark state, optional sheet-trigger props.
 
 ---
 
@@ -250,6 +255,7 @@ _None documented._
 - **New:** Each phase should be self-contained with its own verification step to maintain progress continuity
 - **New:** "design structures yet to be accounted for.txt" integrated into design structure.txt as Universal Pipeline + dedicated pipeline screens (Record Sale, Invoice, Expense, Add Product, Add Customer, Create Quote, Documents, Product Details, Customer Details)
 - **New:** Existing file deleted after clean integration
+- **New:** BottomNav active state with `fill-current` Tailwind class works cleanly for Lucide icons to achieve the "filled/dark when active" design requirement
 
 ---
 
@@ -300,4 +306,4 @@ _None documented._
 
 ## Next Recommended Task
 
-**PHASE 1, Stage 1.1:** Create new BottomNav with 3 items: Health (HNIC), Quotla (QNIC), Records (RNIC). Start in `components/dashboard/BottomNav.tsx`.
+**PHASE 1, Stage 1.2:** Update Sidebar to match new nav items + add Records sub-items (`components/dashboard/Sidebar.tsx`).
